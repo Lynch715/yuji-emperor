@@ -181,6 +181,8 @@ const {
 } = __load("src/ui/common.js");
 const { loadSettings, openSettings } = __load("src/ui/settings.js");
 const { requestTurnNarrative } = __load("src/ui/turn-request.js");
+const { createGameSeed, createOpening, openingErrorMessage } = __load("src/ui/new-game.js");
+const { createDialogRequestScope } = __load("src/ui/request-scope.js");
 const {
   renderApp,
   actionButton,
@@ -193,9 +195,8 @@ const { actionAvailability } = __load("src/ui/view-model.js");
 const { actionDialog } = __load("src/ui/actions.js");
 const { palacePanel } = __load("src/ui/panels.js");
 const { createSaveStore, createIDB } = __load("src/store/save.js");
-const { createState, migrate, clone, reignId } = __load("src/core/state.js");
+const { migrate, clone, reignId } = __load("src/core/state.js");
 const {
-  initialTurn,
   forecastTurn,
   commitTurn,
   ACTIONS,
@@ -203,12 +204,10 @@ const {
 } = __load("src/core/turn.js");
 const { assignTutor } = __load("src/core/harem.js");
 const { requestCompletion, applyBiography } = __load("src/core/chronicles.js");
-const { GOALS, selectAmbitions } = __load("src/core/ambitions.js");
-const { applyWorld } = __load("src/core/world.js");
+const { GOALS } = __load("src/core/ambitions.js");
 const { talkAttempt } = __load("src/core/court.js");
 const { callJSON, createBudget } = __load("src/llm/client.js");
 const {
-  worldMessages,
   talkMessages,
   classifyMessages,
   biographyMessages,
@@ -217,7 +216,6 @@ const {
 const {
   extractPartialChapter,
   mockNarrative,
-  validateWorld,
   validateTalk,
 } = __load("src/llm/validate.js");
 initCommon();
@@ -424,7 +422,7 @@ async function newGame() {
         .join("") +
       '</select></div></div><label class="check"><input id="demo-mode" type="checkbox" ' +
       (!config.key ? "checked" : "") +
-      '>先试读一局（无需密钥）</label><p class="muted">试读无需设置。若要接续新故事，请先设置叙事接口。启用已有卷位前，会先封存旧卷。</p><div class="dialog-actions"><button type="button" data-command="settings">设置接口</button><button type="submit" class="primary">承天践祚</button></div></form>',
+      '>先试读一局（无需密钥）</label><p class="muted">试读无需设置。若要接续新故事，请先设置叙事接口。启用已有卷位前，会先封存旧卷。</p><p id="new-result" class="result hidden" role="status" aria-live="polite" tabindex="-1"></p><div class="dialog-actions"><button type="button" data-command="settings">设置接口</button><button type="submit" class="primary">承天践祚</button></div></form>',
   );
   const goalsHTML = ["宏愿", "宏愿", "心事", "心事"]
     .map(
@@ -450,47 +448,69 @@ async function newGame() {
       "beforebegin",
       '<div class="fields">' + goalsHTML + "</div>",
     );
-  $("#new-form").onsubmit = async (e) => {
+  const form = $("#new-form"), dialog = $("#modal"), result = $("#new-result");
+  const scope = createDialogRequestScope(dialog, form);
+  const showResult = (text, error = false) => {
+    result.classList.remove("hidden");
+    result.setAttribute("role", error ? "alert" : "status");
+    result.textContent = text;
+  };
+  form.onsubmit = async (e) => {
     e.preventDefault();
-    const options = {
-      name: $("#emperor-name").value.trim(),
-      era: $("#era-name").value.trim(),
-      freedom: $("#freedom").value,
-      difficulty: $("#difficulty").value,
-      prose: $("#prose-style").value,
-      demo: $("#demo-mode").checked,
-      seed: crypto.randomUUID(),
-    };
-    const selected = Number($("#new-slot").value),
-      goals = [...document.querySelectorAll("[data-goal-select]")].map(
-        (el) => el.value,
-      );
-    if (!options.demo && !config.key) {
-      toast("请先填写接口密钥，或选择试读。");
-      return;
-    }
-    busy = true;
-    $("#new-form button[type=submit]").disabled = true;
+    if (busy || !form.isConnected || !dialog.open) return;
+    let request, controls = [], saving = false;
+    const submit = form.querySelector('button[type=submit]'), close = $("#close-modal");
+    const preventSaveExit = (event) => { if (saving) event.preventDefault(); };
+    dialog.addEventListener("cancel", preventSaveExit);
     try {
-      let draft = createState(options);
-      if (!options.demo) {
-        const world = await callJSON(config, worldMessages(draft), {
-          validate: validateWorld,
-          onMetric: markMetric,
-        });
-        draft = applyWorld(draft, world);
-      }
-      draft = initialTurn(selectAmbitions(draft, goals));
-      if (occupied.has(selected)) await store.archiveAndSave(selected, draft);
+      const value = (id) => form.querySelector("#" + id).value;
+      const options = {
+        name: value("emperor-name").trim(), era: value("era-name").trim(),
+        freedom: value("freedom"), difficulty: value("difficulty"),
+        prose: value("prose-style"), demo: form.querySelector("#demo-mode").checked,
+        seed: createGameSeed(),
+      };
+      const selected = Number(value("new-slot"));
+      const goals = [...form.querySelectorAll("[data-goal-select]")].map(el => el.value);
+      request = scope.begin();
+      busy = true;
+      controls = [...form.elements].map(el => [el, el.disabled]);
+      for (const [el] of controls) el.disabled = true;
+      form.setAttribute("aria-busy", "true");
+      submit.textContent = "正在开局…";
+      const draft = await createOpening(options, goals, { ...config }, {
+        signal: request.signal, onMetric: markMetric,
+        onStage: (text) => { if (scope.current(request)) showResult(text); },
+      });
+      if (!scope.current(request)) return;
+      saving = true;
+      close.disabled = true;
+      showResult("正在保存新卷……");
+      const work = saveQueue.catch(() => {}).then(() => occupied.has(selected)
+        ? store.archiveAndSave(selected, draft) : store.save(selected, draft));
+      saveQueue = work;
+      const saved = await work;
       state = draft;
       slot = selected;
       readOnly = false;
+      saveStatus = saved.warnings.length ? saved.warnings.join("；") + "，请导出备份" : "已存入第 " + selected + " 卷";
+      try { localStorage.setItem("yuji:active-slot", String(selected)); } catch {}
       closeDialog();
-      await persist();
+      if (saved.warnings.length) toast(saveStatus);
     } catch (err) {
-      toast(err.message);
-      if ($("#new-form")) $("#new-form button[type=submit]").disabled = false;
+      if (form.isConnected && dialog.open) {
+        showResult(openingErrorMessage(err), true);
+        result.focus();
+      }
     } finally {
+      dialog.removeEventListener("cancel", preventSaveExit);
+      if (form.isConnected) {
+        for (const [el, disabled] of controls) el.disabled = disabled;
+        form.removeAttribute("aria-busy");
+        submit.textContent = "承天践祚";
+        close.disabled = false;
+      }
+      scope.finish(request);
       busy = false;
       render();
     }
@@ -2391,245 +2411,59 @@ function biographyMessages(state, record) {
 
 return {STYLES,worldRules,roster,turnMessages,worldMessages,talkMessages,classifyMessages,biographyMessages};
 },
-"src/ui/render.js":function(__load){
-const { esc } = __load("src/ui/common.js");
-const { fateLabel } = __load("src/core/rng.js");
-const { energyLimit } = __load("src/core/emperor.js");
-const { scheduleCost, ACTIONS } = __load("src/core/turn.js");
-const { ACTION_GROUPS, HALLS, GLYPHS, actionAvailability, actionMeta, energyView, metricGroups, scheduleEstimate } = __load("src/ui/view-model.js");
-const num = (n) =>
-  Number(n).toLocaleString("zh-CN", { maximumFractionDigits: 1 });
-const date = (s) =>
-  esc(s.era.name) +
-  " " +
-  s.era.year +
-  "年" +
-  s.era.month +
-  "月" +
-  ["上", "中", "下"][s.era.xun] +
-  "旬";
-function actionButton(kind, s = null) {
-  const reason=actionAvailability(s,kind);
-  return '<button class="action-card" data-action="'+esc(kind)+'" draggable="'+(!reason)+'" '+(reason?'disabled ':'')+'title="'+esc(kind+' · '+(reason||actionMeta(kind)))+'"><span class="glyph" aria-hidden="true">'+GLYPHS[kind]+'</span><span class="action-copy"><strong>'+esc(kind)+'</strong><small>'+esc(reason||actionMeta(kind))+'</small></span></button>';
-}
-function actionsHTML(s, includeHalls = false) {
-  return ACTION_GROUPS.map(([group,kinds])=>'<section class="action-group"><h2>'+group+'</h2><div class="action-grid">'+kinds.map(k=>actionButton(k,s)).join('')+'</div></section>').join('')+(includeHalls?'<nav class="dock-halls" aria-label="殿阁"><h2>殿阁</h2><div>'+HALLS.map(p=>'<button data-panel="'+p+'">'+p+'</button>').join('')+'</div></nav>':'');
-}
-function energyHTML(s, compact=false) {
-  const e=energyView(s);
-  return '<div class="energy '+(compact?'compact':'')+'" aria-label="精力 余 '+e.remaining+' / '+e.limit+(e.excess?'，透支 '+e.excess:'')+'"><span class="energy-label">精力</span><span class="pips" aria-hidden="true">'+Array.from({length:Math.max(e.limit,e.used)},(_,i)=>'<i class="pip '+(i>=e.limit?'over':i<e.used?'spent':'free')+'"></i>').join('')+'</span><span>余 <b>'+e.remaining+'</b> / '+e.limit+'</span></div>';
-}
-function metricsHTML(s, mobile = false) {
- const groups=metricGroups(s),draw=(m)=>'<div class="metric '+(m.danger?'danger':'')+'"><span class="metric-label">'+m.label+'</span><span class="metric-reading"><strong>'+ (Number.isFinite(m.value)?num(m.value):'—')+'</strong><small>'+m.unit+'</small>'+(Math.abs(m.delta)>=.05?'<span class="trend '+(m.delta>0?'positive':'negative')+'" title="较上旬净变化">'+(m.delta>0?'▲':'▼')+num(Math.abs(m.delta))+'</span>':'')+'</span><span class="metric-meter" aria-hidden="true"><i style="width:'+Math.min(100,Math.max(0,(m.value||0)/m.max*100))+'%"></i></span></div>';
- if(mobile)return '<button class="mobile-stats" data-command="stats" title="展开完整国势" aria-description="点击查看四组完整国势与单位">'+['国库','民心','吏治','皇威'].map(k=>draw(groups.flatMap(g=>g.stats).find(m=>m.label===k))).join('')+'</button>';
- return '<div class="metrics" aria-label="国势四组">'+groups.map(g=>'<section class="metric-group weight-'+g.weight+' '+(g.stats.some(m=>m.danger)?'group-danger':'')+'"><h2>'+g.name+'</h2><div class="metric-values">'+g.stats.map(draw).join('')+'</div></section>').join('')+'</div>';
-}
-function ledgerHTML(entries) {
-  return (
-    "<ul>" +
-    entries
-      .map(
-        (e) =>
-          "<li>" +
-          esc(e.source) +
-          "：" +
-          esc(
-            {
-              treasury: "国库",
-              arrears: "欠饷与积欠",
-              privy: "内帑",
-              grain: "粮储",
-              morale: "民心",
-              governance: "吏治",
-              health: "健康",
-              mood: "心情",
-              prestige: "皇威",
-              virtue: "圣德",
-              favor: "好感",
-              energy: "精力",
-              age: "年岁",
-              power: "势力",
-              attitude: "态度",
-              readiness: "军备",
-              troops: "兵力",
-              pop: "人口",
-              tax: "赋税",
-              education: "教养",
-              progress: "政务进度",
-              enemyTroops: "敌军兵力",
-              enemyReadiness: "敌军军备",
-              round: "战役旬数",
-              threat: "边患",
-              灾情: "灾情",
-              disaster: "灾情",
-            }[e.path.split(".").at(-1)] ||
-              (/[\u3400-\u9fff]/.test(e.path.split(".").at(-1))
-                ? e.path.split(".").at(-1)
-                : "相关数值"),
-          ) +
-          ' <span class="' +
-          ((e.path === "nation.arrears" ? e.delta <= 0 : e.delta >= 0)
-            ? "positive"
-            : "negative") +
-          '">' +
-          (e.delta > 0 ? "+" : "") +
-          num(e.delta) +
-          "</span></li>",
-      )
-      .join("") +
-    "</ul>"
-  );
-}
-function chapterTitle(summary) {
- return String(summary||'').replace(/^(本旬(?:大凶|凶|平常|吉|大吉))，诸事已据实落账$/,'$1');
-}
-function chapterHTML(h, ambitions = []) {
- return '<div class="chapter-head"><span class="eyebrow">第 '+h.turn+' 章</span><h2>'+esc(chapterTitle(h.summary))+'</h2><span class="chapter-fate">天命 · '+esc(h.fate||fateLabel(h.die))+'（'+h.die+'）</span></div><div class="chapter-date">'+esc(h.era.name)+' '+h.era.year+'年'+h.era.month+'月</div><div class="prose">'+['朝','午','夜'].map(slot=>'<h3>'+slot+'</h3><p>'+esc(h.chapter[slot]||'略。')+'</p>').join('')+'</div><div class="chapter-tabs"><details class="ledger"><summary>起居注 '+h.entries.length+' 条</summary><div class="chapter-detail">'+Object.entries(h.settlement?.slotResults||{}).map(([slot,results])=>'<p>'+slot+'：'+results.map(esc).join('；')+'</p>').join('')+ledgerHTML(h.entries)+(h.notes||[]).map(n=>'<p>'+esc(n)+'</p>').join('')+'</div></details><details><summary>风闻 '+(h.rumors?.length||0)+' 条</summary><div class="chapter-detail">'+(h.rumors?.length?h.rumors.map(r=>'<p>'+esc(r)+'</p>').join(''):'<p>本旬无新风闻。</p>')+'</div></details><details><summary>宏愿进展</summary><div class="chapter-detail">'+(ambitions.length?ambitionsHTML({ambitions}):'<p>详见史馆的宏愿与心事。</p>')+'</div></details></div>';
-}
-function memorialHTML(m) {
- return '<button class="memorial '+(m.urgent?'urgent':'')+'" data-memorial="'+esc(m.id)+'"><span class="memorial-rail" aria-hidden="true"></span><span class="memorial-copy"><strong>'+esc(m.title)+(m.urgent?'<span class="stamp">急</span>':'')+(m.secret?'<span class="paper-tag">密</span>':'')+'</strong><small>'+esc(m.from)+' · 剩 '+Math.max(0,m.due-(m.currentTurn||0))+' 旬</small></span></button>';
-}
-function ambitionsHTML(s) {
- return s.ambitions.map(a=>'<div class="ambition"><div class="ambition-heading"><span><small>'+esc(a.kind)+'</small>　'+esc(a.title)+'</span><span class="ambition-percent">'+num(a.progress)+'%</span></div><div class="bar" role="progressbar" aria-label="'+esc(a.title)+'" aria-valuenow="'+a.progress+'" aria-valuemin="0" aria-valuemax="100"><i style="width:'+a.progress+'%"></i></div></div>').join('');
-}
-function introHTML() {
-  return '<div class="intro"><div class="eyebrow">架空帝王 · 文字经营</div><h1>御 极</h1><p class="motto">一人之志，天下之重。</p><div class="rule"></div><p>朱笔落下，是一人心事，亦是万民生计。</p><p>在朝堂与宫闱之间，写下你的本纪。</p><div class="start-actions"><button class="primary" data-command="new">登基开局</button><button data-command="saves">续读旧卷</button></div><small>可接入叙事接口，也可先试读一局。</small><div class="onboarding">朝、午、夜，三时由你安排。<br>阅毕奏报，便可起驾；也可歇息一旬。</div></div>';
-}
-function renderApp(s,{readOnly=false,busy=false,saveStatus=""}={}) {
- const last=s?.history.at(-1),locked=readOnly||busy||!!s?.ending||!!s?.pending,e=energyView(s),estimate=scheduleEstimate(s);
- const money=Object.entries(estimate.totals).filter(([,v])=>v).map(([k,v])=>'<span class="'+(v>0?'positive':'negative')+'">'+({treasury:'国库',privy:'内帑',grain:'粮储'}[k])+' '+(v>0?'+':'−')+num(Math.abs(v))+(k==='grain'?' 万石':' 万两')+'</span>').join('　');
- const scheduled=s&&Object.values(s.schedule).some(Boolean);
- const palaces=HALLS.map(p=>'<button data-panel="'+p+'">'+p+'</button>').join('');
- const opening=s?'<div class="chapter-head"><span class="eyebrow">御极 · 序章</span><h2>'+esc(s.era.name)+'新政</h2><span class="chapter-fate">'+esc(s.dynasty)+'</span></div><div class="prose"><p>'+esc(s.backstory||'先帝遗命传入宫门，百官在丹墀下依班肃立。新帝承统，宫中循着旧例运转，天下却已将目光投向御案上的第一封奏报。')+'</p><p>奏报已送到御前。此后的每一旬，朝、午、夜三时都由你安排。</p></div><div class="chapter-tabs"><button data-action="上朝">批阅六部奏报 ›</button></div>':introHTML();
- return '<header class="topbar"><div class="brand"><div class="seal" aria-hidden="true">御<br>极</div><div><h1>'+ (s?esc(s.dynasty)+' · '+esc(s.era.name)+s.era.year+'年':'御极 · 夜御案')+'</h1><div class="date">'+(s?s.era.month+'月 '+['上','中','下'][s.era.xun]+'旬 · 第 '+(s.turn+1)+' 旬　'+esc(s.emperor.name)+' 在位':'一人之志，天下之重。')+'</div><div class="mobile-energy">'+energyHTML(s,true)+'</div></div></div>'+metricsHTML(s)+'<div class="top-actions"><button data-command="saves">存档</button><button data-command="settings">设置</button></div><button class="mobile-menu" data-command="menu" aria-label="御前菜单">☰</button>'+metricsHTML(s,true)+'</header><div class="workbench"><aside class="dock" aria-label="行动坞">'+actionsHTML(s,true)+'</aside><main class="desk">'+(s?'<section class="planning" aria-label="本旬日程"><div class="planning-title"><h2>本旬日程</h2>'+energyHTML(s)+'</div><div class="schedule">'+['朝','午','夜'].map((slot)=>{
- const a=s.schedule[slot],energy=a?scheduleCost({[slot]:a}):0;
- const summary=a?.memorials?a.memorials.map(id=>s.memorials.find(m=>m.id===id)?.title||'已归档奏报').join(' · '):a?.label||ACTIONS&&Object.keys(ACTIONS).filter(k=>ACTIONS[k].slots.includes(slot)).slice(0,4).join(' · ');
- return '<div class="slot-wrap '+(a?'filled':'empty')+'"><button class="slot" data-slot="'+slot+'" '+(locked?'disabled':'')+'><span class="slot-meta"><span>'+slot+' · '+{朝:'辰时',午:'未时',夜:'戌时'}[slot]+'</span>'+(a?'<span>精力 '+energy+'</span>':'')+'</span><strong>'+esc(a?(a.kind+(a.memorials?' · '+a.memorials.length+' 本':'')):'＋ 安排'+{朝:'朝间',午:'午间',夜:'夜间'}[slot])+'</strong><small>'+esc(summary)+'</small></button>'+(a?'<button class="slot-clear" data-clear="'+slot+'" aria-label="清空'+slot+'时段" '+(locked?'disabled':'')+'>×</button>':'')+'</div>';
- }).join('')+'</div><div class="turnbar"><div class="estimate"><span>'+(money?'预估：'+money:'本旬暂无额外开销')+'</span>'+(estimate.executions.length?'<small>成算：'+esc(estimate.executions.join('、'))+' · 成败仍看天命</small>':'')+(e.excess?'<strong class="negative">透支 '+e.excess+' 点：劳累、健康与心情受损</strong>':'')+'</div><button class="oral-trigger" data-command="oral" '+(locked?'disabled':'')+'>口谕</button><button class="primary advance" data-command="advance" '+(readOnly||busy||s.ending?'disabled':'')+'>'+(busy?'正在续写…':s.pending?'重试本旬叙事':scheduled?'起驾':'歇息')+'</button></div></section>':'')+(readOnly?'<p class="warning">此卷暂不可改写，旧卷已保留。请先导出备份。</p>':'')+(s?.pending?'<div class="warning">本旬待续 · 天命 '+s.pending.forecast.die+'，钱粮与成败已定。<button data-command="settle" '+(busy?'disabled':'')+'>先记入起居注</button></div>':'')+(s?.ending?'<div class="warning">'+esc(s.ending.type)+' · '+esc(s.ending.cause)+'<button data-panel="史馆">查看本纪</button></div>':'')+'<article class="scroll" id="scroll" tabindex="0" aria-label="本旬正文章节">'+(last?chapterHTML(last,s.ambitions):opening)+'<div id="stream" class="streaming" aria-live="polite"></div></article><div class="saved-status">'+esc(saveStatus|| (s?(s.settings.demo?'试读中':'本纪续写中'):'御案待启。'))+'</div></main><aside class="sidebar" aria-label="奏报匣"><div class="side-title"><h2>奏报匣</h2><small>'+(s?.memorials.length||0)+' 本待阅 · '+(s?.memorials.filter(m=>m.urgent).length||0)+' 急</small></div>'+(s?s.memorials.slice(0,6).map(m=>memorialHTML({...m,currentTurn:s.turn})).join('')+(s.memorials.length>6?'<button data-command="memorials">展开余下 '+(s.memorials.length-6)+' 本</button>':''):'<p class="muted">待新帝登基，呈送六部奏报。</p>')+'<section class="ambitions-block"><h2>宏愿与心事</h2>'+(s?ambitionsHTML(s):'<p class="muted">两件天下事，两桩心中愿。</p>')+'</section></aside></div><nav class="mobile-nav" aria-label="移动导航"><button data-command="actions"><span aria-hidden="true">令</span>行动</button><button data-command="memorials"><span aria-hidden="true">折</span>奏报'+(s?' '+s.memorials.length:'')+'</button><button data-command="palaces"><span aria-hidden="true">阁</span>殿阁</button><button data-command="journal"><span aria-hidden="true">录</span>起居注</button></nav>';
+"src/ui/new-game.js":function(__load){
+const { createState } = __load("src/core/state.js");
+const { initialTurn } = __load("src/core/turn.js");
+const { selectAmbitions } = __load("src/core/ambitions.js");
+const { applyWorld } = __load("src/core/world.js");
+const { callJSON } = __load("src/llm/client.js");
+const { worldMessages } = __load("src/llm/prompts.js");
+const { validateWorld } = __load("src/llm/validate.js");
+
+let seedSequence = 0;
+// This is an opening seed, not an authentication token. All game rolls still
+// use core/rng.js. Missing/restricted UUID APIs must not block the start form.
+function createGameSeed(cryptoAPI = globalThis.crypto, now = Date.now) {
+  try {
+    const id = cryptoAPI?.randomUUID?.();
+    if (typeof id === "string" && id.trim()) return id;
+  } catch {}
+  try {
+    if (typeof cryptoAPI?.getRandomValues === "function") {
+      const words = cryptoAPI.getRandomValues(new Uint32Array(4));
+      return "opening-" + [...words].map((n) => n.toString(16).padStart(8, "0")).join("");
+    }
+  } catch {}
+  return "opening-" + now().toString(36) + "-" + (++seedSequence).toString(36);
 }
 
-return {num,date,actionButton,actionsHTML,energyHTML,metricsHTML,ledgerHTML,chapterTitle,chapterHTML,memorialHTML,ambitionsHTML,introHTML,renderApp};
-},
-"src/core/rng.js":function(__load){
-const DRAFT = Symbol("internal-forecast-draft");
-function seedNumber(seed) {
-  let n = 2166136261;
-  for (const c of String(seed)) n = Math.imul(n ^ c.charCodeAt(0), 16777619);
-  return n >>> 0 || 1;
-}
-function random(rng) {
-  let x = rng >>> 0 || 1;
-  x ^= x << 13;
-  x ^= x >>> 17;
-  x ^= x << 5;
-  return { rng: x >>> 0, value: (x >>> 0) / 4294967296 };
-}
-function roll(state, low = 1, high = 20) {
-  const r = random(state.rng);
-  return {
-    state: { ...state, rng: r.rng },
-    value: low + Math.floor(r.value * (high - low + 1)),
-  };
-}
-function fateModifier(die) {
-  return (die - 10.5) * 4;
-}
-function fateLabel(die) {
-  return die <= 3
-    ? "大凶"
-    : die <= 8
-      ? "不顺"
-      : die <= 14
-        ? "平常"
-        : die <= 18
-          ? "顺遂"
-          : "大吉";
-}
-function check(
-  talent,
-  die,
-  level = "一般",
-  opposition = 0,
-  modifier = 0,
-) {
-  const difficulty = { 容易: 40, 一般: 55, 困难: 70, 极难: 85 }[level];
-  if (!difficulty) throw new Error("未知判定难度");
-  const score = talent + modifier + fateModifier(die) - opposition / 2;
-  return { score, difficulty, success: score >= difficulty };
-}
-
-return {DRAFT,seedNumber,random,roll,fateModifier,fateLabel,check};
-},
-"src/core/emperor.js":function(__load){
-const { clone } = __load("src/core/state.js");
-const { applyPackage } = __load("src/core/effects.js");
-const { roll } = __load("src/core/rng.js");
-function energyLimit(s) {
-  return (
-    Math.min(10, 6 + Math.floor(s.emperor.health / 25)) -
-    (s.emperor.status.includes("劳累") ? 1 : 0)
-  );
-}
-function settleEnergy(state, cost) {
-  let s = clone(state);
-  const excess = Math.max(0, cost - energyLimit(s));
-  s.emperor.status = s.emperor.status.filter((x) => x !== "劳累");
-  if (excess) {
-    s = applyPackage(
-      s,
-      { health: -2 * excess, mood: -3 * excess },
-      "勉力理政：透支 " + excess + " 点精力",
-    );
-    s.emperor.status.push("劳累");
+async function createOpening(options, goals, config, requestOptions = {}) {
+  const name = options.name?.trim(), era = options.era?.trim();
+  if (!name) throw new Error("请填写皇帝名");
+  if (!era) throw new Error("请填写年号");
+  if (!options.demo && !config.key?.trim())
+    throw new Error("请先填写接口密钥，或选择试读。");
+  const { onStage = () => {}, ...request } = requestOptions;
+  onStage(options.demo ? "正在准备登基与六部奏报……" : "正在拟定朝局与人物，请稍候……");
+  let draft = createState({ ...options, name, era, seed: options.seed ?? createGameSeed() });
+  if (!options.demo) {
+    const world = await callJSON(config, worldMessages(draft), {
+      ...request,
+      validate: validateWorld,
+    });
+    draft = applyWorld(draft, world);
   }
-  s.emperor.energy = Math.max(0, energyLimit(s) - cost);
-  return s;
-}
-function emperorMonth(state) {
-  let s = applyPackage(
-    state,
-    {
-      health: state.emperor.status.includes("劳累") ? -2 : 1,
-      mood: state.emperor.mood < 20 ? 1 : -1,
-    },
-    "太医月诊与心绪",
-  );
-  const tags = s.emperor.tags;
-  if (tags.includes("勤政"))
-    s = applyPackage(s, { governance: 0.3, mood: -0.5 }, "性格：勤政");
-  if (tags.includes("仁厚")) s = applyPackage(s, { virtue: 0.3 }, "性格：仁厚");
-  if (tags.includes("节俭"))
-    s = applyPackage(s, { privy: 1 }, "性格：节俭，核减宫费");
-  if (tags.includes("多疑")) s = applyPackage(s, { mood: -0.3 }, "性格：多疑");
-  if (tags.includes("嗜酒"))
-    s = applyPackage(s, { health: -0.5, mood: 1 }, "性格：嗜酒");
-  if (s.emperor.health < 30 && s.settings.freedom !== "free")
-    s.emperor.lifespan = Math.max(s.emperor.age + 1, s.emperor.lifespan - 0.1);
-  if (s.settings.freedom === "free")
-    s = applyPackage(
-      s,
-      { health: Math.max(0, 30 - s.emperor.health) },
-      "随心所欲：护持圣躬",
-    );
-  if (s.emperor.health < 10 && s.settings.freedom !== "free") {
-    const r = roll(s, 1, 100);
-    s = r.state;
-    if (r.value <= 25) s.ending = { type: "驾崩", cause: "久病不起" };
-  }
-  return s;
-}
-function emperorYear(state) {
-  let s = clone(state);
-  s.emperor.age++;
-  s.emperor.growth = Object.fromEntries(
-    Object.keys(s.emperor.talents).map((t) => [t, 0]),
-  );
-  if (s.emperor.age >= s.emperor.lifespan)
-    s.ending = { type: "驾崩", cause: "寿终正寝" };
-  return s;
+  return initialTurn(selectAmbitions(draft, goals));
 }
 
-return {energyLimit,settleEnergy,emperorMonth,emperorYear};
+function openingErrorMessage(error) {
+  const message = error?.message || "";
+  if (/randomUUID|structuredClone|is not a function|not defined|DataCloneError/.test(message))
+    return "当前浏览器缺少开局所需能力，请用系统浏览器打开后重试。";
+  return message || "开局未完成，请重试。";
+}
+
+return {createGameSeed,createOpening,openingErrorMessage};
 },
 "src/core/state.js":function(__load){
 const { seedNumber, random, DRAFT } = __load("src/core/rng.js");
@@ -3159,85 +2993,55 @@ function reignId(s) {
 
 return {VERSION,TALENTS,SLOTS,POST_NAMES,withDraft,clone,createState,migrate,assertState,reignId};
 },
-"src/core/effects.js":function(__load){
-const { clone } = __load("src/core/state.js");
-function clamp(n, low = 0, high = 100) {
-  return Math.min(high, Math.max(low, Number.isFinite(n) ? n : 0));
+"src/core/rng.js":function(__load){
+const DRAFT = Symbol("internal-forecast-draft");
+function seedNumber(seed) {
+  let n = 2166136261;
+  for (const c of String(seed)) n = Math.imul(n ^ c.charCodeAt(0), 16777619);
+  return n >>> 0 || 1;
 }
-function applyEffects(state, effects = {}, source = "引擎结算") {
-  const s = clone(state),
-    entries = [];
-  const set = (obj, key, delta, path, max = 100) => {
-    if (typeof delta !== "number" || !Number.isFinite(delta)) return;
-    const old = obj[key];
-    obj[key] = clamp(old + delta, 0, max);
-    if (obj[key] !== old)
-      entries.push({
-        path,
-        before: old,
-        after: obj[key],
-        delta: Math.round((obj[key] - old) * 100) / 100,
-        source,
-      });
+function random(rng) {
+  let x = rng >>> 0 || 1;
+  x ^= x << 13;
+  x ^= x >>> 17;
+  x ^= x << 5;
+  return { rng: x >>> 0, value: (x >>> 0) / 4294967296 };
+}
+function roll(state, low = 1, high = 20) {
+  const r = random(state.rng);
+  return {
+    state: { ...state, rng: r.rng },
+    value: low + Math.floor(r.value * (high - low + 1)),
   };
-  for (const f of ["treasury", "privy", "grain", "arrears"])
-    set(s.nation, f, effects[f], "nation." + f, 1000000);
-  for (const f of ["morale", "governance"])
-    set(s.nation, f, effects[f], "nation." + f);
-  for (const f of ["health", "mood", "prestige", "virtue"])
-    set(s.emperor, f, effects[f], "emperor." + f);
-  if (effects.province) {
-    const p = s.nation.provinces.find((p) => p.id === effects.province.id);
-    if (p)
-      for (const f of ["morale", "disaster"])
-        set(p, f, effects.province[f], "province." + p.id + "." + f);
-  }
-  if (effects.faction)
-    for (const [id, n] of Object.entries(effects.faction)) {
-      const f = s.court.factions.find((f) => f.id === id);
-      if (f) set(f, "attitude", n, "faction." + id + ".attitude");
-    }
-  if (effects.official) {
-    const o = s.court.officials.find(
-      (o) => o.id === effects.official.id && o.alive,
-    );
-    if (o)
-      set(o, "favor", effects.official.favor, "official." + o.id + ".favor");
-  }
-  if (effects.thread) {
-    const t = s.threads.find((t) => t.id === effects.thread.id);
-    if (t && t.stage !== "结束") {
-      t.stage = effects.thread.stage;
-      t.result = String(effects.thread.result || "");
-      t.updated = s.turn;
-    }
-  }
-  s.ledger.push(...entries.map((e) => ({ ...e, turn: s.turn })));
-  return { state: s, entries };
 }
-function applyPackage(state, effects, source) {
-  return applyEffects(state, effects, source).state;
+function fateModifier(die) {
+  return (die - 10.5) * 4;
 }
-function growTalent(state, talent, amount = 1) {
-  const s = clone(state),
-    left = 3 - (s.emperor.growth[talent] || 0);
-  if (left > 0) {
-    const inc = Math.min(left, amount, 100 - s.emperor.talents[talent]);
-    s.emperor.talents[talent] += inc;
-    s.emperor.growth[talent] = (s.emperor.growth[talent] || 0) + inc;
-    s.ledger.push({
-      turn: s.turn,
-      path: "emperor.talents." + talent,
-      delta: inc,
-      before: s.emperor.talents[talent] - inc,
-      after: s.emperor.talents[talent],
-      source: "经世历练（每年每才最多 +3）",
-    });
-  }
-  return s;
+function fateLabel(die) {
+  return die <= 3
+    ? "大凶"
+    : die <= 8
+      ? "不顺"
+      : die <= 14
+        ? "平常"
+        : die <= 18
+          ? "顺遂"
+          : "大吉";
+}
+function check(
+  talent,
+  die,
+  level = "一般",
+  opposition = 0,
+  modifier = 0,
+) {
+  const difficulty = { 容易: 40, 一般: 55, 困难: 70, 极难: 85 }[level];
+  if (!difficulty) throw new Error("未知判定难度");
+  const score = talent + modifier + fateModifier(die) - opposition / 2;
+  return { score, difficulty, success: score >= difficulty };
 }
 
-return {clamp,applyEffects,applyPackage,growTalent};
+return {DRAFT,seedNumber,random,roll,fateModifier,fateLabel,check};
 },
 "src/core/turn.js":function(__load){
 const { settleArrears } = __load("src/core/finance.js");
@@ -3739,6 +3543,86 @@ function settleArrears(state) {
 }
 
 return {monthlyBudget,annualBudget,wasteQuote,quarterIndex,provinceTaxFactor,settleArrears};
+},
+"src/core/effects.js":function(__load){
+const { clone } = __load("src/core/state.js");
+function clamp(n, low = 0, high = 100) {
+  return Math.min(high, Math.max(low, Number.isFinite(n) ? n : 0));
+}
+function applyEffects(state, effects = {}, source = "引擎结算") {
+  const s = clone(state),
+    entries = [];
+  const set = (obj, key, delta, path, max = 100) => {
+    if (typeof delta !== "number" || !Number.isFinite(delta)) return;
+    const old = obj[key];
+    obj[key] = clamp(old + delta, 0, max);
+    if (obj[key] !== old)
+      entries.push({
+        path,
+        before: old,
+        after: obj[key],
+        delta: Math.round((obj[key] - old) * 100) / 100,
+        source,
+      });
+  };
+  for (const f of ["treasury", "privy", "grain", "arrears"])
+    set(s.nation, f, effects[f], "nation." + f, 1000000);
+  for (const f of ["morale", "governance"])
+    set(s.nation, f, effects[f], "nation." + f);
+  for (const f of ["health", "mood", "prestige", "virtue"])
+    set(s.emperor, f, effects[f], "emperor." + f);
+  if (effects.province) {
+    const p = s.nation.provinces.find((p) => p.id === effects.province.id);
+    if (p)
+      for (const f of ["morale", "disaster"])
+        set(p, f, effects.province[f], "province." + p.id + "." + f);
+  }
+  if (effects.faction)
+    for (const [id, n] of Object.entries(effects.faction)) {
+      const f = s.court.factions.find((f) => f.id === id);
+      if (f) set(f, "attitude", n, "faction." + id + ".attitude");
+    }
+  if (effects.official) {
+    const o = s.court.officials.find(
+      (o) => o.id === effects.official.id && o.alive,
+    );
+    if (o)
+      set(o, "favor", effects.official.favor, "official." + o.id + ".favor");
+  }
+  if (effects.thread) {
+    const t = s.threads.find((t) => t.id === effects.thread.id);
+    if (t && t.stage !== "结束") {
+      t.stage = effects.thread.stage;
+      t.result = String(effects.thread.result || "");
+      t.updated = s.turn;
+    }
+  }
+  s.ledger.push(...entries.map((e) => ({ ...e, turn: s.turn })));
+  return { state: s, entries };
+}
+function applyPackage(state, effects, source) {
+  return applyEffects(state, effects, source).state;
+}
+function growTalent(state, talent, amount = 1) {
+  const s = clone(state),
+    left = 3 - (s.emperor.growth[talent] || 0);
+  if (left > 0) {
+    const inc = Math.min(left, amount, 100 - s.emperor.talents[talent]);
+    s.emperor.talents[talent] += inc;
+    s.emperor.growth[talent] = (s.emperor.growth[talent] || 0) + inc;
+    s.ledger.push({
+      turn: s.turn,
+      path: "emperor.talents." + talent,
+      delta: inc,
+      before: s.emperor.talents[talent] - inc,
+      after: s.emperor.talents[talent],
+      source: "经世历练（每年每才最多 +3）",
+    });
+  }
+  return s;
+}
+
+return {clamp,applyEffects,applyPackage,growTalent};
 },
 "src/core/facts.js":function(__load){
 // Machine-readable hard outcomes, paired with the human-readable settlement table.
@@ -5047,6 +4931,77 @@ function auditChanges(
 
 return {numericSnapshot,auditChanges};
 },
+"src/core/emperor.js":function(__load){
+const { clone } = __load("src/core/state.js");
+const { applyPackage } = __load("src/core/effects.js");
+const { roll } = __load("src/core/rng.js");
+function energyLimit(s) {
+  return (
+    Math.min(10, 6 + Math.floor(s.emperor.health / 25)) -
+    (s.emperor.status.includes("劳累") ? 1 : 0)
+  );
+}
+function settleEnergy(state, cost) {
+  let s = clone(state);
+  const excess = Math.max(0, cost - energyLimit(s));
+  s.emperor.status = s.emperor.status.filter((x) => x !== "劳累");
+  if (excess) {
+    s = applyPackage(
+      s,
+      { health: -2 * excess, mood: -3 * excess },
+      "勉力理政：透支 " + excess + " 点精力",
+    );
+    s.emperor.status.push("劳累");
+  }
+  s.emperor.energy = Math.max(0, energyLimit(s) - cost);
+  return s;
+}
+function emperorMonth(state) {
+  let s = applyPackage(
+    state,
+    {
+      health: state.emperor.status.includes("劳累") ? -2 : 1,
+      mood: state.emperor.mood < 20 ? 1 : -1,
+    },
+    "太医月诊与心绪",
+  );
+  const tags = s.emperor.tags;
+  if (tags.includes("勤政"))
+    s = applyPackage(s, { governance: 0.3, mood: -0.5 }, "性格：勤政");
+  if (tags.includes("仁厚")) s = applyPackage(s, { virtue: 0.3 }, "性格：仁厚");
+  if (tags.includes("节俭"))
+    s = applyPackage(s, { privy: 1 }, "性格：节俭，核减宫费");
+  if (tags.includes("多疑")) s = applyPackage(s, { mood: -0.3 }, "性格：多疑");
+  if (tags.includes("嗜酒"))
+    s = applyPackage(s, { health: -0.5, mood: 1 }, "性格：嗜酒");
+  if (s.emperor.health < 30 && s.settings.freedom !== "free")
+    s.emperor.lifespan = Math.max(s.emperor.age + 1, s.emperor.lifespan - 0.1);
+  if (s.settings.freedom === "free")
+    s = applyPackage(
+      s,
+      { health: Math.max(0, 30 - s.emperor.health) },
+      "随心所欲：护持圣躬",
+    );
+  if (s.emperor.health < 10 && s.settings.freedom !== "free") {
+    const r = roll(s, 1, 100);
+    s = r.state;
+    if (r.value <= 25) s.ending = { type: "驾崩", cause: "久病不起" };
+  }
+  return s;
+}
+function emperorYear(state) {
+  let s = clone(state);
+  s.emperor.age++;
+  s.emperor.growth = Object.fromEntries(
+    Object.keys(s.emperor.talents).map((t) => [t, 0]),
+  );
+  if (s.emperor.age >= s.emperor.lifespan)
+    s.ending = { type: "驾崩", cause: "寿终正寝" };
+  return s;
+}
+
+return {energyLimit,settleEnergy,emperorMonth,emperorYear};
+},
 "src/core/nation.js":function(__load){
 const { clone } = __load("src/core/state.js");
 const { clamp, applyPackage } = __load("src/core/effects.js");
@@ -6091,6 +6046,172 @@ function advanceProjects(state) {
 }
 
 return {EDICTS,execution,issueEdict,advanceProjects};
+},
+"src/core/world.js":function(__load){
+const { clone } = __load("src/core/state.js");
+function applyWorld(state, data) {
+  const s = clone(state),
+    text = (v, n = 30) =>
+      typeof v === "string"
+        ? v.replace(/[<>\u0000-\u001f]/g, "").slice(0, n)
+        : "";
+  s.dynasty = text(data.dynasty) || s.dynasty;
+  s.backstory =
+    text(data.backstory, 1200) ||
+    "先帝遗命，嗣皇帝即位。百官待诏，天下待新政。";
+  const used = new Set();
+  for (const [key, items] of [
+    ["factions", s.court.factions],
+    ["officials", s.court.officials],
+    ["consorts", s.harem.consorts],
+    ["foreign", s.foreign],
+    ["provinces", s.nation.provinces],
+  ]) {
+    items.forEach((item, i) => {
+      const source = data[key]?.[i];
+      if (!source) return;
+      const name = text(source.name);
+      if (name && !used.has(name)) {
+        item.name = name;
+        used.add(name);
+      }
+      for (const f of [
+        "demand",
+        "family",
+        "secret",
+        "ruler",
+        "description",
+        "personality",
+      ])
+        if (source[f]) item[f] = text(source[f], 300);
+      if (Array.isArray(item.life) && source.life)
+        item.life = [text(source.life, 300)];
+    });
+  }
+  s.dowager = text(data.dowager) || "慈宁太后";
+  return s;
+}
+
+return {applyWorld};
+},
+"src/ui/render.js":function(__load){
+const { esc } = __load("src/ui/common.js");
+const { fateLabel } = __load("src/core/rng.js");
+const { energyLimit } = __load("src/core/emperor.js");
+const { scheduleCost, ACTIONS } = __load("src/core/turn.js");
+const { ACTION_GROUPS, HALLS, GLYPHS, actionAvailability, actionMeta, energyView, metricGroups, scheduleEstimate } = __load("src/ui/view-model.js");
+const num = (n) =>
+  Number(n).toLocaleString("zh-CN", { maximumFractionDigits: 1 });
+const date = (s) =>
+  esc(s.era.name) +
+  " " +
+  s.era.year +
+  "年" +
+  s.era.month +
+  "月" +
+  ["上", "中", "下"][s.era.xun] +
+  "旬";
+function actionButton(kind, s = null) {
+  const reason=actionAvailability(s,kind);
+  return '<button class="action-card" data-action="'+esc(kind)+'" draggable="'+(!reason)+'" '+(reason?'disabled ':'')+'title="'+esc(kind+' · '+(reason||actionMeta(kind)))+'"><span class="glyph" aria-hidden="true">'+GLYPHS[kind]+'</span><span class="action-copy"><strong>'+esc(kind)+'</strong><small>'+esc(reason||actionMeta(kind))+'</small></span></button>';
+}
+function actionsHTML(s, includeHalls = false) {
+  return ACTION_GROUPS.map(([group,kinds])=>'<section class="action-group"><h2>'+group+'</h2><div class="action-grid">'+kinds.map(k=>actionButton(k,s)).join('')+'</div></section>').join('')+(includeHalls?'<nav class="dock-halls" aria-label="殿阁"><h2>殿阁</h2><div>'+HALLS.map(p=>'<button data-panel="'+p+'">'+p+'</button>').join('')+'</div></nav>':'');
+}
+function energyHTML(s, compact=false) {
+  const e=energyView(s);
+  return '<div class="energy '+(compact?'compact':'')+'" aria-label="精力 余 '+e.remaining+' / '+e.limit+(e.excess?'，透支 '+e.excess:'')+'"><span class="energy-label">精力</span><span class="pips" aria-hidden="true">'+Array.from({length:Math.max(e.limit,e.used)},(_,i)=>'<i class="pip '+(i>=e.limit?'over':i<e.used?'spent':'free')+'"></i>').join('')+'</span><span>余 <b>'+e.remaining+'</b> / '+e.limit+'</span></div>';
+}
+function metricsHTML(s, mobile = false) {
+ const groups=metricGroups(s),draw=(m)=>'<div class="metric '+(m.danger?'danger':'')+'"><span class="metric-label">'+m.label+'</span><span class="metric-reading"><strong>'+ (Number.isFinite(m.value)?num(m.value):'—')+'</strong><small>'+m.unit+'</small>'+(Math.abs(m.delta)>=.05?'<span class="trend '+(m.delta>0?'positive':'negative')+'" title="较上旬净变化">'+(m.delta>0?'▲':'▼')+num(Math.abs(m.delta))+'</span>':'')+'</span><span class="metric-meter" aria-hidden="true"><i style="width:'+Math.min(100,Math.max(0,(m.value||0)/m.max*100))+'%"></i></span></div>';
+ if(mobile)return '<button class="mobile-stats" data-command="stats" title="展开完整国势" aria-description="点击查看四组完整国势与单位">'+['国库','民心','吏治','皇威'].map(k=>draw(groups.flatMap(g=>g.stats).find(m=>m.label===k))).join('')+'</button>';
+ return '<div class="metrics" aria-label="国势四组">'+groups.map(g=>'<section class="metric-group weight-'+g.weight+' '+(g.stats.some(m=>m.danger)?'group-danger':'')+'"><h2>'+g.name+'</h2><div class="metric-values">'+g.stats.map(draw).join('')+'</div></section>').join('')+'</div>';
+}
+function ledgerHTML(entries) {
+  return (
+    "<ul>" +
+    entries
+      .map(
+        (e) =>
+          "<li>" +
+          esc(e.source) +
+          "：" +
+          esc(
+            {
+              treasury: "国库",
+              arrears: "欠饷与积欠",
+              privy: "内帑",
+              grain: "粮储",
+              morale: "民心",
+              governance: "吏治",
+              health: "健康",
+              mood: "心情",
+              prestige: "皇威",
+              virtue: "圣德",
+              favor: "好感",
+              energy: "精力",
+              age: "年岁",
+              power: "势力",
+              attitude: "态度",
+              readiness: "军备",
+              troops: "兵力",
+              pop: "人口",
+              tax: "赋税",
+              education: "教养",
+              progress: "政务进度",
+              enemyTroops: "敌军兵力",
+              enemyReadiness: "敌军军备",
+              round: "战役旬数",
+              threat: "边患",
+              灾情: "灾情",
+              disaster: "灾情",
+            }[e.path.split(".").at(-1)] ||
+              (/[\u3400-\u9fff]/.test(e.path.split(".").at(-1))
+                ? e.path.split(".").at(-1)
+                : "相关数值"),
+          ) +
+          ' <span class="' +
+          ((e.path === "nation.arrears" ? e.delta <= 0 : e.delta >= 0)
+            ? "positive"
+            : "negative") +
+          '">' +
+          (e.delta > 0 ? "+" : "") +
+          num(e.delta) +
+          "</span></li>",
+      )
+      .join("") +
+    "</ul>"
+  );
+}
+function chapterTitle(summary) {
+ return String(summary||'').replace(/^(本旬(?:大凶|凶|平常|吉|大吉))，诸事已据实落账$/,'$1');
+}
+function chapterHTML(h, ambitions = []) {
+ return '<div class="chapter-head"><span class="eyebrow">第 '+h.turn+' 章</span><h2>'+esc(chapterTitle(h.summary))+'</h2><span class="chapter-fate">天命 · '+esc(h.fate||fateLabel(h.die))+'（'+h.die+'）</span></div><div class="chapter-date">'+esc(h.era.name)+' '+h.era.year+'年'+h.era.month+'月</div><div class="prose">'+['朝','午','夜'].map(slot=>'<h3>'+slot+'</h3><p>'+esc(h.chapter[slot]||'略。')+'</p>').join('')+'</div><div class="chapter-tabs"><details class="ledger"><summary>起居注 '+h.entries.length+' 条</summary><div class="chapter-detail">'+Object.entries(h.settlement?.slotResults||{}).map(([slot,results])=>'<p>'+slot+'：'+results.map(esc).join('；')+'</p>').join('')+ledgerHTML(h.entries)+(h.notes||[]).map(n=>'<p>'+esc(n)+'</p>').join('')+'</div></details><details><summary>风闻 '+(h.rumors?.length||0)+' 条</summary><div class="chapter-detail">'+(h.rumors?.length?h.rumors.map(r=>'<p>'+esc(r)+'</p>').join(''):'<p>本旬无新风闻。</p>')+'</div></details><details><summary>宏愿进展</summary><div class="chapter-detail">'+(ambitions.length?ambitionsHTML({ambitions}):'<p>详见史馆的宏愿与心事。</p>')+'</div></details></div>';
+}
+function memorialHTML(m) {
+ return '<button class="memorial '+(m.urgent?'urgent':'')+'" data-memorial="'+esc(m.id)+'"><span class="memorial-rail" aria-hidden="true"></span><span class="memorial-copy"><strong>'+esc(m.title)+(m.urgent?'<span class="stamp">急</span>':'')+(m.secret?'<span class="paper-tag">密</span>':'')+'</strong><small>'+esc(m.from)+' · 剩 '+Math.max(0,m.due-(m.currentTurn||0))+' 旬</small></span></button>';
+}
+function ambitionsHTML(s) {
+ return s.ambitions.map(a=>'<div class="ambition"><div class="ambition-heading"><span><small>'+esc(a.kind)+'</small>　'+esc(a.title)+'</span><span class="ambition-percent">'+num(a.progress)+'%</span></div><div class="bar" role="progressbar" aria-label="'+esc(a.title)+'" aria-valuenow="'+a.progress+'" aria-valuemin="0" aria-valuemax="100"><i style="width:'+a.progress+'%"></i></div></div>').join('');
+}
+function introHTML() {
+  return '<div class="intro"><div class="eyebrow">架空帝王 · 文字经营</div><h1>御 极</h1><p class="motto">一人之志，天下之重。</p><div class="rule"></div><p>朱笔落下，是一人心事，亦是万民生计。</p><p>在朝堂与宫闱之间，写下你的本纪。</p><div class="start-actions"><button class="primary" data-command="new">登基开局</button><button data-command="saves">续读旧卷</button></div><small>可接入叙事接口，也可先试读一局。</small><div class="onboarding">朝、午、夜，三时由你安排。<br>阅毕奏报，便可起驾；也可歇息一旬。</div></div>';
+}
+function renderApp(s,{readOnly=false,busy=false,saveStatus=""}={}) {
+ const last=s?.history.at(-1),locked=readOnly||busy||!!s?.ending||!!s?.pending,e=energyView(s),estimate=scheduleEstimate(s);
+ const money=Object.entries(estimate.totals).filter(([,v])=>v).map(([k,v])=>'<span class="'+(v>0?'positive':'negative')+'">'+({treasury:'国库',privy:'内帑',grain:'粮储'}[k])+' '+(v>0?'+':'−')+num(Math.abs(v))+(k==='grain'?' 万石':' 万两')+'</span>').join('　');
+ const scheduled=s&&Object.values(s.schedule).some(Boolean);
+ const palaces=HALLS.map(p=>'<button data-panel="'+p+'">'+p+'</button>').join('');
+ const opening=s?'<div class="chapter-head"><span class="eyebrow">御极 · 序章</span><h2>'+esc(s.era.name)+'新政</h2><span class="chapter-fate">'+esc(s.dynasty)+'</span></div><div class="prose"><p>'+esc(s.backstory||'先帝遗命传入宫门，百官在丹墀下依班肃立。新帝承统，宫中循着旧例运转，天下却已将目光投向御案上的第一封奏报。')+'</p><p>奏报已送到御前。此后的每一旬，朝、午、夜三时都由你安排。</p></div><div class="chapter-tabs"><button data-action="上朝">批阅六部奏报 ›</button></div>':introHTML();
+ return '<header class="topbar"><div class="brand"><div class="seal" aria-hidden="true">御<br>极</div><div><h1>'+ (s?esc(s.dynasty)+' · '+esc(s.era.name)+s.era.year+'年':'御极 · 夜御案')+'</h1><div class="date">'+(s?s.era.month+'月 '+['上','中','下'][s.era.xun]+'旬 · 第 '+(s.turn+1)+' 旬　'+esc(s.emperor.name)+' 在位':'一人之志，天下之重。')+'</div><div class="mobile-energy">'+energyHTML(s,true)+'</div></div></div>'+metricsHTML(s)+'<div class="top-actions"><button data-command="saves">存档</button><button data-command="settings">设置</button></div><button class="mobile-menu" data-command="menu" aria-label="御前菜单">☰</button>'+metricsHTML(s,true)+'</header><div class="workbench"><aside class="dock" aria-label="行动坞">'+actionsHTML(s,true)+'</aside><main class="desk">'+(s?'<section class="planning" aria-label="本旬日程"><div class="planning-title"><h2>本旬日程</h2>'+energyHTML(s)+'</div><div class="schedule">'+['朝','午','夜'].map((slot)=>{
+ const a=s.schedule[slot],energy=a?scheduleCost({[slot]:a}):0;
+ const summary=a?.memorials?a.memorials.map(id=>s.memorials.find(m=>m.id===id)?.title||'已归档奏报').join(' · '):a?.label||ACTIONS&&Object.keys(ACTIONS).filter(k=>ACTIONS[k].slots.includes(slot)).slice(0,4).join(' · ');
+ return '<div class="slot-wrap '+(a?'filled':'empty')+'"><button class="slot" data-slot="'+slot+'" '+(locked?'disabled':'')+'><span class="slot-meta"><span>'+slot+' · '+{朝:'辰时',午:'未时',夜:'戌时'}[slot]+'</span>'+(a?'<span>精力 '+energy+'</span>':'')+'</span><strong>'+esc(a?(a.kind+(a.memorials?' · '+a.memorials.length+' 本':'')):'＋ 安排'+{朝:'朝间',午:'午间',夜:'夜间'}[slot])+'</strong><small>'+esc(summary)+'</small></button>'+(a?'<button class="slot-clear" data-clear="'+slot+'" aria-label="清空'+slot+'时段" '+(locked?'disabled':'')+'>×</button>':'')+'</div>';
+ }).join('')+'</div><div class="turnbar"><div class="estimate"><span>'+(money?'预估：'+money:'本旬暂无额外开销')+'</span>'+(estimate.executions.length?'<small>成算：'+esc(estimate.executions.join('、'))+' · 成败仍看天命</small>':'')+(e.excess?'<strong class="negative">透支 '+e.excess+' 点：劳累、健康与心情受损</strong>':'')+'</div><button class="oral-trigger" data-command="oral" '+(locked?'disabled':'')+'>口谕</button><button class="primary advance" data-command="advance" '+(readOnly||busy||s.ending?'disabled':'')+'>'+(busy?'正在续写…':s.pending?'重试本旬叙事':scheduled?'起驾':'歇息')+'</button></div></section>':'')+(readOnly?'<p class="warning">此卷暂不可改写，旧卷已保留。请先导出备份。</p>':'')+(s?.pending?'<div class="warning">本旬待续 · 天命 '+s.pending.forecast.die+'，钱粮与成败已定。<button data-command="settle" '+(busy?'disabled':'')+'>先记入起居注</button></div>':'')+(s?.ending?'<div class="warning">'+esc(s.ending.type)+' · '+esc(s.ending.cause)+'<button data-panel="史馆">查看本纪</button></div>':'')+'<article class="scroll" id="scroll" tabindex="0" aria-label="本旬正文章节">'+(last?chapterHTML(last,s.ambitions):opening)+'<div id="stream" class="streaming" aria-live="polite"></div></article><div class="saved-status">'+esc(saveStatus|| (s?(s.settings.demo?'试读中':'本纪续写中'):'御案待启。'))+'</div></main><aside class="sidebar" aria-label="奏报匣"><div class="side-title"><h2>奏报匣</h2><small>'+(s?.memorials.length||0)+' 本待阅 · '+(s?.memorials.filter(m=>m.urgent).length||0)+' 急</small></div>'+(s?s.memorials.slice(0,6).map(m=>memorialHTML({...m,currentTurn:s.turn})).join('')+(s.memorials.length>6?'<button data-command="memorials">展开余下 '+(s.memorials.length-6)+' 本</button>':''):'<p class="muted">待新帝登基，呈送六部奏报。</p>')+'<section class="ambitions-block"><h2>宏愿与心事</h2>'+(s?ambitionsHTML(s):'<p class="muted">两件天下事，两桩心中愿。</p>')+'</section></aside></div><nav class="mobile-nav" aria-label="移动导航"><button data-command="actions"><span aria-hidden="true">令</span>行动</button><button data-command="memorials"><span aria-hidden="true">折</span>奏报'+(s?' '+s.memorials.length:'')+'</button><button data-command="palaces"><span aria-hidden="true">阁</span>殿阁</button><button data-command="journal"><span aria-hidden="true">录</span>起居注</button></nav>';
+}
+
+return {num,date,actionButton,actionsHTML,energyHTML,metricsHTML,ledgerHTML,chapterTitle,chapterHTML,memorialHTML,ambitionsHTML,introHTML,renderApp};
 },
 "src/ui/view-model.js":function(__load){
 const { ACTIONS, scheduleCost } = __load("src/core/turn.js");
@@ -7378,53 +7499,6 @@ function createSaveStore({ primary, backup, validate = (x) => x }) {
 }
 
 return {checksum,pack,unpack,createIDB,createSaveStore};
-},
-"src/core/world.js":function(__load){
-const { clone } = __load("src/core/state.js");
-function applyWorld(state, data) {
-  const s = clone(state),
-    text = (v, n = 30) =>
-      typeof v === "string"
-        ? v.replace(/[<>\u0000-\u001f]/g, "").slice(0, n)
-        : "";
-  s.dynasty = text(data.dynasty) || s.dynasty;
-  s.backstory =
-    text(data.backstory, 1200) ||
-    "先帝遗命，嗣皇帝即位。百官待诏，天下待新政。";
-  const used = new Set();
-  for (const [key, items] of [
-    ["factions", s.court.factions],
-    ["officials", s.court.officials],
-    ["consorts", s.harem.consorts],
-    ["foreign", s.foreign],
-    ["provinces", s.nation.provinces],
-  ]) {
-    items.forEach((item, i) => {
-      const source = data[key]?.[i];
-      if (!source) return;
-      const name = text(source.name);
-      if (name && !used.has(name)) {
-        item.name = name;
-        used.add(name);
-      }
-      for (const f of [
-        "demand",
-        "family",
-        "secret",
-        "ruler",
-        "description",
-        "personality",
-      ])
-        if (source[f]) item[f] = text(source[f], 300);
-      if (Array.isArray(item.life) && source.life)
-        item.life = [text(source.life, 300)];
-    });
-  }
-  s.dowager = text(data.dowager) || "慈宁太后";
-  return s;
-}
-
-return {applyWorld};
 }}; const __cache={}; function __load(id){return __cache[id] || (__cache[id]=__modules[id](__load));} __load("src/ui/app.js");})();
     </script>
   </body>

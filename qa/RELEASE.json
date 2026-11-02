@@ -51,5 +51,19 @@
     "retryMessagesIdentical": true,
     "simulationYears": 200,
     "simulationMatchesBefore": true
+  },
+  "openingFix": {
+    "localTests": 144,
+    "indexSha256": "4a03f04abc031732e4d77549da4af50e60730983b7588891ed28e0fc72706ec0",
+    "stateVersion": 4,
+    "realProviderKeyUsed": false,
+    "report": "docs/OPENING-FIX.md",
+    "missingUUIDReproduced": true,
+    "trialOpeningAndRefreshPassed": true,
+    "saveFailurePreservesPreviousGame": true,
+    "mockInterfaceOpeningAndCancelPassed": true,
+    "actualUserDeviceCauseConfirmed": false,
+    "simulationYears": 200,
+    "simulationMatchesBefore": true
   }
 }

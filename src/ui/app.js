@@ -10,6 +10,8 @@ import {
 } from "./common.js";
 import { loadSettings, openSettings } from "./settings.js";
 import { requestTurnNarrative } from "./turn-request.js";
+import { createGameSeed, createOpening, openingErrorMessage } from "./new-game.js";
+import { createDialogRequestScope } from "./request-scope.js";
 import {
   renderApp,
   actionButton,
@@ -22,9 +24,8 @@ import { actionAvailability } from "./view-model.js";
 import { actionDialog } from "./actions.js";
 import { palacePanel } from "./panels.js";
 import { createSaveStore, createIDB } from "../store/save.js";
-import { createState, migrate, clone, reignId } from "../core/state.js";
+import { migrate, clone, reignId } from "../core/state.js";
 import {
-  initialTurn,
   forecastTurn,
   commitTurn,
   ACTIONS,
@@ -32,12 +33,10 @@ import {
 } from "../core/turn.js";
 import { assignTutor } from "../core/harem.js";
 import { requestCompletion, applyBiography } from "../core/chronicles.js";
-import { GOALS, selectAmbitions } from "../core/ambitions.js";
-import { applyWorld } from "../core/world.js";
+import { GOALS } from "../core/ambitions.js";
 import { talkAttempt } from "../core/court.js";
 import { callJSON, createBudget } from "../llm/client.js";
 import {
-  worldMessages,
   talkMessages,
   classifyMessages,
   biographyMessages,
@@ -46,7 +45,6 @@ import {
 import {
   extractPartialChapter,
   mockNarrative,
-  validateWorld,
   validateTalk,
 } from "../llm/validate.js";
 initCommon();
@@ -253,7 +251,7 @@ async function newGame() {
         .join("") +
       '</select></div></div><label class="check"><input id="demo-mode" type="checkbox" ' +
       (!config.key ? "checked" : "") +
-      '>先试读一局（无需密钥）</label><p class="muted">试读无需设置。若要接续新故事，请先设置叙事接口。启用已有卷位前，会先封存旧卷。</p><div class="dialog-actions"><button type="button" data-command="settings">设置接口</button><button type="submit" class="primary">承天践祚</button></div></form>',
+      '>先试读一局（无需密钥）</label><p class="muted">试读无需设置。若要接续新故事，请先设置叙事接口。启用已有卷位前，会先封存旧卷。</p><p id="new-result" class="result hidden" role="status" aria-live="polite" tabindex="-1"></p><div class="dialog-actions"><button type="button" data-command="settings">设置接口</button><button type="submit" class="primary">承天践祚</button></div></form>',
   );
   const goalsHTML = ["宏愿", "宏愿", "心事", "心事"]
     .map(
@@ -279,47 +277,69 @@ async function newGame() {
       "beforebegin",
       '<div class="fields">' + goalsHTML + "</div>",
     );
-  $("#new-form").onsubmit = async (e) => {
+  const form = $("#new-form"), dialog = $("#modal"), result = $("#new-result");
+  const scope = createDialogRequestScope(dialog, form);
+  const showResult = (text, error = false) => {
+    result.classList.remove("hidden");
+    result.setAttribute("role", error ? "alert" : "status");
+    result.textContent = text;
+  };
+  form.onsubmit = async (e) => {
     e.preventDefault();
-    const options = {
-      name: $("#emperor-name").value.trim(),
-      era: $("#era-name").value.trim(),
-      freedom: $("#freedom").value,
-      difficulty: $("#difficulty").value,
-      prose: $("#prose-style").value,
-      demo: $("#demo-mode").checked,
-      seed: crypto.randomUUID(),
-    };
-    const selected = Number($("#new-slot").value),
-      goals = [...document.querySelectorAll("[data-goal-select]")].map(
-        (el) => el.value,
-      );
-    if (!options.demo && !config.key) {
-      toast("请先填写接口密钥，或选择试读。");
-      return;
-    }
-    busy = true;
-    $("#new-form button[type=submit]").disabled = true;
+    if (busy || !form.isConnected || !dialog.open) return;
+    let request, controls = [], saving = false;
+    const submit = form.querySelector('button[type=submit]'), close = $("#close-modal");
+    const preventSaveExit = (event) => { if (saving) event.preventDefault(); };
+    dialog.addEventListener("cancel", preventSaveExit);
     try {
-      let draft = createState(options);
-      if (!options.demo) {
-        const world = await callJSON(config, worldMessages(draft), {
-          validate: validateWorld,
-          onMetric: markMetric,
-        });
-        draft = applyWorld(draft, world);
-      }
-      draft = initialTurn(selectAmbitions(draft, goals));
-      if (occupied.has(selected)) await store.archiveAndSave(selected, draft);
+      const value = (id) => form.querySelector("#" + id).value;
+      const options = {
+        name: value("emperor-name").trim(), era: value("era-name").trim(),
+        freedom: value("freedom"), difficulty: value("difficulty"),
+        prose: value("prose-style"), demo: form.querySelector("#demo-mode").checked,
+        seed: createGameSeed(),
+      };
+      const selected = Number(value("new-slot"));
+      const goals = [...form.querySelectorAll("[data-goal-select]")].map(el => el.value);
+      request = scope.begin();
+      busy = true;
+      controls = [...form.elements].map(el => [el, el.disabled]);
+      for (const [el] of controls) el.disabled = true;
+      form.setAttribute("aria-busy", "true");
+      submit.textContent = "正在开局…";
+      const draft = await createOpening(options, goals, { ...config }, {
+        signal: request.signal, onMetric: markMetric,
+        onStage: (text) => { if (scope.current(request)) showResult(text); },
+      });
+      if (!scope.current(request)) return;
+      saving = true;
+      close.disabled = true;
+      showResult("正在保存新卷……");
+      const work = saveQueue.catch(() => {}).then(() => occupied.has(selected)
+        ? store.archiveAndSave(selected, draft) : store.save(selected, draft));
+      saveQueue = work;
+      const saved = await work;
       state = draft;
       slot = selected;
       readOnly = false;
+      saveStatus = saved.warnings.length ? saved.warnings.join("；") + "，请导出备份" : "已存入第 " + selected + " 卷";
+      try { localStorage.setItem("yuji:active-slot", String(selected)); } catch {}
       closeDialog();
-      await persist();
+      if (saved.warnings.length) toast(saveStatus);
     } catch (err) {
-      toast(err.message);
-      if ($("#new-form")) $("#new-form button[type=submit]").disabled = false;
+      if (form.isConnected && dialog.open) {
+        showResult(openingErrorMessage(err), true);
+        result.focus();
+      }
     } finally {
+      dialog.removeEventListener("cancel", preventSaveExit);
+      if (form.isConnected) {
+        for (const [el, disabled] of controls) el.disabled = disabled;
+        form.removeAttribute("aria-busy");
+        submit.textContent = "承天践祚";
+        close.disabled = false;
+      }
+      scope.finish(request);
       busy = false;
       render();
     }
