@@ -1,6 +1,6 @@
 # 御极 · 皇帝模拟器
 
-[开始游戏](https://lynch715.github.io/yuji-emperor/) · [源码仓库](https://github.com/Lynch715/yuji-emperor)
+[开始游戏](https://lynch715.github.io/yuji-emperor/) · [源码仓库](https://github.com/Lynch715/yuji-emperor) · [游戏海报](docs/POSTERS.md)
 
 本地可运行的单文件帝王文字经营游戏。设计源为 [DESIGN.md](DESIGN.md)，源码分模块放在 `src/`，`index.html` 是可直接放到 GitHub Pages 的构建产物。运行不需要安装依赖，不含统计服务或预置密钥。「夜御案」界面按规格通过 Google Fonts 加载字体；离线或加载失败时使用系统字体，游戏仍可用，没有外部运行脚本。
 

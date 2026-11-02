@@ -22,5 +22,16 @@
     768,
     512
   ],
-  "liveVerified": false
+  "liveVerified": true,
+  "gameSourceCommit": "b087f86d57e332eff7dd7b3426f95c67df5936c2",
+  "verifiedWorkflow": "https://github.com/Lynch715/yuji-emperor/actions/runs/41400496704",
+  "workflowConclusion": "success",
+  "liveIndexIdentical": true,
+  "browserWidths": [
+    1280,
+    390
+  ],
+  "browserErrorsObserved": 0,
+  "liveSaveSubmitted": false,
+  "liveSettingsSaved": false
 }
