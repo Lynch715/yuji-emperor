@@ -106,8 +106,8 @@ test("200-year seeded random strategy stays bounded and includes endings", () =>
   assert.ok(r.deathCount > 0);
   assert.ok(r.maxTreasury <= 3000);
   assert.ok(r.maxTreasuryLast50 <= r.maxTreasuryFirst50 * 1.5);
-  // Batch 2: the user accepted out-of-target mortality. The unchanged
-  // balance report still evaluates 10–35% and exposes failures explicitly.
+  // Batch 3 restores the required mortality gate; no overrun waiver applies.
+  assert.ok(r.collapseRate>=10&&r.collapseRate<=35,"亡国率 "+r.collapseRate+"%");
   assert.equal(r.collapseRate,Math.round(r.collapseCount/r.completedReigns*10000)/100);
   assert.equal(r.eventsPerDecade.length,20);
   assert.ok(r.eventsPerDecade.every(n=>n>=30&&n<=80));

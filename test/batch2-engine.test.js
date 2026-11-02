@@ -129,7 +129,7 @@ test('B8 交战只允许议和接见，宣战绑定方向且背盟需二次确�
 });
 
 test('B8 边患随对应外邦国力态度变化且可下降，同等实力战役胜率40至60%',()=>{
- let a=initial();a.foreign.forEach(f=>{f.power=20;f.attitude=100;});let b=structuredClone(a);b.foreign.forEach(f=>{f.power=90;f.attitude=0;});
+ let a=initial();a.foreign.forEach(f=>{f.power=20;f.attitude=100;f.status='婚盟';});let b=structuredClone(a);b.foreign.forEach(f=>{f.power=90;f.attitude=0;});
  const good=foreignMonth(a),bad=foreignMonth(b);assert.ok(good.nation.army.frontiers.every((f,i)=>f.threat<a.nation.army.frontiers[i].threat));assert.ok(bad.nation.army.frontiers.every((f,i)=>f.threat>good.nation.army.frontiers[i].threat));
  let wins=0;for(let i=0;i<400;i++){let s=initial('同等战役'+i);s.foreign[0].power=42;s.foreign[0].frontier='北';s.court.officials.forEach(o=>o.abilities.军=50);s=diplomacy(s,{country:'w0',operation:'宣战'},20).state;const before=s.campaigns[0].enemyReadiness;s=advanceCampaigns(s);assert.notEqual(s.campaigns[0].enemyReadiness,before);while(!s.campaigns[0].done)s=advanceCampaigns(s);wins+=s.campaigns[0].result==='胜利';}
  assert.ok(wins/400>=0.4&&wins/400<=0.6,'同等胜率 '+wins+'/400');console.log('B8 同等实力胜率 '+wins+'/400');

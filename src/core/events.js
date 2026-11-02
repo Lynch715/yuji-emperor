@@ -170,6 +170,10 @@ export function resolveMemorial(
 export function expireMemorials(state) {
   let s = clone(state);
   for (const m of s.memorials.filter((m) => m.due < s.turn)) {
+    if(m.type==='京畿民变' && !(s.nation.morale<18&&s.nation.treasury<10)) {
+      s.threads=s.threads.map(t=>t.id===m.threadId?{...t,stage:'结束',updated:s.turn,result:'危机解除'}:t);
+      continue;
+    }
     s = applyPackage(
       s,
       { morale: m.urgent ? (m.threadId ? -0.4 : -0.23) : -0.03, governance: -0.08 },
@@ -181,6 +185,8 @@ export function expireMemorials(state) {
       t.result = "逾期放任";
       t.updated = s.turn;
     }
+    if(m.type==='京畿民变'&&s.settings.freedom!=='free')
+      s.ending={type:'亡国',cause:'京畿民变急报逾期未处置，民变攻入京师'};
     if (m.type === "民变") {
       s.nation.army.capital.troops = Math.max(
         0,

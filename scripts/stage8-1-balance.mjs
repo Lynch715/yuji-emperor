@@ -4,6 +4,7 @@ import {BALANCE_SEEDS} from './stage8-balance.mjs';
 import {lowMoraleScenario} from './economy-scenarios.mjs';
 export function economicChecks(r) {
  return {
+  invasions:r.invasionCount>=120&&r.invasionCount<=200,
   complete:r.turns===7200&&r.annual.length===200,
   treasuryPeak:r.maxTreasury<=3000,
   latePeak:r.maxTreasuryLast50<=r.maxTreasuryFirst50*1.5,

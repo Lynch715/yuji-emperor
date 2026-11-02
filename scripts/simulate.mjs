@@ -6,63 +6,34 @@ import { reignId } from "../src/core/state.js";
 import { edictBlock } from "../src/core/edicts.js";
 import { annualBudget } from "../src/core/finance.js";
 import { random, seedNumber } from "../src/core/rng.js";
-export function simulate(years = 200, seed = "御极·两百年", options = {}) {
-  let strategy = seedNumber(seed),
-    life = 0,
-    s = initialTurn(createState({ seed: seed + "-" + life })),
-    deaths = 0,
-    collapse = 0,
-    totalBirths = 0,
-    childrenByReign = new Map(),
-    events = 0,
-    completedTurns = 0,
-    maxTreasury = s.nation.treasury,
-    maxTreasuryFirst50 = s.nation.treasury,
-    maxTreasuryLast50 = 0,
-    annual = [],
-    yearRow = null,
-    decades = [],
-    decadeEvents = 0,
-    reignStart = 0,
-    completed = [],
-    dynasties = 1,
-    successionCount = 0;
-  const pick = (n) => {
-    const r = random(strategy);
-    strategy = r.rng;
-    return Math.floor(r.value * n);
-  };
-  for (let i = 0; i < years * 36; i++) {
-    if (i % 36 === 0) yearRow = {
-      year: 1 + Math.floor(i / 36), openingTreasury: s.nation.treasury,
-      income: 0, expense: 0, taxIncome: 0, wasteExpense: 0,
-      resetAdjustment: 0, peakTreasury: s.nation.treasury,
-    };
-    const action = options.strategy === "rest" ? -1 : pick(8),
+export function makeSimulationSchedule(s,pick,strategy="random") {
+    const action = strategy === "rest" ? -1 : pick(8),
       schedule = { 朝: null, 午: null, 夜: null };
-    if (action < 4) {
+    if (action >= 0 && action < 4) {
       // Court hearings retain three issues; a dedicated paperwork slot processes
       // six memorials at the existing two-energy cost.
       const ms = s.memorials.slice(0, action < 2 ? 3 : 6);
-      let available = Math.max(0, s.nation.treasury - 8);
+      const available = {treasury:Math.max(0,s.nation.treasury-8),grain:s.nation.grain,privy:s.nation.privy};
+      const selected=[];
       const decisions = {};
       for (const m of ms) {
         // Choose uniformly among affordable engine options, including hold.
-        const choices = m.options.filter(o => Math.max(0,-(o.effects?.treasury || 0)) <= available);
+        const choices = m.options.filter(o => Object.keys(available).every(k=>Math.max(0,-(o.effects?.[k]||0))<=available[k]));
+        if(!choices.length)continue;
         const option = choices[pick(choices.length)];
-        decisions[m.id] = option.id;
-        available -= Math.max(0,-(option.effects?.treasury || 0));
+        decisions[m.id] = option.id;selected.push(m.id);
+        for(const k of Object.keys(available))available[k]-=Math.max(0,-(option.effects?.[k]||0));
       }
       schedule.朝 = {
         kind: action < 2 ? "上朝" : "批折",
-        memorials: ms.map((m) => m.id),
+        memorials: selected,
         decisions,
       };
     }
     if (action === 4 && s.nation.treasury > 80) {
       const types=["整饬吏治", "赈灾", "减赋"],start=pick(3);
       const edictType=types.map((_,i)=>types[(start+i)%3]).find(type=>!edictBlock(s,type));
-      if(!s.regency&&edictType)schedule.午={kind:'下旨',edictType};
+      if(!s.regency&&edictType)schedule.午={kind:'下旨',edictType,...(edictType==='减赋'?{province:s.nation.provinces[pick(s.nation.provinces.length)].id}:{})};
     }
     const partner = s.harem.consorts.find((c) => canVisit(s, c));
     if (action === 5 && partner)
@@ -91,7 +62,43 @@ export function simulate(years = 200, seed = "御极·两百年", options = {}) 
       if(schedule.朝?.kind==='上朝')schedule.朝.kind='批折';
       if(schedule.午?.kind==='任命')schedule.午=null;
     }
-    if (options.strategy === "rest") for (const slot of ["朝", "午", "夜"]) schedule[slot] = {kind:"歇息"};
+    if (strategy === "rest") for (const slot of ["朝", "午", "夜"]) schedule[slot] = {kind:"歇息"};
+    return schedule;
+}
+export function simulate(years = 200, seed = "御极·两百年", options = {}) {
+  let strategy = seedNumber(seed),
+    life = 0,
+    s = initialTurn(createState({ seed: seed + "-" + life })),
+    deaths = 0,
+    collapse = 0,
+    totalBirths = 0,
+    childrenByReign = new Map(),
+    events = 0,
+    invasionCount = 0,
+    completedTurns = 0,
+    maxTreasury = s.nation.treasury,
+    maxTreasuryFirst50 = s.nation.treasury,
+    maxTreasuryLast50 = 0,
+    annual = [],
+    yearRow = null,
+    decades = [],
+    decadeEvents = 0,
+    reignStart = 0,
+    completed = [],
+    dynasties = 1,
+    successionCount = 0;
+  const pick = (n) => {
+    const r = random(strategy);
+    strategy = r.rng;
+    return Math.floor(r.value * n);
+  };
+  for (let i = 0; i < years * 36; i++) {
+    if (i % 36 === 0) yearRow = {
+      year: 1 + Math.floor(i / 36), openingTreasury: s.nation.treasury,
+      income: 0, expense: 0, taxIncome: 0, wasteExpense: 0,
+      resetAdjustment: 0, peakTreasury: s.nation.treasury,
+    };
+    const schedule = makeSimulationSchedule(s,pick,options.strategy || "random");
     // Mock chapters contain no narrative. Discard them after their state has been checked.
     s.history = [];
     s.volumes = [];
@@ -99,6 +106,7 @@ export function simulate(years = 200, seed = "御极·两百年", options = {}) 
     const f = forecastTurn(s, schedule),
       before = s.stats.events,
       birthBefore = s.stats.births;
+    invasionCount+=f.state.threads.filter(t=>t.type==="边警"&&t.born===f.state.turn&&!s.threads.some(old=>old.id===t.id)).length;
     options.onForecast?.(s,f);
     s = commitTurn(s, f, {});
     assertState(s);
@@ -208,6 +216,7 @@ export function simulate(years = 200, seed = "御极·两百年", options = {}) 
     meanChildrenIncludingCurrent:
       Math.round((totalBirths / (life + (s.ending ? 0 : 1))) * 100) / 100,
     totalEvents: events,
+    invasionCount,
     eventsPerDecade: decades,
     meanEventsPerDecade: events / (completedTurns / 360),
     maxTreasury,

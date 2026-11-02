@@ -2,13 +2,13 @@ import { clone } from "./state.js";
 import { applyPackage, clamp } from "./effects.js";
 import { roll, check } from "./rng.js";
 import { proxyMemorial, inCapital } from "./court.js";
-import { addEvent } from "./events.js";
+import { addEvent, pickMemorialist } from "./events.js";
 export function foreignMonth(state) {
   let s = clone(state);
   for (const b of s.nation.army.frontiers) {
     const countries=s.foreign.filter(f=>f.frontier===b.dir);
     const force=b.troops*b.readiness/100/500;
-    const delta=countries.length?countries.reduce((sum,f)=>sum+(1+(f.power-force)/50-(f.attitude-50)/25)*(['婚盟','朝贡'].includes(f.status)?0.5:1),0)/countries.length:0;
+    const delta=countries.length?countries.reduce((sum,f)=>sum+0.9+clamp((f.power-force)/250,-0.15,0.15)-(f.attitude-50)/250-(['婚盟','朝贡'].includes(f.status)?1.05:0),0)/countries.length:0;
     b.threat=clamp(b.threat+delta);
   }
   return s;
@@ -213,12 +213,47 @@ export function advanceCampaigns(state) {
   return s;
 }
 export function checkCollapse(state) {
-  let s = clone(state);
-  if (s.settings.freedom === "free") return s;
-  if (s.nation.morale < 18 && s.nation.treasury < 10) {
-    const r = roll(s, 1, 100);
-    s = r.state;
-    if (r.value < 12) s.ending = { type: "亡国", cause: "民变攻入京师" };
+  const s = clone(state);
+  if (s.settings.freedom === "free" || s.ending?.type === "亡国") return s;
+  const isCrisis = t => ["京畿危机", "京畿民变"].includes(t.type);
+  const vulnerable = s.nation.morale < 18 && s.nation.treasury < 10;
+  if (!vulnerable) {
+    const recovered = new Set();
+    s.threads = s.threads.map(t => {
+      if (!isCrisis(t) || t.result === "危机解除") return t;
+      recovered.add(t.id);
+      return {...t, stage:"结束", updated:s.turn, result:"危机解除"};
+    });
+    s.memorials = s.memorials.filter(m => !recovered.has(m.threadId));
+    return s;
+  }
+  // Use the existing thread clock. No new save fields and no random death roll.
+  let index = s.threads.findLastIndex(t => isCrisis(t) && t.result !== "危机解除" && t.updated >= s.turn - 1);
+  if (index < 0) {
+    s.threads.push({id:"capital-"+s.runId+"-"+s.turn+"-"+s.threads.length,
+      title:"京畿民变", type:"京畿危机", stage:"发生", cause:"民心低于18且国库低于10，京畿困顿", actors:[],
+      provinceId:null, born:s.turn, updated:s.turn, result:"尚未急报"});
+    index = s.threads.length - 1;
+  }
+  // clone() shares closed threads; a handled warning may still have a running
+  // six-month clock until the national condition actually recovers.
+  const thread = {...s.threads[index], updated:s.turn};
+  s.threads[index] = thread;
+  const turns = s.turn - thread.born + 1;
+  if (turns >= 18) {
+    s.ending = {type:"亡国", cause:"京畿困局持续满六个月，民变攻入京师"};
+  } else if (turns >= 9 && thread.type === "京畿危机") {
+    thread.type = "京畿民变";
+    thread.stage = "请旨";
+    thread.result = "已呈急报，待速处置";
+    s.stats.events++;
+    s.memorials.push({id:"m-"+thread.id,title:"京畿民变",type:"京畿民变",
+      ...pickMemorialist(s,"政务"),provinceId:null,request:"请速开仓、调兵或下罪己诏，安定京畿",
+      options:[
+        {id:"opt0",label:"开仓赈济",effects:{grain:-30,morale:6}},
+        {id:"opt1",label:"调兵弹压",effects:{treasury:-8,morale:3,prestige:-2}},
+        {id:"opt2",label:"下罪己诏",effects:{prestige:-6,virtue:2,morale:4}},
+      ],due:thread.born+17,threadId:thread.id,urgent:true,secret:false,text:""});
   }
   return s;
 }
