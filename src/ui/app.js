@@ -603,7 +603,7 @@ async function command(name) {
   if (name === "settings") {
     openSettings(config, metrics, (c) => {
       config = c;
-    });
+    }, markMetric);
     if (state) {
       $("#modal").insertAdjacentHTML(
         "beforeend",

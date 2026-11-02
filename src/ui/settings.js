@@ -1,3 +1,4 @@
+import { createDialogRequestScope, probeErrorMessage } from "./request-scope.js";
 import { $, esc, openDialog, toast } from "./common.js";
 import {
   PRESETS,
@@ -21,7 +22,7 @@ export function loadSettings() {
     return defaults;
   }
 }
-export function openSettings(config, metrics, onSave) {
+export function openSettings(config, metrics, onSave, recordMetric = null) {
   openDialog(
     "御前设置",
     '<p class="muted">填写叙事接口，续写本纪。密钥只用于所填地址，不随存档导出。</p><form id="settings-form"><label for="provider">服务商与地域</label><select id="provider">' +
@@ -47,9 +48,9 @@ export function openSettings(config, metrics, onSave) {
       (config.thinking ? "checked" : "") +
       '>启用思考模式</label><label class="check"><input type="checkbox" id="remember-key" ' +
       (config.remember ? "checked" : "") +
-      '>在本机记住密钥</label><p class="muted">只在这台设备保存密钥，取消勾选即可清除。</p><div class="dialog-actions"><button type="button" id="probe">测试连接</button><button class="primary" type="submit">保存设置</button></div></form><div id="probe-result" class="result hidden" role="status" aria-live="polite"></div><details><summary>请求统计 · ' +
+      '>在本机记住密钥</label><p class="muted">只在这台设备保存密钥，取消勾选即可清除。</p><div class="dialog-actions"><button type="button" id="probe">测试连接</button><button class="primary" type="submit">保存设置</button></div></form><div id="probe-result" class="result hidden" role="status" aria-live="polite"></div><details><summary>请求统计 · <span id="request-count">' +
       metrics.length +
-      ' 次</summary><p class="muted">只留用量记录，不保存密钥和正文。</p><div id="metric-list">' +
+      '</span> 次</summary><p class="muted">只留用量记录，不保存密钥和正文。</p><div id="metric-list">' +
       metrics
         .slice(-10)
         .map(
@@ -130,39 +131,48 @@ export function openSettings(config, metrics, onSave) {
       toast(e.message);
     }
   };
-  const ac = new AbortController();
-  $("#modal").addEventListener("close", () => ac.abort(), { once: true });
+  const dialog=$("#modal"),form=$("#settings-form"),scope=createDialogRequestScope(dialog,form);
+  const metricList=$("#metric-list"),metricCount=$("#request-count");
+  const renderMetrics=()=>{
+    metricCount.textContent=String(metrics.length);
+    metricList.innerHTML=metrics.slice(-10).map(m=>'<p>'+esc(new Date(m.at).toLocaleTimeString('zh-CN'))+' · '+esc(({ok:'成功',cancelled:'已取消',timeout:'超时',failed:'未完成'})[m.result]||m.result)+' · HTTP '+Number(m.httpStatus||0)+' · '+Number(m.durationMs||0)+'ms · 输入 '+Number(m.inputTokens||0)+' / 输出 '+Number(m.outputTokens||0)+'</p>').join('');
+  };
+  renderMetrics();
   $("#probe").onclick = async () => {
-    const button = $("#probe"),
-      result = $("#probe-result");
-    button.disabled = true;
-    result.classList.remove("hidden");
-    result.textContent = "正在连接……";
+    if(!form.reportValidity())return;
+    const button=form.querySelector('#probe'),result=dialog.querySelector('#probe-result');
+    const config=read();
+    result.classList.remove('hidden');
+    let request;
+    try{endpoint(config.base);request=scope.begin();}catch(error){result.textContent=probeErrorMessage(error);return;}
+    const controls=[...form.elements].map(el=>[el,el.disabled]);
+    for(const [el]of controls)el.disabled=true;
+    button.textContent='测试中…';
+    result.setAttribute('aria-busy','true');
+    result.textContent='正在连接……';
+    let lastMetric;
     try {
-      const reply = await callJSON(
-        read(),
-        [
-          {
-            role: "user",
-            content: '只输出 JSON：{"ok":true,"message":"御前接口已接通"}',
-          },
-        ],
-        {
-          validate: validateProbe,
-          signal: ac.signal,
-          onMetric: (m) => {
-            metrics.push(m);
-          },
-          onPartial: () => {
-            if (result.isConnected) result.textContent = "正在等待回音……";
-          },
+      const reply=await callJSON(config,[{role:'user',content:'只输出 JSON：{"ok":true,"message":"御前接口已接通"}'}],{
+        validate:validateProbe,
+        signal:request.signal,
+        onMetric:m=>{
+          lastMetric=m;
+          if(recordMetric)recordMetric(m);
+          else {metrics.push(m);if(metrics.length>100)metrics.splice(0,metrics.length-100);}
+          if(scope.current(request))renderMetrics();
         },
-      );
-      result.textContent = "连接成功 · " + reply.message;
-    } catch (e) {
-      if (result.isConnected) result.textContent = e.message;
+        onPartial:()=>{if(scope.current(request))result.textContent='正在等待回音……';},
+      });
+      if(scope.current(request))result.textContent='连接成功 · '+reply.message;
+    } catch(error) {
+      if(scope.current(request))result.textContent=probeErrorMessage(error,lastMetric);
     } finally {
-      if (button.isConnected) button.disabled = false;
+      if(scope.current(request)){
+        for(const [el,disabled]of controls)el.disabled=disabled;
+        button.textContent='测试连接';
+        result.removeAttribute('aria-busy');
+      }
+      scope.finish(request);
     }
   };
 }

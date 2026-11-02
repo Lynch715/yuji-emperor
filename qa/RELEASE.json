@@ -33,5 +33,12 @@
   ],
   "browserErrorsObserved": 0,
   "liveSaveSubmitted": false,
-  "liveSettingsSaved": false
+  "liveSettingsSaved": false,
+  "settingsProbeFix": {
+    "localTests": 125,
+    "indexSha256": "63dccff1d52fa92e946e4f2a892ee119b84c745d2bd8df19b2a12bebe4fa2465",
+    "realProviderKeyUsed": false,
+    "stateVersion": 4,
+    "report": "docs/SETTINGS-PROBE-FIX.md"
+  }
 }

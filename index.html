@@ -774,7 +774,7 @@ async function command(name) {
   if (name === "settings") {
     openSettings(config, metrics, (c) => {
       config = c;
-    });
+    }, markMetric);
     if (state) {
       $("#modal").insertAdjacentHTML(
         "beforeend",
@@ -1173,6 +1173,7 @@ function initMobileViewport() {
 return {blockPinch,initMobileViewport};
 },
 "src/ui/settings.js":function(__load){
+const { createDialogRequestScope, probeErrorMessage } = __load("src/ui/request-scope.js");
 const { $, esc, openDialog, toast } = __load("src/ui/common.js");
 const {
   PRESETS,
@@ -1196,7 +1197,7 @@ function loadSettings() {
     return defaults;
   }
 }
-function openSettings(config, metrics, onSave) {
+function openSettings(config, metrics, onSave, recordMetric = null) {
   openDialog(
     "御前设置",
     '<p class="muted">填写叙事接口，续写本纪。密钥只用于所填地址，不随存档导出。</p><form id="settings-form"><label for="provider">服务商与地域</label><select id="provider">' +
@@ -1222,9 +1223,9 @@ function openSettings(config, metrics, onSave) {
       (config.thinking ? "checked" : "") +
       '>启用思考模式</label><label class="check"><input type="checkbox" id="remember-key" ' +
       (config.remember ? "checked" : "") +
-      '>在本机记住密钥</label><p class="muted">只在这台设备保存密钥，取消勾选即可清除。</p><div class="dialog-actions"><button type="button" id="probe">测试连接</button><button class="primary" type="submit">保存设置</button></div></form><div id="probe-result" class="result hidden" role="status" aria-live="polite"></div><details><summary>请求统计 · ' +
+      '>在本机记住密钥</label><p class="muted">只在这台设备保存密钥，取消勾选即可清除。</p><div class="dialog-actions"><button type="button" id="probe">测试连接</button><button class="primary" type="submit">保存设置</button></div></form><div id="probe-result" class="result hidden" role="status" aria-live="polite"></div><details><summary>请求统计 · <span id="request-count">' +
       metrics.length +
-      ' 次</summary><p class="muted">只留用量记录，不保存密钥和正文。</p><div id="metric-list">' +
+      '</span> 次</summary><p class="muted">只留用量记录，不保存密钥和正文。</p><div id="metric-list">' +
       metrics
         .slice(-10)
         .map(
@@ -1305,44 +1306,98 @@ function openSettings(config, metrics, onSave) {
       toast(e.message);
     }
   };
-  const ac = new AbortController();
-  $("#modal").addEventListener("close", () => ac.abort(), { once: true });
+  const dialog=$("#modal"),form=$("#settings-form"),scope=createDialogRequestScope(dialog,form);
+  const metricList=$("#metric-list"),metricCount=$("#request-count");
+  const renderMetrics=()=>{
+    metricCount.textContent=String(metrics.length);
+    metricList.innerHTML=metrics.slice(-10).map(m=>'<p>'+esc(new Date(m.at).toLocaleTimeString('zh-CN'))+' · '+esc(({ok:'成功',cancelled:'已取消',timeout:'超时',failed:'未完成'})[m.result]||m.result)+' · HTTP '+Number(m.httpStatus||0)+' · '+Number(m.durationMs||0)+'ms · 输入 '+Number(m.inputTokens||0)+' / 输出 '+Number(m.outputTokens||0)+'</p>').join('');
+  };
+  renderMetrics();
   $("#probe").onclick = async () => {
-    const button = $("#probe"),
-      result = $("#probe-result");
-    button.disabled = true;
-    result.classList.remove("hidden");
-    result.textContent = "正在连接……";
+    if(!form.reportValidity())return;
+    const button=form.querySelector('#probe'),result=dialog.querySelector('#probe-result');
+    const config=read();
+    result.classList.remove('hidden');
+    let request;
+    try{endpoint(config.base);request=scope.begin();}catch(error){result.textContent=probeErrorMessage(error);return;}
+    const controls=[...form.elements].map(el=>[el,el.disabled]);
+    for(const [el]of controls)el.disabled=true;
+    button.textContent='测试中…';
+    result.setAttribute('aria-busy','true');
+    result.textContent='正在连接……';
+    let lastMetric;
     try {
-      const reply = await callJSON(
-        read(),
-        [
-          {
-            role: "user",
-            content: '只输出 JSON：{"ok":true,"message":"御前接口已接通"}',
-          },
-        ],
-        {
-          validate: validateProbe,
-          signal: ac.signal,
-          onMetric: (m) => {
-            metrics.push(m);
-          },
-          onPartial: () => {
-            if (result.isConnected) result.textContent = "正在等待回音……";
-          },
+      const reply=await callJSON(config,[{role:'user',content:'只输出 JSON：{"ok":true,"message":"御前接口已接通"}'}],{
+        validate:validateProbe,
+        signal:request.signal,
+        onMetric:m=>{
+          lastMetric=m;
+          if(recordMetric)recordMetric(m);
+          else {metrics.push(m);if(metrics.length>100)metrics.splice(0,metrics.length-100);}
+          if(scope.current(request))renderMetrics();
         },
-      );
-      result.textContent = "连接成功 · " + reply.message;
-    } catch (e) {
-      if (result.isConnected) result.textContent = e.message;
+        onPartial:()=>{if(scope.current(request))result.textContent='正在等待回音……';},
+      });
+      if(scope.current(request))result.textContent='连接成功 · '+reply.message;
+    } catch(error) {
+      if(scope.current(request))result.textContent=probeErrorMessage(error,lastMetric);
     } finally {
-      if (button.isConnected) button.disabled = false;
+      if(scope.current(request)){
+        for(const [el,disabled]of controls)el.disabled=disabled;
+        button.textContent='测试连接';
+        result.removeAttribute('aria-busy');
+      }
+      scope.finish(request);
     }
   };
 }
 
 return {loadSettings,openSettings};
+},
+"src/ui/request-scope.js":function(__load){
+// A native dialog's queued close event may belong to the window it previously held.
+function onDialogExit(dialog, owner, callback) {
+  let done=false;
+  const closed=()=>{
+    if(dialog.open&&owner.isConnected&&dialog.contains(owner))return;
+    if(done)return;
+    done=true;
+    dialog.removeEventListener('close',closed);
+    callback();
+  };
+  dialog.addEventListener('close',closed);
+  return ()=>{done=true;dialog.removeEventListener('close',closed);};
+}
+function createDialogRequestScope(dialog, owner) {
+  let disposed=false,active=null;
+  const attached=()=>!disposed&&dialog.open&&owner.isConnected&&dialog.contains(owner);
+  onDialogExit(dialog,owner,()=>{disposed=true;active?.abort();active=null;});
+  return {
+    begin(){
+      if(!attached())throw new Error('设置窗口已关闭，请重新打开。');
+      active?.abort();active=new AbortController();return active;
+    },
+    current(request){return attached()&&active===request;},
+    finish(request){if(active===request)active=null;},
+  };
+}
+function probeErrorMessage(error,metric) {
+  const message=error?.message||'';
+  const status=Number(message.match(/^HTTP (\d+)/)?.[1]||metric?.httpStatus||0);
+  if(status===401)return '密钥未通过验证，请检查填写是否完整。';
+  if(status===402)return '接口余额不足，请到服务商账户核对。';
+  if(status===403)return '接口拒绝访问，请检查账户与地域权限。';
+  if(status===404)return '接口或型号未找到，请核对地址和模型名称。';
+  if(status===429)return '请求过于频繁，请稍后再试。';
+  if(status>=500)return '服务商暂时不可用，请稍后再试。';
+  if(/取消/.test(message))return '本次测试已取消，可以重新测试。';
+  if(/240 秒|超时/.test(message))return '连接测试超时，请稍后再试。';
+  if(metric?.httpStatus===0&&metric.result==='failed')return '网页未能连接接口，请检查网络或接口是否允许浏览器访问。';
+  if(status===200)return '接口已回应，但回复格式不符合要求，请重试。';
+  return message||'连接未完成，请重试。';
+}
+
+return {onDialogExit,createDialogRequestScope,probeErrorMessage};
 },
 "src/llm/client.js":function(__load){
 const { parseJSONLoose } = __load("src/llm/validate.js");
@@ -5970,6 +6025,7 @@ function scheduleEstimate(s) {
 return {ACTION_GROUPS,HALLS,GLYPHS,actionAvailability,actionMeta,energyView,metricGroups,scheduleEstimate};
 },
 "src/ui/memorials.js":function(__load){
+const { onDialogExit } = __load("src/ui/request-scope.js");
 const { $, esc, openDialog, closeDialog, toast } = __load("src/ui/common.js");
 const { forecastTurn } = __load("src/core/turn.js");
 const { EDICTS, execution } = __load("src/core/edicts.js");
@@ -6112,7 +6168,7 @@ function memorialDialog(s,kind,preferred,onSchedule,startId=null) {
   root.onclick=handleClick;
   const resize=()=>{alignPicker();requestAnimationFrame(revealCurrent);};
   mobile.addEventListener('change',resize);
-  d.addEventListener('close',()=>mobile.removeEventListener('change',resize),{once:true});
+  onDialogExit(d,root,()=>mobile.removeEventListener('change',resize));
   document.fonts?.ready.then(()=>{if(d.open&&root.isConnected)revealCurrent();});
   root.oninput=e=>{if(e.target.id==='review-remark')session.remark=e.target.value;};
   d.onkeydown=e=>{

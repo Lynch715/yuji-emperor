@@ -1,3 +1,4 @@
+import { onDialogExit } from "./request-scope.js";
 import { $, esc, openDialog, closeDialog, toast } from "./common.js";
 import { forecastTurn } from "../core/turn.js";
 import { EDICTS, execution } from "../core/edicts.js";
@@ -140,7 +141,7 @@ export function memorialDialog(s,kind,preferred,onSchedule,startId=null) {
   root.onclick=handleClick;
   const resize=()=>{alignPicker();requestAnimationFrame(revealCurrent);};
   mobile.addEventListener('change',resize);
-  d.addEventListener('close',()=>mobile.removeEventListener('change',resize),{once:true});
+  onDialogExit(d,root,()=>mobile.removeEventListener('change',resize));
   document.fonts?.ready.then(()=>{if(d.open&&root.isConnected)revealCurrent();});
   root.oninput=e=>{if(e.target.id==='review-remark')session.remark=e.target.value;};
   d.onkeydown=e=>{

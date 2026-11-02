@@ -2,6 +2,8 @@
 
 核对日期：2026-10-31。
 
+2026-11-01补充：[连接测试误取消修复](SETTINGS-PROBE-FIX.md)已在本地模拟接口回归。DeepSeek当前官方文档仍接受旧名称deepseek-v4-flash，本次不改写用户型号；真实密钥与账户状态仍未代测。
+
 - DeepSeek 官方模型页：https://api-docs.deepseek.com/quick_start/pricing/ 。阶段 8 按用户要求对齐参考实现：预设 `deepseek-v4-flash`，可选 `deepseek-v4-pro`；早前核对官方模型页时列出的名称为 `deepseek-flash`，接口 `https://api.deepseek.com`；`thinking.type=enabled/disabled`，依据：https://api-docs.deepseek.com/guides/thinking_mode/ 。用户可自行填写其他兼容模型名。
 - 千问地域端点依据：https://help.aliyun.com/en/model-studio/base-url 。预设北京、新加坡、弗吉尼亚的 DashScope 兼容域名；也允许填写工作空间专用域名。密钥地域需匹配。
 - 自定义接口仅发送通用 Chat Completions 参数；思考开关由该服务端决定。
