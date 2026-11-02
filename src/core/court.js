@@ -242,7 +242,7 @@ export function talkAttempt(state, personId, line) {
             privy: Math.min(requested, cap),
           }
         : {};
-  if (verdict.success && kind === "试探" && isOfficial)
+  if (verdict.success && !denied && kind === "试探" && isOfficial)
     s.court.officials.find((o) => o.id === personId).secretKnown = true;
   s = applyPackage(s, effects, "御前面谈：职权内拨款");
   s = applyPackage(
@@ -267,7 +267,12 @@ export function talkAttempt(state, personId, line) {
         ? "臣谨遵圣意，当在职权内尽力。"
         : "臣有难处，此事尚难奉行。",
     innerThought:
-      s.emperor.talents.魅力 >= 60 ? person.secret || "此事须从长计议。" : "",
+      s.emperor.talents.魅力 >= 60
+        ? (person.favor ?? person.attitude ?? 50) >= 60
+          ? "圣眷尚厚，回话须顾全情面。" +
+            (s.court.factions.find((f) => f.id === person.faction)?.demand || person.demand || "此事须从长计议。")
+          : "此事牵涉自身进退，须谨慎回话。"
+        : "",
   };
   s.interimEntries = [
     ...(state.interimEntries || []),

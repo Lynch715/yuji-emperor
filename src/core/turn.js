@@ -76,6 +76,9 @@ export function scheduleCost(schedule) {
     );
 }
 export function validateSchedule(state, schedule) {
+  const talks = state.talks.filter((t) => t.turn === state.turn);
+  if (talks.some((t) => schedule.午?.kind !== "召见" || schedule.午.person !== t.person))
+    throw new Error("本旬面谈已落账，午槽须保留对应人物的召见");
   let full = false,
     count = 0;
   const seen = new Set();
@@ -136,7 +139,7 @@ function forecastDraft(state, schedule) {
     s = applyPackage(
       s,
       { treasury: -Math.min(8, s.nation.treasury), mood: -2 },
-      "天命大凶：内库失窃",
+      "天命大凶：户部银库失窃",
     );
   for (const slot of SLOTS) {
     const action = schedule[slot];

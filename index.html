@@ -7,9 +7,8 @@
       name="description"
       content="御极：以御案为中心的帝王文字经营游戏。治理天下，经营一生。"
     />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;900&amp;family=Noto+Sans+SC:wght@400;500;700&amp;family=Ma+Shan+Zheng&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;900&amp;family=Noto+Sans+SC:wght@400;500;700&amp;family=Ma+Shan+Zheng&amp;display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
     <meta name="application-name" content="御极" />
     <meta name="apple-mobile-web-app-title" content="御极" />
     <title>御极 · 皇帝模拟器</title>
@@ -323,10 +322,6 @@ async function persist() {
     return false;
   }
 }
-function budget() {
-  if (!state.turnBudget) state.turnBudget = createBudget();
-  return state.turnBudget;
-}
 function loadMetrics() {
   try {
     const v = JSON.parse(localStorage.getItem("yuji:metrics") || "[]");
@@ -577,23 +572,25 @@ async function advance(local = false) {
   let ac = new AbortController();
   try {
     if (!state.pending) {
-      const forecast = forecastTurn(state, state.schedule);
+      const forecast = forecastTurn({ ...state, turnBudget: null }, state.schedule);
       state = {
         ...state,
         pending: { forecast },
-        turnBudget: state.turnBudget || createBudget(),
+        turnBudget: { used: 0 },
       };
       if (!(await persist()))
         throw new Error("本旬尚未存妥，请先导出存档，再重试。");
     }
-    const f = state.pending.forecast,
-      requestBudget = budget();
+    const f = state.pending.forecast;
+    // v4 saves may contain an absolute planning-time deadline. Only the
+    // attempt count belongs to a pending turn; the request owns its clock.
+    state.turnBudget = { used: state.turnBudget?.used || 0 };
     render();
     let narrative;
     if (state.settings.demo || local) narrative = mockNarrative(f);
     else {
       narrative = await requestTurnNarrative(config, state, f, {
-        budget: budget(),
+        budget: state.turnBudget,
         signal: ac.signal,
         onMetric: markMetric,
         onPartial: (raw) => {
@@ -609,7 +606,7 @@ async function advance(local = false) {
       try {
         const record = state.chronicles.find((r) => r.id === reignId(state)),
           bio = await callJSON(config, biographyMessages(state, record), {
-            budget: requestBudget,
+            budget: createBudget(),
             onMetric: markMetric,
             validate: (d) => {
               if (typeof d.biography !== "string" || d.biography.length < 500)
@@ -688,9 +685,9 @@ function startTalk(person) {
             config,
             talkMessages(state, result, state.talks),
             {
-              budget: budget(),
+              budget: createBudget(),
               onMetric: markMetric,
-              validate: (d) => validateTalk(d, result),
+              validate: (d) => validateTalk(d, result, state),
             },
           );
         } catch (e) {
@@ -755,7 +752,7 @@ async function oral(text) {
     render();
     try {
       const r = await callJSON(config, classifyMessages(text), {
-        budget: budget(),
+        budget: createBudget(),
         onMetric: markMetric,
       });
       kind = r.kind === "闲谈" ? "私下行事" : r.kind;
@@ -2285,15 +2282,26 @@ function validateWorld(data) {
       throw new Error("铸世人物或州郡资料不全");
   return data;
 }
-function validateTalk(data, result) {
+function validateTalk(data, result, state) {
   const reply = cleanText(data.reply, 1200);
   if (!reply) throw new Error("面谈回复为空");
-  if (result.denied || !result.success)
+  if (result.denied || !result.success) {
+    // Remove entire unsupported promise/number sentences so removing a word
+    // cannot turn a refusal into an apparent agreement.
+    const uncommitted = reply.split(/(?<=[。！？\n])/).filter((sentence) =>
+      !/[0-9０-９零〇一二两三四五六七八九十百千万亿壹贰叁肆伍柒捌玖拾佰仟萬億]|遵旨|领旨|奉旨|遵命|领命|奉命|谨遵|应允|允诺|承诺|答应|照办|照准|允准|即刻|立即|马上|拨付|拨款|拨银|给付|交付|调兵|发兵|已拨|已调|已办|办妥|奉行|依旨|尽力|定当|必当|定会|必会|这就|便去/.test(sentence),
+    ).join("");
+    const checked = state ? validateTurn({ chapter: { 朝: "", 午: uncommitted, 夜: "" } }, {
+      state, die: result.die, fate: "面谈", newMemorials: [],
+      slotResults: { 朝: [], 午: [], 夜: [] }, entries: [], notes: [], facts: [],
+    }).chapter.午 : uncommitted.split(/(?<=[。！？\n])/).filter((sentence) =>
+      !ASSERTIONS.some(([, pattern]) => new RegExp(pattern.source).test(sentence))).join("");
     return {
-      reply: result.reply,
+      reply: checked.trim() || result.reply,
       innerThought: result.innerThought || "",
       effects: null,
     };
+  }
   const safe = /\d.*(?:两|兵)|怀孕|身亡|处死|封后|裸体|插入/.test(reply)
     ? result.reply
     : reply;
@@ -2337,7 +2345,7 @@ function extractPartialChapter(raw) {
 return {parseJSONLoose,repairJSON,cleanText,validateProbe,mockNarrative,chineseNumber,validateTurn,validateWorld,validateTalk,extractPartialChapter};
 },
 "src/ui/turn-request.js":function(__load){
-const { callJSON } = __load("src/llm/client.js");
+const { callJSON, createBudget } = __load("src/llm/client.js");
 const { turnMessages } = __load("src/llm/prompts.js");
 const { validateTurn } = __load("src/llm/validate.js");
 
@@ -2350,11 +2358,30 @@ function validateTurnNarrative(data, forecast) {
   return narrative;
 }
 
-function requestTurnNarrative(config, state, forecast, options = {}) {
-  return callJSON({ ...config }, turnMessages(state, forecast), {
-    ...options,
-    validate: (data) => validateTurnNarrative(data, forecast),
-  });
+async function requestTurnNarrative(config, state, forecast, options = {}) {
+  const saved = options.budget;
+  const budget = createBudget((options.now || Date.now)());
+  budget.used = saved?.used || 0;
+  const rememberAttempts = () => {
+    if (saved) {
+      saved.used = budget.used;
+      delete saved.started;
+      delete saved.deadline;
+    }
+  };
+  try {
+    return await callJSON({ ...config }, turnMessages(state, forecast), {
+      ...options,
+      budget,
+      onMetric: (metric) => {
+        rememberAttempts();
+        options.onMetric?.(metric);
+      },
+      validate: (data) => validateTurnNarrative(data, forecast),
+    });
+  } finally {
+    rememberAttempts();
+  }
 }
 
 return {validateTurnNarrative,requestTurnNarrative};
@@ -2391,10 +2418,21 @@ function roster(state) {
       state.harem.consorts.map(
         (c) => c.id + "｜" + c.name + "｜" + c.rank + "｜" + c.family,
       ),
+      [state.emperor.name + "｜皇帝"],
+      state.harem.children.map((c) =>
+        c.id + "｜" + c.name + "｜" + (c.id === state.harem.heir ? "储君" : c.sex === "男" ? "皇子" : "公主")),
+      [(state.dowager || "慈宁太后") + "｜太后"],
+      (state.harem.royalWomen || []).map((w) => w.id + "｜" + w.name + "｜宗室女"),
+      state.foreign.map((f) => f.id + "｜" + f.ruler + "｜" + f.name + "君主｜" + f.status),
     )
     .join("\n");
 }
 function turnMessages(state, forecast) {
+  const before = state;
+  state = forecast.state;
+  const nationSummary = (s) => Object.fromEntries(
+    ["treasury", "privy", "grain", "morale", "governance"].map((k) => [k, s.nation[k]]));
+  const oldRoster = roster(before).split("\n"), newRoster = roster(state).split("\n");
   const context = {
     人物名册: roster(state),
     派系: state.court.factions,
@@ -2417,6 +2455,11 @@ function turnMessages(state, forecast) {
     长期事实: state.facts.slice(-30),
     在途政务: state.projects.filter((p) => !p.done),
     宏愿: state.ambitions,
+    本旬前后变化: {
+      国势: { 之前: nationSummary(before), 之后: nationSummary(state) },
+      人物旧况: oldRoster.filter((line) => !newRoster.includes(line)),
+      人物新况: newRoster.filter((line) => !oldRoster.includes(line)),
+    },
   };
   return [
     { role: "system", content: worldRules(state) },
@@ -2441,11 +2484,13 @@ function talkMessages(state, result, log) {
     state.court.officials.find((o) => o.id === result.person) ||
     state.harem.consorts.find((o) => o.id === result.person) ||
     state.foreign.find((o) => o.id === result.person);
+  const { secret, secretKnown, memory, life, ...card } = npc;
+  const known = secretKnown || (result.kind === "试探" && result.success);
   return [
     { role: "system", content: worldRules(state) },
     {
       role: "user",
-      content: `扮演 ${npc.name} 御前面谈。只写此人言行，成功才让步，失败不得让步，effects 不得超过职权。输出 {"reply":"","innerThought":"","mood":"","favor":0,"effects":null,"revealSecret":false,"endTalk":false,"summary":""}。\n【资料】${JSON.stringify(npc)}\n【此人能做到什么】拨款上限 ${result.cap} 万两，其他职权外请求必须回去议，妃嫔不能给钱兵。\n【引擎判定】${JSON.stringify(result)}\n【对话】${JSON.stringify(log.slice(-6))}`,
+      content: `扮演 ${npc.name} 御前面谈。只写此人言行，成功才让步，失败不得让步，effects 不得超过职权。未提供的秘密不得编造，未允时不得承诺拨款、调兵或落实请求。输出 {"reply":"","innerThought":"","mood":"","favor":0,"effects":null,"revealSecret":false,"endTalk":false,"summary":""}。\n【资料】${JSON.stringify(card)}${known ? "\n【已获准参考的秘密】" + secret : ""}\n【此人能做到什么】拨款上限 ${result.cap} 万两，其他职权外请求必须回去议，妃嫔不能给钱兵。\n【引擎判定】${JSON.stringify(result)}\n【对话】${JSON.stringify(log.slice(-6))}`,
     },
   ];
 }
@@ -2460,11 +2505,27 @@ function classifyMessages(text) {
   ];
 }
 function biographyMessages(state, record) {
+  const accession = state.reign?.accessionTurn || 0;
+  const years = new Map();
+  for (const h of [...state.volumes.flatMap((v) => v.chapters), ...state.history]
+    .filter((h) => Number.isFinite(h.turn) && h.turn >= accession && h.turn <= state.turn)
+    .sort((a, b) => a.turn - b.turn)) {
+    const year = 1 + Math.floor(Math.max(0, h.turn - 1) / 36);
+    if (!years.has(year)) years.set(year, []);
+    const text = [h.summary, ...(h.notes || [])].filter((x) => typeof x === "string" && x.trim()).join("；");
+    if (text) years.get(year).push(text);
+  }
+  const annual = [...years].slice(-80).map(([year, summaries]) => ({
+    year, summary: [...new Set(summaries)].join("；").slice(0, 320),
+  }));
+  // The sealed record already contains this reign's deltas, rather than the
+  // dynasty-wide cumulative stats. Do not send existing full biographies.
+  const { biography, commentary, ...sealed } = record;
   return [
     { role: "system", content: worldRules(state) },
     {
       role: "user",
-      content: `按引擎所定谥号与庙号写500–800字本纪与一段史臣曰。不得编造实录外的事，不得另定谥号。输出 {"biography":"","commentary":""}。\n【封卷】${JSON.stringify(record)}\n【实录】${JSON.stringify([...state.volumes.flatMap((v) => v.chapters), ...state.history].map((h) => ({ summary: h.summary, notes: h.notes })))}`,
+      content: `按引擎所定谥号与庙号写500–800字本纪与一段史臣曰。不得编造实录外的事，不得另定谥号。年度提要最多列本朝最近80个年度，较早政绩仅以引擎统计为据。输出 {"biography":"","commentary":""}。\n【封卷】${JSON.stringify(sealed)}\n【年度提要】${JSON.stringify(annual)}\n【引擎统计】${JSON.stringify({ accessionTurn: accession, reignTurns: record.reignTurns, stats: record.stats, children: record.children, score: record.score, 国势终值: { treasury: state.nation.treasury, privy: state.nation.privy, grain: state.nation.grain, morale: state.nation.morale, governance: state.nation.governance } })}`,
     },
   ];
 }
@@ -3182,6 +3243,9 @@ function scheduleCost(schedule) {
     );
 }
 function validateSchedule(state, schedule) {
+  const talks = state.talks.filter((t) => t.turn === state.turn);
+  if (talks.some((t) => schedule.午?.kind !== "召见" || schedule.午.person !== t.person))
+    throw new Error("本旬面谈已落账，午槽须保留对应人物的召见");
   let full = false,
     count = 0;
   const seen = new Set();
@@ -3242,7 +3306,7 @@ function forecastDraft(state, schedule) {
     s = applyPackage(
       s,
       { treasury: -Math.min(8, s.nation.treasury), mood: -2 },
-      "天命大凶：内库失窃",
+      "天命大凶：户部银库失窃",
     );
   for (const slot of SLOTS) {
     const action = schedule[slot];
@@ -5388,7 +5452,7 @@ function talkAttempt(state, personId, line) {
             privy: Math.min(requested, cap),
           }
         : {};
-  if (verdict.success && kind === "试探" && isOfficial)
+  if (verdict.success && !denied && kind === "试探" && isOfficial)
     s.court.officials.find((o) => o.id === personId).secretKnown = true;
   s = applyPackage(s, effects, "御前面谈：职权内拨款");
   s = applyPackage(
@@ -5413,7 +5477,12 @@ function talkAttempt(state, personId, line) {
         ? "臣谨遵圣意，当在职权内尽力。"
         : "臣有难处，此事尚难奉行。",
     innerThought:
-      s.emperor.talents.魅力 >= 60 ? person.secret || "此事须从长计议。" : "",
+      s.emperor.talents.魅力 >= 60
+        ? (person.favor ?? person.attitude ?? 50) >= 60
+          ? "圣眷尚厚，回话须顾全情面。" +
+            (s.court.factions.find((f) => f.id === person.faction)?.demand || person.demand || "此事须从长计议。")
+          : "此事牵涉自身进退，须谨慎回话。"
+        : "",
   };
   s.interimEntries = [
     ...(state.interimEntries || []),

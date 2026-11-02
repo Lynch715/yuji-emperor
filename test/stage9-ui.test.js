@@ -46,9 +46,11 @@ test('效果包包含嵌套州郡、派系和人物，每个值都呈现',()=>{
  assert.equal(all.length,6);assert.deepEqual(all.map(f=>f.value),[-30,-20,10,-20,5,-3]);
  assert.ok(all.some(f=>f.label==='直隶 民心'));
 });
-test('核心、LLM、存储源码与改版前逐字一致；颜色值仅在 :root 定义',()=>{
+test('批次1未涉及的核心、LLM、存储源码与阶段9前逐字一致；颜色值仅在 :root 定义',()=>{
  const protectedFiles=JSON.parse(readFileSync('qa/stage9-protected-before.json','utf8'));
- for(const [file,sha]of Object.entries(protectedFiles))assert.equal(createHash('sha256').update(readFileSync(file)).digest('hex'),sha,file);
+ // These four files now carry the explicitly authorized B11–B15 hotfixes.
+ const hotfixFiles=new Set(['src/core/court.js','src/core/turn.js','src/llm/prompts.js','src/llm/validate.js']);
+ for(const [file,sha]of Object.entries(protectedFiles))if(!hotfixFiles.has(file))assert.equal(createHash('sha256').update(readFileSync(file)).digest('hex'),sha,file);
  const css=readFileSync('src/ui/style.css','utf8'),end=css.indexOf('\n}');
  assert.ok(!/#[\da-fA-F]{3,8}\b|rgba?\(|hsla?\(/.test(css.slice(end+2)));
  for(const name of ['desk','desk-deep','desk-shade','panel','panel-active','chip','line','line-strong','line-dashed','text','text-strong','text-soft','text-muted','gold','cinnabar','cinnabar-ink','glyph','paper','paper-line','paper-chip','ink','ink-muted','up','down','danger-border'])assert.ok(css.slice(0,end).includes('--'+name+':'));

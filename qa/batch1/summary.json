@@ -1,0 +1,188 @@
+{
+  "date": "2026-11-02",
+  "baselineCommit": "fe84b59053c2b1dc89ab973c14d401e1fa3a807f",
+  "scope": [
+    "A1",
+    "A2",
+    "B11",
+    "B12",
+    "B13",
+    "B14",
+    "B15"
+  ],
+  "saveVersion": 4,
+  "tests": {
+    "before": 154,
+    "after": 163,
+    "failed": 0,
+    "skipped": 0,
+    "newRegressionsFailedBeforeFix": 9
+  },
+  "simulation": {
+    "years": 200,
+    "turns": 7200,
+    "entireReportMatchesBaseline": true,
+    "normalizedReportSha256": "700546470892fbdf21d658603f2d4c4eab23cda6cb58ab06baf7c51f8b1874b0",
+    "allNumericLeavesAndForecastsSha256Before": "5df55fe02e1a92e1192f45f8145cac16c2709ffbf7b3017371c158741bb410dd",
+    "allNumericLeavesAndForecastsSha256After": "5df55fe02e1a92e1192f45f8145cac16c2709ffbf7b3017371c158741bb410dd"
+  },
+  "balance": {
+    "passed": true,
+    "entireReportMatchesBaseline": true,
+    "normalizedReportSha256": "7106b7c3cd11a424dd077f54c3c6f3f9c69424bb8471944b7ddc4c9900e75d77",
+    "random": [
+      {
+        "seed": "御极·两百年",
+        "turns": 7200,
+        "collapseRate": 16.67,
+        "meanChildren": 6.17,
+        "maxTreasury": 1125.027413327499,
+        "eventsRange": [
+          43,
+          67
+        ],
+        "checks": {
+          "complete": true,
+          "treasuryPeak": true,
+          "latePeak": true,
+          "collapseRate": true,
+          "children": true,
+          "events": true,
+          "annualCash": true
+        }
+      },
+      {
+        "seed": "御极·长治",
+        "turns": 7200,
+        "collapseRate": 33.33,
+        "meanChildren": 7,
+        "maxTreasury": 1162.8792998592276,
+        "eventsRange": [
+          46,
+          61
+        ],
+        "checks": {
+          "complete": true,
+          "treasuryPeak": true,
+          "latePeak": true,
+          "collapseRate": true,
+          "children": true,
+          "events": true,
+          "annualCash": true
+        }
+      },
+      {
+        "seed": "御极·边政",
+        "turns": 7200,
+        "collapseRate": 33.33,
+        "meanChildren": 5.67,
+        "maxTreasury": 1327.4251732109192,
+        "eventsRange": [
+          47,
+          72
+        ],
+        "checks": {
+          "complete": true,
+          "treasuryPeak": true,
+          "latePeak": true,
+          "collapseRate": true,
+          "children": true,
+          "events": true,
+          "annualCash": true
+        }
+      },
+      {
+        "seed": "御极·宫闱",
+        "turns": 7200,
+        "collapseRate": 33.33,
+        "meanChildren": 7,
+        "maxTreasury": 1083.7631797711545,
+        "eventsRange": [
+          44,
+          61
+        ],
+        "checks": {
+          "complete": true,
+          "treasuryPeak": true,
+          "latePeak": true,
+          "collapseRate": true,
+          "children": true,
+          "events": true,
+          "annualCash": true
+        }
+      }
+    ],
+    "rest": [
+      {
+        "seed": "御极·两百年",
+        "turns": 179,
+        "passed": true
+      },
+      {
+        "seed": "御极·长治",
+        "turns": 179,
+        "passed": true
+      },
+      {
+        "seed": "御极·边政",
+        "turns": 168,
+        "passed": true
+      },
+      {
+        "seed": "御极·宫闱",
+        "turns": 180,
+        "passed": true
+      }
+    ],
+    "lowMoralePassed": 108,
+    "lowMoraleTotal": 108
+  },
+  "fontStartup": {
+    "test": "A2 Google Fonts请求挂起时首屏在2秒内显示",
+    "passed": true,
+    "results": [
+      {
+        "paintMs": 68,
+        "width": 360,
+        "scrollWidth": 360,
+        "text": "御\n极\n御极 · 夜御案\n一人之志，天下之重。\n精力\n余 9 / 9\n☰\n国库\n—\n民心\n—\n吏治\n—\n皇威\n—\n架空帝",
+        "elapsedMs": 128,
+        "fontRequestsHeld": 1
+      },
+      {
+        "paintMs": 64,
+        "width": 1280,
+        "scrollWidth": 1280,
+        "text": "御\n极\n御极 · 夜御案\n一人之志，天下之重。\n钱粮\n国库\n—\n万两\n内帑\n—\n万两\n粮储\n—\n万石\n民政\n民心\n—\n吏",
+        "elapsedMs": 100,
+        "fontRequestsHeld": 1
+      }
+    ]
+  },
+  "inAppBrowser": {
+    "browser": "Codex In-app Browser",
+    "url": "http://localhost:4174/",
+    "viewport": {
+      "width": 360,
+      "height": 900
+    },
+    "checks": [
+      "独立空卷试读开局",
+      "面谈落账显示非秘密心声",
+      "行动坞外交覆盖午槽被拦截",
+      "刷新后原召见保留",
+      "清空午槽被拦截",
+      "正常起驾进入第2旬"
+    ],
+    "documentScrollWidth": 360,
+    "visibleControlsSmallerThan44": [],
+    "screenshot": "output/playwright/batch1-talk-lock-360.png",
+    "realDevice": false
+  },
+  "realProviderCalls": false,
+  "physicalMobileDevice": false,
+  "build": {
+    "modules": 36,
+    "inlineScriptBytes": 874235
+  }
+}
