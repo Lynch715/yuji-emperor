@@ -1,0 +1,26 @@
+{
+  "repository": "https://github.com/Lynch715/yuji-emperor",
+  "pages": "https://lynch715.github.io/yuji-emperor/",
+  "version": "0.9.1",
+  "stateVersion": 4,
+  "localTests": 118,
+  "cleanCheckoutTests": 118,
+  "indexSha256": "d2b67991ed58666095ba41172ff004497fc38f11116a85810d57ac3a42a4301b",
+  "pagesArtifactFiles": [
+    "index.html",
+    ".nojekyll"
+  ],
+  "excluded": [
+    "reference/",
+    "old QA artifacts",
+    "player exports",
+    "environment files",
+    "credentials"
+  ],
+  "posterQrWidths": [
+    1024,
+    768,
+    512
+  ],
+  "liveVerified": false
+}

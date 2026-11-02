@@ -1,0 +1,56 @@
+[
+  {
+    "file": "御极_有二维码.png",
+    "size": [
+      1024,
+      1536
+    ],
+    "decoded": [
+      "https://lynch715.github.io/yuji-emperor/"
+    ]
+  },
+  {
+    "file": "御极_有二维码.png",
+    "size": [
+      768,
+      1152
+    ],
+    "decoded": [
+      "https://lynch715.github.io/yuji-emperor/"
+    ]
+  },
+  {
+    "file": "御极_有二维码.png",
+    "size": [
+      512,
+      768
+    ],
+    "decoded": [
+      "https://lynch715.github.io/yuji-emperor/"
+    ]
+  },
+  {
+    "file": "御极_无二维码.png",
+    "size": [
+      1024,
+      1536
+    ],
+    "decoded": []
+  },
+  {
+    "file": "御极_无二维码.png",
+    "size": [
+      768,
+      1152
+    ],
+    "decoded": []
+  },
+  {
+    "file": "御极_无二维码.png",
+    "size": [
+      512,
+      768
+    ],
+    "decoded": []
+  }
+]

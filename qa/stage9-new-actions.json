@@ -1,0 +1,232 @@
+[
+  {
+    "seed": "御极·夜御案验收",
+    "case": "court3",
+    "slot": "朝",
+    "action": {
+      "kind": "上朝",
+      "memorials": [
+        "routine-0-0",
+        "routine-0-1",
+        "routine-0-2"
+      ],
+      "decision": "approve",
+      "stance": "依旨施行",
+      "target": "o0",
+      "remark": "",
+      "label": "3 本奏报"
+    },
+    "baseStateSha256": "399f5b55c1c3e0ff94ec2a03f9857084da69d383df07f4f9804e9a89ff97545b",
+    "forecastSha256": "608675b406fe0db3dcb68ba73eae8d595aa3ce03abfa8ad7aab4ebafc36e4fbe",
+    "die": 16,
+    "slotResults": {
+      "朝": [
+        "直隶 钱粮月报 · 准奏",
+        "六部请整饬案牍 · 准奏",
+        "江南 请赈灾民 · 准奏"
+      ],
+      "午": [
+        "未排程，静候宫中日常"
+      ],
+      "夜": [
+        "未排程，静候宫中日常"
+      ]
+    }
+  },
+  {
+    "seed": "御极·夜御案验收",
+    "case": "batch6",
+    "slot": "午",
+    "action": {
+      "kind": "批折",
+      "memorials": [
+        "routine-0-0",
+        "routine-0-1",
+        "routine-0-2",
+        "routine-1-0",
+        "routine-1-1",
+        "routine-1-2"
+      ],
+      "decision": "reject",
+      "stance": "依旨施行",
+      "target": "o0",
+      "remark": "",
+      "label": "6 本奏报"
+    },
+    "baseStateSha256": "399f5b55c1c3e0ff94ec2a03f9857084da69d383df07f4f9804e9a89ff97545b",
+    "forecastSha256": "cdeea33ae8641320ae766c3cd8bb565536f6e604abe8cdd1e883fd976c9cd228",
+    "die": 16,
+    "slotResults": {
+      "朝": [
+        "未排程，静候宫中日常"
+      ],
+      "午": [
+        "直隶 钱粮月报 · 驳回",
+        "六部请整饬案牍 · 驳回",
+        "江南 请赈灾民 · 驳回",
+        "湖广 钱粮月报 · 驳回",
+        "六部请整饬案牍 · 驳回",
+        "山西 请赈灾民 · 驳回"
+      ],
+      "夜": [
+        "未排程，静候宫中日常"
+      ]
+    }
+  },
+  {
+    "seed": "御极·夜御案验收",
+    "case": "discuss",
+    "slot": "午",
+    "action": {
+      "kind": "批折",
+      "memorials": [
+        "routine-0-0"
+      ],
+      "decision": "discuss",
+      "stance": "依旨施行",
+      "target": "o0",
+      "remark": "",
+      "label": "1 本奏报"
+    },
+    "baseStateSha256": "399f5b55c1c3e0ff94ec2a03f9857084da69d383df07f4f9804e9a89ff97545b",
+    "forecastSha256": "b2194def1ba5d787a0f453f8c28b9df42acf9a9feb5a5d1dc5edd4de79085936",
+    "die": 16,
+    "slotResults": {
+      "朝": [
+        "未排程，静候宫中日常"
+      ],
+      "午": [
+        "直隶 钱粮月报 · 发部再议"
+      ],
+      "夜": [
+        "未排程，静候宫中日常"
+      ]
+    }
+  },
+  {
+    "seed": "御极·夜御案验收",
+    "case": "hold",
+    "slot": "朝",
+    "action": {
+      "kind": "上朝",
+      "memorials": [
+        "routine-0-0"
+      ],
+      "decision": "hold",
+      "stance": "依旨施行",
+      "target": "o0",
+      "remark": "",
+      "label": "1 本奏报"
+    },
+    "baseStateSha256": "399f5b55c1c3e0ff94ec2a03f9857084da69d383df07f4f9804e9a89ff97545b",
+    "forecastSha256": "5cf160a1cae4430d5ab5b409e39d2d9b6a004186b6196ba1f83ff8b5f526453d",
+    "die": 16,
+    "slotResults": {
+      "朝": [
+        "直隶 钱粮月报 · 留中"
+      ],
+      "午": [
+        "未排程，静候宫中日常"
+      ],
+      "夜": [
+        "未排程，静候宫中日常"
+      ]
+    }
+  },
+  {
+    "seed": "御极·夜御案验收",
+    "case": "accountability",
+    "slot": "朝",
+    "action": {
+      "kind": "上朝",
+      "memorials": [
+        "routine-0-0"
+      ],
+      "decision": "approve",
+      "stance": "当廷问责",
+      "target": "o0",
+      "remark": "",
+      "label": "1 本奏报"
+    },
+    "baseStateSha256": "399f5b55c1c3e0ff94ec2a03f9857084da69d383df07f4f9804e9a89ff97545b",
+    "forecastSha256": "48bb9b0f5e83cc8f55ecdd3cf29bdcd907ce6a395a8718a13fe3aeffed7b3004",
+    "die": 16,
+    "slotResults": {
+      "朝": [
+        "直隶 钱粮月报 · 准奏",
+        "当廷问责 沈守正 · 未成"
+      ],
+      "午": [
+        "未排程，静候宫中日常"
+      ],
+      "夜": [
+        "未排程，静候宫中日常"
+      ]
+    }
+  },
+  {
+    "seed": "御极·夜御案验收",
+    "case": "remark",
+    "slot": "午",
+    "action": {
+      "kind": "批折",
+      "memorials": [
+        "routine-0-0"
+      ],
+      "decision": "remark",
+      "stance": "依旨施行",
+      "target": "o0",
+      "remark": "勤勉可嘉，毋懈职守。",
+      "label": "1 本奏报"
+    },
+    "baseStateSha256": "399f5b55c1c3e0ff94ec2a03f9857084da69d383df07f4f9804e9a89ff97545b",
+    "forecastSha256": "6676b362e10492bc287c9673fa97c715a4e4d38634062175da083e030ee70efb",
+    "die": 16,
+    "slotResults": {
+      "朝": [
+        "未排程，静候宫中日常"
+      ],
+      "午": [
+        "直隶 钱粮月报 · 朱批「勤勉可嘉，毋懈职守。」（原请款仍待准驳）"
+      ],
+      "夜": [
+        "未排程，静候宫中日常"
+      ]
+    }
+  },
+  {
+    "seed": "御极·夜御案验收",
+    "case": "debate",
+    "slot": "朝",
+    "action": {
+      "kind": "上朝",
+      "memorials": [
+        "routine-0-0",
+        "routine-0-1",
+        "routine-0-2"
+      ],
+      "decision": "approve",
+      "stance": "廷议",
+      "target": "o0",
+      "remark": "",
+      "label": "3 本奏报"
+    },
+    "baseStateSha256": "399f5b55c1c3e0ff94ec2a03f9857084da69d383df07f4f9804e9a89ff97545b",
+    "forecastSha256": "7884c896e6525277ce7072e779ed2f56f8bbaa8bc734da05708d9943a8d970f1",
+    "die": 16,
+    "slotResults": {
+      "朝": [
+        "廷议：谢景行（反对、反对、反对）、刘元礼（反对、反对、反对）、杜长衡（反对、反对、反对）",
+        "直隶 钱粮月报 · 准奏",
+        "六部请整饬案牍 · 准奏",
+        "江南 请赈灾民 · 准奏"
+      ],
+      "午": [
+        "未排程，静候宫中日常"
+      ],
+      "夜": [
+        "未排程，静候宫中日常"
+      ]
+    }
+  }
+]

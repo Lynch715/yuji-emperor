@@ -1,0 +1,13 @@
+{
+  "name": "yuji-emperor",
+  "version": "0.9.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "build": "node scripts/build.mjs",
+    "simulate": "node scripts/simulate.mjs",
+    "balance": "node scripts/stage8-1-balance.mjs",
+    "serve": "node scripts/serve.mjs"
+  }
+}

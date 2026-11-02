@@ -1,0 +1,11 @@
+import {readFile,writeFile} from 'node:fs/promises';
+import {stage9Fixture} from '../qa/stage9-fixture.js';
+import {renderApp} from '../src/ui/render.js';
+import {createMemorialSession,memorialHTML} from '../src/ui/memorials.js';
+const s=stage9Fixture(true),css=await readFile('src/ui/style.css','utf8');
+const model=createMemorialSession(s,'上朝','朝');model.index=2;model.remark='准。速办，毋使流离。';
+const shell=(body,dialog='',js='')=>'<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>御极 · 夜御案可访问性快照</title><style>'+css+'</style></head><body><a class="skip" href="#scroll">跳至正文</a><div id="app">'+body+'</div><div id="notice" class="notice" role="status"></div>'+dialog+(js?'<script>'+js+'</script>':'')+'</body></html>';
+await writeFile('qa/stage9-a11y-main.html',shell(renderApp(s)));
+const dialog='<dialog id="modal" class="memorial-shell" aria-labelledby="modal-title"><div class="dialog-head"><h2 id="modal-title">上朝 · 御前批阅</h2><button type="button" id="close-modal" aria-label="关闭窗口">×</button></div><div id="review-root" class="memorial-overlay">'+memorialHTML(s,model)+'</div></dialog>';
+await writeFile('qa/stage9-a11y-memorial.html',shell(renderApp(s),dialog,'document.querySelector("#modal").showModal();document.querySelector("#memorial-title").focus();'));
+console.log('Created current game and mounted native-dialog accessibility snapshots');
