@@ -2,6 +2,8 @@
 
 核对日期：2026-10-31。
 
+2026-11-02补充：[正文接口链路审计](NARRATION-API-AUDIT.md)完成。连接测试成功后须保存表单；试读存档可点“保存并用于正文”启用后续接口章节。正文使用相同客户端和配置，额外校验朝 / 午 / 夜章节及结算一致性，校验后三段全空不提交；重试仍保留原结算、共用每回合4次 / 240秒预算。已完成本地模拟接口的浏览器验收，真实服务商密钥未代测。
+
 2026-11-01补充：[连接测试误取消修复](SETTINGS-PROBE-FIX.md)已在本地模拟接口回归。DeepSeek当前官方文档仍接受旧名称deepseek-v4-flash，本次不改写用户型号；真实密钥与账户状态仍未代测。
 
 - DeepSeek 官方模型页：https://api-docs.deepseek.com/quick_start/pricing/ 。阶段 8 按用户要求对齐参考实现：预设 `deepseek-v4-flash`，可选 `deepseek-v4-pro`；早前核对官方模型页时列出的名称为 `deepseek-flash`，接口 `https://api.deepseek.com`；`thinking.type=enabled/disabled`，依据：https://api-docs.deepseek.com/guides/thinking_mode/ 。用户可自行填写其他兼容模型名。

@@ -9,6 +9,7 @@ import {
   download,
 } from "./common.js";
 import { loadSettings, openSettings } from "./settings.js";
+import { requestTurnNarrative } from "./turn-request.js";
 import {
   renderApp,
   actionButton,
@@ -36,7 +37,6 @@ import { applyWorld } from "../core/world.js";
 import { talkAttempt } from "../core/court.js";
 import { callJSON, createBudget } from "../llm/client.js";
 import {
-  turnMessages,
   worldMessages,
   talkMessages,
   classifyMessages,
@@ -46,7 +46,6 @@ import {
 import {
   extractPartialChapter,
   mockNarrative,
-  validateTurn,
   validateWorld,
   validateTalk,
 } from "../llm/validate.js";
@@ -360,11 +359,10 @@ async function advance(local = false) {
     let narrative;
     if (state.settings.demo || local) narrative = mockNarrative(f);
     else {
-      narrative = await callJSON(config, turnMessages(state, f), {
+      narrative = await requestTurnNarrative(config, state, f, {
         budget: budget(),
         signal: ac.signal,
         onMetric: markMetric,
-        validate: (d) => validateTurn(d, f),
         onPartial: (raw) => {
           const el = $("#stream");
           if (el)
@@ -601,21 +599,28 @@ function exportMarkdown() {
 }
 async function command(name) {
   if (name === "settings") {
-    openSettings(config, metrics, (c) => {
+    const settings = openSettings(config, metrics, (c) => {
       config = c;
     }, markMetric);
     if (state) {
       $("#modal").insertAdjacentHTML(
         "beforeend",
-        '<div class="dialog-actions"><button id="mode-toggle">切换为' +
-          (state.settings.demo ? "接口续写" : "试读") +
+        '<p class="muted" id="story-mode">' +
+          (state.settings.demo ? '本卷正在试读。可保存接口并用于后续正文，已有章节保留。' : '本卷使用已保存的接口续写正文。') +
+          '</p><div class="dialog-actions"><button id="mode-toggle">' +
+          (state.settings.demo ? "保存并用于正文" : "切换为试读") +
           "</button></div>",
       );
       $("#mode-toggle").onclick = () => {
+        if (readOnly) {
+          toast("存档处于只读保护模式");
+          return;
+        }
         if (busy || state.pending) {
           toast("请先完成当前回合");
           return;
         }
+        if (state.settings.demo && !settings.save()) return;
         state.settings.demo = !state.settings.demo;
         persist();
         render();

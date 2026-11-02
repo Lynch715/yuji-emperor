@@ -116,8 +116,8 @@ export function openSettings(config, metrics, onSave, recordMetric = null) {
     $("#api-model").value = p.model;
     presets();
   };
-  $("#settings-form").onsubmit = (e) => {
-    e.preventDefault();
+  const save = () => {
+    if (form.querySelector('#probe').disabled || !form.reportValidity()) return false;
     const next = read();
     try {
       endpoint(next.base);
@@ -127,9 +127,15 @@ export function openSettings(config, metrics, onSave, recordMetric = null) {
       );
       onSave(next);
       toast("设置已保存");
+      return true;
     } catch (e) {
       toast(e.message);
+      return false;
     }
+  };
+  $("#settings-form").onsubmit = (e) => {
+    e.preventDefault();
+    save();
   };
   const dialog=$("#modal"),form=$("#settings-form"),scope=createDialogRequestScope(dialog,form);
   const metricList=$("#metric-list"),metricCount=$("#request-count");
@@ -163,7 +169,7 @@ export function openSettings(config, metrics, onSave, recordMetric = null) {
         },
         onPartial:()=>{if(scope.current(request))result.textContent='正在等待回音……';},
       });
-      if(scope.current(request))result.textContent='连接成功 · '+reply.message;
+      if(scope.current(request))result.textContent='连接成功 · '+reply.message+'。保存设置后用于续写。';
     } catch(error) {
       if(scope.current(request))result.textContent=probeErrorMessage(error,lastMetric);
     } finally {
@@ -175,4 +181,5 @@ export function openSettings(config, metrics, onSave, recordMetric = null) {
       scope.finish(request);
     }
   };
+  return { save };
 }

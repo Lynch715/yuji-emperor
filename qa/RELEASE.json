@@ -40,5 +40,16 @@
     "realProviderKeyUsed": false,
     "stateVersion": 4,
     "report": "docs/SETTINGS-PROBE-FIX.md"
+  },
+  "narrationAudit": {
+    "localTests": 136,
+    "indexSha256": "ecdaa524dda98f25995085ab5f960cce7832ee92905cae44bbecbc23b2ba0164",
+    "realProviderKeyUsed": false,
+    "stateVersion": 4,
+    "report": "docs/NARRATION-API-AUDIT.md",
+    "mockBrowserRequests": 11,
+    "retryMessagesIdentical": true,
+    "simulationYears": 200,
+    "simulationMatchesBefore": true
   }
 }
