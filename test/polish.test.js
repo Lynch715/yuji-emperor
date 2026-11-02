@@ -45,7 +45,7 @@ test("old version-1 saves fill compatible optional fields, future saves stay pro
     文采: 0,
     魅力: 0,
   });
-  assert.throws(() => migrate({ ...s, v: 5 }));
+  assert.throws(() => migrate({ ...s, v: 6 }));
 });
 test("one hundred played turns keep history exportable, no duplicate receipts or blocked states", () => {
   let s = initial();

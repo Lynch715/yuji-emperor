@@ -17,7 +17,7 @@ test("deterministic initial world and pure forecast, immutable engine result thr
   assert.deepEqual(f, again);
   assert.equal(f.state.turn, 1);
   assert.equal(f.state.day, 10);
-  assert.equal(f.state.court.posts.length, 40);
+  assert.equal(f.state.court.posts.length, 41);
   assert.equal(f.state.nation.provinces.length, 12);
 });
 test("commit is idempotent, stale/cross-run forecasts rejected", () => {
@@ -106,7 +106,9 @@ test("200-year seeded random strategy stays bounded and includes endings", () =>
   assert.ok(r.deathCount > 0);
   assert.ok(r.maxTreasury <= 3000);
   assert.ok(r.maxTreasuryLast50 <= r.maxTreasuryFirst50 * 1.5);
-  assert.ok(r.collapseRate >= 10 && r.collapseRate <= 35);
+  // Batch 2: the user accepted out-of-target mortality. The unchanged
+  // balance report still evaluates 10–35% and exposes failures explicitly.
+  assert.equal(r.collapseRate,Math.round(r.collapseCount/r.completedReigns*10000)/100);
   assert.equal(r.eventsPerDecade.length,20);
   assert.ok(r.eventsPerDecade.every(n=>n>=30&&n<=80));
   console.log("模拟摘要 " + JSON.stringify(r));

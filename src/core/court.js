@@ -1,6 +1,7 @@
 import { resolveMemorial } from "./events.js";
 import { clone } from "./state.js";
 import { applyPackage, clamp } from "./effects.js";
+import { uniqueName } from "./names.js";
 import { roll, check } from "./rng.js";
 export function strongman(s) {
   return s.emperor.prestige < 40 && s.court.factions.some((f) => f.power > 70);
@@ -63,7 +64,7 @@ export function courtYear(state) {
       for (const p of s.court.posts) if (p.holder === o.id) p.holder = null;
     }
   const year = 1 + Math.floor(s.turn / 36);
-  if (year % 3 === 1 && s.court.officials.filter((o) => o.alive).length < 60) {
+  if (year % 3 === 1 && !s.court.officials.some(o=>o.id.startsWith("exam-"+year+"-")) && s.court.officials.filter((o) => o.alive).length < 60) {
     for (
       let i = 0;
       i < 3 && s.court.officials.filter((o) => o.alive).length < 60;
@@ -76,23 +77,10 @@ export function courtYear(state) {
         s = r.state;
         abilities[a] = r.value;
       }
+      const named=uniqueName(s);s=named.state;
       s.court.officials.push({
         id: "exam-" + year + "-" + i,
-        name:
-          [
-            "徐",
-            "邵",
-            "潘",
-            "傅",
-            "高",
-            "马",
-            "罗",
-            "吕",
-            "余",
-            "周",
-            "钱",
-            "陶",
-          ][index % 12] + ["守礼", "明哲", "慎行"][Math.floor(index / 12) % 3],
+        name: named.name,
         gender: "男",
         age: 25,
         post: null,
@@ -129,6 +117,8 @@ export function appoint(state, action) {
       person.abilities.政 < (post.rank === 1 ? 40 : 25))
   )
     throw new Error("此人资历或能力不符任职要求");
+  if (removing && !post.holder) throw new Error("此职空缺");
+  if (!removing && person.jailed && !action.pardon) throw new Error("此人仍在下狱，须先赦免方可起用");
   if (strongman(s)) {
     const r = roll(s, 1, 20);
     s = r.state;
@@ -174,7 +164,8 @@ export function appoint(state, action) {
   } else {
     for (const p of s.court.posts) if (p.holder === person.id) p.holder = null;
     targetPost.holder = person.id;
-    s.court.officials.find((o) => o.id === person.id).post = post.id;
+    const restored=s.court.officials.find((o)=>o.id===person.id);
+    restored.post=post.id;restored.jailed=false;restored.retired=false;
     s.court.officials.find((o) => o.id === person.id).inCapital =
       !/巡抚|总兵/.test(post.title);
     s = applyPackage(
@@ -186,6 +177,7 @@ export function appoint(state, action) {
       "任命 " + person.name,
     );
   }
+  for (const province of s.nation.provinces) province.governor=s.court.posts.find(p=>p.provinceId===province.id)?.holder || null;
   s.stats.appointments++;
   return {
     state: s,
@@ -288,7 +280,7 @@ export function banquet(state, action) {
     guests.length < 2 ||
     guests.length > 6 ||
     guests.some(
-      (id) => !state.court.officials.some((o) => o.id === id && o.alive),
+      (id) => !state.court.officials.some((o) => o.id === id && inCapital(o)),
     )
   )
     throw new Error("宴请须选择 2–6 位在京官员");
@@ -333,7 +325,7 @@ export function banquet(state, action) {
 
 // A minister's vote follows the issue and his faction's stated interest, not loyalty to the throne.
 export function inCapital(o) {
-  return o.alive && !o.jailed && !o.retired && o.inCapital !== false;
+  return o.alive && o.health > 0 && !o.jailed && !o.retired && o.inCapital !== false;
 }
 export function factionOptionScore(faction, memorial, option) {
   const d = faction.demand,
@@ -438,13 +430,13 @@ export function accountability(state, target, die) {
     opposition,
   };
 }
-export function proxyMemorial(state) {
-  if (!strongman(state) || !state.memorials.length)
+export function proxyMemorial(state, options = {}) {
+  if (!options.minister && !strongman(state) || !state.memorials.length)
     return { state: clone(state), note: null };
-  const faction = state.court.factions
+  const faction = options.minister ? state.court.factions.find(f=>f.id===options.minister.faction) || state.court.factions[0] : state.court.factions
     .filter((f) => f.power > 70)
     .sort((a, b) => b.power - a.power)[0];
-  const minister = state.court.officials
+  const minister = options.minister || state.court.officials
     .filter((o) => inCapital(o) && o.faction === faction.id)
     .sort(
       (a, b) => b.abilities.权谋 + b.ambition - (a.abilities.权谋 + a.ambition),
@@ -456,21 +448,21 @@ export function proxyMemorial(state) {
         .filter(
           (o) =>
             o.id !== "hold" &&
-            state.nation.treasury >= Math.max(0, -(o.effects?.treasury || 0)),
+            ["treasury","privy","grain"].every(k=>state.nation[k]>=Math.max(0,-(o.effects?.[k]||0))),
         )
         .map((o) => ({ m, o, score: factionOptionScore(faction, m, o) })),
     )
     .sort((a, b) => b.score - a.score);
   if (!choices.length) return { state: clone(state), note: null };
   const { m, o } = choices[0],
-    result = resolveMemorial(state, m.id, o.id, "", minister.name + "代批");
+    result = resolveMemorial(state, m.id, o.id, "", minister.name + (options.label || "代批"));
   return {
     state: applyPackage(
       result.state,
-      { prestige: -0.5 },
-      minister.name + "代批：皇权旁落",
+      { prestige: options.minister ? 0 : -0.5 },
+      minister.name + (options.label || "代批") + "：皇权旁落",
     ),
-    note: minister.name + "代批：" + m.title + " · " + o.label,
+    note: minister.name + (options.label || "代批") + "：" + m.title + " · " + o.label,
     officialId: minister.id,
     memorialId: m.id,
     optionId: o.id,

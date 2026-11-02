@@ -30,7 +30,7 @@ export function roster(state) {
         (c) => c.id + "｜" + c.name + "｜" + c.rank + "｜" + c.family,
       ),
       [state.emperor.name + "｜皇帝"],
-      state.harem.children.map((c) =>
+      state.harem.children.filter(c=>c.health>0&&c.id!==state.reign?.emperorId&&c.name!==state.emperor.name).map((c) =>
         c.id + "｜" + c.name + "｜" + (c.id === state.harem.heir ? "储君" : c.sex === "男" ? "皇子" : "公主")),
       [(state.dowager || "慈宁太后") + "｜太后"],
       (state.harem.royalWomen || []).map((w) => w.id + "｜" + w.name + "｜宗室女"),

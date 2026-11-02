@@ -1,7 +1,7 @@
 import { clone } from "./state.js";
 import { clamp, applyPackage } from "./effects.js";
 import {
-  monthlyBudget, wasteQuote, provinceTaxFactor, settleArrears,
+  monthlyBudget, wasteQuote, provinceTaxFactor, settleArrears, quarterIndex,
 } from "./finance.js";
 export function nationMonth(state) {
   let s = settleArrears(clone(state));
@@ -54,7 +54,9 @@ export function nationQuarter(state) {
   const rate = clamp(0.5 + state.nation.governance * 0.0045, 0.5, 0.95),
     income =
       state.nation.provinces.reduce(
-        (sum, p) => sum + p.tax * (1 - p.disaster / 150) * provinceTaxFactor(p, state.turn),
+        (sum, p) => sum + p.tax * (1 - p.disaster / 150) * provinceTaxFactor(p, state.turn) *
+          (p.taxRelief && quarterIndex(state.turn)<p.taxRelief.untilQuarter?p.taxRelief.factor:1) *
+          (p.taxSurge && quarterIndex(state.turn)<p.taxSurge.untilQuarter?p.taxSurge.factor:1),
         0,
       ) *
       rate *
@@ -65,6 +67,12 @@ export function nationQuarter(state) {
     "季结：赋税实收 " + Math.round(rate * 100) + "% 与新粮入仓",
   );
   s.stats.income += income;
+  const surging=s.nation.provinces.filter(p=>p.taxSurge&&quarterIndex(s.turn)<p.taxSurge.untilQuarter);
+  if(surging.length)s=applyPackage(s,{morale:-2},'季结：加税失民心');
+  for(const p of s.nation.provinces){
+    if(p.taxRelief&&quarterIndex(s.turn)>=p.taxRelief.untilQuarter)p.taxRelief=null;
+    if(p.taxSurge&&quarterIndex(s.turn)>=p.taxSurge.untilQuarter)p.taxSurge=null;
+  }
   return settleArrears(s);
 }
 export function nationYear(state) {

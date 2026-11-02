@@ -1,0 +1,4094 @@
+{
+  "v": 4,
+  "runId": "run-1ri3u18",
+  "rng": 45671343,
+  "turn": 0,
+  "day": 0,
+  "dynasty": "大晟",
+  "era": {
+    "name": "永宁",
+    "year": 1,
+    "month": 1,
+    "xun": 0
+  },
+  "settings": {
+    "freedom": "mid",
+    "difficulty": "normal",
+    "prose": "court",
+    "demo": true
+  },
+  "emperor": {
+    "name": "朱厚照",
+    "age": 24,
+    "lifespan": 60,
+    "health": 85,
+    "energy": 9,
+    "mood": 70,
+    "prestige": 58,
+    "virtue": 60,
+    "talents": {
+      "政略": 66,
+      "权谋": 47,
+      "武略": 67,
+      "文采": 70,
+      "魅力": 65
+    },
+    "tags": [
+      "多疑"
+    ],
+    "status": [],
+    "growth": {
+      "政略": 0,
+      "权谋": 0,
+      "武略": 0,
+      "文采": 0,
+      "魅力": 0
+    }
+  },
+  "reign": {
+    "number": 1,
+    "accessionTurn": 0,
+    "emperorId": "founder",
+    "initialTreasury": 480,
+    "initialStats": {}
+  },
+  "nation": {
+    "treasury": 480,
+    "arrears": 0,
+    "privy": 90,
+    "grain": 650,
+    "morale": 62,
+    "governance": 58,
+    "provinces": [
+      {
+        "id": "z0",
+        "name": "直隶",
+        "pop": 420,
+        "tax": 7,
+        "morale": 62,
+        "disaster": 0,
+        "rebellion": false,
+        "rebellionQuarter": -1,
+        "garrison": 14721,
+        "governor": "o13"
+      },
+      {
+        "id": "z1",
+        "name": "河南",
+        "pop": 415,
+        "tax": 8,
+        "morale": 62,
+        "disaster": 0,
+        "rebellion": false,
+        "rebellionQuarter": -1,
+        "garrison": 15055,
+        "governor": "o14"
+      },
+      {
+        "id": "z2",
+        "name": "江南",
+        "pop": 472,
+        "tax": 13,
+        "morale": 62,
+        "disaster": 0,
+        "rebellion": false,
+        "rebellionQuarter": -1,
+        "garrison": 15612,
+        "governor": "o15"
+      },
+      {
+        "id": "z3",
+        "name": "湖广",
+        "pop": 454,
+        "tax": 11,
+        "morale": 62,
+        "disaster": 0,
+        "rebellion": false,
+        "rebellionQuarter": -1,
+        "garrison": 10152,
+        "governor": "o16"
+      },
+      {
+        "id": "z4",
+        "name": "山东",
+        "pop": 418,
+        "tax": 13,
+        "morale": 62,
+        "disaster": 0,
+        "rebellion": false,
+        "rebellionQuarter": -1,
+        "garrison": 11827,
+        "governor": "o17"
+      },
+      {
+        "id": "z5",
+        "name": "山西",
+        "pop": 290,
+        "tax": 11,
+        "morale": 62,
+        "disaster": 0,
+        "rebellion": false,
+        "rebellionQuarter": -1,
+        "garrison": 12589,
+        "governor": "o18"
+      },
+      {
+        "id": "z6",
+        "name": "陕西",
+        "pop": 430,
+        "tax": 8,
+        "morale": 62,
+        "disaster": 0,
+        "rebellion": false,
+        "rebellionQuarter": -1,
+        "garrison": 16130,
+        "governor": "o19"
+      },
+      {
+        "id": "z7",
+        "name": "四川",
+        "pop": 278,
+        "tax": 13,
+        "morale": 62,
+        "disaster": 0,
+        "rebellion": false,
+        "rebellionQuarter": -1,
+        "garrison": 14396,
+        "governor": "o20"
+      },
+      {
+        "id": "z8",
+        "name": "福建",
+        "pop": 352,
+        "tax": 8,
+        "morale": 62,
+        "disaster": 0,
+        "rebellion": false,
+        "rebellionQuarter": -1,
+        "garrison": 10732,
+        "governor": "o21"
+      },
+      {
+        "id": "z9",
+        "name": "广东",
+        "pop": 343,
+        "tax": 12,
+        "morale": 62,
+        "disaster": 0,
+        "rebellion": false,
+        "rebellionQuarter": -1,
+        "garrison": 8464,
+        "governor": "o22"
+      },
+      {
+        "id": "z10",
+        "name": "云南",
+        "pop": 339,
+        "tax": 12,
+        "morale": 62,
+        "disaster": 0,
+        "rebellion": false,
+        "rebellionQuarter": -1,
+        "garrison": 17083,
+        "governor": "o23"
+      },
+      {
+        "id": "z11",
+        "name": "辽东",
+        "pop": 225,
+        "tax": 9,
+        "morale": 62,
+        "disaster": 0,
+        "rebellion": false,
+        "rebellionQuarter": -1,
+        "garrison": 8993,
+        "governor": "o24"
+      }
+    ],
+    "army": {
+      "capital": {
+        "troops": 45000,
+        "readiness": 65
+      },
+      "frontiers": [
+        {
+          "dir": "北",
+          "troops": 35000,
+          "readiness": 60,
+          "threat": 39
+        },
+        {
+          "dir": "西",
+          "troops": 35000,
+          "readiness": 60,
+          "threat": 15
+        },
+        {
+          "dir": "南",
+          "troops": 35000,
+          "readiness": 60,
+          "threat": 35
+        },
+        {
+          "dir": "东",
+          "troops": 35000,
+          "readiness": 60,
+          "threat": 39
+        }
+      ]
+    }
+  },
+  "harem": {
+    "consorts": [
+      {
+        "id": "c0",
+        "name": "陆令仪",
+        "age": 23,
+        "rank": "皇后",
+        "family": "书香陆氏",
+        "faction": "f0",
+        "favor": 65,
+        "mood": 70,
+        "ambition": 48,
+        "scheming": 66,
+        "health": 85,
+        "preg": null,
+        "relations": {},
+        "secret": "家书中藏着旧事。",
+        "confined": false,
+        "cold": false,
+        "retired": false,
+        "reignId": "run-1ri3u18",
+        "recoveryUntil": 0
+      },
+      {
+        "id": "c1",
+        "name": "沈清蘅",
+        "age": 24,
+        "rank": "妃",
+        "family": "清流沈氏",
+        "faction": "f1",
+        "favor": 55,
+        "mood": 70,
+        "ambition": 35,
+        "scheming": 45,
+        "health": 85,
+        "preg": null,
+        "relations": {},
+        "secret": "家书中藏着旧事。",
+        "confined": false,
+        "cold": false,
+        "retired": false,
+        "reignId": "run-1ri3u18",
+        "recoveryUntil": 0
+      },
+      {
+        "id": "c2",
+        "name": "裴映雪",
+        "age": 25,
+        "rank": "嫔",
+        "family": "勋门裴氏",
+        "faction": "f2",
+        "favor": 45,
+        "mood": 70,
+        "ambition": 38,
+        "scheming": 70,
+        "health": 85,
+        "preg": null,
+        "relations": {},
+        "secret": "家书中藏着旧事。",
+        "confined": false,
+        "cold": false,
+        "retired": false,
+        "reignId": "run-1ri3u18",
+        "recoveryUntil": 0
+      }
+    ],
+    "children": [],
+    "heir": null,
+    "candidates": [
+      {
+        "id": "run-1ri3u18-candidate-1-0",
+        "name": "顾静姝",
+        "age": 20,
+        "family": "仕宦之家",
+        "faction": "f0",
+        "appearance": 60,
+        "personality": "沉静",
+        "ambition": 25,
+        "scheming": 20,
+        "health": 85
+      },
+      {
+        "id": "run-1ri3u18-candidate-1-1",
+        "name": "谢疏影",
+        "age": 21,
+        "family": "仕宦之家",
+        "faction": "f1",
+        "appearance": 63,
+        "personality": "直率",
+        "ambition": 29,
+        "scheming": 25,
+        "health": 85
+      },
+      {
+        "id": "run-1ri3u18-candidate-1-2",
+        "name": "方明漪",
+        "age": 22,
+        "family": "仕宦之家",
+        "faction": "f2",
+        "appearance": 66,
+        "personality": "敏慧",
+        "ambition": 33,
+        "scheming": 30,
+        "health": 85
+      },
+      {
+        "id": "run-1ri3u18-candidate-1-3",
+        "name": "崔书宁",
+        "age": 23,
+        "family": "仕宦之家",
+        "faction": "f3",
+        "appearance": 69,
+        "personality": "沉静",
+        "ambition": 37,
+        "scheming": 35,
+        "health": 85
+      },
+      {
+        "id": "run-1ri3u18-candidate-1-4",
+        "name": "温婉清",
+        "age": 24,
+        "family": "仕宦之家",
+        "faction": "f4",
+        "appearance": 72,
+        "personality": "直率",
+        "ambition": 41,
+        "scheming": 40,
+        "health": 85
+      },
+      {
+        "id": "run-1ri3u18-candidate-1-5",
+        "name": "郑知微",
+        "age": 20,
+        "family": "仕宦之家",
+        "faction": "f5",
+        "appearance": 75,
+        "personality": "敏慧",
+        "ambition": 45,
+        "scheming": 45,
+        "health": 85
+      }
+    ],
+    "selectionYear": 1,
+    "royalWomen": [
+      {
+        "id": "royal-1",
+        "name": "萧静宜",
+        "age": 22,
+        "married": null
+      }
+    ]
+  },
+  "foreign": [
+    {
+      "id": "w0",
+      "name": "朔庭",
+      "ruler": "阿史那承",
+      "power": 47,
+      "attitude": 49,
+      "status": "冷淡",
+      "demand": "安定边贸",
+      "tribute": 5,
+      "authorization": 15
+    },
+    {
+      "id": "w1",
+      "name": "西陵",
+      "ruler": "拓跋珩",
+      "power": 70,
+      "attitude": 47,
+      "status": "通好",
+      "demand": "安定边贸",
+      "tribute": 5,
+      "authorization": 15
+    },
+    {
+      "id": "w2",
+      "name": "南越",
+      "ruler": "黎明远",
+      "power": 72,
+      "attitude": 53,
+      "status": "通好",
+      "demand": "安定边贸",
+      "tribute": 5,
+      "authorization": 15
+    },
+    {
+      "id": "w3",
+      "name": "东澜",
+      "ruler": "崔景平",
+      "power": 69,
+      "attitude": 37,
+      "status": "通好",
+      "demand": "安定边贸",
+      "tribute": 5,
+      "authorization": 15
+    },
+    {
+      "id": "w4",
+      "name": "云岚",
+      "ruler": "木嘉措",
+      "power": 55,
+      "attitude": 53,
+      "status": "通好",
+      "demand": "安定边贸",
+      "tribute": 5,
+      "authorization": 15
+    }
+  ],
+  "ambitions": [],
+  "memorials": [
+    {
+      "id": "routine-0-0",
+      "title": "直隶 钱粮月报",
+      "from": "沈守正",
+      "type": "政务",
+      "request": "请陛下裁处",
+      "options": [
+        {
+          "id": "approve",
+          "label": "准奏",
+          "effects": {
+            "treasury": -2,
+            "governance": 0.5
+          }
+        },
+        {
+          "id": "reject",
+          "label": "驳回",
+          "effects": {
+            "prestige": 0.2,
+            "morale": -0.3
+          }
+        },
+        {
+          "id": "hold",
+          "label": "留中",
+          "effects": {}
+        }
+      ],
+      "due": 4,
+      "threadId": null,
+      "urgent": false,
+      "secret": false,
+      "text": ""
+    },
+    {
+      "id": "routine-0-1",
+      "title": "六部请整饬案牍",
+      "from": "陆怀瑾",
+      "type": "政务",
+      "request": "请陛下裁处",
+      "options": [
+        {
+          "id": "approve",
+          "label": "准奏",
+          "effects": {
+            "treasury": -2,
+            "governance": 0.5
+          }
+        },
+        {
+          "id": "reject",
+          "label": "驳回",
+          "effects": {
+            "prestige": 0.2,
+            "morale": -0.3
+          }
+        },
+        {
+          "id": "hold",
+          "label": "留中",
+          "effects": {}
+        }
+      ],
+      "due": 4,
+      "threadId": null,
+      "urgent": false,
+      "secret": false,
+      "text": ""
+    },
+    {
+      "id": "routine-0-2",
+      "title": "江南 请赈灾民",
+      "from": "顾文渊",
+      "type": "请赈",
+      "request": "请陛下裁处",
+      "options": [
+        {
+          "id": "approve",
+          "label": "准奏",
+          "effects": {
+            "treasury": -8,
+            "morale": 2,
+            "virtue": 1
+          }
+        },
+        {
+          "id": "reject",
+          "label": "驳回",
+          "effects": {
+            "prestige": 0.2,
+            "morale": -0.3
+          }
+        },
+        {
+          "id": "hold",
+          "label": "留中",
+          "effects": {}
+        }
+      ],
+      "due": 4,
+      "threadId": null,
+      "urgent": true,
+      "secret": false,
+      "text": ""
+    },
+    {
+      "id": "routine-0-3",
+      "title": "边营请补军粮",
+      "from": "谢景行",
+      "type": "政务",
+      "request": "请陛下裁处",
+      "options": [
+        {
+          "id": "approve",
+          "label": "准奏",
+          "effects": {
+            "treasury": -2,
+            "governance": 0.5
+          }
+        },
+        {
+          "id": "reject",
+          "label": "驳回",
+          "effects": {
+            "prestige": 0.2,
+            "morale": -0.3
+          }
+        },
+        {
+          "id": "hold",
+          "label": "留中",
+          "effects": {}
+        }
+      ],
+      "due": 4,
+      "threadId": null,
+      "urgent": false,
+      "secret": false,
+      "text": ""
+    },
+    {
+      "id": "routine-0-4",
+      "title": "言官请开经筵",
+      "from": "裴廷玉",
+      "type": "政务",
+      "request": "请陛下裁处",
+      "options": [
+        {
+          "id": "approve",
+          "label": "准奏",
+          "effects": {
+            "treasury": -2,
+            "governance": 0.5
+          }
+        },
+        {
+          "id": "reject",
+          "label": "驳回",
+          "effects": {
+            "prestige": 0.2,
+            "morale": -0.3
+          }
+        },
+        {
+          "id": "hold",
+          "label": "留中",
+          "effects": {}
+        }
+      ],
+      "due": 4,
+      "threadId": null,
+      "urgent": false,
+      "secret": false,
+      "text": ""
+    },
+    {
+      "id": "routine-0-5",
+      "title": "地方请奖循吏",
+      "from": "程知远",
+      "type": "政务",
+      "request": "请陛下裁处",
+      "options": [
+        {
+          "id": "approve",
+          "label": "准奏",
+          "effects": {
+            "treasury": -2,
+            "governance": 0.5
+          }
+        },
+        {
+          "id": "reject",
+          "label": "驳回",
+          "effects": {
+            "prestige": 0.2,
+            "morale": -0.3
+          }
+        },
+        {
+          "id": "hold",
+          "label": "留中",
+          "effects": {}
+        }
+      ],
+      "due": 4,
+      "threadId": null,
+      "urgent": false,
+      "secret": false,
+      "text": ""
+    }
+  ],
+  "schedule": {
+    "朝": null,
+    "午": null,
+    "夜": null
+  },
+  "facts": [],
+  "knowledge": [],
+  "rels": [],
+  "stats": {
+    "events": 0,
+    "births": 0,
+    "warsWon": 0,
+    "visits": 0,
+    "edicts": 0,
+    "banquets": 0,
+    "appointments": 0,
+    "petitions": 0,
+    "initialTreasury": 480,
+    "expense": 0,
+    "income": 0
+  },
+  "achievements": [
+    {
+      "id": "accession",
+      "title": "初登大宝",
+      "turn": 0
+    }
+  ],
+  "interimEntries": [],
+  "turnBudget": null,
+  "lastTurn": null,
+  "ending": null,
+  "talks": [],
+  "campaigns": [],
+  "retaliations": [],
+  "revision": 0,
+  "court": {
+    "factions": [
+      {
+        "id": "f0",
+        "name": "清流",
+        "power": 27,
+        "attitude": 65,
+        "demand": "纳谏清议"
+      },
+      {
+        "id": "f1",
+        "name": "勋贵",
+        "power": 34,
+        "attitude": 50,
+        "demand": "军功封赏"
+      },
+      {
+        "id": "f2",
+        "name": "外戚",
+        "power": 35,
+        "attitude": 52,
+        "demand": "家族恩荫"
+      },
+      {
+        "id": "f3",
+        "name": "宦官",
+        "power": 25,
+        "attitude": 60,
+        "demand": "亲近信任"
+      },
+      {
+        "id": "f4",
+        "name": "督抚",
+        "power": 47,
+        "attitude": 61,
+        "demand": "钱粮自主"
+      },
+      {
+        "id": "f5",
+        "name": "宗室",
+        "power": 25,
+        "attitude": 45,
+        "demand": "宗藩安稳"
+      }
+    ],
+    "posts": [
+      {
+        "id": "p0",
+        "title": "内阁首辅",
+        "rank": 1,
+        "office": "内阁",
+        "tags": [
+          "政务"
+        ],
+        "holder": "o0"
+      },
+      {
+        "id": "p1",
+        "title": "户部尚书",
+        "rank": 1,
+        "office": "户部",
+        "tags": [
+          "管钱"
+        ],
+        "holder": "o1"
+      },
+      {
+        "id": "p2",
+        "title": "兵部尚书",
+        "rank": 1,
+        "office": "兵部",
+        "tags": [
+          "管兵"
+        ],
+        "holder": "o2"
+      },
+      {
+        "id": "p3",
+        "title": "吏部尚书",
+        "rank": 1,
+        "office": "吏部",
+        "tags": [
+          "管人"
+        ],
+        "holder": "o3"
+      },
+      {
+        "id": "p4",
+        "title": "礼部尚书",
+        "rank": 1,
+        "office": "礼部",
+        "tags": [
+          "政务"
+        ],
+        "holder": "o4"
+      },
+      {
+        "id": "p5",
+        "title": "刑部尚书",
+        "rank": 1,
+        "office": "刑部",
+        "tags": [
+          "政务"
+        ],
+        "holder": "o5"
+      },
+      {
+        "id": "p6",
+        "title": "工部尚书",
+        "rank": 1,
+        "office": "工部",
+        "tags": [
+          "管钱"
+        ],
+        "holder": "o6"
+      },
+      {
+        "id": "p7",
+        "title": "左都御史",
+        "rank": 1,
+        "office": "左都",
+        "tags": [
+          "言官"
+        ],
+        "holder": "o7"
+      },
+      {
+        "id": "p8",
+        "title": "司礼监掌印",
+        "rank": 1,
+        "office": "司礼",
+        "tags": [
+          "政务"
+        ],
+        "holder": "o8"
+      },
+      {
+        "id": "p9",
+        "title": "京营统领",
+        "rank": 1,
+        "office": "京营",
+        "tags": [
+          "管兵"
+        ],
+        "holder": "o9"
+      },
+      {
+        "id": "p10",
+        "title": "中书令",
+        "rank": 1,
+        "office": "中书",
+        "tags": [
+          "政务"
+        ],
+        "holder": "o10"
+      },
+      {
+        "id": "p11",
+        "title": "门下侍中",
+        "rank": 1,
+        "office": "门下",
+        "tags": [
+          "政务"
+        ],
+        "holder": "o11"
+      },
+      {
+        "id": "p12",
+        "title": "尚书令",
+        "rank": 1,
+        "office": "尚书",
+        "tags": [
+          "政务"
+        ],
+        "holder": "o12"
+      },
+      {
+        "id": "p13",
+        "title": "户部侍郎",
+        "rank": 2,
+        "office": "户部",
+        "tags": [
+          "管钱"
+        ],
+        "holder": "o13"
+      },
+      {
+        "id": "p14",
+        "title": "兵部侍郎",
+        "rank": 2,
+        "office": "兵部",
+        "tags": [
+          "管兵"
+        ],
+        "holder": "o14"
+      },
+      {
+        "id": "p15",
+        "title": "吏部侍郎",
+        "rank": 2,
+        "office": "吏部",
+        "tags": [
+          "管人"
+        ],
+        "holder": "o15"
+      },
+      {
+        "id": "p16",
+        "title": "礼部侍郎",
+        "rank": 2,
+        "office": "礼部",
+        "tags": [
+          "政务"
+        ],
+        "holder": "o16"
+      },
+      {
+        "id": "p17",
+        "title": "刑部侍郎",
+        "rank": 2,
+        "office": "刑部",
+        "tags": [
+          "政务"
+        ],
+        "holder": "o17"
+      },
+      {
+        "id": "p18",
+        "title": "工部侍郎",
+        "rank": 2,
+        "office": "工部",
+        "tags": [
+          "管钱"
+        ],
+        "holder": "o18"
+      },
+      {
+        "id": "p19",
+        "title": "翰林学士",
+        "rank": 2,
+        "office": "翰林",
+        "tags": [
+          "政务"
+        ],
+        "holder": "o19"
+      },
+      {
+        "id": "p20",
+        "title": "太子太傅",
+        "rank": 2,
+        "office": "太子",
+        "tags": [
+          "政务"
+        ],
+        "holder": "o20"
+      },
+      {
+        "id": "p21",
+        "title": "大理寺卿",
+        "rank": 2,
+        "office": "大理",
+        "tags": [
+          "政务"
+        ],
+        "holder": "o21"
+      },
+      {
+        "id": "p22",
+        "title": "太常寺卿",
+        "rank": 2,
+        "office": "太常",
+        "tags": [
+          "政务"
+        ],
+        "holder": "o22"
+      },
+      {
+        "id": "p23",
+        "title": "通政使",
+        "rank": 2,
+        "office": "通政",
+        "tags": [
+          "政务"
+        ],
+        "holder": "o23"
+      },
+      {
+        "id": "p24",
+        "title": "宗人令",
+        "rank": 2,
+        "office": "宗人",
+        "tags": [
+          "政务"
+        ],
+        "holder": "o24"
+      },
+      {
+        "id": "p25",
+        "title": "北境总兵",
+        "rank": 2,
+        "office": "北境",
+        "tags": [
+          "管兵"
+        ],
+        "holder": null
+      },
+      {
+        "id": "p26",
+        "title": "西境总兵",
+        "rank": 2,
+        "office": "西境",
+        "tags": [
+          "管兵"
+        ],
+        "holder": null
+      },
+      {
+        "id": "p27",
+        "title": "南境总兵",
+        "rank": 2,
+        "office": "南境",
+        "tags": [
+          "管兵"
+        ],
+        "holder": null
+      },
+      {
+        "id": "p28",
+        "title": "东境总兵",
+        "rank": 2,
+        "office": "东境",
+        "tags": [
+          "管兵"
+        ],
+        "holder": null
+      },
+      {
+        "id": "p29",
+        "title": "直隶巡抚",
+        "rank": 3,
+        "office": "直隶",
+        "tags": [
+          "政务"
+        ],
+        "holder": null
+      },
+      {
+        "id": "p30",
+        "title": "河南巡抚",
+        "rank": 3,
+        "office": "河南",
+        "tags": [
+          "政务"
+        ],
+        "holder": null
+      },
+      {
+        "id": "p31",
+        "title": "江南巡抚",
+        "rank": 3,
+        "office": "江南",
+        "tags": [
+          "政务"
+        ],
+        "holder": null
+      },
+      {
+        "id": "p32",
+        "title": "湖广巡抚",
+        "rank": 3,
+        "office": "湖广",
+        "tags": [
+          "政务"
+        ],
+        "holder": null
+      },
+      {
+        "id": "p33",
+        "title": "山东巡抚",
+        "rank": 3,
+        "office": "山东",
+        "tags": [
+          "政务"
+        ],
+        "holder": null
+      },
+      {
+        "id": "p34",
+        "title": "山西巡抚",
+        "rank": 3,
+        "office": "山西",
+        "tags": [
+          "政务"
+        ],
+        "holder": null
+      },
+      {
+        "id": "p35",
+        "title": "陕西巡抚",
+        "rank": 3,
+        "office": "陕西",
+        "tags": [
+          "政务"
+        ],
+        "holder": null
+      },
+      {
+        "id": "p36",
+        "title": "四川巡抚",
+        "rank": 3,
+        "office": "四川",
+        "tags": [
+          "政务"
+        ],
+        "holder": null
+      },
+      {
+        "id": "p37",
+        "title": "福建巡抚",
+        "rank": 3,
+        "office": "福建",
+        "tags": [
+          "政务"
+        ],
+        "holder": null
+      },
+      {
+        "id": "p38",
+        "title": "广东巡抚",
+        "rank": 3,
+        "office": "广东",
+        "tags": [
+          "政务"
+        ],
+        "holder": null
+      },
+      {
+        "id": "p39",
+        "title": "云南巡抚",
+        "rank": 3,
+        "office": "云南",
+        "tags": [
+          "政务"
+        ],
+        "holder": null
+      }
+    ],
+    "officials": [
+      {
+        "id": "o0",
+        "name": "沈守正",
+        "gender": "男",
+        "age": 51,
+        "post": "p0",
+        "faction": "f0",
+        "abilities": {
+          "政": 54,
+          "军": 57,
+          "才": 57,
+          "德": 45,
+          "忠": 66,
+          "权谋": 71
+        },
+        "ambition": 48,
+        "greed": 34,
+        "favor": 50,
+        "health": 85,
+        "alive": true,
+        "inCapital": true,
+        "secret": "曾为故交隐瞒田产，尚无人知。",
+        "secretKnown": false,
+        "memory": [],
+        "life": []
+      },
+      {
+        "id": "o1",
+        "name": "陆怀瑾",
+        "gender": "男",
+        "age": 58,
+        "post": "p1",
+        "faction": "f1",
+        "abilities": {
+          "政": 57,
+          "军": 72,
+          "才": 78,
+          "德": 53,
+          "忠": 68,
+          "权谋": 72
+        },
+        "ambition": 42,
+        "greed": 31,
+        "favor": 50,
+        "health": 85,
+        "alive": true,
+        "inCapital": true,
+        "secret": "曾为故交隐瞒田产，尚无人知。",
+        "secretKnown": false,
+        "memory": [],
+        "life": []
+      },
+      {
+        "id": "o2",
+        "name": "顾文渊",
+        "gender": "男",
+        "age": 39,
+        "post": "p2",
+        "faction": "f2",
+        "abilities": {
+          "政": 50,
+          "军": 52,
+          "才": 41,
+          "德": 64,
+          "忠": 43,
+          "权谋": 70
+        },
+        "ambition": 75,
+        "greed": 41,
+        "favor": 50,
+        "health": 85,
+        "alive": true,
+        "inCapital": true,
+        "secret": "曾为故交隐瞒田产，尚无人知。",
+        "secretKnown": false,
+        "memory": [],
+        "life": []
+      },
+      {
+        "id": "o3",
+        "name": "谢景行",
+        "gender": "男",
+        "age": 52,
+        "post": "p3",
+        "faction": "f3",
+        "abilities": {
+          "政": 49,
+          "军": 75,
+          "才": 56,
+          "德": 55,
+          "忠": 38,
+          "权谋": 51
+        },
+        "ambition": 51,
+        "greed": 27,
+        "favor": 50,
+        "health": 85,
+        "alive": true,
+        "inCapital": true,
+        "secret": "曾为故交隐瞒田产，尚无人知。",
+        "secretKnown": false,
+        "memory": [],
+        "life": []
+      },
+      {
+        "id": "o4",
+        "name": "裴廷玉",
+        "gender": "男",
+        "age": 37,
+        "post": "p4",
+        "faction": "f4",
+        "abilities": {
+          "政": 56,
+          "军": 80,
+          "才": 68,
+          "德": 89,
+          "忠": 54,
+          "权谋": 47
+        },
+        "ambition": 64,
+        "greed": 25,
+        "favor": 50,
+        "health": 85,
+        "alive": true,
+        "inCapital": true,
+        "secret": "曾为故交隐瞒田产，尚无人知。",
+        "secretKnown": false,
+        "memory": [],
+        "life": []
+      },
+      {
+        "id": "o5",
+        "name": "程知远",
+        "gender": "男",
+        "age": 40,
+        "post": "p5",
+        "faction": "f5",
+        "abilities": {
+          "政": 78,
+          "军": 35,
+          "才": 46,
+          "德": 46,
+          "忠": 43,
+          "权谋": 82
+        },
+        "ambition": 39,
+        "greed": 20,
+        "favor": 50,
+        "health": 85,
+        "alive": true,
+        "inCapital": true,
+        "secret": "曾为故交隐瞒田产，尚无人知。",
+        "secretKnown": false,
+        "memory": [],
+        "life": []
+      },
+      {
+        "id": "o6",
+        "name": "韩伯庸",
+        "gender": "男",
+        "age": 53,
+        "post": "p6",
+        "faction": "f0",
+        "abilities": {
+          "政": 53,
+          "军": 53,
+          "才": 62,
+          "德": 61,
+          "忠": 50,
+          "权谋": 68
+        },
+        "ambition": 22,
+        "greed": 11,
+        "favor": 50,
+        "health": 85,
+        "alive": true,
+        "inCapital": true,
+        "secret": "曾为故交隐瞒田产，尚无人知。",
+        "secretKnown": false,
+        "memory": [],
+        "life": []
+      },
+      {
+        "id": "o7",
+        "name": "许慎微",
+        "gender": "男",
+        "age": 60,
+        "post": "p7",
+        "faction": "f1",
+        "abilities": {
+          "政": 70,
+          "军": 62,
+          "才": 74,
+          "德": 80,
+          "忠": 36,
+          "权谋": 51
+        },
+        "ambition": 68,
+        "greed": 39,
+        "favor": 50,
+        "health": 85,
+        "alive": true,
+        "inCapital": true,
+        "secret": "曾为故交隐瞒田产，尚无人知。",
+        "secretKnown": false,
+        "memory": [],
+        "life": []
+      },
+      {
+        "id": "o8",
+        "name": "杜长衡",
+        "gender": "男",
+        "age": 39,
+        "post": "p8",
+        "faction": "f2",
+        "abilities": {
+          "政": 77,
+          "军": 77,
+          "才": 54,
+          "德": 79,
+          "忠": 64,
+          "权谋": 82
+        },
+        "ambition": 43,
+        "greed": 35,
+        "favor": 50,
+        "health": 85,
+        "alive": true,
+        "inCapital": true,
+        "secret": "曾为故交隐瞒田产，尚无人知。",
+        "secretKnown": false,
+        "memory": [],
+        "life": []
+      },
+      {
+        "id": "o9",
+        "name": "魏允中",
+        "gender": "男",
+        "age": 52,
+        "post": "p9",
+        "faction": "f3",
+        "abilities": {
+          "政": 80,
+          "军": 44,
+          "才": 64,
+          "德": 76,
+          "忠": 53,
+          "权谋": 75
+        },
+        "ambition": 54,
+        "greed": 31,
+        "favor": 50,
+        "health": 85,
+        "alive": true,
+        "inCapital": true,
+        "secret": "曾为故交隐瞒田产，尚无人知。",
+        "secretKnown": false,
+        "memory": [],
+        "life": []
+      },
+      {
+        "id": "o10",
+        "name": "方世宁",
+        "gender": "男",
+        "age": 46,
+        "post": "p10",
+        "faction": "f4",
+        "abilities": {
+          "政": 67,
+          "军": 73,
+          "才": 79,
+          "德": 56,
+          "忠": 60,
+          "权谋": 60
+        },
+        "ambition": 60,
+        "greed": 30,
+        "favor": 50,
+        "health": 85,
+        "alive": true,
+        "inCapital": true,
+        "secret": "曾为故交隐瞒田产，尚无人知。",
+        "secretKnown": false,
+        "memory": [],
+        "life": []
+      },
+      {
+        "id": "o11",
+        "name": "梁明川",
+        "gender": "男",
+        "age": 55,
+        "post": "p11",
+        "faction": "f5",
+        "abilities": {
+          "政": 71,
+          "军": 72,
+          "才": 60,
+          "德": 62,
+          "忠": 64,
+          "权谋": 73
+        },
+        "ambition": 32,
+        "greed": 15,
+        "favor": 50,
+        "health": 85,
+        "alive": true,
+        "inCapital": true,
+        "secret": "曾为故交隐瞒田产，尚无人知。",
+        "secretKnown": false,
+        "memory": [],
+        "life": []
+      },
+      {
+        "id": "o12",
+        "name": "宋思齐",
+        "gender": "男",
+        "age": 53,
+        "post": "p12",
+        "faction": "f0",
+        "abilities": {
+          "政": 75,
+          "军": 45,
+          "才": 57,
+          "德": 89,
+          "忠": 48,
+          "权谋": 64
+        },
+        "ambition": 31,
+        "greed": 29,
+        "favor": 50,
+        "health": 85,
+        "alive": true,
+        "inCapital": true,
+        "secret": "曾为故交隐瞒田产，尚无人知。",
+        "secretKnown": false,
+        "memory": [],
+        "life": []
+      },
+      {
+        "id": "o13",
+        "name": "张清和",
+        "gender": "男",
+        "age": 47,
+        "post": "p13",
+        "faction": "f1",
+        "abilities": {
+          "政": 56,
+          "军": 44,
+          "才": 73,
+          "德": 83,
+          "忠": 61,
+          "权谋": 78
+        },
+        "ambition": 30,
+        "greed": 53,
+        "favor": 50,
+        "health": 85,
+        "alive": true,
+        "inCapital": true,
+        "secret": "曾为故交隐瞒田产，尚无人知。",
+        "secretKnown": false,
+        "memory": [],
+        "life": []
+      },
+      {
+        "id": "o14",
+        "name": "崔敬修",
+        "gender": "男",
+        "age": 50,
+        "post": "p14",
+        "faction": "f2",
+        "abilities": {
+          "政": 47,
+          "军": 39,
+          "才": 65,
+          "德": 51,
+          "忠": 69,
+          "权谋": 66
+        },
+        "ambition": 47,
+        "greed": 37,
+        "favor": 50,
+        "health": 85,
+        "alive": true,
+        "inCapital": true,
+        "secret": "曾为故交隐瞒田产，尚无人知。",
+        "secretKnown": false,
+        "memory": [],
+        "life": []
+      },
+      {
+        "id": "o15",
+        "name": "温望舒",
+        "gender": "男",
+        "age": 47,
+        "post": "p15",
+        "faction": "f3",
+        "abilities": {
+          "政": 79,
+          "军": 74,
+          "才": 46,
+          "德": 46,
+          "忠": 74,
+          "权谋": 52
+        },
+        "ambition": 48,
+        "greed": 22,
+        "favor": 50,
+        "health": 85,
+        "alive": true,
+        "inCapital": true,
+        "secret": "曾为故交隐瞒田产，尚无人知。",
+        "secretKnown": false,
+        "memory": [],
+        "life": []
+      },
+      {
+        "id": "o16",
+        "name": "袁承安",
+        "gender": "男",
+        "age": 38,
+        "post": "p16",
+        "faction": "f4",
+        "abilities": {
+          "政": 43,
+          "军": 80,
+          "才": 67,
+          "德": 47,
+          "忠": 81,
+          "权谋": 77
+        },
+        "ambition": 66,
+        "greed": 16,
+        "favor": 50,
+        "health": 85,
+        "alive": true,
+        "inCapital": true,
+        "secret": "曾为故交隐瞒田产，尚无人知。",
+        "secretKnown": false,
+        "memory": [],
+        "life": []
+      },
+      {
+        "id": "o17",
+        "name": "郑秉诚",
+        "gender": "男",
+        "age": 44,
+        "post": "p17",
+        "faction": "f5",
+        "abilities": {
+          "政": 55,
+          "军": 48,
+          "才": 78,
+          "德": 41,
+          "忠": 85,
+          "权谋": 49
+        },
+        "ambition": 20,
+        "greed": 46,
+        "favor": 50,
+        "health": 85,
+        "alive": true,
+        "inCapital": true,
+        "secret": "曾为故交隐瞒田产，尚无人知。",
+        "secretKnown": false,
+        "memory": [],
+        "life": []
+      },
+      {
+        "id": "o18",
+        "name": "李问渠",
+        "gender": "男",
+        "age": 55,
+        "post": "p18",
+        "faction": "f0",
+        "abilities": {
+          "政": 69,
+          "军": 47,
+          "才": 58,
+          "德": 60,
+          "忠": 67,
+          "权谋": 82
+        },
+        "ambition": 55,
+        "greed": 31,
+        "favor": 50,
+        "health": 85,
+        "alive": true,
+        "inCapital": true,
+        "secret": "曾为故交隐瞒田产，尚无人知。",
+        "secretKnown": false,
+        "memory": [],
+        "life": []
+      },
+      {
+        "id": "o19",
+        "name": "王砚秋",
+        "gender": "男",
+        "age": 39,
+        "post": "p19",
+        "faction": "f1",
+        "abilities": {
+          "政": 74,
+          "军": 47,
+          "才": 56,
+          "德": 68,
+          "忠": 78,
+          "权谋": 64
+        },
+        "ambition": 47,
+        "greed": 16,
+        "favor": 50,
+        "health": 85,
+        "alive": true,
+        "inCapital": true,
+        "secret": "曾为故交隐瞒田产，尚无人知。",
+        "secretKnown": false,
+        "memory": [],
+        "life": []
+      },
+      {
+        "id": "o20",
+        "name": "赵信之",
+        "gender": "男",
+        "age": 48,
+        "post": "p20",
+        "faction": "f2",
+        "abilities": {
+          "政": 76,
+          "军": 44,
+          "才": 82,
+          "德": 51,
+          "忠": 70,
+          "权谋": 69
+        },
+        "ambition": 46,
+        "greed": 7,
+        "favor": 50,
+        "health": 85,
+        "alive": true,
+        "inCapital": true,
+        "secret": "曾为故交隐瞒田产，尚无人知。",
+        "secretKnown": false,
+        "memory": [],
+        "life": []
+      },
+      {
+        "id": "o21",
+        "name": "刘元礼",
+        "gender": "男",
+        "age": 56,
+        "post": "p21",
+        "faction": "f3",
+        "abilities": {
+          "政": 40,
+          "军": 48,
+          "才": 65,
+          "德": 69,
+          "忠": 64,
+          "权谋": 67
+        },
+        "ambition": 39,
+        "greed": 18,
+        "favor": 50,
+        "health": 85,
+        "alive": true,
+        "inCapital": true,
+        "secret": "曾为故交隐瞒田产，尚无人知。",
+        "secretKnown": false,
+        "memory": [],
+        "life": []
+      },
+      {
+        "id": "o22",
+        "name": "苏惟新",
+        "gender": "男",
+        "age": 57,
+        "post": "p22",
+        "faction": "f4",
+        "abilities": {
+          "政": 82,
+          "军": 49,
+          "才": 66,
+          "德": 43,
+          "忠": 46,
+          "权谋": 45
+        },
+        "ambition": 53,
+        "greed": 41,
+        "favor": 50,
+        "health": 85,
+        "alive": true,
+        "inCapital": true,
+        "secret": "曾为故交隐瞒田产，尚无人知。",
+        "secretKnown": false,
+        "memory": [],
+        "life": []
+      },
+      {
+        "id": "o23",
+        "name": "柳济川",
+        "gender": "男",
+        "age": 60,
+        "post": "p23",
+        "faction": "f5",
+        "abilities": {
+          "政": 68,
+          "军": 78,
+          "才": 64,
+          "德": 87,
+          "忠": 49,
+          "权谋": 64
+        },
+        "ambition": 46,
+        "greed": 54,
+        "favor": 50,
+        "health": 85,
+        "alive": true,
+        "inCapital": true,
+        "secret": "曾为故交隐瞒田产，尚无人知。",
+        "secretKnown": false,
+        "memory": [],
+        "life": []
+      },
+      {
+        "id": "o24",
+        "name": "陈云章",
+        "gender": "男",
+        "age": 51,
+        "post": "p24",
+        "faction": "f0",
+        "abilities": {
+          "政": 81,
+          "军": 68,
+          "才": 52,
+          "德": 64,
+          "忠": 36,
+          "权谋": 74
+        },
+        "ambition": 22,
+        "greed": 54,
+        "favor": 50,
+        "health": 85,
+        "alive": true,
+        "inCapital": true,
+        "secret": "曾为故交隐瞒田产，尚无人知。",
+        "secretKnown": false,
+        "memory": [],
+        "life": []
+      }
+    ]
+  },
+  "threads": [],
+  "projects": [],
+  "receipts": [],
+  "history": [],
+  "volumes": [],
+  "ledger": [],
+  "chronicles": [],
+  "pending": {
+    "forecast": {
+      "turnId": "run-1ri3u18:1:0",
+      "runId": "run-1ri3u18",
+      "baseTurn": 0,
+      "baseRevision": 0,
+      "die": 16,
+      "fate": "顺遂",
+      "schedule": {
+        "朝": {
+          "kind": "上朝",
+          "memorials": [
+            "routine-0-0",
+            "routine-0-1",
+            "routine-0-2"
+          ],
+          "decision": "reject"
+        },
+        "午": null,
+        "夜": null
+      },
+      "cost": 2,
+      "state": {
+        "v": 4,
+        "runId": "run-1ri3u18",
+        "rng": 4024598305,
+        "turn": 1,
+        "day": 10,
+        "dynasty": "大晟",
+        "era": {
+          "name": "永宁",
+          "year": 1,
+          "month": 1,
+          "xun": 1
+        },
+        "settings": {
+          "freedom": "mid",
+          "difficulty": "normal",
+          "prose": "court",
+          "demo": true
+        },
+        "emperor": {
+          "name": "朱厚照",
+          "age": 24,
+          "lifespan": 60,
+          "health": 85,
+          "energy": 9,
+          "mood": 70,
+          "prestige": 58.60000000000001,
+          "virtue": 60,
+          "talents": {
+            "政略": 66.2,
+            "权谋": 47,
+            "武略": 67,
+            "文采": 70,
+            "魅力": 65
+          },
+          "tags": [
+            "多疑"
+          ],
+          "status": [],
+          "growth": {
+            "政略": 0.2,
+            "权谋": 0,
+            "武略": 0,
+            "文采": 0,
+            "魅力": 0
+          }
+        },
+        "reign": {
+          "number": 1,
+          "accessionTurn": 0,
+          "emperorId": "founder",
+          "initialTreasury": 480,
+          "initialStats": {}
+        },
+        "nation": {
+          "treasury": 480,
+          "arrears": 0,
+          "privy": 90,
+          "grain": 650,
+          "morale": 61.10000000000001,
+          "governance": 58,
+          "provinces": [
+            {
+              "id": "z0",
+              "name": "直隶",
+              "pop": 420,
+              "tax": 7,
+              "morale": 62,
+              "disaster": 0,
+              "rebellion": false,
+              "rebellionQuarter": -1,
+              "garrison": 14721,
+              "governor": "o13"
+            },
+            {
+              "id": "z1",
+              "name": "河南",
+              "pop": 415,
+              "tax": 8,
+              "morale": 62,
+              "disaster": 0,
+              "rebellion": false,
+              "rebellionQuarter": -1,
+              "garrison": 15055,
+              "governor": "o14"
+            },
+            {
+              "id": "z2",
+              "name": "江南",
+              "pop": 472,
+              "tax": 13,
+              "morale": 62,
+              "disaster": 0,
+              "rebellion": false,
+              "rebellionQuarter": -1,
+              "garrison": 15612,
+              "governor": "o15"
+            },
+            {
+              "id": "z3",
+              "name": "湖广",
+              "pop": 454,
+              "tax": 11,
+              "morale": 62,
+              "disaster": 0,
+              "rebellion": false,
+              "rebellionQuarter": -1,
+              "garrison": 10152,
+              "governor": "o16"
+            },
+            {
+              "id": "z4",
+              "name": "山东",
+              "pop": 418,
+              "tax": 13,
+              "morale": 62,
+              "disaster": 0,
+              "rebellion": false,
+              "rebellionQuarter": -1,
+              "garrison": 11827,
+              "governor": "o17"
+            },
+            {
+              "id": "z5",
+              "name": "山西",
+              "pop": 290,
+              "tax": 11,
+              "morale": 62,
+              "disaster": 0,
+              "rebellion": false,
+              "rebellionQuarter": -1,
+              "garrison": 12589,
+              "governor": "o18"
+            },
+            {
+              "id": "z6",
+              "name": "陕西",
+              "pop": 430,
+              "tax": 8,
+              "morale": 62,
+              "disaster": 0,
+              "rebellion": false,
+              "rebellionQuarter": -1,
+              "garrison": 16130,
+              "governor": "o19"
+            },
+            {
+              "id": "z7",
+              "name": "四川",
+              "pop": 278,
+              "tax": 13,
+              "morale": 62,
+              "disaster": 0,
+              "rebellion": false,
+              "rebellionQuarter": -1,
+              "garrison": 14396,
+              "governor": "o20"
+            },
+            {
+              "id": "z8",
+              "name": "福建",
+              "pop": 352,
+              "tax": 8,
+              "morale": 62,
+              "disaster": 0,
+              "rebellion": false,
+              "rebellionQuarter": -1,
+              "garrison": 10732,
+              "governor": "o21"
+            },
+            {
+              "id": "z9",
+              "name": "广东",
+              "pop": 343,
+              "tax": 12,
+              "morale": 62,
+              "disaster": 0,
+              "rebellion": false,
+              "rebellionQuarter": -1,
+              "garrison": 8464,
+              "governor": "o22"
+            },
+            {
+              "id": "z10",
+              "name": "云南",
+              "pop": 339,
+              "tax": 12,
+              "morale": 62,
+              "disaster": 0,
+              "rebellion": false,
+              "rebellionQuarter": -1,
+              "garrison": 17083,
+              "governor": "o23"
+            },
+            {
+              "id": "z11",
+              "name": "辽东",
+              "pop": 225,
+              "tax": 9,
+              "morale": 62,
+              "disaster": 0,
+              "rebellion": false,
+              "rebellionQuarter": -1,
+              "garrison": 8993,
+              "governor": "o24"
+            }
+          ],
+          "army": {
+            "capital": {
+              "troops": 45000,
+              "readiness": 65
+            },
+            "frontiers": [
+              {
+                "dir": "北",
+                "troops": 35000,
+                "readiness": 60,
+                "threat": 39
+              },
+              {
+                "dir": "西",
+                "troops": 35000,
+                "readiness": 60,
+                "threat": 15
+              },
+              {
+                "dir": "南",
+                "troops": 35000,
+                "readiness": 60,
+                "threat": 35
+              },
+              {
+                "dir": "东",
+                "troops": 35000,
+                "readiness": 60,
+                "threat": 39
+              }
+            ]
+          }
+        },
+        "harem": {
+          "consorts": [
+            {
+              "id": "c0",
+              "name": "陆令仪",
+              "age": 23,
+              "rank": "皇后",
+              "family": "书香陆氏",
+              "faction": "f0",
+              "favor": 65,
+              "mood": 70,
+              "ambition": 48,
+              "scheming": 66,
+              "health": 85,
+              "preg": null,
+              "relations": {},
+              "secret": "家书中藏着旧事。",
+              "confined": false,
+              "cold": false,
+              "retired": false,
+              "reignId": "run-1ri3u18",
+              "recoveryUntil": 0
+            },
+            {
+              "id": "c1",
+              "name": "沈清蘅",
+              "age": 24,
+              "rank": "妃",
+              "family": "清流沈氏",
+              "faction": "f1",
+              "favor": 55,
+              "mood": 70,
+              "ambition": 35,
+              "scheming": 45,
+              "health": 85,
+              "preg": null,
+              "relations": {},
+              "secret": "家书中藏着旧事。",
+              "confined": false,
+              "cold": false,
+              "retired": false,
+              "reignId": "run-1ri3u18",
+              "recoveryUntil": 0
+            },
+            {
+              "id": "c2",
+              "name": "裴映雪",
+              "age": 25,
+              "rank": "嫔",
+              "family": "勋门裴氏",
+              "faction": "f2",
+              "favor": 45,
+              "mood": 70,
+              "ambition": 38,
+              "scheming": 70,
+              "health": 85,
+              "preg": null,
+              "relations": {},
+              "secret": "家书中藏着旧事。",
+              "confined": false,
+              "cold": false,
+              "retired": false,
+              "reignId": "run-1ri3u18",
+              "recoveryUntil": 0
+            }
+          ],
+          "children": [],
+          "heir": null,
+          "candidates": [
+            {
+              "id": "run-1ri3u18-candidate-1-0",
+              "name": "顾静姝",
+              "age": 20,
+              "family": "仕宦之家",
+              "faction": "f0",
+              "appearance": 60,
+              "personality": "沉静",
+              "ambition": 25,
+              "scheming": 20,
+              "health": 85
+            },
+            {
+              "id": "run-1ri3u18-candidate-1-1",
+              "name": "谢疏影",
+              "age": 21,
+              "family": "仕宦之家",
+              "faction": "f1",
+              "appearance": 63,
+              "personality": "直率",
+              "ambition": 29,
+              "scheming": 25,
+              "health": 85
+            },
+            {
+              "id": "run-1ri3u18-candidate-1-2",
+              "name": "方明漪",
+              "age": 22,
+              "family": "仕宦之家",
+              "faction": "f2",
+              "appearance": 66,
+              "personality": "敏慧",
+              "ambition": 33,
+              "scheming": 30,
+              "health": 85
+            },
+            {
+              "id": "run-1ri3u18-candidate-1-3",
+              "name": "崔书宁",
+              "age": 23,
+              "family": "仕宦之家",
+              "faction": "f3",
+              "appearance": 69,
+              "personality": "沉静",
+              "ambition": 37,
+              "scheming": 35,
+              "health": 85
+            },
+            {
+              "id": "run-1ri3u18-candidate-1-4",
+              "name": "温婉清",
+              "age": 24,
+              "family": "仕宦之家",
+              "faction": "f4",
+              "appearance": 72,
+              "personality": "直率",
+              "ambition": 41,
+              "scheming": 40,
+              "health": 85
+            },
+            {
+              "id": "run-1ri3u18-candidate-1-5",
+              "name": "郑知微",
+              "age": 20,
+              "family": "仕宦之家",
+              "faction": "f5",
+              "appearance": 75,
+              "personality": "敏慧",
+              "ambition": 45,
+              "scheming": 45,
+              "health": 85
+            }
+          ],
+          "selectionYear": 1,
+          "royalWomen": [
+            {
+              "id": "royal-1",
+              "name": "萧静宜",
+              "age": 22,
+              "married": null
+            }
+          ]
+        },
+        "foreign": [
+          {
+            "id": "w0",
+            "name": "朔庭",
+            "ruler": "阿史那承",
+            "power": 47,
+            "attitude": 49,
+            "status": "冷淡",
+            "demand": "安定边贸",
+            "tribute": 5,
+            "authorization": 15
+          },
+          {
+            "id": "w1",
+            "name": "西陵",
+            "ruler": "拓跋珩",
+            "power": 70,
+            "attitude": 47,
+            "status": "通好",
+            "demand": "安定边贸",
+            "tribute": 5,
+            "authorization": 15
+          },
+          {
+            "id": "w2",
+            "name": "南越",
+            "ruler": "黎明远",
+            "power": 72,
+            "attitude": 53,
+            "status": "通好",
+            "demand": "安定边贸",
+            "tribute": 5,
+            "authorization": 15
+          },
+          {
+            "id": "w3",
+            "name": "东澜",
+            "ruler": "崔景平",
+            "power": 69,
+            "attitude": 37,
+            "status": "通好",
+            "demand": "安定边贸",
+            "tribute": 5,
+            "authorization": 15
+          },
+          {
+            "id": "w4",
+            "name": "云岚",
+            "ruler": "木嘉措",
+            "power": 55,
+            "attitude": 53,
+            "status": "通好",
+            "demand": "安定边贸",
+            "tribute": 5,
+            "authorization": 15
+          }
+        ],
+        "ambitions": [],
+        "memorials": [
+          {
+            "id": "routine-0-3",
+            "title": "边营请补军粮",
+            "from": "谢景行",
+            "type": "政务",
+            "request": "请陛下裁处",
+            "options": [
+              {
+                "id": "approve",
+                "label": "准奏",
+                "effects": {
+                  "treasury": -2,
+                  "governance": 0.5
+                }
+              },
+              {
+                "id": "reject",
+                "label": "驳回",
+                "effects": {
+                  "prestige": 0.2,
+                  "morale": -0.3
+                }
+              },
+              {
+                "id": "hold",
+                "label": "留中",
+                "effects": {}
+              }
+            ],
+            "due": 4,
+            "threadId": null,
+            "urgent": false,
+            "secret": false,
+            "text": ""
+          },
+          {
+            "id": "routine-0-4",
+            "title": "言官请开经筵",
+            "from": "裴廷玉",
+            "type": "政务",
+            "request": "请陛下裁处",
+            "options": [
+              {
+                "id": "approve",
+                "label": "准奏",
+                "effects": {
+                  "treasury": -2,
+                  "governance": 0.5
+                }
+              },
+              {
+                "id": "reject",
+                "label": "驳回",
+                "effects": {
+                  "prestige": 0.2,
+                  "morale": -0.3
+                }
+              },
+              {
+                "id": "hold",
+                "label": "留中",
+                "effects": {}
+              }
+            ],
+            "due": 4,
+            "threadId": null,
+            "urgent": false,
+            "secret": false,
+            "text": ""
+          },
+          {
+            "id": "routine-0-5",
+            "title": "地方请奖循吏",
+            "from": "程知远",
+            "type": "政务",
+            "request": "请陛下裁处",
+            "options": [
+              {
+                "id": "approve",
+                "label": "准奏",
+                "effects": {
+                  "treasury": -2,
+                  "governance": 0.5
+                }
+              },
+              {
+                "id": "reject",
+                "label": "驳回",
+                "effects": {
+                  "prestige": 0.2,
+                  "morale": -0.3
+                }
+              },
+              {
+                "id": "hold",
+                "label": "留中",
+                "effects": {}
+              }
+            ],
+            "due": 4,
+            "threadId": null,
+            "urgent": false,
+            "secret": false,
+            "text": ""
+          },
+          {
+            "id": "routine-1-0",
+            "title": "湖广 钱粮月报",
+            "from": "陆怀瑾",
+            "type": "政务",
+            "request": "请陛下裁处",
+            "options": [
+              {
+                "id": "approve",
+                "label": "准奏",
+                "effects": {
+                  "treasury": -2,
+                  "governance": 0.5
+                }
+              },
+              {
+                "id": "reject",
+                "label": "驳回",
+                "effects": {
+                  "prestige": 0.2,
+                  "morale": -0.3
+                }
+              },
+              {
+                "id": "hold",
+                "label": "留中",
+                "effects": {}
+              }
+            ],
+            "due": 5,
+            "threadId": null,
+            "urgent": false,
+            "secret": false,
+            "text": ""
+          },
+          {
+            "id": "routine-1-1",
+            "title": "六部请整饬案牍",
+            "from": "顾文渊",
+            "type": "政务",
+            "request": "请陛下裁处",
+            "options": [
+              {
+                "id": "approve",
+                "label": "准奏",
+                "effects": {
+                  "treasury": -2,
+                  "governance": 0.5
+                }
+              },
+              {
+                "id": "reject",
+                "label": "驳回",
+                "effects": {
+                  "prestige": 0.2,
+                  "morale": -0.3
+                }
+              },
+              {
+                "id": "hold",
+                "label": "留中",
+                "effects": {}
+              }
+            ],
+            "due": 5,
+            "threadId": null,
+            "urgent": false,
+            "secret": false,
+            "text": ""
+          },
+          {
+            "id": "routine-1-2",
+            "title": "山西 请赈灾民",
+            "from": "谢景行",
+            "type": "请赈",
+            "request": "请陛下裁处",
+            "options": [
+              {
+                "id": "approve",
+                "label": "准奏",
+                "effects": {
+                  "treasury": -8,
+                  "morale": 2,
+                  "virtue": 1
+                }
+              },
+              {
+                "id": "reject",
+                "label": "驳回",
+                "effects": {
+                  "prestige": 0.2,
+                  "morale": -0.3
+                }
+              },
+              {
+                "id": "hold",
+                "label": "留中",
+                "effects": {}
+              }
+            ],
+            "due": 5,
+            "threadId": null,
+            "urgent": true,
+            "secret": false,
+            "text": ""
+          },
+          {
+            "id": "routine-1-3",
+            "title": "边营请补军粮",
+            "from": "裴廷玉",
+            "type": "政务",
+            "request": "请陛下裁处",
+            "options": [
+              {
+                "id": "approve",
+                "label": "准奏",
+                "effects": {
+                  "treasury": -2,
+                  "governance": 0.5
+                }
+              },
+              {
+                "id": "reject",
+                "label": "驳回",
+                "effects": {
+                  "prestige": 0.2,
+                  "morale": -0.3
+                }
+              },
+              {
+                "id": "hold",
+                "label": "留中",
+                "effects": {}
+              }
+            ],
+            "due": 5,
+            "threadId": null,
+            "urgent": false,
+            "secret": false,
+            "text": ""
+          },
+          {
+            "id": "routine-1-4",
+            "title": "言官请开经筵",
+            "from": "程知远",
+            "type": "政务",
+            "request": "请陛下裁处",
+            "options": [
+              {
+                "id": "approve",
+                "label": "准奏",
+                "effects": {
+                  "treasury": -2,
+                  "governance": 0.5
+                }
+              },
+              {
+                "id": "reject",
+                "label": "驳回",
+                "effects": {
+                  "prestige": 0.2,
+                  "morale": -0.3
+                }
+              },
+              {
+                "id": "hold",
+                "label": "留中",
+                "effects": {}
+              }
+            ],
+            "due": 5,
+            "threadId": null,
+            "urgent": false,
+            "secret": false,
+            "text": ""
+          },
+          {
+            "id": "routine-1-5",
+            "title": "地方请奖循吏",
+            "from": "韩伯庸",
+            "type": "政务",
+            "request": "请陛下裁处",
+            "options": [
+              {
+                "id": "approve",
+                "label": "准奏",
+                "effects": {
+                  "treasury": -2,
+                  "governance": 0.5
+                }
+              },
+              {
+                "id": "reject",
+                "label": "驳回",
+                "effects": {
+                  "prestige": 0.2,
+                  "morale": -0.3
+                }
+              },
+              {
+                "id": "hold",
+                "label": "留中",
+                "effects": {}
+              }
+            ],
+            "due": 5,
+            "threadId": null,
+            "urgent": false,
+            "secret": false,
+            "text": ""
+          }
+        ],
+        "schedule": {
+          "朝": null,
+          "午": null,
+          "夜": null
+        },
+        "facts": [],
+        "knowledge": [],
+        "rels": [],
+        "stats": {
+          "events": 0,
+          "births": 0,
+          "warsWon": 0,
+          "visits": 0,
+          "edicts": 0,
+          "banquets": 0,
+          "appointments": 0,
+          "petitions": 3,
+          "initialTreasury": 480,
+          "expense": 0,
+          "income": 0
+        },
+        "achievements": [
+          {
+            "id": "accession",
+            "title": "初登大宝",
+            "turn": 0
+          },
+          {
+            "id": "petition",
+            "title": "朱批初落",
+            "turn": 1
+          }
+        ],
+        "interimEntries": [],
+        "turnBudget": null,
+        "lastTurn": null,
+        "ending": null,
+        "talks": [],
+        "campaigns": [],
+        "retaliations": [],
+        "revision": 1,
+        "court": {
+          "factions": [
+            {
+              "id": "f0",
+              "name": "清流",
+              "power": 27,
+              "attitude": 65,
+              "demand": "纳谏清议"
+            },
+            {
+              "id": "f1",
+              "name": "勋贵",
+              "power": 34,
+              "attitude": 50,
+              "demand": "军功封赏"
+            },
+            {
+              "id": "f2",
+              "name": "外戚",
+              "power": 35,
+              "attitude": 52,
+              "demand": "家族恩荫"
+            },
+            {
+              "id": "f3",
+              "name": "宦官",
+              "power": 25,
+              "attitude": 60,
+              "demand": "亲近信任"
+            },
+            {
+              "id": "f4",
+              "name": "督抚",
+              "power": 47,
+              "attitude": 61,
+              "demand": "钱粮自主"
+            },
+            {
+              "id": "f5",
+              "name": "宗室",
+              "power": 25,
+              "attitude": 45,
+              "demand": "宗藩安稳"
+            }
+          ],
+          "posts": [
+            {
+              "id": "p0",
+              "title": "内阁首辅",
+              "rank": 1,
+              "office": "内阁",
+              "tags": [
+                "政务"
+              ],
+              "holder": "o0"
+            },
+            {
+              "id": "p1",
+              "title": "户部尚书",
+              "rank": 1,
+              "office": "户部",
+              "tags": [
+                "管钱"
+              ],
+              "holder": "o1"
+            },
+            {
+              "id": "p2",
+              "title": "兵部尚书",
+              "rank": 1,
+              "office": "兵部",
+              "tags": [
+                "管兵"
+              ],
+              "holder": "o2"
+            },
+            {
+              "id": "p3",
+              "title": "吏部尚书",
+              "rank": 1,
+              "office": "吏部",
+              "tags": [
+                "管人"
+              ],
+              "holder": "o3"
+            },
+            {
+              "id": "p4",
+              "title": "礼部尚书",
+              "rank": 1,
+              "office": "礼部",
+              "tags": [
+                "政务"
+              ],
+              "holder": "o4"
+            },
+            {
+              "id": "p5",
+              "title": "刑部尚书",
+              "rank": 1,
+              "office": "刑部",
+              "tags": [
+                "政务"
+              ],
+              "holder": "o5"
+            },
+            {
+              "id": "p6",
+              "title": "工部尚书",
+              "rank": 1,
+              "office": "工部",
+              "tags": [
+                "管钱"
+              ],
+              "holder": "o6"
+            },
+            {
+              "id": "p7",
+              "title": "左都御史",
+              "rank": 1,
+              "office": "左都",
+              "tags": [
+                "言官"
+              ],
+              "holder": "o7"
+            },
+            {
+              "id": "p8",
+              "title": "司礼监掌印",
+              "rank": 1,
+              "office": "司礼",
+              "tags": [
+                "政务"
+              ],
+              "holder": "o8"
+            },
+            {
+              "id": "p9",
+              "title": "京营统领",
+              "rank": 1,
+              "office": "京营",
+              "tags": [
+                "管兵"
+              ],
+              "holder": "o9"
+            },
+            {
+              "id": "p10",
+              "title": "中书令",
+              "rank": 1,
+              "office": "中书",
+              "tags": [
+                "政务"
+              ],
+              "holder": "o10"
+            },
+            {
+              "id": "p11",
+              "title": "门下侍中",
+              "rank": 1,
+              "office": "门下",
+              "tags": [
+                "政务"
+              ],
+              "holder": "o11"
+            },
+            {
+              "id": "p12",
+              "title": "尚书令",
+              "rank": 1,
+              "office": "尚书",
+              "tags": [
+                "政务"
+              ],
+              "holder": "o12"
+            },
+            {
+              "id": "p13",
+              "title": "户部侍郎",
+              "rank": 2,
+              "office": "户部",
+              "tags": [
+                "管钱"
+              ],
+              "holder": "o13"
+            },
+            {
+              "id": "p14",
+              "title": "兵部侍郎",
+              "rank": 2,
+              "office": "兵部",
+              "tags": [
+                "管兵"
+              ],
+              "holder": "o14"
+            },
+            {
+              "id": "p15",
+              "title": "吏部侍郎",
+              "rank": 2,
+              "office": "吏部",
+              "tags": [
+                "管人"
+              ],
+              "holder": "o15"
+            },
+            {
+              "id": "p16",
+              "title": "礼部侍郎",
+              "rank": 2,
+              "office": "礼部",
+              "tags": [
+                "政务"
+              ],
+              "holder": "o16"
+            },
+            {
+              "id": "p17",
+              "title": "刑部侍郎",
+              "rank": 2,
+              "office": "刑部",
+              "tags": [
+                "政务"
+              ],
+              "holder": "o17"
+            },
+            {
+              "id": "p18",
+              "title": "工部侍郎",
+              "rank": 2,
+              "office": "工部",
+              "tags": [
+                "管钱"
+              ],
+              "holder": "o18"
+            },
+            {
+              "id": "p19",
+              "title": "翰林学士",
+              "rank": 2,
+              "office": "翰林",
+              "tags": [
+                "政务"
+              ],
+              "holder": "o19"
+            },
+            {
+              "id": "p20",
+              "title": "太子太傅",
+              "rank": 2,
+              "office": "太子",
+              "tags": [
+                "政务"
+              ],
+              "holder": "o20"
+            },
+            {
+              "id": "p21",
+              "title": "大理寺卿",
+              "rank": 2,
+              "office": "大理",
+              "tags": [
+                "政务"
+              ],
+              "holder": "o21"
+            },
+            {
+              "id": "p22",
+              "title": "太常寺卿",
+              "rank": 2,
+              "office": "太常",
+              "tags": [
+                "政务"
+              ],
+              "holder": "o22"
+            },
+            {
+              "id": "p23",
+              "title": "通政使",
+              "rank": 2,
+              "office": "通政",
+              "tags": [
+                "政务"
+              ],
+              "holder": "o23"
+            },
+            {
+              "id": "p24",
+              "title": "宗人令",
+              "rank": 2,
+              "office": "宗人",
+              "tags": [
+                "政务"
+              ],
+              "holder": "o24"
+            },
+            {
+              "id": "p25",
+              "title": "北境总兵",
+              "rank": 2,
+              "office": "北境",
+              "tags": [
+                "管兵"
+              ],
+              "holder": null
+            },
+            {
+              "id": "p26",
+              "title": "西境总兵",
+              "rank": 2,
+              "office": "西境",
+              "tags": [
+                "管兵"
+              ],
+              "holder": null
+            },
+            {
+              "id": "p27",
+              "title": "南境总兵",
+              "rank": 2,
+              "office": "南境",
+              "tags": [
+                "管兵"
+              ],
+              "holder": null
+            },
+            {
+              "id": "p28",
+              "title": "东境总兵",
+              "rank": 2,
+              "office": "东境",
+              "tags": [
+                "管兵"
+              ],
+              "holder": null
+            },
+            {
+              "id": "p29",
+              "title": "直隶巡抚",
+              "rank": 3,
+              "office": "直隶",
+              "tags": [
+                "政务"
+              ],
+              "holder": null
+            },
+            {
+              "id": "p30",
+              "title": "河南巡抚",
+              "rank": 3,
+              "office": "河南",
+              "tags": [
+                "政务"
+              ],
+              "holder": null
+            },
+            {
+              "id": "p31",
+              "title": "江南巡抚",
+              "rank": 3,
+              "office": "江南",
+              "tags": [
+                "政务"
+              ],
+              "holder": null
+            },
+            {
+              "id": "p32",
+              "title": "湖广巡抚",
+              "rank": 3,
+              "office": "湖广",
+              "tags": [
+                "政务"
+              ],
+              "holder": null
+            },
+            {
+              "id": "p33",
+              "title": "山东巡抚",
+              "rank": 3,
+              "office": "山东",
+              "tags": [
+                "政务"
+              ],
+              "holder": null
+            },
+            {
+              "id": "p34",
+              "title": "山西巡抚",
+              "rank": 3,
+              "office": "山西",
+              "tags": [
+                "政务"
+              ],
+              "holder": null
+            },
+            {
+              "id": "p35",
+              "title": "陕西巡抚",
+              "rank": 3,
+              "office": "陕西",
+              "tags": [
+                "政务"
+              ],
+              "holder": null
+            },
+            {
+              "id": "p36",
+              "title": "四川巡抚",
+              "rank": 3,
+              "office": "四川",
+              "tags": [
+                "政务"
+              ],
+              "holder": null
+            },
+            {
+              "id": "p37",
+              "title": "福建巡抚",
+              "rank": 3,
+              "office": "福建",
+              "tags": [
+                "政务"
+              ],
+              "holder": null
+            },
+            {
+              "id": "p38",
+              "title": "广东巡抚",
+              "rank": 3,
+              "office": "广东",
+              "tags": [
+                "政务"
+              ],
+              "holder": null
+            },
+            {
+              "id": "p39",
+              "title": "云南巡抚",
+              "rank": 3,
+              "office": "云南",
+              "tags": [
+                "政务"
+              ],
+              "holder": null
+            }
+          ],
+          "officials": [
+            {
+              "id": "o0",
+              "name": "沈守正",
+              "gender": "男",
+              "age": 51,
+              "post": "p0",
+              "faction": "f0",
+              "abilities": {
+                "政": 54,
+                "军": 57,
+                "才": 57,
+                "德": 45,
+                "忠": 66,
+                "权谋": 71
+              },
+              "ambition": 48,
+              "greed": 34,
+              "favor": 50,
+              "health": 85,
+              "alive": true,
+              "inCapital": true,
+              "secret": "曾为故交隐瞒田产，尚无人知。",
+              "secretKnown": false,
+              "memory": [],
+              "life": []
+            },
+            {
+              "id": "o1",
+              "name": "陆怀瑾",
+              "gender": "男",
+              "age": 58,
+              "post": "p1",
+              "faction": "f1",
+              "abilities": {
+                "政": 57,
+                "军": 72,
+                "才": 78,
+                "德": 53,
+                "忠": 68,
+                "权谋": 72
+              },
+              "ambition": 42,
+              "greed": 31,
+              "favor": 50,
+              "health": 85,
+              "alive": true,
+              "inCapital": true,
+              "secret": "曾为故交隐瞒田产，尚无人知。",
+              "secretKnown": false,
+              "memory": [],
+              "life": []
+            },
+            {
+              "id": "o2",
+              "name": "顾文渊",
+              "gender": "男",
+              "age": 39,
+              "post": "p2",
+              "faction": "f2",
+              "abilities": {
+                "政": 50,
+                "军": 52,
+                "才": 41,
+                "德": 64,
+                "忠": 43,
+                "权谋": 70
+              },
+              "ambition": 75,
+              "greed": 41,
+              "favor": 50,
+              "health": 85,
+              "alive": true,
+              "inCapital": true,
+              "secret": "曾为故交隐瞒田产，尚无人知。",
+              "secretKnown": false,
+              "memory": [],
+              "life": []
+            },
+            {
+              "id": "o3",
+              "name": "谢景行",
+              "gender": "男",
+              "age": 52,
+              "post": "p3",
+              "faction": "f3",
+              "abilities": {
+                "政": 49,
+                "军": 75,
+                "才": 56,
+                "德": 55,
+                "忠": 38,
+                "权谋": 51
+              },
+              "ambition": 51,
+              "greed": 27,
+              "favor": 50,
+              "health": 85,
+              "alive": true,
+              "inCapital": true,
+              "secret": "曾为故交隐瞒田产，尚无人知。",
+              "secretKnown": false,
+              "memory": [],
+              "life": []
+            },
+            {
+              "id": "o4",
+              "name": "裴廷玉",
+              "gender": "男",
+              "age": 37,
+              "post": "p4",
+              "faction": "f4",
+              "abilities": {
+                "政": 56,
+                "军": 80,
+                "才": 68,
+                "德": 89,
+                "忠": 54,
+                "权谋": 47
+              },
+              "ambition": 64,
+              "greed": 25,
+              "favor": 50,
+              "health": 85,
+              "alive": true,
+              "inCapital": true,
+              "secret": "曾为故交隐瞒田产，尚无人知。",
+              "secretKnown": false,
+              "memory": [],
+              "life": []
+            },
+            {
+              "id": "o5",
+              "name": "程知远",
+              "gender": "男",
+              "age": 40,
+              "post": "p5",
+              "faction": "f5",
+              "abilities": {
+                "政": 78,
+                "军": 35,
+                "才": 46,
+                "德": 46,
+                "忠": 43,
+                "权谋": 82
+              },
+              "ambition": 39,
+              "greed": 20,
+              "favor": 50,
+              "health": 85,
+              "alive": true,
+              "inCapital": true,
+              "secret": "曾为故交隐瞒田产，尚无人知。",
+              "secretKnown": false,
+              "memory": [],
+              "life": []
+            },
+            {
+              "id": "o6",
+              "name": "韩伯庸",
+              "gender": "男",
+              "age": 53,
+              "post": "p6",
+              "faction": "f0",
+              "abilities": {
+                "政": 53,
+                "军": 53,
+                "才": 62,
+                "德": 61,
+                "忠": 50,
+                "权谋": 68
+              },
+              "ambition": 22,
+              "greed": 11,
+              "favor": 50,
+              "health": 85,
+              "alive": true,
+              "inCapital": true,
+              "secret": "曾为故交隐瞒田产，尚无人知。",
+              "secretKnown": false,
+              "memory": [],
+              "life": []
+            },
+            {
+              "id": "o7",
+              "name": "许慎微",
+              "gender": "男",
+              "age": 60,
+              "post": "p7",
+              "faction": "f1",
+              "abilities": {
+                "政": 70,
+                "军": 62,
+                "才": 74,
+                "德": 80,
+                "忠": 36,
+                "权谋": 51
+              },
+              "ambition": 68,
+              "greed": 39,
+              "favor": 50,
+              "health": 85,
+              "alive": true,
+              "inCapital": true,
+              "secret": "曾为故交隐瞒田产，尚无人知。",
+              "secretKnown": false,
+              "memory": [],
+              "life": []
+            },
+            {
+              "id": "o8",
+              "name": "杜长衡",
+              "gender": "男",
+              "age": 39,
+              "post": "p8",
+              "faction": "f2",
+              "abilities": {
+                "政": 77,
+                "军": 77,
+                "才": 54,
+                "德": 79,
+                "忠": 64,
+                "权谋": 82
+              },
+              "ambition": 43,
+              "greed": 35,
+              "favor": 50,
+              "health": 85,
+              "alive": true,
+              "inCapital": true,
+              "secret": "曾为故交隐瞒田产，尚无人知。",
+              "secretKnown": false,
+              "memory": [],
+              "life": []
+            },
+            {
+              "id": "o9",
+              "name": "魏允中",
+              "gender": "男",
+              "age": 52,
+              "post": "p9",
+              "faction": "f3",
+              "abilities": {
+                "政": 80,
+                "军": 44,
+                "才": 64,
+                "德": 76,
+                "忠": 53,
+                "权谋": 75
+              },
+              "ambition": 54,
+              "greed": 31,
+              "favor": 50,
+              "health": 85,
+              "alive": true,
+              "inCapital": true,
+              "secret": "曾为故交隐瞒田产，尚无人知。",
+              "secretKnown": false,
+              "memory": [],
+              "life": []
+            },
+            {
+              "id": "o10",
+              "name": "方世宁",
+              "gender": "男",
+              "age": 46,
+              "post": "p10",
+              "faction": "f4",
+              "abilities": {
+                "政": 67,
+                "军": 73,
+                "才": 79,
+                "德": 56,
+                "忠": 60,
+                "权谋": 60
+              },
+              "ambition": 60,
+              "greed": 30,
+              "favor": 50,
+              "health": 85,
+              "alive": true,
+              "inCapital": true,
+              "secret": "曾为故交隐瞒田产，尚无人知。",
+              "secretKnown": false,
+              "memory": [],
+              "life": []
+            },
+            {
+              "id": "o11",
+              "name": "梁明川",
+              "gender": "男",
+              "age": 55,
+              "post": "p11",
+              "faction": "f5",
+              "abilities": {
+                "政": 71,
+                "军": 72,
+                "才": 60,
+                "德": 62,
+                "忠": 64,
+                "权谋": 73
+              },
+              "ambition": 32,
+              "greed": 15,
+              "favor": 50,
+              "health": 85,
+              "alive": true,
+              "inCapital": true,
+              "secret": "曾为故交隐瞒田产，尚无人知。",
+              "secretKnown": false,
+              "memory": [],
+              "life": []
+            },
+            {
+              "id": "o12",
+              "name": "宋思齐",
+              "gender": "男",
+              "age": 53,
+              "post": "p12",
+              "faction": "f0",
+              "abilities": {
+                "政": 75,
+                "军": 45,
+                "才": 57,
+                "德": 89,
+                "忠": 48,
+                "权谋": 64
+              },
+              "ambition": 31,
+              "greed": 29,
+              "favor": 50,
+              "health": 85,
+              "alive": true,
+              "inCapital": true,
+              "secret": "曾为故交隐瞒田产，尚无人知。",
+              "secretKnown": false,
+              "memory": [],
+              "life": []
+            },
+            {
+              "id": "o13",
+              "name": "张清和",
+              "gender": "男",
+              "age": 47,
+              "post": "p13",
+              "faction": "f1",
+              "abilities": {
+                "政": 56,
+                "军": 44,
+                "才": 73,
+                "德": 83,
+                "忠": 61,
+                "权谋": 78
+              },
+              "ambition": 30,
+              "greed": 53,
+              "favor": 50,
+              "health": 85,
+              "alive": true,
+              "inCapital": true,
+              "secret": "曾为故交隐瞒田产，尚无人知。",
+              "secretKnown": false,
+              "memory": [],
+              "life": []
+            },
+            {
+              "id": "o14",
+              "name": "崔敬修",
+              "gender": "男",
+              "age": 50,
+              "post": "p14",
+              "faction": "f2",
+              "abilities": {
+                "政": 47,
+                "军": 39,
+                "才": 65,
+                "德": 51,
+                "忠": 69,
+                "权谋": 66
+              },
+              "ambition": 47,
+              "greed": 37,
+              "favor": 50,
+              "health": 85,
+              "alive": true,
+              "inCapital": true,
+              "secret": "曾为故交隐瞒田产，尚无人知。",
+              "secretKnown": false,
+              "memory": [],
+              "life": []
+            },
+            {
+              "id": "o15",
+              "name": "温望舒",
+              "gender": "男",
+              "age": 47,
+              "post": "p15",
+              "faction": "f3",
+              "abilities": {
+                "政": 79,
+                "军": 74,
+                "才": 46,
+                "德": 46,
+                "忠": 74,
+                "权谋": 52
+              },
+              "ambition": 48,
+              "greed": 22,
+              "favor": 50,
+              "health": 85,
+              "alive": true,
+              "inCapital": true,
+              "secret": "曾为故交隐瞒田产，尚无人知。",
+              "secretKnown": false,
+              "memory": [],
+              "life": []
+            },
+            {
+              "id": "o16",
+              "name": "袁承安",
+              "gender": "男",
+              "age": 38,
+              "post": "p16",
+              "faction": "f4",
+              "abilities": {
+                "政": 43,
+                "军": 80,
+                "才": 67,
+                "德": 47,
+                "忠": 81,
+                "权谋": 77
+              },
+              "ambition": 66,
+              "greed": 16,
+              "favor": 50,
+              "health": 85,
+              "alive": true,
+              "inCapital": true,
+              "secret": "曾为故交隐瞒田产，尚无人知。",
+              "secretKnown": false,
+              "memory": [],
+              "life": []
+            },
+            {
+              "id": "o17",
+              "name": "郑秉诚",
+              "gender": "男",
+              "age": 44,
+              "post": "p17",
+              "faction": "f5",
+              "abilities": {
+                "政": 55,
+                "军": 48,
+                "才": 78,
+                "德": 41,
+                "忠": 85,
+                "权谋": 49
+              },
+              "ambition": 20,
+              "greed": 46,
+              "favor": 50,
+              "health": 85,
+              "alive": true,
+              "inCapital": true,
+              "secret": "曾为故交隐瞒田产，尚无人知。",
+              "secretKnown": false,
+              "memory": [],
+              "life": []
+            },
+            {
+              "id": "o18",
+              "name": "李问渠",
+              "gender": "男",
+              "age": 55,
+              "post": "p18",
+              "faction": "f0",
+              "abilities": {
+                "政": 69,
+                "军": 47,
+                "才": 58,
+                "德": 60,
+                "忠": 67,
+                "权谋": 82
+              },
+              "ambition": 55,
+              "greed": 31,
+              "favor": 50,
+              "health": 85,
+              "alive": true,
+              "inCapital": true,
+              "secret": "曾为故交隐瞒田产，尚无人知。",
+              "secretKnown": false,
+              "memory": [],
+              "life": []
+            },
+            {
+              "id": "o19",
+              "name": "王砚秋",
+              "gender": "男",
+              "age": 39,
+              "post": "p19",
+              "faction": "f1",
+              "abilities": {
+                "政": 74,
+                "军": 47,
+                "才": 56,
+                "德": 68,
+                "忠": 78,
+                "权谋": 64
+              },
+              "ambition": 47,
+              "greed": 16,
+              "favor": 50,
+              "health": 85,
+              "alive": true,
+              "inCapital": true,
+              "secret": "曾为故交隐瞒田产，尚无人知。",
+              "secretKnown": false,
+              "memory": [],
+              "life": []
+            },
+            {
+              "id": "o20",
+              "name": "赵信之",
+              "gender": "男",
+              "age": 48,
+              "post": "p20",
+              "faction": "f2",
+              "abilities": {
+                "政": 76,
+                "军": 44,
+                "才": 82,
+                "德": 51,
+                "忠": 70,
+                "权谋": 69
+              },
+              "ambition": 46,
+              "greed": 7,
+              "favor": 50,
+              "health": 85,
+              "alive": true,
+              "inCapital": true,
+              "secret": "曾为故交隐瞒田产，尚无人知。",
+              "secretKnown": false,
+              "memory": [],
+              "life": []
+            },
+            {
+              "id": "o21",
+              "name": "刘元礼",
+              "gender": "男",
+              "age": 56,
+              "post": "p21",
+              "faction": "f3",
+              "abilities": {
+                "政": 40,
+                "军": 48,
+                "才": 65,
+                "德": 69,
+                "忠": 64,
+                "权谋": 67
+              },
+              "ambition": 39,
+              "greed": 18,
+              "favor": 50,
+              "health": 85,
+              "alive": true,
+              "inCapital": true,
+              "secret": "曾为故交隐瞒田产，尚无人知。",
+              "secretKnown": false,
+              "memory": [],
+              "life": []
+            },
+            {
+              "id": "o22",
+              "name": "苏惟新",
+              "gender": "男",
+              "age": 57,
+              "post": "p22",
+              "faction": "f4",
+              "abilities": {
+                "政": 82,
+                "军": 49,
+                "才": 66,
+                "德": 43,
+                "忠": 46,
+                "权谋": 45
+              },
+              "ambition": 53,
+              "greed": 41,
+              "favor": 50,
+              "health": 85,
+              "alive": true,
+              "inCapital": true,
+              "secret": "曾为故交隐瞒田产，尚无人知。",
+              "secretKnown": false,
+              "memory": [],
+              "life": []
+            },
+            {
+              "id": "o23",
+              "name": "柳济川",
+              "gender": "男",
+              "age": 60,
+              "post": "p23",
+              "faction": "f5",
+              "abilities": {
+                "政": 68,
+                "军": 78,
+                "才": 64,
+                "德": 87,
+                "忠": 49,
+                "权谋": 64
+              },
+              "ambition": 46,
+              "greed": 54,
+              "favor": 50,
+              "health": 85,
+              "alive": true,
+              "inCapital": true,
+              "secret": "曾为故交隐瞒田产，尚无人知。",
+              "secretKnown": false,
+              "memory": [],
+              "life": []
+            },
+            {
+              "id": "o24",
+              "name": "陈云章",
+              "gender": "男",
+              "age": 51,
+              "post": "p24",
+              "faction": "f0",
+              "abilities": {
+                "政": 81,
+                "军": 68,
+                "才": 52,
+                "德": 64,
+                "忠": 36,
+                "权谋": 74
+              },
+              "ambition": 22,
+              "greed": 54,
+              "favor": 50,
+              "health": 85,
+              "alive": true,
+              "inCapital": true,
+              "secret": "曾为故交隐瞒田产，尚无人知。",
+              "secretKnown": false,
+              "memory": [],
+              "life": []
+            }
+          ]
+        },
+        "threads": [],
+        "projects": [],
+        "receipts": [],
+        "history": [],
+        "volumes": [],
+        "ledger": [
+          {
+            "path": "nation.morale",
+            "before": 62,
+            "after": 61.7,
+            "delta": -0.3,
+            "source": "处置奏报：直隶 钱粮月报 / 驳回",
+            "turn": 0
+          },
+          {
+            "path": "emperor.prestige",
+            "before": 58,
+            "after": 58.2,
+            "delta": 0.2,
+            "source": "处置奏报：直隶 钱粮月报 / 驳回",
+            "turn": 0
+          },
+          {
+            "path": "nation.morale",
+            "before": 61.7,
+            "after": 61.400000000000006,
+            "delta": -0.3,
+            "source": "处置奏报：六部请整饬案牍 / 驳回",
+            "turn": 0
+          },
+          {
+            "path": "emperor.prestige",
+            "before": 58.2,
+            "after": 58.400000000000006,
+            "delta": 0.2,
+            "source": "处置奏报：六部请整饬案牍 / 驳回",
+            "turn": 0
+          },
+          {
+            "path": "nation.morale",
+            "before": 61.400000000000006,
+            "after": 61.10000000000001,
+            "delta": -0.3,
+            "source": "处置奏报：江南 请赈灾民 / 驳回",
+            "turn": 0
+          },
+          {
+            "path": "emperor.prestige",
+            "before": 58.400000000000006,
+            "after": 58.60000000000001,
+            "delta": 0.2,
+            "source": "处置奏报：江南 请赈灾民 / 驳回",
+            "turn": 0
+          },
+          {
+            "turn": 0,
+            "path": "emperor.talents.政略",
+            "delta": 0.2,
+            "before": 66,
+            "after": 66.2,
+            "source": "经世历练（每年每才最多 +3）"
+          }
+        ],
+        "chronicles": [],
+        "pending": null
+      },
+      "entries": [
+        {
+          "path": "nation.morale",
+          "before": 62,
+          "after": 61.7,
+          "delta": -0.3,
+          "source": "处置奏报：直隶 钱粮月报 / 驳回",
+          "turn": 0
+        },
+        {
+          "path": "emperor.prestige",
+          "before": 58,
+          "after": 58.2,
+          "delta": 0.2,
+          "source": "处置奏报：直隶 钱粮月报 / 驳回",
+          "turn": 0
+        },
+        {
+          "path": "nation.morale",
+          "before": 61.7,
+          "after": 61.400000000000006,
+          "delta": -0.3,
+          "source": "处置奏报：六部请整饬案牍 / 驳回",
+          "turn": 0
+        },
+        {
+          "path": "emperor.prestige",
+          "before": 58.2,
+          "after": 58.400000000000006,
+          "delta": 0.2,
+          "source": "处置奏报：六部请整饬案牍 / 驳回",
+          "turn": 0
+        },
+        {
+          "path": "nation.morale",
+          "before": 61.400000000000006,
+          "after": 61.10000000000001,
+          "delta": -0.3,
+          "source": "处置奏报：江南 请赈灾民 / 驳回",
+          "turn": 0
+        },
+        {
+          "path": "emperor.prestige",
+          "before": 58.400000000000006,
+          "after": 58.60000000000001,
+          "delta": 0.2,
+          "source": "处置奏报：江南 请赈灾民 / 驳回",
+          "turn": 0
+        },
+        {
+          "turn": 0,
+          "path": "emperor.talents.政略",
+          "delta": 0.2,
+          "before": 66,
+          "after": 66.2,
+          "source": "经世历练（每年每才最多 +3）"
+        }
+      ],
+      "notes": [],
+      "slotResults": {
+        "朝": [
+          "直隶 钱粮月报 · 驳回",
+          "六部请整饬案牍 · 驳回",
+          "江南 请赈灾民 · 驳回"
+        ],
+        "午": [
+          "未排程，静候宫中日常"
+        ],
+        "夜": [
+          "未排程，静候宫中日常"
+        ]
+      },
+      "debate": [],
+      "facts": [],
+      "newMemorials": [
+        {
+          "id": "routine-1-0",
+          "title": "湖广 钱粮月报",
+          "from": "陆怀瑾",
+          "type": "政务",
+          "request": "请陛下裁处",
+          "options": [
+            {
+              "id": "approve",
+              "label": "准奏",
+              "effects": {
+                "treasury": -2,
+                "governance": 0.5
+              }
+            },
+            {
+              "id": "reject",
+              "label": "驳回",
+              "effects": {
+                "prestige": 0.2,
+                "morale": -0.3
+              }
+            },
+            {
+              "id": "hold",
+              "label": "留中",
+              "effects": {}
+            }
+          ],
+          "due": 5,
+          "threadId": null,
+          "urgent": false,
+          "secret": false,
+          "text": ""
+        },
+        {
+          "id": "routine-1-1",
+          "title": "六部请整饬案牍",
+          "from": "顾文渊",
+          "type": "政务",
+          "request": "请陛下裁处",
+          "options": [
+            {
+              "id": "approve",
+              "label": "准奏",
+              "effects": {
+                "treasury": -2,
+                "governance": 0.5
+              }
+            },
+            {
+              "id": "reject",
+              "label": "驳回",
+              "effects": {
+                "prestige": 0.2,
+                "morale": -0.3
+              }
+            },
+            {
+              "id": "hold",
+              "label": "留中",
+              "effects": {}
+            }
+          ],
+          "due": 5,
+          "threadId": null,
+          "urgent": false,
+          "secret": false,
+          "text": ""
+        },
+        {
+          "id": "routine-1-2",
+          "title": "山西 请赈灾民",
+          "from": "谢景行",
+          "type": "请赈",
+          "request": "请陛下裁处",
+          "options": [
+            {
+              "id": "approve",
+              "label": "准奏",
+              "effects": {
+                "treasury": -8,
+                "morale": 2,
+                "virtue": 1
+              }
+            },
+            {
+              "id": "reject",
+              "label": "驳回",
+              "effects": {
+                "prestige": 0.2,
+                "morale": -0.3
+              }
+            },
+            {
+              "id": "hold",
+              "label": "留中",
+              "effects": {}
+            }
+          ],
+          "due": 5,
+          "threadId": null,
+          "urgent": true,
+          "secret": false,
+          "text": ""
+        },
+        {
+          "id": "routine-1-3",
+          "title": "边营请补军粮",
+          "from": "裴廷玉",
+          "type": "政务",
+          "request": "请陛下裁处",
+          "options": [
+            {
+              "id": "approve",
+              "label": "准奏",
+              "effects": {
+                "treasury": -2,
+                "governance": 0.5
+              }
+            },
+            {
+              "id": "reject",
+              "label": "驳回",
+              "effects": {
+                "prestige": 0.2,
+                "morale": -0.3
+              }
+            },
+            {
+              "id": "hold",
+              "label": "留中",
+              "effects": {}
+            }
+          ],
+          "due": 5,
+          "threadId": null,
+          "urgent": false,
+          "secret": false,
+          "text": ""
+        },
+        {
+          "id": "routine-1-4",
+          "title": "言官请开经筵",
+          "from": "程知远",
+          "type": "政务",
+          "request": "请陛下裁处",
+          "options": [
+            {
+              "id": "approve",
+              "label": "准奏",
+              "effects": {
+                "treasury": -2,
+                "governance": 0.5
+              }
+            },
+            {
+              "id": "reject",
+              "label": "驳回",
+              "effects": {
+                "prestige": 0.2,
+                "morale": -0.3
+              }
+            },
+            {
+              "id": "hold",
+              "label": "留中",
+              "effects": {}
+            }
+          ],
+          "due": 5,
+          "threadId": null,
+          "urgent": false,
+          "secret": false,
+          "text": ""
+        },
+        {
+          "id": "routine-1-5",
+          "title": "地方请奖循吏",
+          "from": "韩伯庸",
+          "type": "政务",
+          "request": "请陛下裁处",
+          "options": [
+            {
+              "id": "approve",
+              "label": "准奏",
+              "effects": {
+                "treasury": -2,
+                "governance": 0.5
+              }
+            },
+            {
+              "id": "reject",
+              "label": "驳回",
+              "effects": {
+                "prestige": 0.2,
+                "morale": -0.3
+              }
+            },
+            {
+              "id": "hold",
+              "label": "留中",
+              "effects": {}
+            }
+          ],
+          "due": 5,
+          "threadId": null,
+          "urgent": false,
+          "secret": false,
+          "text": ""
+        }
+      ],
+      "baseFingerprint": "{\"rng\":45671343,\"turn\":0,\"revision\":0}"
+    }
+  }
+}

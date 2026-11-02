@@ -3,6 +3,7 @@ import { initialTurn, forecastTurn, commitTurn } from "../src/core/turn.js";
 import { canVisit } from "../src/core/harem.js";
 import { succeedEmperor } from "../src/core/succession.js";
 import { reignId } from "../src/core/state.js";
+import { edictBlock } from "../src/core/edicts.js";
 import { annualBudget } from "../src/core/finance.js";
 import { random, seedNumber } from "../src/core/rng.js";
 export function simulate(years = 200, seed = "御极·两百年", options = {}) {
@@ -40,7 +41,9 @@ export function simulate(years = 200, seed = "御极·两百年", options = {}) 
     const action = options.strategy === "rest" ? -1 : pick(8),
       schedule = { 朝: null, 午: null, 夜: null };
     if (action < 4) {
-      const ms = s.memorials.slice(0, 3);
+      // Court hearings retain three issues; a dedicated paperwork slot processes
+      // six memorials at the existing two-energy cost.
+      const ms = s.memorials.slice(0, action < 2 ? 3 : 6);
       let available = Math.max(0, s.nation.treasury - 8);
       const decisions = {};
       for (const m of ms) {
@@ -56,11 +59,11 @@ export function simulate(years = 200, seed = "御极·两百年", options = {}) 
         decisions,
       };
     }
-    if (action === 4 && s.nation.treasury > 80)
-      schedule.午 = {
-        kind: "下旨",
-        edictType: ["整饬吏治", "赈灾", "减赋"][pick(3)],
-      };
+    if (action === 4 && s.nation.treasury > 80) {
+      const types=["整饬吏治", "赈灾", "减赋"],start=pick(3);
+      const edictType=types.map((_,i)=>types[(start+i)%3]).find(type=>!edictBlock(s,type));
+      if(!s.regency&&edictType)schedule.午={kind:'下旨',edictType};
+    }
     const partner = s.harem.consorts.find((c) => canVisit(s, c));
     if (action === 5 && partner)
       schedule.夜 = { kind: "后宫", operation: "侍寝", person: partner.id };
@@ -84,6 +87,10 @@ export function simulate(years = 200, seed = "御极·两百年", options = {}) 
         };
     }
     if (action === 7 && !schedule.夜) schedule.夜 = { kind: "歇息" };
+    if(s.regency){
+      if(schedule.朝?.kind==='上朝')schedule.朝.kind='批折';
+      if(schedule.午?.kind==='任命')schedule.午=null;
+    }
     if (options.strategy === "rest") for (const slot of ["朝", "午", "夜"]) schedule[slot] = {kind:"歇息"};
     // Mock chapters contain no narrative. Discard them after their state has been checked.
     s.history = [];
@@ -92,6 +99,7 @@ export function simulate(years = 200, seed = "御极·两百年", options = {}) 
     const f = forecastTurn(s, schedule),
       before = s.stats.events,
       birthBefore = s.stats.births;
+    options.onForecast?.(s,f);
     s = commitTurn(s, f, {});
     assertState(s);
     const delta = s.stats.events - before;

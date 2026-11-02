@@ -1,9 +1,15 @@
 import { clone } from "./state.js";
 import { roll, check } from "./rng.js";
-import { applyPackage } from "./effects.js";
+import { applyPackage, growTalent } from "./effects.js";
 export function privateAction(state, action) {
   let s = clone(state);
-  const operation = action.operation || "闲谈",
+  const operation = action.operation || "闲谈";
+  if(operation==='经筵') {
+    const child=s.harem.children.find(c=>c.id===s.reign?.emperorId);
+    if(child)child.education=Math.min(100,(child.education||0)+0.2);
+    return {state:growTalent(s,'文采',0.2),note:'经筵进讲，习读经史'};
+  }
+  const
     spec = {
       试探: ["权谋", "一般"],
       离间: ["权谋", "困难"],

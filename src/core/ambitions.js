@@ -1,4 +1,4 @@
-import { clone } from "./state.js";
+import { clone, reignId } from "./state.js";
 import { roll } from "./rng.js";
 import { applyPackage, clamp } from "./effects.js";
 export const GOALS = [
@@ -149,7 +149,7 @@ export function selectAmbitions(state, selected = []) {
 }
 export function goalMetric(s, key) {
   if (key.startsWith("project:"))
-    return s.projects.filter((p) => p.done && p.edictType === key.slice(8))
+    return s.projects.filter((p) => p.done && p.edictType === key.slice(8) && p.start >= (s.reign?.accessionTurn || 0))
       .length;
   return (
     {
@@ -163,12 +163,12 @@ export function goalMetric(s, key) {
       ).length,
       tribute: s.foreign.filter((f) => ["朝贡", "婚盟"].includes(f.status))
         .length,
-      warsWon: s.stats.warsWon,
+      warsWon: s.stats.warsWon - (s.reign?.initialStats?.warsWon || 0),
       heir: s.harem.heir ? 1 : 0,
-      outings: s.stats.outings || 0,
-      reignYears: s.turn / 36,
-      maxFavor: Math.max(0, ...s.harem.consorts.map((c) => c.favor)),
-      children: s.harem.children.length,
+      outings: (s.stats.outings || 0) - (s.reign?.initialStats?.outings || 0),
+      reignYears: Math.max(0,s.turn - (s.reign?.accessionTurn || 0)) / 36,
+      maxFavor: Math.max(0, ...s.harem.consorts.filter(c=>!c.retired&&c.health>0&&c.reignId===reignId(s)).map((c) => c.favor)),
+      children: s.harem.children.filter(c=>c.fatherId===reignId(s)).length,
       maxOfficialFavor: Math.max(0, ...s.court.officials.map((o) => o.favor)),
     }[key] || 0
   );
@@ -207,7 +207,7 @@ export function evaluateAmbitions(state, narrative = {}) {
     if (a.objectives.every((o) => o.done)) {
       a.status = "达成";
       a.completion = s.turn;
-      const receipt = "goal:" + a.id;
+      const receipt = "goal:" + reignId(s) + ":" + a.id;
       if (!s.receipts.includes(receipt)) {
         s.receipts.push(receipt);
         s = applyPackage(

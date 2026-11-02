@@ -45,12 +45,12 @@ test('A1 面谈后超过240秒仍可请求正文，三轮面谈与分类不占�
   await c.advance();
   assert.equal(calls,4);assert.equal(c.state.turn,1,errors.join(';'));
   const pending=saves.find(s=>s.pending);
-  assert.deepEqual(Object.keys(pending.turnBudget),['used']);assert.equal(pending.turnBudget.used,0);assert.equal(pending.v,4);assert.equal(pending.pending.forecast.state.turnBudget,null,'新预演不得夹带旧预算时钟');
+  assert.deepEqual(Object.keys(pending.turnBudget),['used']);assert.equal(pending.turnBudget.used,0);assert.equal(pending.v,VERSION);assert.equal(pending.pending.forecast.state.turnBudget,null,'新预演不得夹带旧预算时钟');
 });
 test('A1 待续重载只保留已用次数，重新计时且重试不重掷',async()=>{
   let s=initial();const f=forecastTurn(s),before=hash(f);
   s.pending={forecast:f};s.turnBudget={...createBudget(0),used:1};
-  s=migrate(unpack(pack(s)).state);assert.equal(VERSION,4);
+  s=migrate(unpack(pack(s)).state);assert.equal(VERSION,5);
   let calls=0;const options={budget:s.turnBudget,now:()=>600000,fetcher:async()=>{calls++;return new Response('',{status:401});}};
   await assert.rejects(()=>requestTurnNarrative(config,s,s.pending.forecast,options),/401/);
   assert.equal(calls,1);assert.deepEqual(s.turnBudget,{used:2});assert.equal(hash(s.pending.forecast),before);
@@ -132,5 +132,5 @@ test('B15 大凶国库扣款明确记为户部银库失窃，内帑与数值公�
   let s,f;for(let i=0;i<100;i++){s=initialTurn(createState({seed:'B15-'+i}));f=forecastTurn(s);if(f.die<=3)break;}
   assert.ok(f.die<=3);const entries=f.entries.filter(e=>e.source==='天命大凶：户部银库失窃');assert.ok(entries.length,'大凶账目须注明户部银库');
   assert.equal(entries.find(e=>e.path==='nation.treasury').after-entries.find(e=>e.path==='nation.treasury').before,-8);
-  assert.ok(!f.entries.some(e=>e.source.includes('内库失窃')));assert.ok(!entries.some(e=>e.path==='nation.privy'));assert.equal(s.v,4);
+  assert.ok(!f.entries.some(e=>e.source.includes('内库失窃')));assert.ok(!entries.some(e=>e.path==='nation.privy'));assert.equal(s.v,VERSION);
 });

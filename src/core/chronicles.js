@@ -127,6 +127,7 @@ export function sealChronicle(state) {
     emperor: s.emperor.name,
     era: s.era.name,
     children: reignChildren.length,
+    ambitions: clone(s.ambitions),
     stats: ownStats,
     reignTurns: s.turn - (s.reign?.accessionTurn || 0),
     score,
