@@ -4,7 +4,7 @@ import { EDICTS, execution } from "../core/edicts.js";
 import { energyLimit } from "../core/emperor.js";
 import { memorialDialog } from "./memorials.js";
 export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
-  if (kind === "上朝" || kind === "批折") return memorialDialog(s,kind,preferred,onSchedule);
+  if (kind === "上朝" || kind === "批折") return memorialDialog(s,kind,preferred,onSchedule,null,{newBatch:true});
   const rule = ACTIONS[kind];
   if (!rule) throw new Error("未识别的行动");
   const opt = (items, value = "id", label = "name") =>
@@ -27,9 +27,9 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
         .join("") +
       '</select><label for="province">主办州郡</label><select id="province">' +
       opt(s.nation.provinces) +
-      '</select><label for="edict-amount">拨转金额（万两）</label><input id="edict-amount" type="number" min="1" max="100" value="10"><label for="edict-child">储君人选</label><select id="edict-child"><option value="">请选择在世皇子</option>' +
+      '</select><div id="edict-amount-field"><label for="edict-amount">拨转金额（万两）</label><input id="edict-amount" type="number" min="1" max="100" value="10"></div><div id="edict-child-field"><label for="edict-child">储君人选</label><select id="edict-child"><option value="">请选择在世皇子</option>' +
       opt(s.harem.children.filter((c) => c.sex === "男" && c.health > 0)) +
-      '</select><label for="edict-text">御旨（选填）</label><textarea id="edict-text" maxlength="500" placeholder="着有司依议施行。"></textarea><label class="check"><input id="force-edict" type="checkbox">遭封驳仍强推（可能引发党争）</label>';
+      '</select></div><label for="edict-text">御旨（选填）</label><textarea id="edict-text" maxlength="500" placeholder="着有司依议施行。"></textarea><label class="check"><input id="force-edict" type="checkbox">遭封驳仍强推（可能引发党争）</label>';
   if (kind === "任命")
     fields =
       '<label for="post">官职</label><select id="post">' +
@@ -82,14 +82,14 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
         .join("") +
       '</select><label for="envoy">正使</label><select id="envoy">' +
       opt(s.court.officials.filter((o) => o.alive)) +
-      '</select><label for="bride">和亲人选</label><select id="bride"><option value="">请选择成年未婚宗室女</option>' +
+      '</select><div id="bride-field"><label for="bride">和亲人选</label><select id="bride"><option value="">请选择成年未婚宗室女</option>' +
       opt([
         ...(s.harem.royalWomen || []).filter((w) => w.age >= 18 && !w.married),
         ...s.harem.children.filter(
           (c) => c.sex === "女" && s.turn - c.born >= 18 * 36 && !c.married,
         ),
       ]) +
-      "</select>";
+      "</select></div>";
   if (kind === "后宫")
     fields =
       '<label for="person">妃嫔</label><select id="person">' +
@@ -98,7 +98,7 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
       ["探望", "侍寝", "晋位", "降位", "赏赐", "禁足", "冷宫"]
         .map((x) => "<option>" + x + "</option>")
         .join("") +
-      '</select><label for="harem-amount">赏赐（万两）</label><input id="harem-amount" type="number" min="1" max="20" value="2">';
+      '</select><div id="harem-amount-field"><label for="harem-amount">赏赐（万两）</label><input id="harem-amount" type="number" min="1" max="20" value="2"></div>';
   if (kind === "选妃")
     fields =
       '<label for="person">本届秀女</label><select id="person">' +
@@ -165,6 +165,11 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
         "」，仍须看本旬天命。";
     }
     $("#action-estimate").textContent = text;
+    const show=(id,visible)=>$("#"+id)?.classList.toggle("hidden",!visible);
+    show("edict-amount-field",["转内帑","转国库"].includes($("#edict-type")?.value));
+    show("edict-child-field",$("#edict-type")?.value==="立储");
+    show("bride-field",$("#operation")?.value==="和亲");
+    show("harem-amount-field",$("#operation")?.value==="赏赐");
   };
   estimate();
   const paper=()=>{
@@ -175,7 +180,7 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
       const r=EDICTS[$('#edict-type').value];
       html+='<p>主办　'+r.office+'</p><p>所需 '+r.cost+' 万两'+(r.grain?'、'+r.grain+' 万石':'')+'，预计 '+r.months+' 个月。</p><p>预计成算「'+execution(s,$('#edict-type').value,11).label+'」</p>';
     }
-    html+='<p class="muted">'+({召见:'候见之人已至殿外。',宴请:'择宾客，定酒席。',后宫:'宫中诸事，待陛下裁定。',任命:'官职与人选，均在此列。',外交:'先定来往之国，再议国书。',选妃:'本届秀女候选于此。',出巡:'出行占满一旬，奏报仍会呈来。',亲征:'御驾亲征，须留一臣守京。',私下行事:'择一人，定所行之事。',下旨:'旨意发至有司，须待回奏。'}[kind]||'安排时辰后，放入本旬日程。')+'</p>';
+    html+='<p class="muted action-preview-note">'+({召见:'候见之人已至殿外。',宴请:'择宾客，定酒席。',后宫:'宫中诸事，待陛下裁定。',任命:'官职与人选，均在此列。',外交:'先定来往之国，再议国书。',选妃:'本届秀女候选于此。',出巡:'出行占满一旬，奏报仍会呈来。',亲征:'御驾亲征，须留一臣守京。',私下行事:'择一人，定所行之事。',下旨:'旨意发至有司，须待回奏。'}[kind]||'安排时辰后，放入本旬日程。')+'</p>';
     $('#action-document').innerHTML=html;
   };
   paper();

@@ -2,6 +2,7 @@ import { ACTIONS, scheduleCost } from "../core/turn.js";
 import { energyLimit } from "../core/emperor.js";
 import { annualBudget } from "../core/finance.js";
 import { EDICTS, execution } from "../core/edicts.js";
+import { availableMemorials } from "./memorial-state.js";
 export const ACTION_GROUPS = [
   ["朝政", ["上朝", "批折", "下旨", "任命"]],
   ["人事", ["召见", "宴请", "外交", "私下行事"]],
@@ -15,6 +16,11 @@ export function actionAvailability(s, kind) {
   if (s.pending) return "本旬待续写";
   if (s.ending) return "本朝已封卷";
   if ((kind === "上朝" || kind === "批折") && !s.memorials.length) return "暂无奏报";
+  if (kind === "上朝" || kind === "批折") {
+    if (!availableMemorials(s).length) return "本旬均已拟批";
+    if (kind === "上朝" && s.schedule.朝) return "朝间已有安排";
+    if (kind === "批折" && s.schedule.朝 && s.schedule.午) return "朝午已排定";
+  }
   if (kind === "亲征" && !s.campaigns.some(w=>!w.done)) return "无战事";
   if (kind === "选妃" && (s.era.year % 3 !== 1 || !s.harem.candidates.length)) return "非选秀年";
   if (s.campaigns.some(w=>w.personal&&!w.done) && !["亲征","歇息"].includes(kind)) return "御驾在外";

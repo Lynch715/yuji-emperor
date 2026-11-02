@@ -15,11 +15,12 @@ import { createDialogRequestScope } from "./request-scope.js";
 import {
   renderApp,
   actionButton,
-  memorialHTML,
+  memorialListHTML,
   ambitionsHTML,
   actionsHTML, metricsHTML, chapterHTML,
 } from "./render.js";
-import { memorialDialog } from "./memorials.js";
+import { memorialDialog, scheduledMemorialDialog } from "./memorials.js";
+import { memorialAssignments } from "./memorial-state.js";
 import { actionAvailability } from "./view-model.js";
 import { actionDialog } from "./actions.js";
 import { palacePanel } from "./panels.js";
@@ -672,11 +673,7 @@ async function command(name) {
   if (name === "memorials") {
     openDialog(
       "奏报匣",
-      state
-        ? state.memorials
-            .map((m) => memorialHTML({ ...m, currentTurn: state.turn }))
-            .join("")
-        : "<p>尚未登基。</p>",
+      memorialListHTML(state),
       "drawer",
     );
     return;
@@ -728,7 +725,7 @@ document.addEventListener("click", async (e) => {
       guard();
       preferred = b.dataset.slot;
       if (['上朝','批折'].includes(state.schedule[preferred]?.kind)) {
-        chooseAction(state.schedule[preferred].kind);return;
+        memorialDialog(state,state.schedule[preferred].kind,preferred,(which,a)=>arrange(which,a));return;
       }
       openDialog(
         preferred + " · 选择行动",
@@ -752,9 +749,17 @@ document.addEventListener("click", async (e) => {
       render();
     } else if (b.dataset.memorial) {
       guard();
+      if(memorialAssignments(state).has(b.dataset.memorial)) {
+        scheduledMemorialDialog(state,b.dataset.memorial);return;
+      }
       const sl=['朝','午'].find(k=>!state.schedule[k]);
       if(!sl)throw new Error('朝、午已有安排，请先撤下行动');
       memorialDialog(state,sl==='朝'?'上朝':'批折',sl,(which,a)=>arrange(which,a),b.dataset.memorial);
+    } else if (b.dataset.editReviewSlot) {
+      guard();
+      const sl=b.dataset.editReviewSlot,a=state.schedule[sl];
+      if(!a||!['上朝','批折'].includes(a.kind))throw new Error('原拟批已撤下，请重新选择奏报。');
+      memorialDialog(state,a.kind,sl,(which,next)=>arrange(which,next));
     } else if (b.dataset.talk) startTalk(b.dataset.talk);
     else if (b.dataset.tutor) {
       guard();

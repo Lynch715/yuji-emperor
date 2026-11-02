@@ -13,6 +13,20 @@ let toastTimer;
 export function toast(text) {
   $("#notice").textContent = text;
   $("#notice").classList.add("show");
+  const dialog=$("#modal");
+  if(dialog?.open){
+    let status=dialog.querySelector('.dialog-notice');
+    if(!status){
+      status=document.createElement('p');
+      status.className='dialog-notice';
+      status.setAttribute('role','status');
+      status.setAttribute('aria-live','polite');
+      const header=dialog.querySelector('.dialog-head');
+      if(header)header.insertAdjacentElement('afterend',status);
+      else dialog.prepend(status);
+    }
+    status.textContent=text;
+  }
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => $("#notice").classList.remove("show"), 6000);
 }
@@ -49,10 +63,10 @@ export function download(name, data, type = "application/json") {
   a.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
-function fitBrandDate() {
-  for(const date of document.querySelectorAll('.brand .date')) {
+function fitBrandText() {
+  for(const date of document.querySelectorAll('.brand .date,.brand h1')) {
     date.style.removeProperty('font-size');
-    const css=getComputedStyle(date),minimum=Number.parseFloat(css.getPropertyValue('--font-minor'))||10;
+    const css=getComputedStyle(date),minimum=Number.parseFloat(css.getPropertyValue(date.matches('h1')?'--font-ui':'--font-minor'))||10;
     let size=Number.parseFloat(css.fontSize);
     while(date.scrollWidth>date.clientWidth&&size>minimum){size=Math.max(minimum,size-.5);date.style.fontSize=size+'px';}
   }
@@ -60,9 +74,9 @@ function fitBrandDate() {
 export function initCommon() {
   initMobileViewport();
   // Refit after rendering, viewport changes and the optional web fonts settle.
-  new MutationObserver(fitBrandDate).observe($('#app'),{childList:true});
-  window.addEventListener('resize',fitBrandDate);
-  document.fonts?.ready.then(fitBrandDate);
+  new MutationObserver(fitBrandText).observe($('#app'),{childList:true});
+  window.addEventListener('resize',fitBrandText);
+  document.fonts?.ready.then(fitBrandText);
   $("#modal").addEventListener("keydown", e => {
     if(e.key!=='Tab')return;
     const d=$("#modal"),items=[...d.querySelectorAll('button:not(:disabled),input:not(:disabled),select:not(:disabled),textarea:not(:disabled),summary,[tabindex="0"]')].filter(x=>x.tabIndex>=0&&x.getClientRects().length&&(!x.checkVisibility||x.checkVisibility()));

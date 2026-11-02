@@ -65,5 +65,19 @@
     "actualUserDeviceCauseConfirmed": false,
     "simulationYears": 200,
     "simulationMatchesBefore": true
+  },
+  "mobileArtAndQueueFix": {
+    "localTests": 154,
+    "indexSha256": "52f1bddc415de766eb055feb345a7175915d85f6aa396b4b5e8ea430387c39a9",
+    "stateVersion": 4,
+    "report": "docs/MOBILE-V2-AUDIT.md",
+    "browserSamples": 120,
+    "controlGeometryChecks": 1366,
+    "realProviderKeyUsed": false,
+    "duplicateQueuedPetitionsExcluded": true,
+    "oldSixIdsRemovedAfterCommit": true,
+    "simulationYears": 200,
+    "simulationMatchesBefore": true,
+    "physicalDeviceTested": false
   }
 }
