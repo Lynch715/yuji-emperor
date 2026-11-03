@@ -264,6 +264,8 @@ export async function callJSON(config, messages, options = {}) {
         result,
         inputTokens: Number(usage.prompt_tokens) || 0,
         outputTokens: Number(usage.completion_tokens) || 0,
+        // 千问/OpenAI 兼容：prompt_tokens_details.cached_tokens；DeepSeek：prompt_cache_hit_tokens。
+        cachedTokens: Number(usage.prompt_tokens_details?.cached_tokens ?? usage.prompt_cache_hit_tokens) || 0,
       });
     }
     if (budget.used < 4 && now() + waitMs < budget.deadline)
