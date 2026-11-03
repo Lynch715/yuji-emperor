@@ -13,196 +13,200 @@
     <meta name="apple-mobile-web-app-title" content="御极" />
     <title>御极 · 皇帝模拟器</title>
     <style>
-      :root {
---desk: #1c1714;
---desk-deep: #191411;
---desk-shade: #120e0c;
---panel: #231d19;
---panel-active: #2b231e;
---chip: #2e2621;
---line: #3a322b;
---line-strong: #4a4037;
---line-dashed: #5a4e43;
---text: #ede3d1;
---text-strong: #f2e8d6;
---text-soft: #d9cbb4;
---text-muted: #a89a88;
---gold: #c8a35a;
---cinnabar: #b8322a;
---cinnabar-ink: #a12b23;
---glyph: #e07a62;
---paper: #efe6d3;
---paper-line: #d6c9af;
---paper-chip: #e3d7be;
---ink: #2a2420;
---ink-muted: #6e6155;
---up: #8fbf8a;
---down: #e0705f;
---danger-border: #6b3a30;
---app-height: 100dvh;
---viewport-top: 0px;
---short-paper-height: 260px;
---nav-count-size: 18px;
---nav-count-wide: 26px;
---memorial-title-line: 24px;
---safe-top: env(safe-area-inset-top, 0px);
---safe-bottom: env(safe-area-inset-bottom, 0px);
---safe-left: env(safe-area-inset-left, 0px);
---safe-right: env(safe-area-inset-right, 0px);
---clear: transparent;
---overlay-opacity: 0.86;
---faded: 0.6;
---serif: "Noto Serif SC", "Songti SC", "Noto Serif CJK SC", SimSun, serif;
+      :root{
+--desk:#1c1714;
+--desk-deep:#191411;
+--desk-shade:#120e0c;
+--panel:#231d19;
+--panel-active:#2b231e;
+--chip:#2e2621;
+--line:#3a322b;
+--line-strong:#4a4037;
+--line-dashed:#5a4e43;
+--text:#ede3d1;
+--text-strong:#f2e8d6;
+--text-soft:#d9cbb4;
+--text-muted:#a89a88;
+--gold:#c8a35a;
+--cinnabar:#b8322a;
+--cinnabar-ink:#a12b23;
+--glyph:#e07a62;
+--paper:#efe6d3;
+--paper-line:#d6c9af;
+--paper-chip:#e3d7be;
+--ink:#2a2420;
+--ink-muted:#6e6155;
+--up:#8fbf8a;
+--down:#e0705f;
+--danger-border:#6b3a30;
+--app-height:100dvh;
+--viewport-top:0px;
+--short-paper-height:260px;
+--nav-count-size:18px;
+--nav-count-wide:26px;
+--memorial-title-line:24px;
+--safe-top:env(safe-area-inset-top, 0px);
+--safe-bottom:env(safe-area-inset-bottom, 0px);
+--safe-left:env(safe-area-inset-left, 0px);
+--safe-right:env(safe-area-inset-right, 0px);
+--clear:transparent;
+--overlay-opacity:0.86;
+--faded:0.6;
+--serif:"Noto Serif SC", "Songti SC", "Noto Serif CJK SC", SimSun, serif;
 --sans:
 "Noto Sans SC", -apple-system, BlinkMacSystemFont, "PingFang SC",
 "Microsoft YaHei", sans-serif;
---brush: "Ma Shan Zheng", "Kaiti SC", KaiTi, serif;
---font-minor: 10px;
---font-micro: 11px;
---font-note: 12px;
---font-small: 13px;
---font-ui: 14px;
---font-base: 16px;
---font-body: 17px;
---font-document: 18px;
---font-value: 20px;
---font-heading: 26px;
---font-title: 30px;
---font-brush: 40px;
---font-hero: 64px;
---body-line: 32px;
---document-line: 36px;
---mobile-line: 30px;
---ui-line: 1.6;
---s0: 0px;
---s1: 4px;
---s2: 6px;
---s3: 8px;
---s4: 10px;
---s5: 12px;
---s6: 14px;
---s7: 16px;
---s8: 18px;
---s9: 20px;
---s10: 22px;
---s11: 24px;
---s12: 28px;
---s13: 32px;
---s14: 36px;
---s15: 40px;
---s16: 48px;
---hairline: 1px;
---focus-line: 2px;
---rail: 3px;
---meter: 3px;
---goal-meter: 4px;
---radius-card: 8px;
---radius-button: 6px;
---radius-tag: 12px;
---radius-pill: 22px;
---target: 44px;
---action-height: 52px;
---slot-height: 112px;
---slot-mobile: 56px;
---primary-height: 48px;
---top-height: 92px;
---bottom-height: 64px;
---dock-width: 296px;
---sidebar-width: 340px;
---brand-width: 260px;
---glyph-size: 28px;
---seal-size: 48px;
---seal-mobile: 36px;
---pip-size: 12px;
---meter-width: 72px;
---review-width: 420px;
---review-max: 1120px;
---dialog-width: 760px;
---palace-width: 1200px;
---paper-pad: 40px;
---dialog-height: 88dvh;
---intro-width: 560px;
---portrait-size: 44px;
---chart-size: 120px;
---drawer-height: 85dvh;
---mobile-dialog-height: 92dvh;
---picker-height: 50dvh;
---picker-width: 80vw;
---tracking: 0.12em;
---wide-tracking: 0.24em;
---indent: 2em;
---brush-angle: -4deg;
---shadow: 0 var(--s9) var(--s16)
+--brush:"Ma Shan Zheng", "Kaiti SC", KaiTi, serif;
+--font-minor:10px;
+--font-micro:11px;
+--font-note:12px;
+--font-small:13px;
+--font-ui:14px;
+--font-base:16px;
+--font-body:17px;
+--font-document:18px;
+--font-value:20px;
+--font-heading:26px;
+--font-title:30px;
+--font-brush:40px;
+--font-hero:64px;
+--body-line:32px;
+--document-line:36px;
+--mobile-line:30px;
+--ui-line:1.6;
+--s0:0px;
+--s1:4px;
+--s2:6px;
+--s3:8px;
+--s4:10px;
+--s5:12px;
+--s6:14px;
+--s7:16px;
+--s8:18px;
+--s9:20px;
+--s10:22px;
+--s11:24px;
+--s12:28px;
+--s13:32px;
+--s14:36px;
+--s15:40px;
+--s16:48px;
+--hairline:1px;
+--focus-line:2px;
+--rail:3px;
+--meter:3px;
+--goal-meter:4px;
+--radius-card:8px;
+--radius-button:6px;
+--radius-tag:12px;
+--radius-pill:22px;
+--target:44px;
+--action-height:52px;
+--slot-height:112px;
+--slot-mobile:56px;
+--primary-height:48px;
+--top-height:92px;
+--bottom-height:64px;
+--dock-width:296px;
+--sidebar-width:340px;
+--brand-width:260px;
+--glyph-size:28px;
+--seal-size:48px;
+--seal-mobile:36px;
+--pip-size:12px;
+--meter-width:72px;
+--review-width:420px;
+--review-max:1120px;
+--dialog-width:760px;
+--palace-width:1200px;
+--paper-pad:40px;
+--dialog-height:88dvh;
+--intro-width:560px;
+--portrait-size:44px;
+--chart-size:120px;
+--drawer-height:85dvh;
+--mobile-dialog-height:92dvh;
+--picker-height:50dvh;
+--picker-width:80vw;
+--tracking:0.12em;
+--wide-tracking:0.24em;
+--indent:2em;
+--brush-angle:-4deg;
+--shadow:0 var(--s9) var(--s16)
 color-mix(in srgb, var(--desk-shade) 45%, var(--clear));
-color-scheme: dark;
-font-family: var(--sans);
-font-size: var(--font-base);
-line-height: var(--ui-line);
-color: var(--text);
-background: var(--desk);
+color-scheme:dark;
+font-family:var(--sans);
+font-size:var(--font-base);
+line-height:var(--ui-line);
+color:var(--text);
+background:var(--desk);
 }
-* {
-box-sizing: border-box;
+*{
+box-sizing:border-box;
 }
-body {
-margin: var(--s0);
-background: var(--desk);
+body{
+margin:var(--s0);
+background:var(--desk);
 }
 button,
 input,
 textarea,
-select {
-font: inherit;
-color: inherit;
+select{
+font:inherit;
+color:inherit;
 }
 button,
 a,
 input,
 textarea,
 select,
-summary {
-touch-action: manipulation;
+summary{
+touch-action:manipulation;
 }
-button {
-min-height: var(--target);
-min-width: var(--target);
-padding: var(--s3) var(--s7);
-border: var(--hairline) solid var(--line-strong);
-border-radius: var(--radius-button);
-background: var(--panel);
-color: var(--text-soft);
-cursor: pointer;
-font-size: var(--font-ui);
+button{
+min-height:var(--target);
+min-width:var(--target);
+padding:var(--s3) var(--s7);
+border:var(--hairline) solid var(--line-strong);
+border-radius:var(--radius-button);
+background:var(--panel);
+color:var(--text-soft);
+cursor:pointer;
+font-size:var(--font-ui);
 }
-button:hover {
-background: var(--panel-active);
-border-color: var(--gold);
+@media (hover: hover){
+button:hover{
+background:var(--panel-active);
+border-color:var(--gold);
 }
-button:disabled {
-cursor: not-allowed;
-color: var(--text-muted);
-background: var(--clear);
 }
-button:disabled .glyph {
-opacity: var(--faded);
+button:disabled{
+cursor:not-allowed;
+color:var(--text-muted);
+background:var(--clear);
 }
-button.primary {
-background: var(--cinnabar);
-border-color: var(--cinnabar);
-color: var(--text-strong);
-font-family: var(--serif);
-font-weight: 600;
-letter-spacing: var(--tracking);
+button:disabled .glyph{
+opacity:var(--faded);
 }
-button.primary:hover {
-border-color: var(--gold);
+button.primary{
+background:var(--cinnabar);
+border-color:var(--cinnabar);
+color:var(--text-strong);
+font-family:var(--serif);
+font-weight:600;
+letter-spacing:var(--tracking);
 }
-button.quiet {
-background: var(--clear);
-border-color: var(--clear);
+@media (hover: hover){
+button.primary:hover{
+border-color:var(--gold);
 }
-button.danger {
-color: var(--down);
+}
+button.quiet{
+background:var(--clear);
+border-color:var(--clear);
+}
+button.danger{
+color:var(--down);
 }
 button:focus-visible,
 a:focus-visible,
@@ -210,2152 +214,2203 @@ input:focus-visible,
 textarea:focus-visible,
 select:focus-visible,
 summary:focus-visible,
-[tabindex]:focus-visible {
-outline: var(--focus-line) solid var(--gold);
-outline-offset: var(--focus-line);
+[tabindex]:focus-visible{
+outline:var(--focus-line) solid var(--gold);
+outline-offset:var(--focus-line);
 }
-a {
-color: var(--gold);
+a{
+color:var(--gold);
 }
 input,
 select,
-textarea {
-width: 100%;
-min-height: var(--target);
-padding: var(--s4) var(--s5);
-border: var(--hairline) solid var(--line);
-border-radius: var(--radius-button);
-background: var(--panel);
-color: var(--text);
+textarea{
+width:100%;
+min-height:var(--target);
+padding:var(--s4) var(--s5);
+border:var(--hairline) solid var(--line);
+border-radius:var(--radius-button);
+background:var(--panel);
+color:var(--text);
 }
-textarea {
-resize: vertical;
-min-height: var(--top-height);
+textarea{
+resize:vertical;
+min-height:var(--top-height);
 }
-label {
-display: block;
-margin: var(--s5) var(--s0) var(--s2);
-font-size: var(--font-small);
-color: var(--text-muted);
+label{
+display:block;
+margin:var(--s5) var(--s0) var(--s2);
+font-size:var(--font-small);
+color:var(--text-muted);
 }
-input[type="checkbox"] {
-width: var(--s10);
-height: var(--s10);
-min-height: var(--s10);
-flex: none;
-accent-color: var(--gold);
+input[type="checkbox"]{
+width:var(--s10);
+height:var(--s10);
+min-height:var(--s10);
+flex:none;
+accent-color:var(--gold);
 }
-label.check {
-display: flex;
-align-items: center;
-gap: var(--s4);
-min-height: var(--target);
-padding: var(--s2);
-margin: var(--s0);
-color: var(--text);
+label.check{
+display:flex;
+align-items:center;
+gap:var(--s4);
+min-height:var(--target);
+padding:var(--s2);
+margin:var(--s0);
+color:var(--text);
 }
-fieldset {
-min-width: var(--s0);
-border: var(--hairline) solid var(--line);
-padding: var(--s5);
-border-radius: var(--radius-card);
-margin: var(--s7) var(--s0);
+fieldset{
+min-width:var(--s0);
+border:var(--hairline) solid var(--line);
+padding:var(--s5);
+border-radius:var(--radius-card);
+margin:var(--s7) var(--s0);
 }
-legend {
-color: var(--gold);
-font-size: var(--font-small);
-padding: var(--s0) var(--s2);
-}
-h1,
-h2,
-h3,
-h4,
-p {
-margin: var(--s0);
+legend{
+color:var(--gold);
+font-size:var(--font-small);
+padding:var(--s0) var(--s2);
 }
 h1,
 h2,
 h3,
 h4,
-strong.serif {
-font-family: var(--serif);
+p{
+margin:var(--s0);
 }
-h2 {
-font-size: var(--font-document);
-font-weight: 600;
+h1,
+h2,
+h3,
+h4,
+strong.serif{
+font-family:var(--serif);
 }
-h3 {
-font-size: var(--font-document);
-font-weight: 600;
-margin-bottom: var(--s3);
+h2{
+font-size:var(--font-document);
+font-weight:600;
 }
-p + p {
-margin-top: var(--s5);
+h3{
+font-size:var(--font-document);
+font-weight:600;
+margin-bottom:var(--s3);
 }
-small {
-font-size: var(--font-note);
+p + p{
+margin-top:var(--s5);
 }
-.muted {
-color: var(--text-muted);
+small{
+font-size:var(--font-note);
 }
-.positive {
-color: var(--up);
+.muted{
+color:var(--text-muted);
 }
-.negative {
-color: var(--down);
+.positive{
+color:var(--up);
 }
-.hidden {
-display: none !important;
+.negative{
+color:var(--down);
 }
-.skip {
-position: fixed;
-left: var(--s7);
-top: var(--s7);
-z-index: 20;
-background: var(--desk-deep);
-padding: var(--s5);
-transform: translateY(-200%);
+.hidden{
+display:none !important;
 }
-.skip:focus {
-transform: none;
+.skip{
+position:fixed;
+left:var(--s7);
+top:var(--s7);
+z-index:20;
+background:var(--desk-deep);
+padding:var(--s5);
+transform:translateY(-200%);
 }
-#app {
-height: var(--app-height);
-display: flex;
-flex-direction: column;
-min-height: var(--s0);
+.skip:focus{
+transform:none;
 }
-.topbar {
-height: var(--top-height);
-flex: none;
-display: flex;
-align-items: center;
-gap: var(--s7);
-padding: var(--s0) var(--s9);
-background: var(--desk-deep);
-border-bottom: var(--hairline) solid var(--line);
+#app{
+height:var(--app-height);
+display:flex;
+flex-direction:column;
+min-height:var(--s0);
 }
-.brand {
-width: var(--brand-width);
-flex: none;
-display: flex;
-align-items: center;
-gap: var(--s5);
-min-width: var(--s0);
+.topbar{
+height:var(--top-height);
+flex:none;
+display:flex;
+align-items:center;
+gap:var(--s7);
+padding:var(--s0) var(--s9);
+background:var(--desk-deep);
+border-bottom:var(--hairline) solid var(--line);
 }
-.brand > div:last-child {
-min-width: var(--s0);
+.brand{
+width:var(--brand-width);
+flex:none;
+display:flex;
+align-items:center;
+gap:var(--s5);
+min-width:var(--s0);
 }
-.brand h1 {
-font-size: var(--font-document);
-color: var(--text-strong);
-font-weight: 600;
-white-space: nowrap;
-max-width: 100%;
-overflow: hidden;
-text-overflow: ellipsis;
+.brand > div:last-child{
+min-width:var(--s0);
 }
-.seal {
-width: var(--seal-size);
-height: var(--seal-size);
-flex: none;
-display: grid;
-place-content: center;
-text-align: center;
-background: var(--cinnabar);
-color: var(--text-strong);
-border-radius: var(--s1);
-font: 900 var(--font-ui) / 1.2 var(--serif);
+.brand h1{
+font-size:var(--font-document);
+color:var(--text-strong);
+font-weight:600;
+white-space:nowrap;
+max-width:100%;
+overflow:hidden;
+text-overflow:ellipsis;
 }
-.date {
-font-size: var(--font-micro);
-color: var(--text-muted);
-white-space: nowrap;
-overflow: hidden;
-text-overflow: ellipsis;
+.seal{
+width:var(--seal-size);
+height:var(--seal-size);
+flex:none;
+display:grid;
+place-content:center;
+text-align:center;
+background:var(--cinnabar);
+color:var(--text-strong);
+border-radius:var(--s1);
+font:900 var(--font-ui) / 1.2 var(--serif);
 }
-.top-actions {
-display: flex;
-gap: var(--s2);
-flex: none;
+.date{
+font-size:var(--font-micro);
+color:var(--text-muted);
+white-space:nowrap;
+overflow:hidden;
+text-overflow:ellipsis;
 }
-.top-actions button {
-padding: var(--s3) var(--s4);
+.top-actions{
+display:flex;
+gap:var(--s2);
+flex:none;
 }
-.metrics {
-display: flex;
-gap: var(--s3);
-flex: 1;
-min-width: var(--s0);
+.top-actions button{
+padding:var(--s3) var(--s4);
 }
-.metric-group {
-background: var(--panel);
-border: var(--hairline) solid var(--line);
-border-radius: var(--radius-card);
-padding: var(--s2) var(--s3);
-min-width: var(--s0);
+.metrics{
+display:flex;
+gap:var(--s3);
+flex:1;
+min-width:var(--s0);
 }
-.weight-3 {
-flex: 3;
+.metric-group{
+background:var(--panel);
+border:var(--hairline) solid var(--line);
+border-radius:var(--radius-card);
+padding:var(--s2) var(--s3);
+min-width:var(--s0);
 }
-.weight-2 {
-flex: 2;
+.weight-3{
+flex:3;
 }
-.metric-group h2 {
-font: 500 var(--font-micro) / 1.2 var(--sans);
-letter-spacing: var(--tracking);
-color: var(--gold);
-margin-bottom: var(--s1);
+.weight-2{
+flex:2;
 }
-.metric-values {
-display: flex;
-gap: var(--s3);
+.metric-group h2{
+font:500 var(--font-micro) / 1.2 var(--sans);
+letter-spacing:var(--tracking);
+color:var(--gold);
+margin-bottom:var(--s1);
 }
-.metric {
-flex: 1;
-min-width: var(--s0);
+.metric-values{
+display:flex;
+gap:var(--s3);
 }
-.metric-label {
-font-size: var(--font-micro);
-color: var(--text-muted);
-display: block;
+.metric{
+flex:1;
+min-width:var(--s0);
 }
-.metric-reading {
-display: flex;
-align-items: baseline;
-gap: var(--s1);
-white-space: nowrap;
+.metric-label{
+font-size:var(--font-micro);
+color:var(--text-muted);
+display:block;
 }
-.metric strong {
-font-family: var(--serif);
-font-size: var(--font-value);
-font-weight: 600;
-line-height: 1.2;
+.metric-reading{
+display:flex;
+align-items:baseline;
+gap:var(--s1);
+white-space:nowrap;
+}
+.metric strong{
+font-family:var(--serif);
+font-size:var(--font-value);
+font-weight:600;
+line-height:1.2;
 }
 .metric small,
-.trend {
-font-size: var(--font-micro);
+.trend{
+font-size:var(--font-micro);
 }
-.metric-reading small {
-color: var(--text-muted);
+.metric-reading small{
+color:var(--text-muted);
 }
-.metric-meter {
-display: block;
-width: var(--meter-width);
-max-width: 100%;
-height: var(--meter);
-border-radius: var(--s1);
-background: var(--line);
-margin-top: var(--s1);
-overflow: hidden;
+.metric-meter{
+display:block;
+width:var(--meter-width);
+max-width:100%;
+height:var(--meter);
+border-radius:var(--s1);
+background:var(--line);
+margin-top:var(--s1);
+overflow:hidden;
 }
-.metric-meter i {
-display: block;
-height: 100%;
-background: var(--gold);
+.metric-meter i{
+display:block;
+height:100%;
+background:var(--gold);
 }
-.metric.danger strong {
-color: var(--down);
+.metric.danger strong{
+color:var(--down);
 }
-.metric.danger .metric-meter i {
-background: var(--down);
+.metric.danger .metric-meter i{
+background:var(--down);
 }
-.group-danger {
-border-color: var(--danger-border);
+.group-danger{
+border-color:var(--danger-border);
 }
 .mobile-menu,
 .mobile-stats,
 .mobile-energy,
-.mobile-nav {
-display: none;
+.mobile-nav{
+display:none;
 }
-.workbench {
-display: grid;
-grid-template-columns: var(--dock-width) minmax(0, 1fr) var(--sidebar-width);
-flex: 1;
-min-height: var(--s0);
+.workbench{
+display:grid;
+grid-template-columns:var(--dock-width) minmax(0, 1fr) var(--sidebar-width);
+flex:1;
+min-height:var(--s0);
 }
-.dock {
-padding: var(--s9);
-border-right: var(--hairline) solid var(--line);
-overflow: auto;
-display: flex;
-flex-direction: column;
-gap: var(--s8);
+.dock{
+padding:var(--s9);
+border-right:var(--hairline) solid var(--line);
+overflow:auto;
+display:flex;
+flex-direction:column;
+gap:var(--s8);
 }
 .action-group h2,
-.dock-halls h2 {
-font: 500 var(--font-note) / 1.4 var(--sans);
-color: var(--gold);
-letter-spacing: var(--wide-tracking);
-margin-bottom: var(--s3);
+.dock-halls h2{
+font:500 var(--font-note) / 1.4 var(--sans);
+color:var(--gold);
+letter-spacing:var(--wide-tracking);
+margin-bottom:var(--s3);
 }
-.action-grid {
-display: grid;
-grid-template-columns: repeat(2, minmax(0, 1fr));
-gap: var(--s2);
+.action-grid{
+display:grid;
+grid-template-columns:repeat(2, minmax(0, 1fr));
+gap:var(--s2);
 }
-.action-card {
-height: var(--action-height);
-display: flex;
-align-items: center;
-gap: var(--s2);
-padding: var(--s0) var(--s3);
-background: var(--panel);
-border-color: var(--line);
-text-align: left;
-min-width: var(--s0);
+.action-card{
+height:var(--action-height);
+display:flex;
+align-items:center;
+gap:var(--s2);
+padding:var(--s0) var(--s3);
+background:var(--panel);
+border-color:var(--line);
+text-align:left;
+min-width:var(--s0);
 }
-.glyph {
-width: var(--glyph-size);
-height: var(--glyph-size);
-flex: none;
-display: grid;
-place-items: center;
-border-radius: var(--s1);
-background: var(--chip);
-color: var(--glyph);
-font: 600 var(--font-ui) / 1 var(--serif);
+.glyph{
+width:var(--glyph-size);
+height:var(--glyph-size);
+flex:none;
+display:grid;
+place-items:center;
+border-radius:var(--s1);
+background:var(--chip);
+color:var(--glyph);
+font:600 var(--font-ui) / 1 var(--serif);
 }
-.action-copy {
-display: flex;
-flex-direction: column;
-min-width: var(--s0);
-gap: var(--s1);
+.action-copy{
+display:flex;
+flex-direction:column;
+min-width:var(--s0);
+gap:var(--s1);
 }
-.action-copy strong {
-font-size: var(--font-ui);
-font-weight: 500;
-color: var(--text);
+.action-copy strong{
+font-size:var(--font-ui);
+font-weight:500;
+color:var(--text);
 }
-.action-copy small {
-font-size: var(--font-micro);
-line-height: 1.2;
-color: var(--text-muted);
-white-space: normal;
+.action-copy small{
+font-size:var(--font-micro);
+line-height:1.2;
+color:var(--text-muted);
+white-space:normal;
 }
-.action-card:disabled strong {
-color: var(--text-muted);
+.action-card:disabled strong{
+color:var(--text-muted);
 }
-.dock-halls {
-margin-top: auto;
-border-top: var(--hairline) solid var(--line);
-padding-top: var(--s6);
+.dock-halls{
+margin-top:auto;
+border-top:var(--hairline) solid var(--line);
+padding-top:var(--s6);
 }
-.dock-halls > div {
-display: grid;
-grid-template-columns: repeat(3, minmax(0, 1fr));
-gap: var(--s2);
+.dock-halls > div{
+display:grid;
+grid-template-columns:repeat(3, minmax(0, 1fr));
+gap:var(--s2);
 }
-.dock-halls button {
-padding: var(--s2);
-background: var(--clear);
-border-color: var(--line);
-font-family: var(--serif);
+.dock-halls button{
+padding:var(--s2);
+background:var(--clear);
+border-color:var(--line);
+font-family:var(--serif);
 }
-.desk {
-min-width: var(--s0);
-min-height: var(--s0);
-padding: var(--s10) var(--s12) var(--s0);
-display: flex;
-flex-direction: column;
-gap: var(--s7);
+.desk{
+min-width:var(--s0);
+min-height:var(--s0);
+padding:var(--s10) var(--s12) var(--s0);
+display:flex;
+flex-direction:column;
+gap:var(--s7);
 }
-.planning {
-flex: none;
-min-width: var(--s0);
+.planning{
+flex:none;
+min-width:var(--s0);
 }
-.planning-title {
-display: flex;
-align-items: center;
-justify-content: space-between;
-gap: var(--s5);
-margin-bottom: var(--s5);
+.planning-title{
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:var(--s5);
+margin-bottom:var(--s5);
 }
-.planning-title h2 {
-white-space: nowrap;
-color: var(--text-strong);
+.planning-title h2{
+white-space:nowrap;
+color:var(--text-strong);
 }
-.energy {
-display: flex;
-align-items: center;
-gap: var(--s2);
-font-size: var(--font-small);
-color: var(--text-soft);
-white-space: nowrap;
+.energy{
+display:flex;
+align-items:center;
+gap:var(--s2);
+font-size:var(--font-small);
+color:var(--text-soft);
+white-space:nowrap;
 }
-.energy-label {
-color: var(--text-muted);
+.energy-label{
+color:var(--text-muted);
 }
-.pips {
-display: flex;
-gap: var(--s1);
+.pips{
+display:flex;
+gap:var(--s1);
 }
-.pip {
-width: var(--pip-size);
-height: var(--pip-size);
-border: var(--hairline) solid var(--gold);
-border-radius: 50%;
-background: var(--gold);
+.pip{
+width:var(--pip-size);
+height:var(--pip-size);
+border:var(--hairline) solid var(--gold);
+border-radius:50%;
+background:var(--gold);
 }
-.pip.spent {
-background: var(--line);
-border-color: var(--line-dashed);
+.pip.spent{
+background:var(--line);
+border-color:var(--line-dashed);
 }
-.pip.over {
-background: var(--down);
-border-color: var(--down);
+.pip.over{
+background:var(--down);
+border-color:var(--down);
 }
-.schedule {
-display: grid;
-grid-template-columns: repeat(3, minmax(0, 1fr));
-gap: var(--s5);
+.schedule{
+display:grid;
+grid-template-columns:repeat(3, minmax(0, 1fr));
+gap:var(--s5);
 }
-.slot-wrap {
-position: relative;
-min-width: var(--s0);
+.slot-wrap{
+position:relative;
+min-width:var(--s0);
 }
-.slot {
-width: 100%;
-height: var(--slot-height);
-display: flex;
-flex-direction: column;
-align-items: stretch;
-gap: var(--s2);
-padding: var(--s6);
-text-align: left;
-background: var(--clear);
-border: var(--hairline) dashed var(--line-dashed);
-border-radius: var(--radius-card);
-overflow: hidden;
+.slot{
+width:100%;
+height:var(--slot-height);
+display:flex;
+flex-direction:column;
+align-items:stretch;
+gap:var(--s2);
+padding:var(--s6);
+text-align:left;
+background:var(--clear);
+border:var(--hairline) dashed var(--line-dashed);
+border-radius:var(--radius-card);
+overflow:hidden;
 }
-.filled .slot {
-background: var(--panel-active);
-border: var(--hairline) solid var(--gold);
+.filled .slot{
+background:var(--panel-active);
+border:var(--hairline) solid var(--gold);
 }
-.slot-meta {
-display: flex;
-justify-content: space-between;
-gap: var(--s1);
-font-size: var(--font-note);
-color: var(--text-muted);
+.slot-meta{
+display:flex;
+justify-content:space-between;
+gap:var(--s1);
+font-size:var(--font-note);
+color:var(--text-muted);
 }
-.filled .slot-meta {
-color: var(--gold);
+.filled .slot-meta{
+color:var(--gold);
 }
-.slot strong {
-font: 600 var(--font-value) / 1.5 var(--serif);
-color: var(--text-soft);
-white-space: nowrap;
+.slot strong{
+font:600 var(--font-value) / 1.5 var(--serif);
+color:var(--text-soft);
+white-space:nowrap;
 }
-.filled .slot strong {
-color: var(--text-strong);
+.filled .slot strong{
+color:var(--text-strong);
 }
-.slot small {
-font-size: var(--font-small);
-color: var(--text-muted);
-text-overflow: ellipsis;
-overflow: hidden;
-white-space: nowrap;
+.slot small{
+font-size:var(--font-small);
+color:var(--text-muted);
+text-overflow:ellipsis;
+overflow:hidden;
+white-space:nowrap;
 }
-.slot-clear {
-position: absolute;
-right: var(--s0);
-top: var(--s11);
-background: var(--panel-active);
-border: var(--s0);
-padding: var(--s0);
-min-width: var(--target);
-color: var(--text-muted);
+.slot-clear{
+position:absolute;
+right:var(--s0);
+top:var(--s11);
+background:var(--panel-active);
+border:var(--s0);
+padding:var(--s0);
+min-width:var(--target);
+color:var(--text-muted);
 }
-.turnbar {
-display: flex;
-align-items: center;
-gap: var(--s3);
-background: var(--panel);
-border: var(--hairline) solid var(--line);
-border-radius: var(--radius-card);
-padding: var(--s3) var(--s4) var(--s3) var(--s7);
-margin-top: var(--s5);
+.turnbar{
+display:flex;
+align-items:center;
+gap:var(--s3);
+background:var(--panel);
+border:var(--hairline) solid var(--line);
+border-radius:var(--radius-card);
+padding:var(--s3) var(--s4) var(--s3) var(--s7);
+margin-top:var(--s5);
 }
-.estimate {
-font-size: var(--font-small);
-color: var(--text-soft);
-min-width: var(--s0);
-flex: 1;
-display: flex;
-flex-direction: column;
-gap: var(--s1);
+.estimate{
+font-size:var(--font-small);
+color:var(--text-soft);
+min-width:var(--s0);
+flex:1;
+display:flex;
+flex-direction:column;
+gap:var(--s1);
 }
-.estimate small {
-font-size: var(--font-micro);
-color: var(--text-muted);
+.estimate small{
+font-size:var(--font-micro);
+color:var(--text-muted);
 }
-.advance {
-min-width: var(--top-height);
-height: var(--target);
-flex: none;
+.advance{
+min-width:var(--top-height);
+height:var(--target);
+flex:none;
 }
-.oral-trigger {
-background: var(--clear);
-padding: var(--s2);
-flex: none;
+.oral-trigger{
+background:var(--clear);
+padding:var(--s2);
+flex:none;
 }
-.scroll {
-flex: 1;
-min-height: var(--s0);
-min-width: var(--s0);
-overflow: auto;
-background: var(--paper);
-color: var(--ink);
-border-radius: var(--radius-card) var(--radius-card) var(--s0) var(--s0);
-padding: var(--s11) var(--paper-pad);
-font-family: var(--serif);
-overflow-wrap: anywhere;
-scrollbar-color: var(--ink-muted) var(--paper);
+.scroll{
+flex:1;
+min-height:var(--s0);
+min-width:var(--s0);
+overflow:auto;
+background:var(--paper);
+color:var(--ink);
+border-radius:var(--radius-card) var(--radius-card) var(--s0) var(--s0);
+padding:var(--s11) var(--paper-pad);
+font-family:var(--serif);
+overflow-wrap:anywhere;
+scrollbar-color:var(--ink-muted) var(--paper);
 }
-.chapter-head {
-display: flex;
-align-items: baseline;
-gap: var(--s6);
-border-bottom: var(--hairline) solid var(--paper-line);
-padding-bottom: var(--s5);
-flex-wrap: wrap;
+.chapter-head{
+display:flex;
+align-items:baseline;
+gap:var(--s6);
+border-bottom:var(--hairline) solid var(--paper-line);
+padding-bottom:var(--s5);
+flex-wrap:wrap;
 }
-.eyebrow {
-font: 500 var(--font-note) / 1.5 var(--sans);
-letter-spacing: var(--tracking);
-color: var(--cinnabar-ink);
+.eyebrow{
+font:500 var(--font-note) / 1.5 var(--sans);
+letter-spacing:var(--tracking);
+color:var(--cinnabar-ink);
 }
-.chapter-head h2 {
-font-size: var(--font-heading);
-color: var(--ink);
-flex: 1;
+.chapter-head h2{
+font-size:var(--font-heading);
+color:var(--ink);
+flex:1;
 }
-.chapter-fate {
-font-size: var(--font-note);
-color: var(--ink-muted);
+.chapter-fate{
+font-size:var(--font-note);
+color:var(--ink-muted);
 }
-.chapter-date {
-font: var(--font-note) / 1.6 var(--sans);
-color: var(--ink-muted);
-margin-top: var(--s3);
+.chapter-date{
+font:var(--font-note) / 1.6 var(--sans);
+color:var(--ink-muted);
+margin-top:var(--s3);
 }
-.prose {
-font: 400 var(--font-body) / var(--body-line) var(--serif);
+.prose{
+font:400 var(--font-body) / var(--body-line) var(--serif);
 }
-.prose h3 {
-font-size: var(--font-body);
-color: var(--ink-muted);
-margin: var(--s7) var(--s0) var(--s2);
+.prose h3{
+font-size:var(--font-body);
+color:var(--ink-muted);
+margin:var(--s7) var(--s0) var(--s2);
 }
-.prose p {
-text-indent: var(--indent);
-white-space: pre-wrap;
+.prose p{
+text-indent:var(--indent);
+white-space:pre-wrap;
 }
-.chapter-tabs {
-margin-top: var(--s9);
-display: flex;
-gap: var(--s3);
-flex-wrap: wrap;
-font-family: var(--sans);
+.chapter-tabs{
+margin-top:var(--s9);
+display:flex;
+gap:var(--s3);
+flex-wrap:wrap;
+font-family:var(--sans);
 }
-.chapter-tabs details {
-flex: 0 1 auto;
-max-width: 100%;
+.chapter-tabs details{
+flex:0 1 auto;
+max-width:100%;
 }
 .chapter-tabs summary,
-.chapter-tabs > button {
-min-height: var(--target);
-padding: var(--s3) var(--s4);
-border-radius: var(--radius-tag);
-background: var(--paper-chip);
-color: var(--ink);
-border: var(--s0);
-font-size: var(--font-note);
+.chapter-tabs > button{
+min-height:var(--target);
+padding:var(--s3) var(--s4);
+border-radius:var(--radius-tag);
+background:var(--paper-chip);
+color:var(--ink);
+border:var(--s0);
+font-size:var(--font-note);
 }
-.chapter-tabs details[open] {
-flex-basis: 100%;
+.chapter-tabs details[open]{
+flex-basis:100%;
 }
-.chapter-detail {
-font-size: var(--font-small);
-padding: var(--s5) var(--s0);
+.chapter-detail{
+font-size:var(--font-small);
+padding:var(--s5) var(--s0);
 }
-.chapter-detail ul {
-padding-left: var(--s9);
+.chapter-detail ul{
+padding-left:var(--s9);
 }
-.chapter-detail li {
-margin-bottom: var(--s2);
+.chapter-detail li{
+margin-bottom:var(--s2);
 }
 .scroll .muted,
 .paper .muted,
 .card .muted,
-.province .muted {
-color: var(--ink-muted);
+.province .muted{
+color:var(--ink-muted);
 }
 .scroll .positive,
 .scroll .negative,
 .card .positive,
 .card .negative,
 .paper .positive,
-.paper .negative {
-display: inline-block;
-background: var(--desk);
-padding: var(--s0) var(--s1);
-border-radius: var(--s1);
+.paper .negative{
+display:inline-block;
+background:var(--desk);
+padding:var(--s0) var(--s1);
+border-radius:var(--s1);
 }
-.saved-status {
-font-size: var(--font-micro);
-color: var(--text-muted);
-flex: none;
-min-height: var(--s7);
-padding-bottom: var(--s2);
+.saved-status{
+font-size:var(--font-micro);
+color:var(--text-muted);
+flex:none;
+min-height:var(--s7);
+padding-bottom:var(--s2);
 }
-.sidebar {
-border-left: var(--hairline) solid var(--line);
-padding: var(--s9);
-display: flex;
-flex-direction: column;
-gap: var(--s5);
-overflow: auto;
-min-height: var(--s0);
+.sidebar{
+border-left:var(--hairline) solid var(--line);
+padding:var(--s9);
+display:flex;
+flex-direction:column;
+gap:var(--s5);
+overflow:auto;
+min-height:var(--s0);
 }
-.side-title {
-display: flex;
-align-items: baseline;
-justify-content: space-between;
-gap: var(--s3);
+.side-title{
+display:flex;
+align-items:baseline;
+justify-content:space-between;
+gap:var(--s3);
 }
 .side-title h2,
-.ambitions-block > h2 {
-font-size: var(--font-document);
-color: var(--text-strong);
+.ambitions-block > h2{
+font-size:var(--font-document);
+color:var(--text-strong);
 }
-.side-title small {
-font-size: var(--font-note);
-color: var(--text-muted);
+.side-title small{
+font-size:var(--font-note);
+color:var(--text-muted);
 }
-.memorial {
-display: flex;
-gap: var(--s5);
-background: var(--paper);
-color: var(--ink);
-border: var(--s0);
-padding: var(--s5) var(--s6);
-text-align: left;
-flex: none;
-min-width: var(--s0);
+.memorial{
+display:flex;
+gap:var(--s5);
+background:var(--paper);
+color:var(--ink);
+border:var(--s0);
+padding:var(--s5) var(--s6);
+text-align:left;
+flex:none;
+min-width:var(--s0);
 }
-.memorial:hover {
-background: var(--paper-chip);
+@media (hover: hover){
+.memorial:hover{
+background:var(--paper-chip);
 }
-.memorial-rail {
-width: var(--rail);
-flex: none;
-border-radius: var(--s1);
-background: var(--gold);
 }
-.urgent .memorial-rail {
-background: var(--cinnabar);
+.memorial-rail{
+width:var(--rail);
+flex:none;
+border-radius:var(--s1);
+background:var(--gold);
 }
-.memorial-copy {
-display: flex;
-flex-direction: column;
-gap: var(--s1);
-min-width: var(--s0);
+.urgent .memorial-rail{
+background:var(--cinnabar);
 }
-.memorial strong {
-display: flex;
-align-items: center;
-gap: var(--s3);
-font: 600 var(--font-base) / 1.6 var(--serif);
-flex-wrap: wrap;
+.memorial-copy{
+display:flex;
+flex-direction:column;
+gap:var(--s1);
+min-width:var(--s0);
 }
-.memorial small {
-font-size: var(--font-note);
-color: var(--ink-muted);
+.memorial strong{
+display:flex;
+align-items:center;
+gap:var(--s3);
+font:600 var(--font-base) / 1.6 var(--serif);
+flex-wrap:wrap;
 }
-.stamp {
-display: inline-flex;
-align-items: center;
-justify-content: center;
-color: var(--text-strong);
-background: var(--cinnabar);
-border-radius: var(--s1);
-padding: var(--s0) var(--s2);
-font: var(--font-value) / 1.4 var(--brush);
+.memorial small{
+font-size:var(--font-note);
+color:var(--ink-muted);
 }
-.paper-tag {
-font-size: var(--font-note);
-color: var(--ink-muted);
-background: var(--paper-chip);
+.stamp{
+display:inline-flex;
+align-items:center;
+justify-content:center;
+color:var(--text-strong);
+background:var(--cinnabar);
+border-radius:var(--s1);
+padding:var(--s0) var(--s2);
+font:var(--font-value) / 1.4 var(--brush);
 }
-.memorial {
-width: 100%;
-max-width: 100%;
-border: var(--hairline) solid var(--paper-line);
-border-radius: var(--radius-card);
+.paper-tag{
+font-size:var(--font-note);
+color:var(--ink-muted);
+background:var(--paper-chip);
 }
-.memorial-copy {
-flex: 1;
+.memorial{
+width:100%;
+max-width:100%;
+border:var(--hairline) solid var(--paper-line);
+border-radius:var(--radius-card);
 }
-.memorial strong {
-display: grid;
-grid-template-columns: minmax(0, 1fr) auto;
-align-items: start;
-min-height: calc(var(--memorial-title-line) * 2);
+.memorial-copy{
+flex:1;
 }
-.memorial-title {
-display: -webkit-box;
--webkit-box-orient: vertical;
--webkit-line-clamp: 2;
-overflow: hidden;
-overflow-wrap: anywhere;
-line-height: var(--memorial-title-line);
+.memorial strong{
+display:grid;
+grid-template-columns:minmax(0, 1fr) auto;
+align-items:start;
+min-height:calc(var(--memorial-title-line) * 2);
 }
-.memorial-status {
-font: var(--font-note) / 1.6 var(--sans);
-color: var(--ink-muted);
-white-space: nowrap;
-overflow: hidden;
-text-overflow: ellipsis;
+.memorial-title{
+display:-webkit-box;
+-webkit-box-orient:vertical;
+-webkit-line-clamp:2;
+overflow:hidden;
+overflow-wrap:anywhere;
+line-height:var(--memorial-title-line);
 }
-.memorial-byline {
-display: flex;
-gap: var(--s3);
-justify-content: space-between;
-line-height: 1.6;
+.memorial-status{
+font:var(--font-note) / 1.6 var(--sans);
+color:var(--ink-muted);
+white-space:nowrap;
+overflow:hidden;
+text-overflow:ellipsis;
 }
-.memorial-from {
-min-width: var(--s0);
-overflow: hidden;
-white-space: nowrap;
-text-overflow: ellipsis;
+.memorial-byline{
+display:flex;
+gap:var(--s3);
+justify-content:space-between;
+line-height:1.6;
 }
-.memorial-byline > span:last-child {
-flex: none;
-white-space: nowrap;
+.memorial-from{
+min-width:var(--s0);
+overflow:hidden;
+white-space:nowrap;
+text-overflow:ellipsis;
 }
-.memorial.queued {
-background: var(--paper-chip);
+.memorial-byline > span:last-child{
+flex:none;
+white-space:nowrap;
 }
-.memorial.queued .memorial-rail {
-background: var(--ink-muted);
+.memorial.queued{
+background:var(--paper-chip);
 }
-.memorial.queued .memorial-status {
-color: var(--ink);
-font-weight: 600;
+.memorial.queued .memorial-rail{
+background:var(--ink-muted);
 }
-.memorial-list {
-display: grid;
-gap: var(--s5);
+.memorial.queued .memorial-status{
+color:var(--ink);
+font-weight:600;
 }
-.memorial-group + .memorial-group {
-margin-top: var(--s11);
-padding-top: var(--s7);
-border-top: var(--hairline) solid var(--line);
+.memorial-list{
+display:grid;
+gap:var(--s5);
 }
-.memorial-group > h3 {
-margin-bottom: var(--s5);
-color: var(--text-strong);
+.memorial-group + .memorial-group{
+margin-top:var(--s11);
+padding-top:var(--s7);
+border-top:var(--hairline) solid var(--line);
 }
-.memorial-group > .muted {
-margin-bottom: var(--s5);
+.memorial-group > h3{
+margin-bottom:var(--s5);
+color:var(--text-strong);
 }
-.scheduled-memorial p {
-line-height: 1.8;
+.memorial-group > .muted{
+margin-bottom:var(--s5);
 }
-.decision-summary {
-font-weight: 600;
-color: var(--cinnabar-ink);
+.scheduled-memorial p{
+line-height:1.8;
 }
-.saved-remark {
-white-space: pre-wrap;
-overflow-wrap: anywhere;
+.decision-summary{
+font-weight:600;
+color:var(--cinnabar-ink);
 }
-.ambitions-block {
-margin-top: var(--s3);
-padding-top: var(--s7);
-border-top: var(--hairline) solid var(--line);
+.saved-remark{
+white-space:pre-wrap;
+overflow-wrap:anywhere;
 }
-.ambition {
-font-size: var(--font-small);
-margin-top: var(--s5);
+.ambitions-block{
+margin-top:var(--s3);
+padding-top:var(--s7);
+border-top:var(--hairline) solid var(--line);
 }
-.ambition small {
-font-size: var(--font-note);
-color: var(--gold);
+.ambition{
+font-size:var(--font-small);
+margin-top:var(--s5);
 }
-.bar {
-height: var(--goal-meter);
-background: var(--line);
-border-radius: var(--s1);
-overflow: hidden;
-margin-top: var(--s2);
+.ambition small{
+font-size:var(--font-note);
+color:var(--gold);
 }
-.bar i {
-display: block;
-height: 100%;
-background: var(--gold);
+.bar{
+height:var(--goal-meter);
+background:var(--line);
+border-radius:var(--s1);
+overflow:hidden;
+margin-top:var(--s2);
 }
-.intro {
-max-width: var(--intro-width);
-margin: auto;
-text-align: center;
-padding: var(--s15) var(--s0);
+.bar i{
+display:block;
+height:100%;
+background:var(--gold);
 }
-.intro h1 {
-font-size: var(--font-hero);
-font-weight: 900;
-color: var(--ink);
-margin: var(--s9) var(--s0);
+.intro{
+max-width:var(--intro-width);
+margin:auto;
+text-align:center;
+padding:var(--s15) var(--s0);
 }
-.intro .motto {
-font-size: var(--font-value);
+.intro h1{
+font-size:var(--font-hero);
+font-weight:900;
+color:var(--ink);
+margin:var(--s9) var(--s0);
 }
-.intro small {
-color: var(--ink-muted);
+.intro .motto{
+font-size:var(--font-value);
 }
-.start-actions {
-display: flex;
-justify-content: center;
-gap: var(--s5);
-margin: var(--s11) var(--s0);
+.intro small{
+color:var(--ink-muted);
 }
-.intro button:not(.primary) {
-background: var(--paper-chip);
-color: var(--ink);
-border-color: var(--paper-line);
+.start-actions{
+display:flex;
+justify-content:center;
+gap:var(--s5);
+margin:var(--s11) var(--s0);
 }
-.rule {
-width: var(--meter-width);
-height: var(--hairline);
-background: var(--paper-line);
-margin: var(--s11) auto;
+.intro button:not(.primary){
+background:var(--paper-chip);
+color:var(--ink);
+border-color:var(--paper-line);
 }
-.onboarding {
-padding: var(--s6);
-margin-top: var(--s7);
-background: var(--panel-active);
-border-radius: var(--radius-card);
-font: var(--font-small) / 1.8 var(--sans);
-color: var(--text-soft);
+.rule{
+width:var(--meter-width);
+height:var(--hairline);
+background:var(--paper-line);
+margin:var(--s11) auto;
 }
-.intro .onboarding {
-background: var(--paper-chip);
-color: var(--ink-muted);
+.onboarding{
+padding:var(--s6);
+margin-top:var(--s7);
+background:var(--panel-active);
+border-radius:var(--radius-card);
+font:var(--font-small) / 1.8 var(--sans);
+color:var(--text-soft);
 }
-.warning {
-padding: var(--s5);
-border: var(--hairline) solid var(--danger-border);
-background: var(--panel-active);
-color: var(--text-soft);
-font-size: var(--font-small);
-border-radius: var(--radius-card);
+.intro .onboarding{
+background:var(--paper-chip);
+color:var(--ink-muted);
 }
-.warning button {
-margin: var(--s2);
+.warning{
+padding:var(--s5);
+border:var(--hairline) solid var(--danger-border);
+background:var(--panel-active);
+color:var(--text-soft);
+font-size:var(--font-small);
+border-radius:var(--radius-card);
 }
-.notice {
-position: fixed;
-left: 50%;
-bottom: var(--s11);
-transform: translate(-50%, 200%);
-opacity: 0;
-pointer-events: none;
-z-index: 30;
-max-width: calc(100% - var(--s13));
-background: var(--desk-deep);
-color: var(--text);
-border: var(--hairline) solid var(--gold);
-border-radius: var(--radius-card);
-padding: var(--s5) var(--s9);
-box-shadow: var(--shadow);
-font-size: var(--font-small);
+.warning button{
+margin:var(--s2);
 }
-.notice.show {
-transform: translate(-50%, 0);
-opacity: 1;
+.notice{
+position:fixed;
+left:50%;
+bottom:var(--s11);
+transform:translate(-50%, 200%);
+opacity:0;
+pointer-events:none;
+z-index:30;
+max-width:calc(100% - var(--s13));
+background:var(--desk-deep);
+color:var(--text);
+border:var(--hairline) solid var(--gold);
+border-radius:var(--radius-card);
+padding:var(--s5) var(--s9);
+box-shadow:var(--shadow);
+font-size:var(--font-small);
 }
-dialog {
-width: min(var(--dialog-width), calc(100% - var(--s13)));
-max-width: 100%;
-max-height: var(--dialog-height);
-margin: auto;
-padding: var(--s11) var(--s12);
-background: var(--desk-shade);
-color: var(--text);
-border: var(--hairline) solid var(--line);
-border-radius: var(--radius-card);
-box-shadow: var(--shadow);
-overflow: auto;
-overscroll-behavior: contain;
+.notice.show{
+transform:translate(-50%, 0);
+opacity:1;
 }
-dialog::backdrop {
-background: var(--desk-shade);
-opacity: var(--overlay-opacity);
+dialog{
+width:min(var(--dialog-width), calc(100% - var(--s13)));
+max-width:100%;
+max-height:var(--dialog-height);
+margin:auto;
+padding:var(--s11) var(--s12);
+background:var(--desk-shade);
+color:var(--text);
+border:var(--hairline) solid var(--line);
+border-radius:var(--radius-card);
+box-shadow:var(--shadow);
+overflow:auto;
+overscroll-behavior:contain;
 }
-.dialog-head {
-display: flex;
-align-items: center;
-justify-content: space-between;
-gap: var(--s7);
-position: sticky;
-top: calc(-1 * var(--s11));
-background: var(--desk-shade);
-padding: var(--s2) var(--s0) var(--s7);
-z-index: 3;
+dialog::backdrop{
+background:var(--desk-shade);
+opacity:var(--overlay-opacity);
 }
-.dialog-head h2 {
-font-size: var(--font-value);
-color: var(--text-strong);
+.dialog-head{
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:var(--s7);
+position:sticky;
+top:calc(-1 * var(--s11));
+background:var(--desk-shade);
+padding:var(--s2) var(--s0) var(--s7);
+z-index:3;
 }
-#close-modal {
-width: var(--target);
-height: var(--target);
-padding: var(--s0);
-background: var(--clear);
-font-size: var(--font-value);
-flex: none;
+.dialog-head h2{
+font-size:var(--font-value);
+color:var(--text-strong);
+}
+#close-modal{
+width:var(--target);
+height:var(--target);
+padding:var(--s0);
+background:var(--clear);
+font-size:var(--font-value);
+flex:none;
 }
 .dialog-actions,
-.row {
-display: flex;
-gap: var(--s4);
-align-items: center;
-flex-wrap: wrap;
+.row{
+display:flex;
+gap:var(--s4);
+align-items:center;
+flex-wrap:wrap;
 }
-.dialog-actions {
-margin-top: var(--s9);
-justify-content: flex-end;
+.dialog-actions{
+margin-top:var(--s9);
+justify-content:flex-end;
 }
 .fields,
-.grid {
-display: grid;
-grid-template-columns: repeat(2, minmax(0, 1fr));
-gap: var(--s7);
+.grid{
+display:grid;
+grid-template-columns:repeat(2, minmax(0, 1fr));
+gap:var(--s7);
 }
-.fields > div {
-min-width: var(--s0);
+.fields > div{
+min-width:var(--s0);
 }
 .card,
 .province,
-.paper {
-background: var(--paper);
-color: var(--ink);
-padding: var(--s7);
-border-radius: var(--radius-card);
-border: var(--hairline) solid var(--paper-line);
-min-width: var(--s0);
-overflow-wrap: anywhere;
+.paper{
+background:var(--paper);
+color:var(--ink);
+padding:var(--s7);
+border-radius:var(--radius-card);
+border:var(--hairline) solid var(--paper-line);
+min-width:var(--s0);
+overflow-wrap:anywhere;
 }
 .card h3,
-.province h3 {
-color: var(--ink);
+.province h3{
+color:var(--ink);
 }
 .card p,
-.province small {
-font-size: var(--font-small);
+.province small{
+font-size:var(--font-small);
 }
-.card label {
-color: var(--ink-muted);
+.card label{
+color:var(--ink-muted);
 }
 .card button,
-.paper button:not(.primary):not(.accountability) {
-background: var(--paper-chip);
-border-color: var(--paper-line);
-color: var(--ink);
+.paper button:not(.primary):not(.accountability){
+background:var(--paper-chip);
+border-color:var(--paper-line);
+color:var(--ink);
 }
-.card .bar {
-background: var(--paper-line);
+.card .bar{
+background:var(--paper-line);
 }
-.card dl {
-display: grid;
-grid-template-columns: repeat(4, minmax(0, 1fr));
-gap: var(--s2);
-font-size: var(--font-small);
+.card dl{
+display:grid;
+grid-template-columns:repeat(4, minmax(0, 1fr));
+gap:var(--s2);
+font-size:var(--font-small);
 }
-dt {
-color: var(--ink-muted);
+dt{
+color:var(--ink-muted);
 }
-dd {
-margin: var(--s0);
+dd{
+margin:var(--s0);
 }
-.tag {
-display: inline-flex;
-padding: var(--s1) var(--s4);
-border: var(--hairline) solid var(--line-strong);
-border-radius: var(--radius-tag);
-font-size: var(--font-small);
-color: var(--text-soft);
+.tag{
+display:inline-flex;
+padding:var(--s1) var(--s4);
+border:var(--hairline) solid var(--line-strong);
+border-radius:var(--radius-tag);
+font-size:var(--font-small);
+color:var(--text-soft);
 }
-.portrait {
-width: var(--portrait-size);
-height: var(--portrait-size);
-display: grid;
-place-items: center;
-background: var(--paper-chip);
-border-radius: 50%;
-font: 600 var(--font-value) / 1 var(--serif);
-color: var(--ink-muted);
+.portrait{
+width:var(--portrait-size);
+height:var(--portrait-size);
+display:grid;
+place-items:center;
+background:var(--paper-chip);
+border-radius:50%;
+font:600 var(--font-value) / 1 var(--serif);
+color:var(--ink-muted);
 }
-.map-grid {
-display: grid;
-grid-template-columns: repeat(4, minmax(0, 1fr));
-gap: var(--s5);
+.map-grid{
+display:grid;
+grid-template-columns:repeat(4, minmax(0, 1fr));
+gap:var(--s5);
 }
-.province.disaster {
-border-color: var(--cinnabar-ink);
+.province.disaster{
+border-color:var(--cinnabar-ink);
 }
-progress {
-width: 100%;
-accent-color: var(--gold);
+progress{
+width:100%;
+accent-color:var(--gold);
 }
-.section-spacer {
-margin-top: var(--s11);
+.section-spacer{
+margin-top:var(--s11);
 }
-.palace {
-width: min(var(--palace-width), calc(100% - var(--s13)));
+.palace{
+width:min(var(--palace-width), calc(100% - var(--s13)));
 }
-.faction-chart {
-width: var(--chart-size);
-height: var(--chart-size);
-border-radius: 50%;
-flex: none;
+.faction-chart{
+width:var(--chart-size);
+height:var(--chart-size);
+border-radius:50%;
+flex:none;
 }
-.faction-bars {
-flex: 1;
-display: grid;
-gap: var(--s5);
+.faction-bars{
+flex:1;
+display:grid;
+gap:var(--s5);
 }
-summary {
-cursor: pointer;
-min-height: var(--target);
-padding: var(--s4) var(--s0);
-color: inherit;
+summary{
+cursor:pointer;
+min-height:var(--target);
+padding:var(--s4) var(--s0);
+color:inherit;
 }
-.result {
-white-space: pre-wrap;
-overflow-wrap: anywhere;
-max-height: var(--sidebar-width);
-overflow: auto;
-padding: var(--s6);
-border: var(--hairline) solid var(--line);
-font-size: var(--font-small);
+.result{
+white-space:pre-wrap;
+overflow-wrap:anywhere;
+max-height:var(--sidebar-width);
+overflow:auto;
+padding:var(--s6);
+border:var(--hairline) solid var(--line);
+font-size:var(--font-small);
 }
-.talk-line {
-background: var(--panel);
-padding: var(--s6);
-margin-bottom: var(--s5);
-border-radius: var(--radius-card);
+.talk-line{
+background:var(--panel);
+padding:var(--s6);
+margin-bottom:var(--s5);
+border-radius:var(--radius-card);
 }
-.talk-line.emperor {
-color: var(--gold);
+.talk-line.emperor{
+color:var(--gold);
 }
-.streaming {
-white-space: pre-wrap;
-font: var(--font-body) / var(--body-line) var(--serif);
+.streaming{
+white-space:pre-wrap;
+font:var(--font-body) / var(--body-line) var(--serif);
 }
-.action-shell {
-width: min(var(--palace-width), calc(100% - var(--s13)));
+.action-shell{
+width:min(var(--palace-width), calc(100% - var(--s13)));
 }
-.dual-content {
-display: grid;
-grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-gap: var(--s9);
-min-width: var(--s0);
+.dual-content{
+display:grid;
+grid-template-columns:minmax(0, 1fr) minmax(0, 1fr);
+gap:var(--s9);
+min-width:var(--s0);
 }
-.action-document {
-padding: var(--s12);
-font-family: var(--serif);
+.action-document{
+padding:var(--s12);
+font-family:var(--serif);
 }
-.action-document h3 {
-font-size: var(--font-heading);
-padding-bottom: var(--s7);
-border-bottom: var(--hairline) solid var(--paper-line);
+.action-document h3{
+font-size:var(--font-heading);
+padding-bottom:var(--s7);
+border-bottom:var(--hairline) solid var(--paper-line);
 }
-.action-document p {
-font-size: var(--font-body);
-line-height: var(--body-line);
+.action-document p{
+font-size:var(--font-body);
+line-height:var(--body-line);
 }
-.action-options {
-min-width: var(--s0);
+.action-options{
+min-width:var(--s0);
 }
-.segmented {
-display: flex;
-gap: var(--s2);
-flex-wrap: wrap;
+.segmented{
+display:flex;
+gap:var(--s2);
+flex-wrap:wrap;
 }
-.segmented button {
-background: var(--clear);
+.segmented button{
+background:var(--clear);
 }
-.segmented button[aria-pressed="true"] {
-border-color: var(--gold);
-background: var(--panel-active);
-color: var(--gold);
+.segmented button[aria-pressed="true"]{
+border-color:var(--gold);
+background:var(--panel-active);
+color:var(--gold);
 }
-dialog.memorial-shell {
-width: 100%;
-height: var(--app-height);
-max-height: var(--app-height);
-max-width: 100%;
-border: var(--s0);
-border-radius: var(--s0);
-padding: var(--s11) var(--s9);
-display: none;
-overflow: hidden;
-box-shadow: none;
+dialog.memorial-shell{
+width:100%;
+height:var(--app-height);
+max-height:var(--app-height);
+max-width:100%;
+border:var(--s0);
+border-radius:var(--s0);
+padding:var(--s11) var(--s9);
+display:none;
+overflow:hidden;
+box-shadow:none;
 }
-dialog.memorial-shell[open] {
-display: flex;
-flex-direction: column;
+dialog.memorial-shell[open]{
+display:flex;
+flex-direction:column;
 }
-.memorial-shell > .dialog-head {
-width: 100%;
-max-width: var(--review-max);
-margin: var(--s0) auto;
-position: static;
-flex: none;
-padding-bottom: var(--s5);
+.memorial-shell > .dialog-head{
+width:100%;
+max-width:var(--review-max);
+margin:var(--s0) auto;
+position:static;
+flex:none;
+padding-bottom:var(--s5);
 }
-.memorial-overlay {
-max-width: var(--review-max);
-width: 100%;
-margin: var(--s0) auto;
-min-height: var(--s0);
-display: flex;
-flex-direction: column;
-gap: var(--s7);
-flex: 1;
+.memorial-overlay{
+max-width:var(--review-max);
+width:100%;
+margin:var(--s0) auto;
+min-height:var(--s0);
+display:flex;
+flex-direction:column;
+gap:var(--s7);
+flex:1;
 }
-.memorial-queue {
-display: flex;
-align-items: center;
-gap: var(--s3);
-min-width: var(--s0);
-flex: none;
+.memorial-queue{
+display:flex;
+align-items:center;
+gap:var(--s3);
+min-width:var(--s0);
+flex:none;
 }
-.queue-tabs {
-display: flex;
-gap: var(--s3);
-overflow: auto;
-flex: 1;
-min-width: var(--s0);
+.queue-tabs{
+display:flex;
+gap:var(--s3);
+overflow:auto;
+flex:1;
+min-width:var(--s0);
 }
-.queue-tab {
-white-space: nowrap;
-border-radius: var(--radius-pill);
-background: var(--clear);
-border-color: var(--line);
-padding: var(--s2) var(--s5);
-display: flex;
-align-items: center;
-gap: var(--s3);
+.queue-tab{
+white-space:nowrap;
+border-radius:var(--radius-pill);
+background:var(--clear);
+border-color:var(--line);
+padding:var(--s2) var(--s5);
+display:flex;
+align-items:center;
+gap:var(--s3);
 }
-.queue-tab[aria-current="step"] {
-border-color: var(--gold);
-background: var(--panel-active);
-color: var(--text-strong);
+.queue-tab[aria-current="step"]{
+border-color:var(--gold);
+background:var(--panel-active);
+color:var(--text-strong);
 }
-.queue-tab .queue-number {
-background: var(--line-dashed);
-color: var(--desk);
-border-radius: 50%;
-width: var(--s9);
-height: var(--s9);
-display: grid;
-place-items: center;
-font-size: var(--font-micro);
+.queue-tab .queue-number{
+background:var(--line-dashed);
+color:var(--desk);
+border-radius:50%;
+width:var(--s9);
+height:var(--s9);
+display:grid;
+place-items:center;
+font-size:var(--font-micro);
 }
 .queue-tab.done .queue-number,
-.queue-tab[aria-current="step"] .queue-number {
-background: var(--gold);
+.queue-tab[aria-current="step"] .queue-number{
+background:var(--gold);
 }
-.queue-picker {
-position: relative;
-flex: none;
+.queue-picker{
+position:relative;
+flex:none;
 }
-.queue-picker > summary {
-border: var(--hairline) solid var(--line-strong);
-border-radius: var(--radius-button);
-padding: var(--s3) var(--s4);
-font-size: var(--font-small);
+.queue-picker > summary{
+border:var(--hairline) solid var(--line-strong);
+border-radius:var(--radius-button);
+padding:var(--s3) var(--s4);
+font-size:var(--font-small);
 }
-.queue-picker-list {
-position: absolute;
-z-index: 5;
-right: var(--s0);
-top: 100%;
-width: min(var(--review-width), var(--picker-width));
-max-height: var(--picker-height);
-overflow: auto;
-background: var(--panel);
-padding: var(--s5);
-border: var(--hairline) solid var(--gold);
-border-radius: var(--radius-card);
-display: grid;
-gap: var(--s2);
+.queue-picker-list{
+position:absolute;
+z-index:5;
+right:var(--s0);
+top:100%;
+width:min(var(--review-width), var(--picker-width));
+max-height:var(--picker-height);
+overflow:auto;
+background:var(--panel);
+padding:var(--s5);
+border:var(--hairline) solid var(--gold);
+border-radius:var(--radius-card);
+display:grid;
+gap:var(--s2);
 }
-.memorial-columns {
-display: grid;
-grid-template-columns: minmax(0, 1fr) var(--review-width);
-gap: var(--s9);
-flex: 1;
-min-height: var(--s0);
-overflow: hidden;
+.memorial-columns{
+display:grid;
+grid-template-columns:minmax(0, 1fr) var(--review-width);
+gap:var(--s9);
+flex:1;
+min-height:var(--s0);
+overflow:hidden;
 }
-.memorial-paper {
-padding: var(--s13) var(--s16);
-overflow: auto;
-display: flex;
-flex-direction: column;
-gap: var(--s7);
-font-family: var(--serif);
-border: var(--s0);
+.memorial-paper{
+padding:var(--s13) var(--s16);
+overflow:auto;
+display:flex;
+flex-direction:column;
+gap:var(--s7);
+font-family:var(--serif);
+border:var(--s0);
 }
-.memorial-heading {
-display: flex;
-gap: var(--s5);
-align-items: center;
+.memorial-heading{
+display:flex;
+gap:var(--s5);
+align-items:center;
 }
-.memorial-heading h3 {
-font-size: var(--font-heading);
-margin: var(--s0);
+.memorial-heading h3{
+font-size:var(--font-heading);
+margin:var(--s0);
 }
-.memorial-meta {
-font: var(--font-small) / 1.8 var(--sans);
-color: var(--ink-muted);
-border-bottom: var(--hairline) solid var(--paper-line);
-padding-bottom: var(--s6);
-display: flex;
-flex-direction: column;
-gap: var(--s2);
+.memorial-meta{
+font:var(--font-small) / 1.8 var(--sans);
+color:var(--ink-muted);
+border-bottom:var(--hairline) solid var(--paper-line);
+padding-bottom:var(--s6);
+display:flex;
+flex-direction:column;
+gap:var(--s2);
 }
-.memorial-author {
-display: flex;
-align-items: center;
-gap: var(--s3);
-width: 100%;
+.memorial-author{
+display:flex;
+align-items:center;
+gap:var(--s3);
+width:100%;
 }
-.memorial-author > span {
-flex: 1;
-min-width: var(--s0);
+.memorial-author > span{
+flex:1;
+min-width:var(--s0);
 }
-.memorial-author .accountability {
-flex: none;
-margin-left: auto;
+.memorial-author .accountability{
+flex:none;
+margin-left:auto;
 }
-.memorial-facts {
-display: flex;
-gap: var(--s7);
-flex-wrap: wrap;
+.memorial-facts{
+display:flex;
+gap:var(--s7);
+flex-wrap:wrap;
 }
-.accountability {
-background: var(--clear);
-color: var(--cinnabar-ink);
-border-color: var(--cinnabar-ink);
-font-size: var(--font-small);
-padding: var(--s2) var(--s4);
+.accountability{
+background:var(--clear);
+color:var(--cinnabar-ink);
+border-color:var(--cinnabar-ink);
+font-size:var(--font-small);
+padding:var(--s2) var(--s4);
 }
-.accountability[aria-pressed="true"] {
-background: var(--cinnabar);
-color: var(--text-strong);
+.accountability[aria-pressed="true"]{
+background:var(--cinnabar);
+color:var(--text-strong);
 }
-.memorial-body {
-font: var(--font-document) / var(--document-line) var(--serif);
-white-space: pre-wrap;
-text-indent: var(--indent);
+.memorial-body{
+font:var(--font-document) / var(--document-line) var(--serif);
+white-space:pre-wrap;
+text-indent:var(--indent);
 }
-.memorial-foot {
-margin-top: auto;
+.memorial-foot{
+margin-top:auto;
 }
-.memorial-region {
-font: var(--font-small) / 1.8 var(--sans);
-color: var(--ink-muted);
-margin-top: var(--s9);
+.memorial-region{
+font:var(--font-small) / 1.8 var(--sans);
+color:var(--ink-muted);
+margin-top:var(--s9);
 }
-.brush-writing {
-overflow: hidden;
-border-bottom: var(--hairline) solid var(--paper-line);
-padding: var(--s2) var(--s0);
+.brush-writing{
+overflow:hidden;
+border-bottom:var(--hairline) solid var(--paper-line);
+padding:var(--s2) var(--s0);
 }
-textarea.brush-input:focus-visible {
-outline: none;
+textarea.brush-input:focus-visible{
+outline:none;
 }
-.brush-control:has(+ .brush-writing:focus-within) .brush-label {
-text-decoration: underline;
-text-decoration-color: var(--cinnabar-ink);
-text-decoration-thickness: var(--focus-line);
-text-underline-offset: var(--s1);
+.brush-control:has(+ .brush-writing:focus-within) .brush-label{
+text-decoration:underline;
+text-decoration-color:var(--cinnabar-ink);
+text-decoration-thickness:var(--focus-line);
+text-underline-offset:var(--s1);
 }
-.brush-label {
-font-family: var(--sans);
-color: var(--ink-muted);
+.brush-label{
+font-family:var(--sans);
+color:var(--ink-muted);
 }
-textarea.brush-input {
-outline: none;
-font: var(--font-brush) / 1.4 var(--brush);
-color: var(--cinnabar-ink);
-border: var(--s0);
-border-radius: var(--s0);
-background: var(--clear);
-min-height: var(--slot-height);
-transform: rotate(var(--brush-angle));
-transform-origin: left center;
-padding: var(--s3);
-margin: var(--s0);
-resize: none;
+textarea.brush-input{
+outline:none;
+font:var(--font-brush) / 1.4 var(--brush);
+color:var(--cinnabar-ink);
+border:var(--s0);
+border-radius:var(--s0);
+background:var(--clear);
+min-height:var(--slot-height);
+transform:rotate(var(--brush-angle));
+transform-origin:left center;
+padding:var(--s3);
+margin:var(--s0);
+resize:none;
 }
-textarea.brush-input::placeholder {
-font: var(--font-small) / 1.5 var(--sans);
-color: var(--ink-muted);
+textarea.brush-input::placeholder{
+font:var(--font-small) / 1.5 var(--sans);
+color:var(--ink-muted);
 }
-.shared-remark-note {
-font: var(--font-note) / 1.7 var(--sans);
-color: var(--ink-muted);
+.shared-remark-note{
+font:var(--font-note) / 1.7 var(--sans);
+color:var(--ink-muted);
 }
-.review-panel {
-min-height: var(--s0);
-overflow: auto;
-display: flex;
-flex-direction: column;
-gap: var(--s5);
-padding-right: var(--s1);
+.review-panel{
+min-height:var(--s0);
+overflow:auto;
+display:flex;
+flex-direction:column;
+gap:var(--s5);
+padding-right:var(--s1);
 }
-.review-title {
-display: flex;
-justify-content: space-between;
-align-items: baseline;
+.review-title{
+display:flex;
+justify-content:space-between;
+align-items:baseline;
 }
-.review-title h3 {
-color: var(--text-strong);
-margin: var(--s0);
+.review-title h3{
+color:var(--text-strong);
+margin:var(--s0);
 }
-.review-title small {
-color: var(--text-muted);
+.review-title small{
+color:var(--text-muted);
 }
-.review-options {
-display: grid;
-gap: var(--s4);
+.review-options{
+display:grid;
+gap:var(--s4);
 }
-.review-option {
-width: 100%;
-text-align: left;
-display: flex;
-flex-direction: column;
-gap: var(--s3);
-padding: var(--s6) var(--s7);
-border-color: var(--line);
-background: var(--panel);
-border-radius: var(--radius-card);
+.review-option{
+width:100%;
+text-align:left;
+display:flex;
+flex-direction:column;
+gap:var(--s3);
+padding:var(--s6) var(--s7);
+border-color:var(--line);
+background:var(--panel);
+border-radius:var(--radius-card);
 }
-.review-option[aria-checked="true"] {
-border-color: var(--gold);
-background: var(--panel-active);
+.review-option[aria-checked="true"]{
+border-color:var(--gold);
+background:var(--panel-active);
 }
-.option-title {
-display: flex;
-justify-content: space-between;
-align-items: baseline;
-gap: var(--s3);
-width: 100%;
-font: 600 var(--font-body) / 1.5 var(--serif);
+.option-title{
+display:flex;
+justify-content:space-between;
+align-items:baseline;
+gap:var(--s3);
+width:100%;
+font:600 var(--font-body) / 1.5 var(--serif);
 }
-.option-title small {
-font: var(--font-note) / 1.6 var(--sans);
-color: var(--gold);
+.option-title small{
+font:var(--font-note) / 1.6 var(--sans);
+color:var(--gold);
 }
-.effects {
-display: flex;
-gap: var(--s2);
-flex-wrap: wrap;
-font-size: var(--font-note);
+.effects{
+display:flex;
+gap:var(--s2);
+flex-wrap:wrap;
+font-size:var(--font-note);
 }
-.effect {
-background: var(--desk);
-border-radius: var(--radius-tag);
-padding: var(--s1) var(--s3);
-font-size: var(--font-note);
+.effect{
+background:var(--desk);
+border-radius:var(--radius-tag);
+padding:var(--s1) var(--s3);
+font-size:var(--font-note);
 }
-.effect.neutral {
-color: var(--text-soft);
+.effect.neutral{
+color:var(--text-soft);
 }
-.debate {
-padding: var(--s6);
-background: var(--panel);
-border: var(--hairline) solid var(--line);
-border-radius: var(--radius-card);
+.debate{
+padding:var(--s6);
+background:var(--panel);
+border:var(--hairline) solid var(--line);
+border-radius:var(--radius-card);
 }
-.debate h4 {
-font: 500 var(--font-small) / 1.8 var(--sans);
-color: var(--gold);
-margin-bottom: var(--s3);
+.debate h4{
+font:500 var(--font-small) / 1.8 var(--sans);
+color:var(--gold);
+margin-bottom:var(--s3);
 }
-.debate-row {
-display: grid;
-grid-template-columns: var(--s15) minmax(0, 1fr);
-gap: var(--s3);
-font-size: var(--font-small);
-margin-top: var(--s3);
+.debate-row{
+display:grid;
+grid-template-columns:var(--s15) minmax(0, 1fr);
+gap:var(--s3);
+font-size:var(--font-small);
+margin-top:var(--s3);
 }
-.vote {
-background: var(--gold);
-color: var(--desk);
-border-radius: var(--s1);
-text-align: center;
-align-self: start;
-font-weight: 700;
+.vote{
+background:var(--gold);
+color:var(--desk);
+border-radius:var(--s1);
+text-align:center;
+align-self:start;
+font-weight:700;
 }
-.vote.yes {
-background: var(--up);
+.vote.yes{
+background:var(--up);
 }
-.vote.no {
-background: var(--down);
+.vote.no{
+background:var(--down);
 }
-.debate-row small {
-display: block;
-color: var(--text-muted);
+.debate-row small{
+display:block;
+color:var(--text-muted);
 }
-.review-footer {
-width: var(--review-width);
-align-self: flex-end;
-display: grid;
-grid-template-columns: 1fr 2fr;
-gap: var(--s4);
-flex: none;
+.review-footer{
+width:var(--review-width);
+align-self:flex-end;
+display:grid;
+grid-template-columns:1fr 2fr;
+gap:var(--s4);
+flex:none;
 }
-.review-footer button {
-height: var(--primary-height);
+.review-footer button{
+height:var(--primary-height);
 }
-.review-help {
-font-size: var(--font-note);
-color: var(--text-muted);
+.review-help{
+font-size:var(--font-note);
+color:var(--text-muted);
 }
-.review-error {
-font-size: var(--font-small);
-color: var(--down);
-min-height: var(--s9);
+.review-error{
+font-size:var(--font-small);
+color:var(--down);
+min-height:var(--s9);
 }
-@media (min-width: 900px) and (max-width: 1099px) {
-.workbench {
-grid-template-columns: var(--dock-width) minmax(0, 1fr);
+@media (min-width: 900px) and (max-width: 1099px){
+.workbench{
+grid-template-columns:var(--dock-width) minmax(0, 1fr);
 }
-.sidebar {
-display: none;
+.sidebar{
+display:none;
 }
-.metrics {
-gap: var(--s1);
+.metrics{
+gap:var(--s1);
 }
-.brand {
-width: auto;
+.brand{
+width:auto;
 }
-.brand .date {
-max-width: var(--chart-size);
+.brand .date{
+max-width:var(--chart-size);
 }
 .metric-reading small,
-.metric-meter {
-display: none;
+.metric-meter{
+display:none;
 }
-.metric-values {
-flex-wrap: wrap;
+.metric-values{
+flex-wrap:wrap;
 }
-.metric-group {
-padding: var(--s1);
+.metric-group{
+padding:var(--s1);
 }
-.topbar {
-padding: var(--s0) var(--s5);
-gap: var(--s3);
+.topbar{
+padding:var(--s0) var(--s5);
+gap:var(--s3);
 }
 }
-@media (max-width: 899px) {
-#app {
-height: var(--app-height);
+@media (max-width: 899px){
+#app{
+height:var(--app-height);
 }
-.topbar {
-height: auto;
-padding: var(--s6) var(--s7) var(--s5);
-gap: var(--s5);
-flex-wrap: wrap;
+.topbar{
+height:auto;
+padding:var(--s6) var(--s7) var(--s5);
+gap:var(--s5);
+flex-wrap:wrap;
 }
-.brand {
-flex: 1;
-width: auto;
-gap: var(--s4);
+.brand{
+flex:1;
+width:auto;
+gap:var(--s4);
 }
-.seal {
-width: var(--seal-mobile);
-height: var(--seal-mobile);
-font-size: var(--font-note);
+.seal{
+width:var(--seal-mobile);
+height:var(--seal-mobile);
+font-size:var(--font-note);
 }
-.brand h1 {
-font-size: var(--font-base);
+.brand h1{
+font-size:var(--font-base);
 }
-.date {
-font-size: var(--font-note);
+.date{
+font-size:var(--font-note);
 }
-.mobile-energy {
-display: block;
+.mobile-energy{
+display:block;
 }
-.energy.compact {
-font-size: var(--font-note);
+.energy.compact{
+font-size:var(--font-note);
 }
-.compact .pips {
-display: none;
+.compact .pips{
+display:none;
 }
 .topbar > .metrics,
-.top-actions {
-display: none;
+.top-actions{
+display:none;
 }
-.mobile-menu {
-display: grid;
-place-items: center;
-width: var(--target);
-height: var(--target);
-background: var(--clear);
-padding: var(--s0);
-font-size: var(--font-value);
+.mobile-menu{
+display:grid;
+place-items:center;
+width:var(--target);
+height:var(--target);
+background:var(--clear);
+padding:var(--s0);
+font-size:var(--font-value);
 }
-.mobile-stats {
-display: grid;
-grid-template-columns: repeat(4, minmax(0, 1fr));
-gap: var(--s2);
-flex: 0 0 100%;
-width: 100%;
-padding: var(--s0);
-background: var(--clear);
-border: var(--s0);
-text-align: left;
+.mobile-stats{
+display:grid;
+grid-template-columns:repeat(4, minmax(0, 1fr));
+gap:var(--s2);
+flex:0 0 100%;
+width:100%;
+padding:var(--s0);
+background:var(--clear);
+border:var(--s0);
+text-align:left;
 }
-.mobile-stats:hover {
-background: var(--clear);
+@media (hover: hover){
+.mobile-stats:hover{
+background:var(--clear);
 }
-.mobile-stats .metric {
-background: var(--panel);
-border: var(--hairline) solid var(--line);
-border-radius: var(--radius-button);
-padding: var(--s2) var(--s3);
 }
-.mobile-stats .metric.danger {
-border-color: var(--danger-border);
+.mobile-stats .metric{
+background:var(--panel);
+border:var(--hairline) solid var(--line);
+border-radius:var(--radius-button);
+padding:var(--s2) var(--s3);
 }
-.mobile-stats .metric strong {
-font-size: var(--font-body);
+.mobile-stats .metric.danger{
+border-color:var(--danger-border);
+}
+.mobile-stats .metric strong{
+font-size:var(--font-body);
 }
 .mobile-stats .metric-meter,
-.mobile-stats .metric-reading small {
-display: none;
+.mobile-stats .metric-reading small{
+display:none;
 }
-.mobile-stats .metric-reading {
-gap: var(--s1);
-flex-wrap: wrap;
+.mobile-stats .metric-reading{
+gap:var(--s1);
+flex-wrap:wrap;
 }
-.workbench {
-display: block;
-min-height: var(--s0);
-overflow: hidden;
+.workbench{
+display:block;
+min-height:var(--s0);
+overflow:hidden;
 }
 .dock,
-.sidebar {
-display: none;
+.sidebar{
+display:none;
 }
-.desk {
-height: 100%;
-padding: var(--s6) var(--s7) var(--s0);
-gap: var(--s4);
+.desk{
+height:100%;
+padding:var(--s6) var(--s7) var(--s0);
+gap:var(--s4);
 }
-.planning-title {
-display: none;
+.planning-title{
+display:none;
 }
-.schedule {
-grid-template-columns: 1fr;
-gap: var(--s3);
+.schedule{
+grid-template-columns:1fr;
+gap:var(--s3);
 }
-.slot {
-height: auto;
-min-height: var(--slot-mobile);
-padding: var(--s3) var(--s5);
-display: grid;
-grid-template-columns: var(--s13) minmax(0, 1fr);
-grid-template-rows: auto auto;
-gap: var(--s0) var(--s5);
+.slot{
+height:auto;
+min-height:var(--slot-mobile);
+padding:var(--s3) var(--s5);
+display:grid;
+grid-template-columns:var(--s13) minmax(0, 1fr);
+grid-template-rows:auto auto;
+gap:var(--s0) var(--s5);
 }
-.slot-meta {
-grid-row: 1 / span 2;
-align-self: center;
-display: block;
-font-size: var(--font-note);
-width: var(--s13);
-color: var(--glyph);
-line-height: 1.2;
+.slot-meta{
+grid-row:1 / span 2;
+align-self:center;
+display:block;
+font-size:var(--font-note);
+width:var(--s13);
+color:var(--glyph);
+line-height:1.2;
 }
-.slot-meta > span:nth-child(2) {
-display: none;
+.slot-meta > span:nth-child(2){
+display:none;
 }
-.slot strong {
-font-size: var(--font-base);
-line-height: 1.5;
-grid-column: 2;
-padding-right: var(--s11);
+.slot strong{
+font-size:var(--font-base);
+line-height:1.5;
+grid-column:2;
+padding-right:var(--s11);
 }
-.slot small {
-font-size: var(--font-note);
-grid-column: 2;
-line-height: 1.6;
+.slot small{
+font-size:var(--font-note);
+grid-column:2;
+line-height:1.6;
 }
-.slot-clear {
-top: var(--s2);
-background: var(--clear);
+.slot-clear{
+top:var(--s2);
+background:var(--clear);
 }
-.turnbar {
-display: grid;
-grid-template-columns: 1fr;
-margin-top: var(--s4);
-padding: var(--s0);
-border: var(--s0);
-background: var(--clear);
-gap: var(--s2);
+.turnbar{
+display:grid;
+grid-template-columns:1fr;
+margin-top:var(--s4);
+padding:var(--s0);
+border:var(--s0);
+background:var(--clear);
+gap:var(--s2);
 }
-.estimate {
-font-size: var(--font-note);
-line-height: 1.4;
+.estimate{
+font-size:var(--font-note);
+line-height:1.4;
 }
-.estimate small {
-display: none;
+.estimate small{
+display:none;
 }
-.oral-trigger {
-display: none;
+.oral-trigger{
+display:none;
 }
-.advance {
-width: 100%;
-height: var(--primary-height);
+.advance{
+width:100%;
+height:var(--primary-height);
 }
-.scroll {
-padding: var(--s8) var(--s9);
-scrollbar-width: thin;
+.scroll{
+padding:var(--s8) var(--s9);
+scrollbar-width:thin;
 }
-.chapter-head {
-gap: var(--s3);
-padding-bottom: var(--s4);
+.chapter-head{
+gap:var(--s3);
+padding-bottom:var(--s4);
 }
-.chapter-head h2 {
-font-size: var(--font-value);
+.chapter-head h2{
+font-size:var(--font-value);
 }
-.chapter-fate {
-font-size: var(--font-micro);
+.chapter-fate{
+font-size:var(--font-micro);
 }
-.prose {
-font-size: var(--font-base);
-line-height: var(--mobile-line);
+.prose{
+font-size:var(--font-base);
+line-height:var(--mobile-line);
 }
-.prose h3 {
-font-size: var(--font-base);
-margin-top: var(--s5);
+.prose h3{
+font-size:var(--font-base);
+margin-top:var(--s5);
 }
-.chapter-date {
-font-size: var(--font-micro);
+.chapter-date{
+font-size:var(--font-micro);
 }
-.saved-status {
-display: none;
+.saved-status{
+display:none;
 }
-.mobile-nav {
-height: var(--bottom-height);
-flex: none;
-display: grid;
-grid-template-columns: repeat(4, minmax(0, 1fr));
-background: var(--desk-deep);
-border-top: var(--hairline) solid var(--line);
-padding-bottom: env(safe-area-inset-bottom, var(--s0));
+.mobile-nav{
+height:var(--bottom-height);
+flex:none;
+display:grid;
+grid-template-columns:repeat(4, minmax(0, 1fr));
+background:var(--desk-deep);
+border-top:var(--hairline) solid var(--line);
+padding-bottom:env(safe-area-inset-bottom, var(--s0));
 }
-.mobile-nav button {
-border: var(--s0);
-background: var(--clear);
-display: flex;
-flex-direction: column;
-align-items: center;
-justify-content: center;
-padding: var(--s1);
-gap: var(--s0);
-font-size: var(--font-small);
-color: var(--text-soft);
+.mobile-nav button{
+border:var(--s0);
+background:var(--clear);
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+padding:var(--s1);
+gap:var(--s0);
+font-size:var(--font-small);
+color:var(--text-soft);
 }
-.mobile-nav button:first-child {
-color: var(--gold);
+.mobile-nav button:first-child{
+color:var(--gold);
 }
-.mobile-nav button > span {
-font: var(--font-body) / 1.4 var(--serif);
+.mobile-nav button > span{
+font:var(--font-body) / 1.4 var(--serif);
 }
-.notice {
-bottom: calc(var(--bottom-height) + var(--s5));
+.notice{
+bottom:calc(var(--bottom-height) + var(--s5));
 }
 dialog,
 .palace,
-.action-shell {
-width: calc(100% - var(--s7));
-max-height: var(--mobile-dialog-height);
-padding: var(--s7);
-border-radius: var(--radius-card);
+.action-shell{
+width:calc(100% - var(--s7));
+max-height:var(--mobile-dialog-height);
+padding:var(--s7);
+border-radius:var(--radius-card);
 }
-.dialog-head {
-top: calc(-1 * var(--s7));
-padding-bottom: var(--s5);
+.dialog-head{
+top:calc(-1 * var(--s7));
+padding-bottom:var(--s5);
 }
-.dialog-head h2 {
-font-size: var(--font-document);
+.dialog-head h2{
+font-size:var(--font-document);
 }
-dialog.drawer {
-width: 100%;
-max-height: var(--drawer-height);
-margin: auto var(--s0) var(--s0);
-border-radius: var(--radius-card) var(--radius-card) var(--s0) var(--s0);
-padding-bottom: calc(var(--s7) + env(safe-area-inset-bottom, var(--s0)));
+dialog.drawer{
+width:100%;
+max-height:var(--drawer-height);
+margin:auto var(--s0) var(--s0);
+border-radius:var(--radius-card) var(--radius-card) var(--s0) var(--s0);
+padding-bottom:calc(var(--s7) + env(safe-area-inset-bottom, var(--s0)));
 }
-.drawer .action-group {
-margin-top: var(--s7);
+.drawer .action-group{
+margin-top:var(--s7);
 }
-.drawer .metrics {
-display: grid;
-grid-template-columns: repeat(2, minmax(0, 1fr));
+.drawer .metrics{
+display:grid;
+grid-template-columns:repeat(2, minmax(0, 1fr));
 }
-.drawer .metric-group h2 {
-font-size: var(--font-note);
+.drawer .metric-group h2{
+font-size:var(--font-note);
 }
-.drawer .metric-values {
-gap: var(--s5);
+.drawer .metric-values{
+gap:var(--s5);
 }
-.drawer .metric-reading {
-flex-wrap: wrap;
+.drawer .metric-reading{
+flex-wrap:wrap;
 }
-.dual-content {
-grid-template-columns: 1fr;
-gap: var(--s7);
+.dual-content{
+grid-template-columns:1fr;
+gap:var(--s7);
 }
-.action-document {
-padding: var(--s7);
+.action-document{
+padding:var(--s7);
 }
-.action-document p {
-font-size: var(--font-base);
-line-height: var(--mobile-line);
+.action-document p{
+font-size:var(--font-base);
+line-height:var(--mobile-line);
 }
 .fields,
-.grid {
-gap: var(--s5);
+.grid{
+gap:var(--s5);
 }
-.map-grid {
-grid-template-columns: repeat(2, minmax(0, 1fr));
+.map-grid{
+grid-template-columns:repeat(2, minmax(0, 1fr));
 }
-.card {
-padding: var(--s5);
+.card{
+padding:var(--s5);
 }
-dialog.memorial-shell {
-padding: var(--s5);
-height: var(--app-height);
-max-height: var(--app-height);
-border-radius: var(--s0);
-width: 100%;
+dialog.memorial-shell{
+padding:var(--s5);
+height:var(--app-height);
+max-height:var(--app-height);
+border-radius:var(--s0);
+width:100%;
 }
-.memorial-shell > .dialog-head {
-padding-bottom: var(--s3);
-gap: var(--s3);
+.memorial-shell > .dialog-head{
+padding-bottom:var(--s3);
+gap:var(--s3);
 }
-.memorial-shell > .dialog-head h2 {
-flex: 1;
-min-width: var(--s0);
-font-size: var(--font-body);
+.memorial-shell > .dialog-head h2{
+flex:1;
+min-width:var(--s0);
+font-size:var(--font-body);
 }
-.memorial-shell > .dialog-head > .queue-picker {
-margin-left: auto;
+.memorial-shell > .dialog-head > .queue-picker{
+margin-left:auto;
 }
-.memorial-overlay {
-gap: var(--s5);
+.memorial-overlay{
+gap:var(--s5);
 }
-.memorial-queue {
-gap: var(--s2);
-flex-wrap: wrap;
+.memorial-queue{
+gap:var(--s2);
+flex-wrap:wrap;
 }
-.queue-tabs {
-flex-basis: 100%;
+.queue-tabs{
+flex-basis:100%;
 }
-.queue-tab {
-font-size: var(--font-small);
-padding: var(--s2) var(--s4);
+.queue-tab{
+font-size:var(--font-small);
+padding:var(--s2) var(--s4);
 }
-.queue-tab[aria-current="step"] {
-max-width: 100%;
-white-space: normal;
-text-align: left;
-overflow-wrap: anywhere;
+.queue-tab[aria-current="step"]{
+max-width:100%;
+white-space:normal;
+text-align:left;
+overflow-wrap:anywhere;
 }
-.queue-picker {
-margin-left: auto;
+.queue-picker{
+margin-left:auto;
 }
-.memorial-columns {
-display: flex;
-flex-direction: column;
-overflow: auto;
-gap: var(--s5);
-overscroll-behavior: contain;
+.memorial-columns{
+display:flex;
+flex-direction:column;
+overflow:auto;
+gap:var(--s5);
+overscroll-behavior:contain;
 }
-.memorial-paper {
-padding: var(--s9);
-overflow: visible;
-flex: none;
+.memorial-paper{
+padding:var(--s9);
+overflow:visible;
+flex:none;
 }
-.memorial-heading h3 {
-font-size: var(--font-heading);
+.memorial-heading h3{
+font-size:var(--font-heading);
 }
-.memorial-meta {
-font-size: var(--font-note);
+.memorial-meta{
+font-size:var(--font-note);
 }
-.memorial-body {
-font-size: var(--font-base);
-line-height: var(--mobile-line);
+.memorial-body{
+font-size:var(--font-base);
+line-height:var(--mobile-line);
 }
-.review-panel {
-overflow: visible;
-flex: none;
+.review-panel{
+overflow:visible;
+flex:none;
 }
-.review-footer {
-width: 100%;
-padding-bottom: env(safe-area-inset-bottom, var(--s0));
+.review-footer{
+width:100%;
+padding-bottom:env(safe-area-inset-bottom, var(--s0));
 }
-.review-help {
-font-size: var(--font-micro);
+.review-help{
+font-size:var(--font-micro);
 }
-textarea.brush-input {
-min-height: var(--top-height);
-}
-}
-@media (max-width: 420px) {
-.fields {
-grid-template-columns: 1fr;
-}
-.planning .estimate {
-max-height: var(--s14);
-overflow: auto;
-}
-.brand h1 {
-font-size: var(--font-ui);
-}
-.metric-reading {
-gap: var(--s0);
-}
-.card dl {
-grid-template-columns: repeat(2, minmax(0, 1fr));
+textarea.brush-input{
+min-height:var(--top-height);
 }
 }
-@media (prefers-reduced-motion: reduce) {
-* {
-scroll-behavior: auto !important;
-transition: none !important;
+@media (max-width: 420px){
+.fields{
+grid-template-columns:1fr;
+}
+.planning .estimate{
+max-height:var(--s14);
+overflow:auto;
+}
+.brand h1{
+font-size:var(--font-ui);
+}
+.metric-reading{
+gap:var(--s0);
+}
+.card dl{
+grid-template-columns:repeat(2, minmax(0, 1fr));
 }
 }
-
-.ambition-heading {
-display: flex;
-justify-content: space-between;
-gap: var(--s3);
-align-items: baseline;
+@media (prefers-reduced-motion: reduce){
+*{
+scroll-behavior:auto !important;
+transition:none !important;
 }
-.ambition-percent {
-font-size: var(--font-note);
-color: var(--text-muted);
-white-space: nowrap;
+}
+.ambition-heading{
+display:flex;
+justify-content:space-between;
+gap:var(--s3);
+align-items:baseline;
+}
+.ambition-percent{
+font-size:var(--font-note);
+color:var(--text-muted);
+white-space:nowrap;
 }
 .paper .ambition small,
 .scroll .ambition small,
 .paper .ambition-percent,
-.scroll .ambition-percent {
-color: var(--ink-muted);
+.scroll .ambition-percent{
+color:var(--ink-muted);
 }
-
-.brush-control {
-display: flex;
-align-items: center;
-justify-content: space-between;
-gap: var(--s3);
+.brush-control{
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:var(--s3);
 }
-.brush-control label {
-flex: 1;
-min-width: var(--s0);
+.brush-control label{
+flex:1;
+min-width:var(--s0);
 }
-.brush-control .brush-mode {
-flex: none;
-white-space: nowrap;
+.brush-control .brush-mode{
+flex:none;
+white-space:nowrap;
 }
-.brush-control label {
-margin: var(--s0);
+.brush-control label{
+margin:var(--s0);
 }
-.paper button.brush-mode {
-font-size: var(--font-note);
-padding: var(--s2) var(--s3);
+.paper button.brush-mode{
+font-size:var(--font-note);
+padding:var(--s2) var(--s3);
 }
-.paper button.brush-mode[aria-pressed="true"] {
-border-color: var(--cinnabar-ink);
-color: var(--cinnabar-ink);
+.paper button.brush-mode[aria-pressed="true"]{
+border-color:var(--cinnabar-ink);
+color:var(--cinnabar-ink);
 }
-
-.action-card {
-gap: var(--s1);
+.action-card{
+gap:var(--s1);
 }
-.action-copy small {
-white-space: nowrap;
+.action-copy small{
+white-space:nowrap;
 }
-.slot-clear {
-top: auto;
-bottom: var(--s0);
-background: var(--clear);
+.slot-clear{
+top:auto;
+bottom:var(--s0);
+background:var(--clear);
 }
-.filled .slot small {
-padding-right: var(--s11);
+.filled .slot small{
+padding-right:var(--s11);
 }
-@media (max-width: 899px) {
-.slot-clear {
-top: var(--s2);
-bottom: auto;
+@media (max-width: 899px){
+.slot-clear{
+top:var(--s2);
+bottom:auto;
 }
 }
-
-.advance {
-letter-spacing: var(--wide-tracking);
+.advance{
+letter-spacing:var(--wide-tracking);
 }
-
 .queue-tab,
-.queue-number {
-flex-shrink: 0;
+.queue-number{
+flex-shrink:0;
 }
-
 .paper-tag,
 .portrait,
-.intro .onboarding {
-color: var(--ink);
+.intro .onboarding{
+color:var(--ink);
 }
-
-/* Mobile scroll, safe-area and keyboard viewport audit. */
 html,
-body {
-touch-action: pan-x pan-y;
-overscroll-behavior: none;
+body{
+touch-action:pan-x pan-y;
+overscroll-behavior:none;
 }
 html.modal-open,
-html.modal-open body {
-overflow: hidden;
+html.modal-open body{
+overflow:hidden;
 }
-@media (max-width: 899px) {
-.topbar {
-padding-top: calc(var(--s6) + var(--safe-top));
-padding-left: max(var(--s7), var(--safe-left));
-padding-right: max(var(--s7), var(--safe-right));
+@media (max-width: 899px){
+.topbar{
+padding-top:calc(var(--s6) + var(--safe-top));
+padding-left:max(var(--s7), var(--safe-left));
+padding-right:max(var(--s7), var(--safe-right));
 }
-.mobile-nav {
-height: calc(var(--bottom-height) + var(--safe-bottom));
-padding-bottom: var(--safe-bottom);
+.mobile-nav{
+height:calc(var(--bottom-height) + var(--safe-bottom));
+padding-bottom:var(--safe-bottom);
 }
-.desk {
-padding-left: max(var(--s7), var(--safe-left));
-padding-right: max(var(--s7), var(--safe-right));
+.desk{
+padding-left:max(var(--s7), var(--safe-left));
+padding-right:max(var(--s7), var(--safe-right));
 }
-dialog[open] {
-inset: var(--s0) var(--s0) auto;
-top: calc(var(--viewport-top) + var(--app-height) / 2);
-transform: translateY(-50%);
-margin: var(--s0) auto;
-max-height: calc(var(--app-height) - var(--s7));
+dialog[open]{
+inset:var(--s0) var(--s0) auto;
+top:calc(var(--viewport-top) + var(--app-height) / 2);
+transform:translateY(-50%);
+margin:var(--s0) auto;
+max-height:calc(var(--app-height) - var(--s7));
 }
-dialog.drawer[open] {
-top: calc(var(--viewport-top) + var(--app-height));
-transform: translateY(-100%);
-padding-bottom: calc(var(--s7) + var(--safe-bottom));
-max-height: calc(var(--app-height) - var(--s7));
+dialog.drawer[open]{
+top:calc(var(--viewport-top) + var(--app-height));
+transform:translateY(-100%);
+padding-bottom:calc(var(--s7) + var(--safe-bottom));
+max-height:calc(var(--app-height) - var(--s7));
 }
-dialog.memorial-shell[open] {
-top: var(--viewport-top);
-transform: none;
-height: var(--app-height);
-max-height: var(--app-height);
-padding-top: calc(var(--s5) + var(--safe-top));
-padding-left: max(var(--s5), var(--safe-left));
-padding-right: max(var(--s5), var(--safe-right));
+dialog.memorial-shell[open]{
+top:var(--viewport-top);
+transform:none;
+height:var(--app-height);
+max-height:var(--app-height);
+padding-top:calc(var(--s5) + var(--safe-top));
+padding-left:max(var(--s5), var(--safe-left));
+padding-right:max(var(--s5), var(--safe-right));
 }
-.review-footer {
-padding-bottom: var(--safe-bottom);
+.review-footer{
+padding-bottom:var(--safe-bottom);
 }
 .keyboard-help,
-.key-hint {
-display: none;
+.key-hint{
+display:none;
 }
 }
-@media (max-width: 899px) and (max-height: 600px) {
-.workbench {
-overflow: auto;
-overscroll-behavior: contain;
+@media (max-width: 899px) and (max-height: 600px){
+.workbench{
+overflow:auto;
+overscroll-behavior:contain;
 }
-.desk {
-height: auto;
-min-height: 100%;
-padding-bottom: var(--s7);
+.desk{
+height:auto;
+min-height:100%;
+padding-bottom:var(--s7);
 }
-.scroll {
-flex: none;
-min-height: var(--short-paper-height);
-}
-}
-@media (max-width: 899px) {
-.action-document {
-padding: var(--s5);
-}
-.action-document h3 {
-font-size: var(--font-value);
-padding-bottom: var(--s3);
-}
-.action-document p {
-font-size: var(--font-ui);
-line-height: var(--s11);
-}
-.action-document p + p {
-margin-top: var(--s2);
+.scroll{
+flex:none;
+min-height:var(--short-paper-height);
 }
 }
-
-/* Shared phone layout: stable lists, navigation, and form controls. */
+@media (max-width: 899px){
+.action-document{
+padding:var(--s5);
+}
+.action-document h3{
+font-size:var(--font-value);
+padding-bottom:var(--s3);
+}
+.action-document p{
+font-size:var(--font-ui);
+line-height:var(--s11);
+}
+.action-document p + p{
+margin-top:var(--s2);
+}
+}
 input,
 select,
-textarea {
-min-width: var(--s0);
-max-width: 100%;
+textarea{
+min-width:var(--s0);
+max-width:100%;
 }
 input::placeholder,
-textarea::placeholder {
-color: var(--text-muted);
-opacity: 1;
+textarea::placeholder{
+color:var(--text-muted);
+opacity:1;
 }
-.dialog-head h2 {
-min-width: var(--s0);
-overflow-wrap: anywhere;
+.dialog-head h2{
+min-width:var(--s0);
+overflow-wrap:anywhere;
 }
-.dialog-notice {
-position: sticky;
-top: var(--target);
-z-index: 4;
-flex: none;
-min-width: var(--s0);
-margin-bottom: var(--s5);
-padding: var(--s5);
-border: var(--hairline) solid var(--gold);
-border-radius: var(--radius-card);
-background: var(--panel);
-color: var(--text);
-font: var(--font-small) / 1.6 var(--sans);
-overflow-wrap: anywhere;
+.dialog-notice{
+position:sticky;
+top:var(--target);
+z-index:4;
+flex:none;
+min-width:var(--s0);
+margin-bottom:var(--s5);
+padding:var(--s5);
+border:var(--hairline) solid var(--gold);
+border-radius:var(--radius-card);
+background:var(--panel);
+color:var(--text);
+font:var(--font-small) / 1.6 var(--sans);
+overflow-wrap:anywhere;
 }
-.nav-icon {
-position: relative;
-display: grid;
-place-items: center;
-width: var(--glyph-size);
-height: var(--s11);
-flex: none;
+.nav-icon{
+position:relative;
+display:grid;
+place-items:center;
+width:var(--glyph-size);
+height:var(--s11);
+flex:none;
 }
-.nav-count {
-position: absolute;
-top: calc(-1 * var(--s1));
-left: calc(100% - var(--s3));
-min-width: var(--nav-count-size);
-max-width: var(--nav-count-wide);
-height: var(--nav-count-size);
-padding: var(--s0) var(--s1);
-border-radius: var(--radius-pill);
-background: var(--cinnabar);
-color: var(--text-strong);
-font: 600 var(--font-minor) / var(--nav-count-size) var(--sans);
-white-space: nowrap;
+.nav-count{
+position:absolute;
+top:calc(-1 * var(--s1));
+left:calc(100% - var(--s3));
+min-width:var(--nav-count-size);
+max-width:var(--nav-count-wide);
+height:var(--nav-count-size);
+padding:var(--s0) var(--s1);
+border-radius:var(--radius-pill);
+background:var(--cinnabar);
+color:var(--text-strong);
+font:600 var(--font-minor) / var(--nav-count-size) var(--sans);
+white-space:nowrap;
 }
-.nav-label {
-white-space: nowrap;
+.nav-label{
+white-space:nowrap;
 }
-@media (max-width: 899px) {
-.mobile-nav button {
-width: 100%;
-min-width: var(--s0);
-height: 100%;
-gap: var(--s1);
-font-family: var(--sans);
+@media (max-width: 899px){
+.mobile-nav button{
+width:100%;
+min-width:var(--s0);
+height:100%;
+gap:var(--s1);
+font-family:var(--sans);
 }
-.mobile-nav button > .nav-label {
-font: var(--font-small) / 1.4 var(--sans);
+.mobile-nav button > .nav-label{
+font:var(--font-small) / 1.4 var(--sans);
 }
-.mobile-nav button > .nav-icon {
-font: var(--font-body) / 1 var(--serif);
+.mobile-nav button > .nav-icon{
+font:var(--font-body) / 1 var(--serif);
 }
-.dialog-actions {
-display: grid;
-grid-auto-flow: column;
-grid-auto-columns: minmax(0, 1fr);
-grid-template-columns: none;
-align-items: stretch;
-gap: var(--s3);
+.dialog-actions{
+display:grid;
+grid-auto-flow:column;
+grid-auto-columns:minmax(0, 1fr);
+grid-template-columns:none;
+align-items:stretch;
+gap:var(--s3);
 }
-.dialog-actions > button {
-width: 100%;
-min-height: var(--primary-height);
-padding: var(--s3) var(--s4);
-white-space: normal;
-overflow-wrap: anywhere;
+.dialog-actions > button{
+width:100%;
+min-height:var(--primary-height);
+padding:var(--s3) var(--s4);
+white-space:normal;
+overflow-wrap:anywhere;
 }
-.memorial-group {
-width: 100%;
-min-width: var(--s0);
+.memorial-group{
+width:100%;
+min-width:var(--s0);
 }
-.queue-picker-list button {
-width: 100%;
-text-align: left;
-white-space: normal;
-overflow-wrap: anywhere;
+.queue-picker-list button{
+width:100%;
+text-align:left;
+white-space:normal;
+overflow-wrap:anywhere;
 }
 .action-document > .eyebrow,
-.action-document > .action-preview-note {
-display: none;
+.action-document > .action-preview-note{
+display:none;
 }
-.action-document {
-padding: var(--s5);
-gap: var(--s2);
+.action-document{
+padding:var(--s5);
+gap:var(--s2);
 }
-.action-document h3 {
-margin-bottom: var(--s2);
-padding-bottom: var(--s2);
+.action-document h3{
+margin-bottom:var(--s2);
+padding-bottom:var(--s2);
 }
-.action-document p {
-line-height: 1.6;
+.action-document p{
+line-height:1.6;
 }
-textarea:not(.brush-input) {
-line-height: 1.6;
-min-height: var(--top-height);
+textarea:not(.brush-input){
+line-height:1.6;
+min-height:var(--top-height);
 }
-.palace .row {
-align-items: flex-start;
+.palace .row{
+align-items:flex-start;
 }
 }
-@media (max-width: 599px) {
+@media (max-width: 599px){
 .fields,
 .palace .grid,
-dialog:not(.drawer) > .grid {
-grid-template-columns: minmax(0, 1fr);
+dialog:not(.drawer) > .grid{
+grid-template-columns:minmax(0, 1fr);
 }
-.palace .card .row {
-align-items: center;
+.palace .card .row{
+align-items:center;
 }
-.card button {
-min-height: var(--target);
+.card button{
+min-height:var(--target);
 }
-.faction-chart {
-width: var(--top-height);
-height: var(--top-height);
+.faction-chart{
+width:var(--top-height);
+height:var(--top-height);
 }
-.faction-bars {
-min-width: var(--s0);
-overflow-wrap: anywhere;
+.faction-bars{
+min-width:var(--s0);
+overflow-wrap:anywhere;
 }
 }
-
+html{
+-webkit-tap-highlight-color:transparent;
+}
+button,
+.memorial,
+.slot,
+[data-action],
+[data-panel]{
+transition:
+transform 80ms ease-out,
+background-color 120ms ease-out,
+border-color 120ms ease-out;
+}
+button:not(:disabled):active,
+.memorial:active,
+[data-action]:not(:disabled):active{
+transform:scale(0.97);
+background:var(--panel-active);
+border-color:var(--gold);
+}
+button.primary:not(:disabled):active{
+background:var(--cinnabar);
+filter:brightness(1.12);
+}
+:root[data-font="l"] .prose{
+font-size:18px;
+}
+:root[data-font="xl"] .prose{
+font-size:20px;
+}
+@media (prefers-reduced-motion: reduce){
+button:not(:disabled):active,
+.memorial:active,
+[data-action]:not(:disabled):active{
+transform:none;
+}
+}
+.cabinet-draft{
+margin:var(--s2) var(--s0);
+font-size:var(--font-note);
+color:var(--text-muted);
+}
+.review-footer:has([data-review-drafts]){
+grid-template-columns:1fr 1fr 2fr;
+}
+@media (max-width: 420px){
+.review-footer:has([data-review-drafts]){
+grid-template-columns:1fr 1fr;
+}
+.review-footer:has([data-review-drafts]) #review-next{
+grid-column:1 / -1;
+}
+}
+.repeat-trigger{
+background:var(--clear);
+padding:var(--s2);
+flex:none;
+}
     </style>
   </head>
   <body>
@@ -2376,8 +2431,12 @@ $,
 esc,
 initCommon,
 toast,
+captureView,
+restoreView,
+throttleFrame,
 openDialog,
 closeDialog,
+setLeaveGuard,
 download,
 } = __load("src/ui/common.js");
 const { loadSettings, openSettings } = __load("src/ui/settings.js");
@@ -2393,7 +2452,7 @@ actionsHTML, metricsHTML, chapterHTML,
 } = __load("src/ui/render.js");
 const { memorialDialog, scheduledMemorialDialog } = __load("src/ui/memorials.js");
 const { memorialAssignments } = __load("src/ui/memorial-state.js");
-const { actionAvailability } = __load("src/ui/view-model.js");
+const { actionAvailability, repeatSchedule } = __load("src/ui/view-model.js");
 const { actionDialog } = __load("src/ui/actions.js");
 const { palacePanel } = __load("src/ui/panels.js");
 const { createSaveStore, createIDB } = __load("src/store/save.js");
@@ -2421,6 +2480,7 @@ mockNarrative,
 validateTalk,
 } = __load("src/llm/validate.js");
 initCommon();
+setLeaveGuard(() => busy);
 initAppIcon();
 const store = createSaveStore({
 primary: createIDB(globalThis.indexedDB),
@@ -2438,19 +2498,31 @@ saveStatus = "",
 config = loadSettings(),
 metrics = loadMetrics(),
 preferred = "朝",
-saveQueue = Promise.resolve();
+saveQueue = Promise.resolve(),
+lastSchedule = null;
 const scheduleSave=createDebouncedSave(()=>persist());
 window.addEventListener("pagehide",()=>scheduleSave.flush());
 function render() {
-const y = window.scrollY;
-$("#app").innerHTML = renderApp(state, { readOnly, busy, saveStatus });
+const y = window.scrollY, kept = captureView($("#app"));
+const canRepeat = !!state && Object.values(repeatSchedule(state, lastScheduleFor(state))).some(Boolean);
+$("#app").innerHTML = renderApp(state, { readOnly, busy, saveStatus, canRepeat });
 document.querySelectorAll("[data-action]").forEach((b) => {
 const reason=readOnly?'存档只读保护':busy?'本旬正在续写':actionAvailability(state,b.dataset.action);
 b.disabled=!!reason;b.draggable=!reason;
 if(reason&&b.querySelector('.action-copy small'))b.querySelector('.action-copy small').textContent=reason;
 });
 window.scrollTo(0, y);
+restoreView($("#app"), kept);
 }
+// Streaming chunks arrive faster than a phone can paint; redraw at most once
+// per frame and only when the draft has grown.
+let streamedLength = -1;
+const streamDraft = throttleFrame((raw) => {
+if (raw.length === streamedLength) return;
+streamedLength = raw.length;
+const el = $("#stream");
+if (el) el.textContent = "正文草稿 · 正在续写\n\n" + extractPartialChapter(raw);
+});
 function guard() {
 if (!state) throw new Error("请先登基开局");
 if (readOnly) throw new Error("存档处于只读保护模式");
@@ -2719,6 +2791,9 @@ render();
 }
 };
 }
+function lastScheduleFor(s) {
+return lastSchedule && s && lastSchedule.runId === s.runId && lastSchedule.turn === s.turn ? lastSchedule.schedule : null;
+}
 function arrange(which, action) {
 guard();
 const next = { ...state.schedule, [which]: action };
@@ -2763,15 +2838,11 @@ narrative = await requestTurnNarrative(config, state, f, {
 budget: state.turnBudget,
 signal: ac.signal,
 onMetric: markMetric,
-onPartial: (raw) => {
-const el = $("#stream");
-if (el)
-el.textContent =
-"正文草稿 · 正在续写\n\n" + extractPartialChapter(raw);
-},
+onPartial: streamDraft,
 });
 }
 state = commitTurn(state, f, narrative);
+lastSchedule = { runId: state.runId, turn: state.turn, schedule: f.schedule };
 if (state.ending && !state.settings.demo) {
 try {
 const record = state.chronicles.find((r) => r.id === reignId(state)),
@@ -3032,6 +3103,17 @@ return;
 if (name === "new") return newGame();
 if (name === "saves") return showSaves();
 if (name === "advance") return advance();
+if (name === "repeat") {
+guard();
+const next = repeatSchedule(state, lastScheduleFor(state));
+if (!Object.values(next).some(Boolean)) { toast("上旬安排本旬无法沿用"); return; }
+validateSchedule(state, next);
+state = { ...state, schedule: next };
+scheduleSave.schedule();
+render();
+toast("已沿用上旬可重复的安排");
+return;
+}
 if (name === "settle") return advance(true);
 if (name === "complete") {
 guard();
@@ -3375,6 +3457,78 @@ c
 ],
 );
 }
+// Full re-renders replace the DOM. Keep inner scroll positions (the phone
+// layout scrolls inside fixed-height containers) and the focused control.
+function nodePath(node, root) {
+const path = [];
+while (node && node !== root) {
+const parent = node.parentElement;
+if (!parent) return null;
+path.unshift([...parent.children].indexOf(node));
+node = parent;
+}
+return node === root ? path : null;
+}
+function nodeAt(root, path) {
+let node = root;
+for (const i of path) { node = node?.children?.[i]; if (!node) return null; }
+return node;
+}
+function keyOf(el, root) {
+if (el.id) return { id: el.id };
+for (const name of ["scrollKey", "command", "action", "slot", "panel", "clear"])
+if (el.dataset?.[name]) return { data: name, value: el.dataset[name] };
+return { path: nodePath(el, root) };
+}
+function find(root, key) {
+if (key.id) return root.querySelector("#" + CSS.escape(key.id));
+if (key.data) return root.querySelector("[data-" + key.data.replace(/[A-Z]/g, (c) => "-" + c.toLowerCase()) + '="' + CSS.escape(key.value) + '"]');
+return key.path ? nodeAt(root, key.path) : null;
+}
+function captureView(root) {
+if (!root) return { scrolls: [], focus: null };
+const scrolls = [];
+for (const el of root.querySelectorAll("*"))
+if (el.scrollTop > 0 || el.scrollLeft > 0)
+scrolls.push({ key: keyOf(el, root), top: el.scrollTop, left: el.scrollLeft });
+const active = document.activeElement;
+const focus = active && active !== document.body && root.contains(active)
+? { key: keyOf(active, root), start: active.selectionStart ?? null, end: active.selectionEnd ?? null }
+: null;
+return { scrolls, focus };
+}
+function restoreView(root, view) {
+if (!root || !view) return;
+for (const s of view.scrolls) {
+const el = find(root, s.key);
+if (el) { el.scrollTop = s.top; el.scrollLeft = s.left; }
+}
+if (view.focus) {
+const el = find(root, view.focus.key);
+if (el && !el.disabled) {
+el.focus({ preventScroll: true });
+if (view.focus.start !== null && typeof el.setSelectionRange === "function")
+try { el.setSelectionRange(view.focus.start, view.focus.end); } catch {}
+}
+}
+}
+function throttleFrame(fn, schedule = (f) => requestAnimationFrame(f)) {
+let queued = false, latest;
+return (...args) => {
+latest = args;
+if (queued) return;
+queued = true;
+schedule(() => { queued = false; fn(...latest); });
+};
+}
+// Back gestures close the open dialog instead of leaving the game. One history
+// entry is pushed per dialog session; replacing the dialog content reuses it.
+let modalEntry = false, closingFromHistory = false, pendingBack = 0, leaveGuard = () => false;
+function setLeaveGuard(fn) { leaveGuard = fn; }
+function pushModalEntry() {
+if (modalEntry) return;
+try { history.pushState({ ...(history.state || {}), yujiModal: true }, ""); modalEntry = true; } catch {}
+}
 let toastTimer;
 function toast(text) {
 $("#notice").textContent = text;
@@ -3415,6 +3569,7 @@ esc(title) +
 body;
 $("#close-modal").onclick = () => d.close();
 d.showModal();
+pushModalEntry();
 document.documentElement.classList.add("modal-open");
 d.scrollTop = 0;
 }
@@ -3450,45 +3605,102 @@ if(!items.length){e.preventDefault();return;}
 const at=items.indexOf(document.activeElement);
 if((e.shiftKey&&at<=0)||(!e.shiftKey&&(at===items.length-1||at<0))){e.preventDefault();items[e.shiftKey?items.length-1:0].focus();}
 });
+window.addEventListener("popstate", () => {
+if (pendingBack > 0) {
+// Our own history.back() after a close. If a new dialog opened before the
+// traversal landed, the entry we arrived on still belongs to a dialog.
+pendingBack--;
+modalEntry = $("#modal").open;
+return;
+}
+if (!modalEntry) return;
+modalEntry = false;
+if ($("#modal").open) { closingFromHistory = true; $("#modal").close(); }
+});
+window.addEventListener("beforeunload", (e) => {
+if (!leaveGuard()) return;
+e.preventDefault();
+e.returnValue = "";
+});
 $("#modal").addEventListener("close", () => {
 if($("#modal").open)return;
+if (closingFromHistory) closingFromHistory = false;
+else if (modalEntry) { modalEntry = false; pendingBack++; try { history.back(); } catch { pendingBack--; } }
 document.documentElement.classList.remove("modal-open");
 if (returnFocus?.isConnected) returnFocus.focus();
 else if(returnSelector) document.querySelector(returnSelector)?.focus();
 });
 }
 
-return {$,esc,toast,openDialog,closeDialog,download,initCommon};
+return {$,esc,captureView,restoreView,throttleFrame,setLeaveGuard,toast,openDialog,closeDialog,download,initCommon};
 },
 "src/ui/mobile.js":function(__load){
-// Keep the game at its intended scale while preserving ordinary scrolling and text selection.
+// Keep the game at its intended scale without delaying ordinary scrolling.
+// Android pinch is stopped by touch-action: pan-x pan-y; only iOS gesture
+// events need a non-passive listener, and they fire for pinches alone.
+const GUARDED_EVENTS = ["gesturestart", "gesturechange"];
 function blockPinch(event) {
-if ((event.touches?.length || 0) > 1 || ['gesturestart','gesturechange'].includes(event.type)) {
+if ((event.touches?.length || 0) > 1 || GUARDED_EVENTS.includes(event.type)) {
 if (event.cancelable) event.preventDefault();
 }
 }
-let installed=false;
-function initMobileViewport() {
-if(installed)return;
-installed=true;
-for(const type of ['touchstart','touchmove','gesturestart','gesturechange'])
-document.addEventListener(type,blockPinch,{passive:false});
-const update=()=>{
-const viewport=window.visualViewport;
-document.documentElement.style.setProperty('--app-height',(viewport?.height||window.innerHeight)+'px');
-document.documentElement.style.setProperty('--viewport-top',(viewport?.offsetTop||0)+'px');
+// Coalesce viewport writes to one per frame and skip unchanged values, so a
+// visualViewport scroll does not restyle the whole document on every event.
+function createViewportUpdater(read, write, schedule = (f) => requestAnimationFrame(f)) {
+let queued = false, last = "";
+return () => {
+if (queued) return;
+queued = true;
+schedule(() => {
+queued = false;
+const { height, top } = read(), key = height + "|" + top;
+if (key === last) return;
+last = key;
+write(height, top);
+});
 };
-window.addEventListener('resize',update);
-window.visualViewport?.addEventListener('resize',update);
-window.visualViewport?.addEventListener('scroll',update);
+}
+const FONT_SCALES = { m: "标准", l: "较大", xl: "特大" };
+function applyFontScale(value, root = document.documentElement, storage = globalThis.localStorage) {
+const scale = FONT_SCALES[value] ? value : "m";
+if (scale === "m") root.removeAttribute("data-font");
+else root.setAttribute("data-font", scale);
+try { storage?.setItem("yuji:font", scale); } catch {}
+return scale;
+}
+function storedFontScale(storage = globalThis.localStorage) {
+try { return FONT_SCALES[storage?.getItem("yuji:font")] ? storage.getItem("yuji:font") : "m"; } catch { return "m"; }
+}
+let installed = false;
+function initMobileViewport() {
+if (installed) return;
+installed = true;
+for (const type of GUARDED_EVENTS)
+document.addEventListener(type, blockPinch, { passive: false });
+const root = document.documentElement;
+const update = createViewportUpdater(
+() => ({
+height: window.visualViewport?.height || window.innerHeight,
+top: window.visualViewport?.offsetTop || 0,
+}),
+(height, top) => {
+root.style.setProperty("--app-height", height + "px");
+root.style.setProperty("--viewport-top", top + "px");
+},
+);
+window.addEventListener("resize", update);
+window.visualViewport?.addEventListener("resize", update);
+window.visualViewport?.addEventListener("scroll", update);
 update();
+applyFontScale(storedFontScale());
 }
 
-return {blockPinch,initMobileViewport};
+return {GUARDED_EVENTS,blockPinch,createViewportUpdater,FONT_SCALES,applyFontScale,storedFontScale,initMobileViewport};
 },
 "src/ui/settings.js":function(__load){
 const { createDialogRequestScope, probeErrorMessage } = __load("src/ui/request-scope.js");
 const { $, esc, openDialog, toast } = __load("src/ui/common.js");
+const { FONT_SCALES, applyFontScale, storedFontScale } = __load("src/ui/mobile.js");
 const {
 PRESETS,
 callJSON,
@@ -3514,7 +3726,9 @@ return defaults;
 function openSettings(config, metrics, onSave, recordMetric = null) {
 openDialog(
 "御前设置",
-'<p class="muted">填写叙事接口，续写本纪。密钥只用于所填地址，不随存档导出。</p><form id="settings-form"><label for="provider">服务商与地域</label><select id="provider">' +
+'<label for="font-scale">正文字号</label><select id="font-scale">' +
+Object.entries(FONT_SCALES).map(([id, label]) => '<option value="' + id + '"' + (id === storedFontScale() ? " selected" : "") + ">" + label + "</option>").join("") +
+'</select><p class="muted">立即生效，只影响本机阅读。</p><p class="muted">填写叙事接口，续写本纪。密钥只用于所填地址，不随存档导出。</p><form id="settings-form"><label for="provider">服务商与地域</label><select id="provider">' +
 Object.entries(PRESETS)
 .map(
 ([id, p]) =>
@@ -3559,6 +3773,7 @@ m.outputTokens +
 .join("") +
 "</div></details>",
 );
+$("#font-scale").onchange = (e) => applyFontScale(e.target.value);
 const read = () => ({
 provider: $("#provider").value,
 base: $("#api-base").value.trim(),
@@ -4001,574 +4216,572 @@ return {PRESETS,MODEL_OPTIONS,modelsFor,modelDescription,createBudget,endpoint,r
 const { sceneNarrative } = __load("src/llm/mock-narrative.js");
 // Pure JSON repair. Never evaluate model text as JavaScript.
 function parseJSONLoose(raw) {
-  if (typeof raw !== "string" || raw.length > 1500000)
-    throw new Error("模型 JSON 为空或过长");
-  let text = raw
-    .replace(/<think>[\s\S]*?<\/think>/g, "")
-    .replace(/^\s*```(?:json)?/i, "")
-    .replace(/```\s*$/, "")
-    .trim();
-  const start = text.indexOf("{");
-  if (start < 0) throw new Error("模型未返回 JSON 对象");
-  text = text.slice(start);
-  const attempts = [
-    text,
-    text.slice(0, text.lastIndexOf("}") + 1),
-    repairJSON(text),
-  ];
-  for (const candidate of attempts) {
-    try {
-      const obj = JSON.parse(candidate, (key, value) => {
-        if (["__proto__", "constructor", "prototype"].includes(key))
-          throw new Error("无效字段");
-        return value;
-      });
-      if (!obj || Array.isArray(obj) || typeof obj !== "object") continue;
-      return obj;
-    } catch {
-      /* try safe repair */
-    }
-  }
-  throw new Error("模型 JSON 无法修复，请重试");
+if (typeof raw !== "string" || raw.length > 1500000)
+throw new Error("模型 JSON 为空或过长");
+let text = raw
+.replace(/<think>[\s\S]*?<\/think>/g, "")
+.replace(/^\s*\x60{3}(?:json)?/i, "")
+.replace(/\x60{3}\s*$/, "")
+.trim();
+const start = text.indexOf("{");
+if (start < 0) throw new Error("模型未返回 JSON 对象");
+text = text.slice(start);
+const attempts = [
+text,
+text.slice(0, text.lastIndexOf("}") + 1),
+repairJSON(text),
+];
+for (const candidate of attempts) {
+try {
+const obj = JSON.parse(candidate, (key, value) => {
+if (["__proto__", "constructor", "prototype"].includes(key))
+throw new Error("无效字段");
+return value;
+});
+if (!obj || Array.isArray(obj) || typeof obj !== "object") continue;
+return obj;
+} catch {
+/* try safe repair */
+}
+}
+throw new Error("模型 JSON 无法修复，请重试");
 }
 function repairJSON(text) {
-  let out = "",
-    quoted = false,
-    escaped = false;
-  const stack = [];
-  const punctuation = {
-    "，": ",",
-    "：": ":",
-    "｛": "{",
-    "｝": "}",
-    "［": "[",
-    "］": "]",
-  };
-  for (let i = 0; i < text.length; i++) {
-    let c = text[i];
-    if (quoted) {
-      if (escaped) {
-        out += /["\\/bfnrtu]/.test(c) ? c : "\\" + c;
-        escaped = false;
-        continue;
-      }
-      if (c === "\\") {
-        out += c;
-        escaped = true;
-        continue;
-      }
-      if (c === '"' || c === "”") {
-        const rest = text.slice(i + 1).trimStart();
-        if (!rest || /^[,，:：}\]｝］]/.test(rest)) {
-          out += '"';
-          quoted = false;
-        } else out += '\\"';
-      } else
-        out +=
-          c === "\n"
-            ? "\\n"
-            : c === "\r"
-              ? ""
-              : c === "\t"
-                ? "\\t"
-                : c < " "
-                  ? ""
-                  : c;
-    } else {
-      c = punctuation[c] || c;
-      if (c === '"' || c === "“") {
-        quoted = true;
-        out += '"';
-      } else if (c === "{" || c === "[") {
-        stack.push(c);
-        out += c;
-      } else if (c === "}" || c === "]") {
-        if (!stack.length) break;
-        if (stack.at(-1) !== (c === "}" ? "{" : "["))
-          throw new Error("JSON 括号不匹配");
-        stack.pop();
-        out = out.replace(/,\s*$/, "") + c;
-        if (!stack.length) break;
-      } else out += c;
-    }
-  }
-  if (escaped) out = out.slice(0, -1);
-  if (quoted) out += '"';
-  out = out.replace(/,\s*$/, "").replace(/:\s*$/, ":null");
-  while (stack.length) out += stack.pop() === "{" ? "}" : "]";
-  return out;
+let out = "",
+quoted = false,
+escaped = false;
+const stack = [];
+const punctuation = {
+"，": ",",
+"：": ":",
+"｛": "{",
+"｝": "}",
+"［": "[",
+"］": "]",
+};
+for (let i = 0; i < text.length; i++) {
+let c = text[i];
+if (quoted) {
+if (escaped) {
+out += /["\\/bfnrtu]/.test(c) ? c : "\\" + c;
+escaped = false;
+continue;
+}
+if (c === "\\") {
+out += c;
+escaped = true;
+continue;
+}
+if (c === '"' || c === "”") {
+const rest = text.slice(i + 1).trimStart();
+if (!rest || /^[,，:：}\]｝］]/.test(rest)) {
+out += '"';
+quoted = false;
+} else out += '\\"';
+} else
+out +=
+c === "\n"
+? "\\n"
+: c === "\r"
+? ""
+: c === "\t"
+? "\\t"
+: c < " "
+? ""
+: c;
+} else {
+c = punctuation[c] || c;
+if (c === '"' || c === "“") {
+quoted = true;
+out += '"';
+} else if (c === "{" || c === "[") {
+stack.push(c);
+out += c;
+} else if (c === "}" || c === "]") {
+if (!stack.length) break;
+if (stack.at(-1) !== (c === "}" ? "{" : "["))
+throw new Error("JSON 括号不匹配");
+stack.pop();
+out = out.replace(/,\s*$/, "") + c;
+if (!stack.length) break;
+} else out += c;
+}
+}
+if (escaped) out = out.slice(0, -1);
+if (quoted) out += '"';
+out = out.replace(/,\s*$/, "").replace(/:\s*$/, ":null");
+while (stack.length) out += stack.pop() === "{" ? "}" : "]";
+return out;
 }
 function cleanText(value, limit = 3000) {
-  return typeof value === "string"
-    ? value.replace(/[\u0000-\u0008\u000b\u000c]/g, "").slice(0, limit)
-    : "";
+return typeof value === "string"
+? value.replace(/[\u0000-\u0008\u000b\u000c]/g, "").slice(0, limit)
+: "";
 }
 function validateProbe(data) {
-  if (data.ok !== true || typeof data.message !== "string")
-    throw new Error("接口已响应，但 JSON 字段不符合要求");
-  return { ok: true, message: cleanText(data.message, 500) };
+if (data.ok !== true || typeof data.message !== "string")
+throw new Error("接口已响应，但 JSON 字段不符合要求");
+return { ok: true, message: cleanText(data.message, 500) };
 }
 function mockNarrative(forecast) {
-  return {
-    chapter:sceneNarrative(forecast),
-    summary: "本旬" + forecast.fate + "，诸事已据实落账",
-    memorialTexts: forecast.newMemorials.map((m) => ({
-      id: m.id,
-      text:
-        "臣谨奏：" +
-        m.title +
-        "。事关地方生计与朝廷成法，伏乞陛下裁处，臣等当依旨奉行。",
-    })),
-    reactions: [],
-    rumors: [],
-    ambitionEvidence: [],
-    factUpdates: [],
-    fixNotes: [],
-  };
+return {
+chapter:sceneNarrative(forecast),
+summary: "本旬" + forecast.fate + "，诸事已据实落账",
+memorialTexts: forecast.newMemorials.map((m) => ({
+id: m.id,
+text:
+"臣谨奏：" +
+m.title +
+"。事关地方生计与朝廷成法，伏乞陛下裁处，臣等当依旨奉行。",
+})),
+reactions: [],
+rumors: [],
+ambitionEvidence: [],
+factUpdates: [],
+fixNotes: [],
+};
 }
 // Extract assertions and compare them with typed engine facts; ordinary vocabulary is never a reason to delete prose.
 const NUMERAL = "[0-9０-９零〇一二两三四五六七八九十百千万亿点.,，]+";
 function chineseNumber(text) {
-  text = text
-    .replace(/[０-９]/g, (c) => String(c.charCodeAt(0) - 65296))
-    .replace(/[,，]/g, "");
-  if (/^\d+(?:\.\d+)?$/.test(text)) return Number(text);
-  const digits = {
-    零: 0,
-    〇: 0,
-    一: 1,
-    二: 2,
-    两: 2,
-    三: 3,
-    四: 4,
-    五: 5,
-    六: 6,
-    七: 7,
-    八: 8,
-    九: 9,
-  };
-  for (const [unit, mult] of [
-    ["亿", 100000000],
-    ["万", 10000],
-  ]) {
-    if (text.includes(unit)) {
-      const [left, right] = text.split(unit);
-      return chineseNumber(left) * mult + (right ? chineseNumber(right) : 0);
-    }
-  }
-  const [whole, decimal] = text.split("点");
-  let result = 0,
-    n = 0;
-  for (const c of whole) {
-    if (/\d/.test(c)) n = n * 10 + Number(c);
-    else if (c in digits) n = digits[c];
-    else if ({ 十: 10, 百: 100, 千: 1000 }[c]) {
-      result += (n || 1) * { 十: 10, 百: 100, 千: 1000 }[c];
-      n = 0;
-    } else return NaN;
-  }
-  return (
-    result +
-    n +
-    (decimal
-      ? Number("0." + [...decimal].map((c) => digits[c] ?? c).join(""))
-      : 0)
-  );
+text = text
+.replace(/[０-９]/g, (c) => String(c.charCodeAt(0) - 65296))
+.replace(/[,，]/g, "");
+if (/^\d+(?:\.\d+)?$/.test(text)) return Number(text);
+const digits = {
+零: 0,
+〇: 0,
+一: 1,
+二: 2,
+两: 2,
+三: 3,
+四: 4,
+五: 5,
+六: 6,
+七: 7,
+八: 8,
+九: 9,
+};
+for (const [unit, mult] of [
+["亿", 100000000],
+["万", 10000],
+]) {
+if (text.includes(unit)) {
+const [left, right] = text.split(unit);
+return chineseNumber(left) * mult + (right ? chineseNumber(right) : 0);
 }
-
+}
+const [whole, decimal] = text.split("点");
+let result = 0,
+n = 0;
+for (const c of whole) {
+if (/\d/.test(c)) n = n * 10 + Number(c);
+else if (c in digits) n = digits[c];
+else if ({ 十: 10, 百: 100, 千: 1000 }[c]) {
+result += (n || 1) * { 十: 10, 百: 100, 千: 1000 }[c];
+n = 0;
+} else return NaN;
+}
+return (
+result +
+n +
+(decimal
+? Number("0." + [...decimal].map((c) => digits[c] ?? c).join(""))
+: 0)
+);
+}
 function numericEvidence(f) {
-  const sets = { money: new Set(), people: new Set(), age: new Set() },
-    add = (kind, v) => {
-      if (Number.isFinite(v)) sets[kind].add(Math.abs(v));
-    };
-  const walk = (v) => {
-    if (!v || typeof v !== "object") return;
-    for (const [k, x] of Object.entries(v)) {
-      if (["history", "volumes", "pending", "ledger"].includes(k)) continue;
-      if (["treasury", "privy", "arrears", "cost"].includes(k)) add("money", x * 10000);
-      if (["troops", "garrison", "enemyTroops"].includes(k)) add("people", x);
-      if (k === "pop") add("people", x * 10000);
-      if (k === "age") add("age", x);
-      if (typeof x === "object") walk(x);
-    }
-  };
-  walk(f.state);
-  for (const e of f.entries || []) {
-    const kind = /treasury|privy|arrears/.test(e.path)
-      ? "money"
-      : /troops|garrison/.test(e.path)
-        ? "people"
-        : /\.age$/.test(e.path)
-          ? "age"
-          : null;
-    if (kind)
-      for (const v of [e.before, e.after, e.delta])
-        add(kind, v * (kind === "money" ? 10000 : 1));
-  }
-  const text = JSON.stringify([f.slotResults, f.notes]);
-  for (const match of text.matchAll(
-    new RegExp("(" + NUMERAL + ")(万两|两|万人|人|名|岁)", "g"),
-  )) {
-    const kind = /两/.test(match[2])
-      ? "money"
-      : match[2] === "岁"
-        ? "age"
-        : "people";
-    add(
-      kind,
-      chineseNumber(match[1]) * (match[2].startsWith("万") ? 10000 : 1),
-    );
-  }
-  for (const c of f.state.harem.children)
-    add("age", Math.floor((f.state.turn - c.born) / 36));
-  add("people", f.debate?.length);
-  add("people", f.state.court.officials.length);
-  add("people", f.state.harem.children.length);
-  return sets;
+const sets = { money: new Set(), people: new Set(), age: new Set() },
+add = (kind, v) => {
+if (Number.isFinite(v)) sets[kind].add(Math.abs(v));
+};
+const walk = (v) => {
+if (!v || typeof v !== "object") return;
+for (const [k, x] of Object.entries(v)) {
+if (["history", "volumes", "pending", "ledger"].includes(k)) continue;
+if (["treasury", "privy", "arrears", "cost"].includes(k)) add("money", x * 10000);
+if (["troops", "garrison", "enemyTroops"].includes(k)) add("people", x);
+if (k === "pop") add("people", x * 10000);
+if (k === "age") add("age", x);
+if (typeof x === "object") walk(x);
+}
+};
+walk(f.state);
+for (const e of f.entries || []) {
+const kind = /treasury|privy|arrears/.test(e.path)
+? "money"
+: /troops|garrison/.test(e.path)
+? "people"
+: /\.age$/.test(e.path)
+? "age"
+: null;
+if (kind)
+for (const v of [e.before, e.after, e.delta])
+add(kind, v * (kind === "money" ? 10000 : 1));
+}
+const text = JSON.stringify([f.slotResults, f.notes]);
+for (const match of text.matchAll(
+new RegExp("(" + NUMERAL + ")(万两|两|万人|人|名|岁)", "g"),
+)) {
+const kind = /两/.test(match[2])
+? "money"
+: match[2] === "岁"
+? "age"
+: "people";
+add(
+kind,
+chineseNumber(match[1]) * (match[2].startsWith("万") ? 10000 : 1),
+);
+}
+for (const c of f.state.harem.children)
+add("age", Math.floor((f.state.turn - c.born) / 36));
+add("people", f.debate?.length);
+add("people", f.state.court.officials.length);
+add("people", f.state.harem.children.length);
+return sets;
 }
 const ASSERTIONS = [
-  ["miscarriage", /小产|流产/g],
-  ["pregnancy", /怀孕|身孕|有孕|受孕|喜脉/g],
-  ["birth", /诞下|诞生|产下|分娩|生下皇[子女]/g],
-  ["death", /驾崩|薨逝|身亡|死去|病故|处死|斩首|伏诛|赐死|寿终|被杀/g],
-  [
-    "appointment",
-    /任命|出任|升任|擢升|罢免|革职|贬谪|下狱|致仕|晋为|册立|封后/g,
-  ],
-  [
-    "war",
-    /大获全胜|大捷|战败|败北|兵败|攻克|收复|夺回|失守|陷落|入寇|宣战|开战/g,
-  ],
+["miscarriage", /小产|流产/g],
+["pregnancy", /怀孕|身孕|有孕|受孕|喜脉/g],
+["birth", /诞下|诞生|产下|分娩|生下皇[子女]/g],
+["death", /驾崩|薨逝|身亡|死去|病故|处死|斩首|伏诛|赐死|寿终|被杀/g],
+[
+"appointment",
+/任命|出任|升任|擢升|罢免|革职|贬谪|下狱|致仕|晋为|册立|封后/g,
+],
+[
+"war",
+/大获全胜|大捷|战败|败北|兵败|攻克|收复|夺回|失守|陷落|入寇|宣战|开战/g,
+],
 ];
 const EXECUTION = /雷厉风行|照办|敷衍|阳奉阴违|封驳/g;
 function hypothetical(prefix) {
-  return /若|倘|假如|担心|恐怕|盼|但愿|希望|拟|奏请|请求|不曾|未曾|尚未|并未|没有|不敢|不可|切勿/.test(
-    prefix.slice(-18),
-  );
+return /若|倘|假如|担心|恐怕|盼|但愿|希望|拟|奏请|请求|不曾|未曾|尚未|并未|没有|不敢|不可|切勿/.test(
+prefix.slice(-18),
+);
 }
 function validateTurn(data, forecast) {
-  if (
-    !data?.chapter ||
-    !["朝", "午", "夜"].every((k) => typeof data.chapter[k] === "string")
-  )
-    throw new Error("章节须包含朝、午、夜三段");
-  const fallback = mockNarrative(forecast),
-    fixNotes = [],
-    chapter = {},
-    s = forecast.state,
-    numbers = numericEvidence(forecast);
-  const facts = forecast.facts || [],
-    settlement = [
-      ...Object.values(forecast.slotResults || {}).flat(),
-      ...(forecast.notes || []),
-      ...(forecast.entries || []).map((e) => e.source),
-    ];
-  const roster = [
-    s.emperor,
-    ...s.court.officials,
-    ...s.harem.consorts,
-    ...s.harem.children,
-    ...s.foreign,
-  ];
-  const aliases = s.court.posts
-    .filter((p) => p.holder)
-    .map((p) => ({
-      alias: p.title,
-      name: s.court.officials.find((o) => o.id === p.holder)?.name,
-    }));
-  const scrutinize = (raw, slot) => {
-    let previousActors = [];
-    return raw
-      .split(/(?<=[。！？\n])/)
-      .map((original) => {
-        let sentence = original;
-        const actors = roster
-          .filter((o) => sentence.includes(o.name))
-          .map((o) => o.name);
-        for (const a of aliases)
-          if (sentence.includes(a.alias) && a.name) actors.push(a.name);
-        const subjects = actors.length ? actors : previousActors;
-        if (actors.length) previousActors = actors;
-        const invalidNumbers = [
-          ...sentence.matchAll(
-            new RegExp(
-              "(" +
-                NUMERAL +
-                ")(万两|两银|两|万人|人|名|位|兵马|精兵|禁军|士卒|骑兵|岁)",
-              "g",
-            ),
-          ),
-        ].filter((m) => {
-          // Generic "两位/一人/三名" describe a scene, not a population assertion.
-          if (
-            ["人", "名", "位"].includes(m[2]) &&
-            !/兵|丁|人口|户口|丁口|军|士卒|征发/.test(sentence)
-          ) return false;
-          const kind = /两/.test(m[2])
-              ? "money"
-              : m[2] === "岁"
-                ? "age"
-                : "people",
-            value = chineseNumber(m[1]) * (m[2].startsWith("万") ? 10000 : 1);
-          return ![...numbers[kind]].some((n) => Math.abs(n - value) < 0.01);
-        });
-        for (const m of sentence.matchAll(
-          new RegExp("(?:年方|年仅|年届)(" + NUMERAL + ")", "g"),
-        ))
-          if (!numbers.age.has(chineseNumber(m[1]))) invalidNumbers.push(m);
-        if (invalidNumbers.length) {
-          fixNotes.push(
-            (slot || "附文") + "中无结算或状态依据的金额/人数/年龄已删除",
-          );
-          return "";
-        }
-        for (const [kind, pattern] of ASSERTIONS) {
-          for (const claim of sentence.matchAll(
-            new RegExp(pattern.source, "g"),
-          )) {
-            if (hypothetical(sentence.slice(0, claim.index))) continue;
-            const compatible = (f) => {
-              if (kind === "war") {
-                const required = /败北|兵败|战败/.test(claim[0])
-                  ? "失利"
-                  : /全胜|大捷|攻克|收复|夺回/.test(claim[0])
-                    ? "胜利"
-                    : /宣战|开战/.test(claim[0])
-                      ? "宣战"
-                      : /入寇/.test(claim[0])
-                        ? "入寇"
-                        : "失守";
-                return f.outcome === required;
-              }
-              if (kind === "appointment") {
-                const required = /罢免|革职/.test(claim[0])
-                  ? "罢免"
-                  : /贬谪/.test(claim[0])
-                    ? "贬谪"
-                    : /下狱/.test(claim[0])
-                      ? "下狱"
-                      : /致仕/.test(claim[0])
-                        ? "致仕"
-                        : /册立/.test(claim[0])
-                          ? "册立"
-                          : /封后|晋为/.test(claim[0])
-                            ? "晋位"
-                            : "任命";
-                return (
-                  f.operation === required ||
-                  (required === "任命" && f.operation === "入宫")
-                );
-              }
-              return true;
-            };
-            const supported =
-              facts.some(
-                (f) =>
-                  f.kind === kind &&
-                  (!subjects.length ||
-                    f.actors?.some((a) => subjects.includes(a))) &&
-                  compatible(f),
-              ) ||
-              (!forecast.facts &&
-                settlement.some(
-                  (line) =>
-                    new RegExp(pattern.source).test(line) &&
-                    (!subjects.length ||
-                      subjects.some((name) => line.includes(name))),
-                ));
-            if (!supported) {
-              const subject = {
-                death: "生死",
-                pregnancy: "受孕",
-                birth: "生产",
-                miscarriage: "小产",
-                appointment: "任免",
-                war: "战果",
-              }[kind];
-              fixNotes.push(
-                (slot || "附文") + "中没有对应结算的" + subject + "陈述已删除",
-              );
-              return "";
-            }
-          }
-        }
-        const executions = facts.filter((f) => f.kind === "execution"),
-          topical = executions.filter(
-            (f) => f.topic && sentence.includes(f.topic),
-          ),
-          localFacts = executions.filter((f) => f.slot === slot);
-        const choices = topical.length
-          ? topical
-          : localFacts.length
-            ? localFacts
-            : executions;
-        const expected = choices.length
-          ? choices.map((f) => f.label)
-          : !forecast.facts
-            ? [
-                ...(forecast.slotResults?.[slot] || [])
-                  .join(" ")
-                  .matchAll(EXECUTION),
-              ].map((m) => m[0])
-            : [];
-        if (new Set(expected).size === 1)
-          sentence = sentence.replace(EXECUTION, (word, offset) => {
-            if (word === expected[0] || hypothetical(sentence.slice(0, offset)))
-              return word;
-            fixNotes.push(
-              (slot || "附文") + "执行度由" + word + "改为" + expected[0],
-            );
-            return expected[0];
-          });
-        if (/性交|交媾|生殖器|阴茎|阴道|插入|抽插|乳房|裸体/.test(sentence)) {
-          fixNotes.push("亲密场景已收束为含蓄叙述。");
-          return "宫帘垂下，夜色渐深。";
-        }
-        return sentence;
-      })
-      .join("");
-  };
-  for (const slot of ["朝", "午", "夜"])
-    chapter[slot] = scrutinize(cleanText(data.chapter[slot], 3500), slot);
-  const whole = Object.values(chapter).join("\n"),
-    reactions = [];
-  for (const r of Array.isArray(data.reactions)
-    ? data.reactions.slice(0, 10)
-    : []) {
-    const npc = s.court.officials.find((o) => o.name === r.name && o.alive);
-    if (npc && Number.isFinite(Number(r.favorDelta)))
-      reactions.push({
-        id: npc.id,
-        name: npc.name,
-        favorDelta: Math.max(-5, Math.min(5, Number(r.favorDelta))),
-        note: cleanText(r.note, 100),
-      });
-    else fixNotes.push("未知人物反应未采用。");
-  }
-  const evidence = (
-    Array.isArray(data.ambitionEvidence) ? data.ambitionEvidence : []
-  )
-    .filter(
-      (e) =>
-        typeof e.evidence === "string" &&
-        e.evidence.length >= 8 &&
-        whole.includes(e.evidence),
-    )
-    .map((e) => ({
-      id: cleanText(e.id, 80),
-      objectiveId: cleanText(e.objectiveId, 80),
-      evidence: cleanText(e.evidence, 500),
-    }));
-  return {
-    chapter,
-    summary: scrutinize(cleanText(data.summary, 100), null) || fallback.summary,
-    reactions,
-    memorialTexts: (Array.isArray(data.memorialTexts) ? data.memorialTexts : [])
-      .filter((m) => forecast.newMemorials.some((n) => n.id === m.id))
-      .map((m) => ({
-        id: m.id,
-        text: scrutinize(cleanText(m.text, 1000), null),
-      })),
-    rumors: (Array.isArray(data.rumors) ? data.rumors : [])
-      .map((r) => scrutinize(cleanText(r, 150), null))
-      .filter(Boolean)
-      .slice(0, 3),
-    ambitionEvidence: evidence,
-    factUpdates: (Array.isArray(data.factUpdates) ? data.factUpdates : [])
-      .filter(
-        (f) =>
-          typeof f.reason === "string" &&
-          f.reason.length >= 8 &&
-          whole.includes(f.reason) &&
-          scrutinize(String(f.value), null) === String(f.value),
-      )
-      .slice(0, 5)
-      .map((f) => ({
-        subject: cleanText(f.subject, 80),
-        key: cleanText(f.key, 80),
-        value: cleanText(f.value, 200),
-        reason: cleanText(f.reason, 300),
-      })),
-    fixNotes: [...new Set(fixNotes)],
-  };
+if (
+!data?.chapter ||
+!["朝", "午", "夜"].every((k) => typeof data.chapter[k] === "string")
+)
+throw new Error("章节须包含朝、午、夜三段");
+const fallback = mockNarrative(forecast),
+fixNotes = [],
+chapter = {},
+s = forecast.state,
+numbers = numericEvidence(forecast);
+const facts = forecast.facts || [],
+settlement = [
+...Object.values(forecast.slotResults || {}).flat(),
+...(forecast.notes || []),
+...(forecast.entries || []).map((e) => e.source),
+];
+const roster = [
+s.emperor,
+...s.court.officials,
+...s.harem.consorts,
+...s.harem.children,
+...s.foreign,
+];
+const aliases = s.court.posts
+.filter((p) => p.holder)
+.map((p) => ({
+alias: p.title,
+name: s.court.officials.find((o) => o.id === p.holder)?.name,
+}));
+const scrutinize = (raw, slot) => {
+let previousActors = [];
+return raw
+.split(/(?<=[。！？\n])/)
+.map((original) => {
+let sentence = original;
+const actors = roster
+.filter((o) => sentence.includes(o.name))
+.map((o) => o.name);
+for (const a of aliases)
+if (sentence.includes(a.alias) && a.name) actors.push(a.name);
+const subjects = actors.length ? actors : previousActors;
+if (actors.length) previousActors = actors;
+const invalidNumbers = [
+...sentence.matchAll(
+new RegExp(
+"(" +
+NUMERAL +
+")(万两|两银|两|万人|人|名|位|兵马|精兵|禁军|士卒|骑兵|岁)",
+"g",
+),
+),
+].filter((m) => {
+// Generic "两位/一人/三名" describe a scene, not a population assertion.
+if (
+["人", "名", "位"].includes(m[2]) &&
+!/兵|丁|人口|户口|丁口|军|士卒|征发/.test(sentence)
+) return false;
+const kind = /两/.test(m[2])
+? "money"
+: m[2] === "岁"
+? "age"
+: "people",
+value = chineseNumber(m[1]) * (m[2].startsWith("万") ? 10000 : 1);
+return ![...numbers[kind]].some((n) => Math.abs(n - value) < 0.01);
+});
+for (const m of sentence.matchAll(
+new RegExp("(?:年方|年仅|年届)(" + NUMERAL + ")", "g"),
+))
+if (!numbers.age.has(chineseNumber(m[1]))) invalidNumbers.push(m);
+if (invalidNumbers.length) {
+fixNotes.push(
+(slot || "附文") + "中无结算或状态依据的金额/人数/年龄已删除",
+);
+return "";
+}
+for (const [kind, pattern] of ASSERTIONS) {
+for (const claim of sentence.matchAll(
+new RegExp(pattern.source, "g"),
+)) {
+if (hypothetical(sentence.slice(0, claim.index))) continue;
+const compatible = (f) => {
+if (kind === "war") {
+const required = /败北|兵败|战败/.test(claim[0])
+? "失利"
+: /全胜|大捷|攻克|收复|夺回/.test(claim[0])
+? "胜利"
+: /宣战|开战/.test(claim[0])
+? "宣战"
+: /入寇/.test(claim[0])
+? "入寇"
+: "失守";
+return f.outcome === required;
+}
+if (kind === "appointment") {
+const required = /罢免|革职/.test(claim[0])
+? "罢免"
+: /贬谪/.test(claim[0])
+? "贬谪"
+: /下狱/.test(claim[0])
+? "下狱"
+: /致仕/.test(claim[0])
+? "致仕"
+: /册立/.test(claim[0])
+? "册立"
+: /封后|晋为/.test(claim[0])
+? "晋位"
+: "任命";
+return (
+f.operation === required ||
+(required === "任命" && f.operation === "入宫")
+);
+}
+return true;
+};
+const supported =
+facts.some(
+(f) =>
+f.kind === kind &&
+(!subjects.length ||
+f.actors?.some((a) => subjects.includes(a))) &&
+compatible(f),
+) ||
+(!forecast.facts &&
+settlement.some(
+(line) =>
+new RegExp(pattern.source).test(line) &&
+(!subjects.length ||
+subjects.some((name) => line.includes(name))),
+));
+if (!supported) {
+const subject = {
+death: "生死",
+pregnancy: "受孕",
+birth: "生产",
+miscarriage: "小产",
+appointment: "任免",
+war: "战果",
+}[kind];
+fixNotes.push(
+(slot || "附文") + "中没有对应结算的" + subject + "陈述已删除",
+);
+return "";
+}
+}
+}
+const executions = facts.filter((f) => f.kind === "execution"),
+topical = executions.filter(
+(f) => f.topic && sentence.includes(f.topic),
+),
+localFacts = executions.filter((f) => f.slot === slot);
+const choices = topical.length
+? topical
+: localFacts.length
+? localFacts
+: executions;
+const expected = choices.length
+? choices.map((f) => f.label)
+: !forecast.facts
+? [
+...(forecast.slotResults?.[slot] || [])
+.join(" ")
+.matchAll(EXECUTION),
+].map((m) => m[0])
+: [];
+if (new Set(expected).size === 1)
+sentence = sentence.replace(EXECUTION, (word, offset) => {
+if (word === expected[0] || hypothetical(sentence.slice(0, offset)))
+return word;
+fixNotes.push(
+(slot || "附文") + "执行度由" + word + "改为" + expected[0],
+);
+return expected[0];
+});
+if (/性交|交媾|生殖器|阴茎|阴道|插入|抽插|乳房|裸体/.test(sentence)) {
+fixNotes.push("亲密场景已收束为含蓄叙述。");
+return "宫帘垂下，夜色渐深。";
+}
+return sentence;
+})
+.join("");
+};
+for (const slot of ["朝", "午", "夜"])
+chapter[slot] = scrutinize(cleanText(data.chapter[slot], 3500), slot);
+const whole = Object.values(chapter).join("\n"),
+reactions = [];
+for (const r of Array.isArray(data.reactions)
+? data.reactions.slice(0, 10)
+: []) {
+const npc = s.court.officials.find((o) => o.name === r.name && o.alive);
+if (npc && Number.isFinite(Number(r.favorDelta)))
+reactions.push({
+id: npc.id,
+name: npc.name,
+favorDelta: Math.max(-5, Math.min(5, Number(r.favorDelta))),
+note: cleanText(r.note, 100),
+});
+else fixNotes.push("未知人物反应未采用。");
+}
+const evidence = (
+Array.isArray(data.ambitionEvidence) ? data.ambitionEvidence : []
+)
+.filter(
+(e) =>
+typeof e.evidence === "string" &&
+e.evidence.length >= 8 &&
+whole.includes(e.evidence),
+)
+.map((e) => ({
+id: cleanText(e.id, 80),
+objectiveId: cleanText(e.objectiveId, 80),
+evidence: cleanText(e.evidence, 500),
+}));
+return {
+chapter,
+summary: scrutinize(cleanText(data.summary, 100), null) || fallback.summary,
+reactions,
+memorialTexts: (Array.isArray(data.memorialTexts) ? data.memorialTexts : [])
+.filter((m) => forecast.newMemorials.some((n) => n.id === m.id))
+.map((m) => ({
+id: m.id,
+text: scrutinize(cleanText(m.text, 1000), null),
+})),
+rumors: (Array.isArray(data.rumors) ? data.rumors : [])
+.map((r) => scrutinize(cleanText(r, 150), null))
+.filter(Boolean)
+.slice(0, 3),
+ambitionEvidence: evidence,
+factUpdates: (Array.isArray(data.factUpdates) ? data.factUpdates : [])
+.filter(
+(f) =>
+typeof f.reason === "string" &&
+f.reason.length >= 8 &&
+whole.includes(f.reason) &&
+scrutinize(String(f.value), null) === String(f.value),
+)
+.slice(0, 5)
+.map((f) => ({
+subject: cleanText(f.subject, 80),
+key: cleanText(f.key, 80),
+value: cleanText(f.value, 200),
+reason: cleanText(f.reason, 300),
+})),
+fixNotes: [...new Set(fixNotes)],
+};
 }
 function validateWorld(data) {
-  for (const [key, min] of [
-    ["factions", 5],
-    ["officials", 25],
-    ["consorts", 2],
-    ["foreign", 4],
-    ["provinces", 10],
-  ])
-    if (
-      !Array.isArray(data[key]) ||
-      data[key].length < min ||
-      data[key].some((x) => !cleanText(x?.name, 20))
-    )
-      throw new Error("铸世人物或州郡资料不全");
-  return data;
+for (const [key, min] of [
+["factions", 5],
+["officials", 25],
+["consorts", 2],
+["foreign", 4],
+["provinces", 10],
+])
+if (
+!Array.isArray(data[key]) ||
+data[key].length < min ||
+data[key].some((x) => !cleanText(x?.name, 20))
+)
+throw new Error("铸世人物或州郡资料不全");
+return data;
 }
 function validateTalk(data, result, state) {
-  const reply = cleanText(data.reply, 1200);
-  if (!reply) throw new Error("面谈回复为空");
-  if (result.denied || !result.success) {
-    // Remove entire unsupported promise/number sentences so removing a word
-    // cannot turn a refusal into an apparent agreement.
-    const numeral='[0-9０-９零〇一二两三四五六七八九十百千万亿壹贰叁肆伍陆柒捌玖拾佰仟萬億]';
-    const measurement = new RegExp(numeral+'(?:'+numeral+'|[点.,，])*\\s*(?:万两|两|兵|人|石|名|位|岁|万人|万石|匹|艘|亩|户|成)');
-    const uncommitted = reply.split(/(?<=[。！？\n])/).filter((sentence) =>
-      !measurement.test(sentence) &&
-      !/遵旨|领旨|奉旨|遵命|领命|奉命|谨遵|应允|允诺|承诺|答应|照办|照准|允准|即刻|立即|马上|拨付|拨款|拨银|给付|交付|调兵|发兵|已拨|已调|已办|办妥|奉行|依旨|尽力|定当|必当|定会|必会|这就|便去/.test(sentence),
-    ).join("");
-    const checked = state ? validateTurn({ chapter: { 朝: "", 午: uncommitted, 夜: "" } }, {
-      state, die: result.die, fate: "面谈", newMemorials: [],
-      slotResults: { 朝: [], 午: [], 夜: [] }, entries: [], notes: [], facts: [],
-    }).chapter.午 : uncommitted.split(/(?<=[。！？\n])/).filter((sentence) =>
-      !ASSERTIONS.some(([, pattern]) => new RegExp(pattern.source).test(sentence))).join("");
-    return {
-      reply: checked.trim() || result.reply,
-      innerThought: result.innerThought || "",
-      effects: null,
-    };
-  }
-  const safe = /\d.*(?:两|兵)|怀孕|身亡|处死|封后|裸体|插入/.test(reply)
-    ? result.reply
-    : reply;
-  return {
-    reply: safe,
-    innerThought: result.innerThought ? cleanText(data.innerThought, 500) : "",
-    effects: null,
-  };
+const reply = cleanText(data.reply, 1200);
+if (!reply) throw new Error("面谈回复为空");
+if (result.denied || !result.success) {
+// Remove entire unsupported promise/number sentences so removing a word
+// cannot turn a refusal into an apparent agreement.
+const numeral='[0-9０-９零〇一二两三四五六七八九十百千万亿壹贰叁肆伍陆柒捌玖拾佰仟萬億]';
+const measurement = new RegExp(numeral+'(?:'+numeral+'|[点.,，])*\\s*(?:万两|两|兵|人|石|名|位|岁|万人|万石|匹|艘|亩|户|成)');
+const uncommitted = reply.split(/(?<=[。！？\n])/).filter((sentence) =>
+!measurement.test(sentence) &&
+!/遵旨|领旨|奉旨|遵命|领命|奉命|谨遵|应允|允诺|承诺|答应|照办|照准|允准|即刻|立即|马上|拨付|拨款|拨银|给付|交付|调兵|发兵|已拨|已调|已办|办妥|奉行|依旨|尽力|定当|必当|定会|必会|这就|便去/.test(sentence),
+).join("");
+const checked = state ? validateTurn({ chapter: { 朝: "", 午: uncommitted, 夜: "" } }, {
+state, die: result.die, fate: "面谈", newMemorials: [],
+slotResults: { 朝: [], 午: [], 夜: [] }, entries: [], notes: [], facts: [],
+}).chapter.午 : uncommitted.split(/(?<=[。！？\n])/).filter((sentence) =>
+!ASSERTIONS.some(([, pattern]) => new RegExp(pattern.source).test(sentence))).join("");
+return {
+reply: checked.trim() || result.reply,
+innerThought: result.innerThought || "",
+effects: null,
+};
 }
-
+const safe = /\d.*(?:两|兵)|怀孕|身亡|处死|封后|裸体|插入/.test(reply)
+? result.reply
+: reply;
+return {
+reply: safe,
+innerThought: result.innerThought ? cleanText(data.innerThought, 500) : "",
+effects: null,
+};
+}
 function extractPartialChapter(raw) {
-  const sections = [];
-  for (const key of ["朝", "午", "夜"]) {
-    const match = new RegExp('"' + key + '"\\s*:\\s*"').exec(raw);
-    if (!match) continue;
-    let value = "";
-    for (
-      let i = match.index + match[0].length;
-      i < raw.length && value.length < 3500;
-      i++
-    ) {
-      const c = raw[i];
-      if (c === '"') break;
-      if (c === "\\") {
-        const n = raw[++i];
-        if (n === undefined) break;
-        if (n === "u") {
-          const hex = raw.slice(i + 1, i + 5);
-          if (!/^[a-fA-F0-9]{4}$/.test(hex)) break;
-          value += String.fromCharCode(parseInt(hex, 16));
-          i += 4;
-        } else value += n === "n" ? "\n" : n === "t" ? "\t" : n;
-      } else value += c;
-    }
-    if (/裸体|插入|抽插|性交/.test(value)) value = "宫帘垂下，夜色渐深。";
-    sections.push(key + "\n" + value);
-  }
-  return sections.join("\n\n");
+const sections = [];
+for (const key of ["朝", "午", "夜"]) {
+const match = new RegExp('"' + key + '"\\s*:\\s*"').exec(raw);
+if (!match) continue;
+let value = "";
+for (
+let i = match.index + match[0].length;
+i < raw.length && value.length < 3500;
+i++
+) {
+const c = raw[i];
+if (c === '"') break;
+if (c === "\\") {
+const n = raw[++i];
+if (n === undefined) break;
+if (n === "u") {
+const hex = raw.slice(i + 1, i + 5);
+if (!/^[a-fA-F0-9]{4}$/.test(hex)) break;
+value += String.fromCharCode(parseInt(hex, 16));
+i += 4;
+} else value += n === "n" ? "\n" : n === "t" ? "\t" : n;
+} else value += c;
+}
+if (/裸体|插入|抽插|性交/.test(value)) value = "宫帘垂下，夜色渐深。";
+sections.push(key + "\n" + value);
+}
+return sections.join("\n\n");
 }
 
 return {parseJSONLoose,repairJSON,cleanText,validateProbe,mockNarrative,chineseNumber,validateTurn,validateWorld,validateTalk,extractPartialChapter};
@@ -8432,8 +8645,27 @@ memorialId: m.id,
 optionId: o.id,
 };
 }
+// 票拟：首辅（或在京最高职官员）按本派立场拟出的建议批答。只给建议，不改状态；
+// 只选国库/内帑/粮储付得起的选项，不选“留中”。
+function cabinetDraft(state, memorial) {
+if (!memorial?.options?.length) return null;
+const minister = state.court.posts
+.map((p) => state.court.officials.find((o) => o.id === p.holder))
+.find((o) => o && inCapital(o));
+if (!minister) return null;
+const faction = state.court.factions.find((f) => f.id === minister.faction) || state.court.factions[0];
+const affordable = (o) => ["treasury", "privy", "grain"].every(
+(k) => (state.nation[k] || 0) >= Math.max(0, -(o.effects?.[k] || 0)));
+const ranked = memorial.options
+.map((o, i) => ({ o, i }))
+.filter(({ o }) => o.id !== "hold" && affordable(o))
+.map((x) => ({ ...x, score: faction ? factionOptionScore(faction, memorial, x.o) : 0 }))
+.sort((a, b) => b.score - a.score || a.i - b.i);
+if (!ranked.length) return null;
+return { option: ranked[0].o.id, label: ranked[0].o.label, minister: minister.name, faction: faction?.name || "" };
+}
 
-return {strongmanCandidate,strongman,courtMonth,courtYear,officialDeathChance,appoint,talkAttempt,banquet,inCapital,factionOptionScore,courtDebate,accountability,proxyMemorial};
+return {strongmanCandidate,strongman,courtMonth,courtYear,officialDeathChance,appoint,talkAttempt,banquet,inCapital,factionOptionScore,courtDebate,accountability,proxyMemorial,cabinetDraft};
 },
 "src/core/foreign.js":function(__load){
 const { clone } = __load("src/core/state.js");
@@ -9449,7 +9681,7 @@ return (
 }
 function renderApp(
 s,
-{ readOnly = false, busy = false, saveStatus = "" } = {},
+{ readOnly = false, busy = false, saveStatus = "", canRepeat = false } = {},
 ) {
 const last = s?.history.at(-1),
 locked = readOnly || busy || !!s?.ending || !!s?.pending,
@@ -9592,7 +9824,11 @@ esc(estimate.executions.join("、")) +
 e.excess +
 " 点：劳累、健康与心情受损</strong>"
 : "") +
-'</div><button class="oral-trigger" data-command="oral" ' +
+"</div>" +
+(canRepeat && !scheduled && !locked
+? '<button class="repeat-trigger" data-command="repeat">沿用上旬</button>'
+: "") +
+'<button class="oral-trigger" data-command="oral" ' +
 (locked ? "disabled" : "") +
 '>口谕</button><button class="primary advance" data-command="advance" ' +
 (readOnly || busy || s.ending ? "disabled" : "") +
@@ -9698,7 +9934,7 @@ return {memorialAssignments,availableMemorials,memorialCounts,memorialDecisionLa
 },
 "src/ui/view-model.js":function(__load){
 const { memorialDecision } = __load("src/core/memorial-decisions.js");
-const { ACTIONS, scheduleCost } = __load("src/core/turn.js");
+const { ACTIONS, scheduleCost, validateSchedule } = __load("src/core/turn.js");
 const { energyLimit } = __load("src/core/emperor.js");
 const { annualBudget } = __load("src/core/finance.js");
 const { EDICTS, execution } = __load("src/core/edicts.js");
@@ -9732,7 +9968,9 @@ function actionMeta(kind) {
 const rule = ACTIONS[kind];
 if (!rule) return "";
 const time = rule.full ? "占满一旬" : rule.slots.length === 3 ? "任意" : rule.slots.join("/");
-return time + " · " + (kind === "批折" ? "每3本1" : rule.full ? rule.energy+"点" : "精力 " + rule.energy);
+if (kind === "上朝") return time + " · 精力 " + rule.energy + " · 三本内，可廷议问责";
+if (kind === "批折") return time + " · 每3本1 · 独断，不经廷议";
+return time + " · " + (rule.full ? rule.energy+"点" : "精力 " + rule.energy);
 }
 function energyView(s) {
 const limit = s ? energyLimit(s) : 9, used = s ? scheduleCost(s.schedule) : 0;
@@ -9781,8 +10019,21 @@ if(a.kind==="外交"&&a.operation==="和亲")totals.privy-=10;
 }
 return {totals,executions};
 }
+// 沿用上旬日程：只沿用不绑定具体奏报或人物结果的行动，逐槽校验，不合规的槽位留空。
+const REPEATABLE = ["歇息", "后宫", "宴请", "私下行事", "下旨"];
+function repeatSchedule(s, last) {
+const next = { 朝: null, 午: null, 夜: null };
+if (!s || !last) return next;
+for (const slot of ["朝", "午", "夜"]) {
+const a = last[slot];
+if (!a || !REPEATABLE.includes(a.kind) || actionAvailability(s, a.kind)) continue;
+const trial = { ...next, [slot]: JSON.parse(JSON.stringify(a)) };
+try { validateSchedule(s, trial); next[slot] = trial[slot]; } catch {}
+}
+return next;
+}
 
-return {ACTION_GROUPS,HALLS,GLYPHS,actionAvailability,actionMeta,energyView,metricGroups,scheduleEstimate};
+return {ACTION_GROUPS,HALLS,GLYPHS,actionAvailability,actionMeta,energyView,metricGroups,scheduleEstimate,REPEATABLE,repeatSchedule};
 },
 "src/ui/memorials.js":function(__load){
 const { memorialDecision } = __load("src/core/memorial-decisions.js");
@@ -9790,6 +10041,7 @@ const { onDialogExit } = __load("src/ui/request-scope.js");
 const { $, esc, openDialog, closeDialog, toast } = __load("src/ui/common.js");
 const { forecastTurn, validateSchedule } = __load("src/core/turn.js");
 const { EDICTS, execution } = __load("src/core/edicts.js");
+const { cabinetDraft } = __load("src/core/court.js");
 const {
 memorialAssignments,
 availableMemorials,
@@ -9852,6 +10104,18 @@ stance: old?.stance || "依旨施行",
 target: old?.target || s.court.officials[0]?.id || "",
 remark: old?.remark || "",
 };
+}
+// 未选择的非急报按票拟填入；急报必须御览亲裁。返回填入的本数。
+function applyCabinetDrafts(s, session) {
+let filled = 0;
+for (const id of session.ids) {
+if (session.choices[id]) continue;
+const m = s.memorials.find((x) => x.id === id);
+if (!m || m.urgent) continue;
+const draft = cabinetDraft(s, m);
+if (draft) { session.choices[id] = draft.option; filled++; }
+}
+return filled;
 }
 function legacyChoice(m, value) {
 if (value === "opt0" && m.options[0]?.id === value) return "approve";
@@ -10031,6 +10295,7 @@ p.id === s.threads.find((t) => t.id === m.threadId)?.provinceId ||
 m.title.includes(p.name),
 );
 const opts = memorialOptions(s, m),
+draft = cabinetDraft(s, m),
 selected = session.choices[m.id],
 debate = debateFor(s, session),
 assigned = memorialAssignments(s);
@@ -10092,6 +10357,8 @@ o.edictType && EDICTS[o.edictType]
 ? "执行度预估「" + execution(s, o.edictType, 11).label + "」"
 : chosen
 ? "已选"
+: draft?.option === o.id
+? "票拟"
 : i < 4
 ? "按 " + (i + 1)
 : "";
@@ -10209,7 +10476,11 @@ esc(session.remarks[m.id] || "") +
 (session.index + 1) +
 " / " +
 session.ids.length +
-' 本</small></div><div class="review-options" role="radiogroup" aria-label="处置选项">' +
+' 本</small></div>' +
+(draft
+? '<p class="cabinet-draft">票拟 · ' + esc(draft.minister) + (draft.faction ? "（" + esc(draft.faction) + "）" : "") + "：" + esc(draft.label) + "</p>"
+: "") +
+'<div class="review-options" role="radiogroup" aria-label="处置选项">' +
 cards +
 "</div>" +
 (session.kind === "上朝"
@@ -10263,7 +10534,11 @@ esc(factionDemandReason(s, o, m)) +
 : "") +
 ('<p class="review-help"><span class="keyboard-help">1–4 择批 · Enter 下一本 · Esc 暂退</span></p><p id="review-error" ' +
 'class="review-error" role="status" aria-live="polite"></p></section></div><footer class="review-footer"><butto' +
-'n type="button" data-review-hold>留中不发</button><button type="button" id="review-next" class="primary" data-revi' +
+'n type="button" data-review-hold>留中不发</button>') +
+(session.ids.some((id) => !session.choices[id] && !s.memorials.find((x) => x.id === id)?.urgent)
+? '<button type="button" data-review-drafts>未批者依票拟</button>'
+: "") +
+('<button type="button" id="review-next" class="primary" data-revi' +
 "ew-next>") +
 (session.index === session.ids.length - 1
 ? "拟批完毕，入日程"
@@ -10408,6 +10683,12 @@ session.remarks[id] ??= "";
 session.index = Math.min(session.index, session.ids.length - 1);
 paint();
 d.querySelector(".queue-picker").open = true;
+} else if (b.hasAttribute("data-review-drafts")) {
+const filled = applyCabinetDrafts(s, session);
+const missing = session.ids.findIndex((id) => !session.choices[id]);
+if (missing >= 0) session.index = missing;
+paint("#memorial-title");
+showError(filled ? "已依票拟填入 " + filled + " 本" + (missing >= 0 ? "；急报须亲裁" : "，可拟批完毕") : "急报须亲裁，未填入");
 } else if (b.hasAttribute("data-review-hold")) {
 session.choices[session.ids[session.index]] = "hold";
 next();
@@ -10457,7 +10738,7 @@ next();
 paint("#memorial-title");
 }
 
-return {createMemorialSession,memorialAction,scheduledMemorialDialog,effectItems,effectLabel,factionDemandReason,memorialOptions,memorialHTML,memorialDialog};
+return {createMemorialSession,applyCabinetDrafts,memorialAction,scheduledMemorialDialog,effectItems,effectLabel,factionDemandReason,memorialOptions,memorialHTML,memorialDialog};
 },
 "src/ui/actions.js":function(__load){
 const { $, esc, openDialog, toast, closeDialog } = __load("src/ui/common.js");

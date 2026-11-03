@@ -1,5 +1,6 @@
 import { createDialogRequestScope, probeErrorMessage } from "./request-scope.js";
 import { $, esc, openDialog, toast } from "./common.js";
+import { FONT_SCALES, applyFontScale, storedFontScale } from "./mobile.js";
 import {
   PRESETS,
   callJSON,
@@ -25,7 +26,9 @@ export function loadSettings() {
 export function openSettings(config, metrics, onSave, recordMetric = null) {
   openDialog(
     "御前设置",
-    '<p class="muted">填写叙事接口，续写本纪。密钥只用于所填地址，不随存档导出。</p><form id="settings-form"><label for="provider">服务商与地域</label><select id="provider">' +
+    '<label for="font-scale">正文字号</label><select id="font-scale">' +
+      Object.entries(FONT_SCALES).map(([id, label]) => '<option value="' + id + '"' + (id === storedFontScale() ? " selected" : "") + ">" + label + "</option>").join("") +
+      '</select><p class="muted">立即生效，只影响本机阅读。</p><p class="muted">填写叙事接口，续写本纪。密钥只用于所填地址，不随存档导出。</p><form id="settings-form"><label for="provider">服务商与地域</label><select id="provider">' +
       Object.entries(PRESETS)
         .map(
           ([id, p]) =>
@@ -70,6 +73,7 @@ export function openSettings(config, metrics, onSave, recordMetric = null) {
         .join("") +
       "</div></details>",
   );
+  $("#font-scale").onchange = (e) => applyFontScale(e.target.value);
   const read = () => ({
     provider: $("#provider").value,
     base: $("#api-base").value.trim(),

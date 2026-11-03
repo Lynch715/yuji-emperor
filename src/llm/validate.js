@@ -5,8 +5,8 @@ export function parseJSONLoose(raw) {
     throw new Error("模型 JSON 为空或过长");
   let text = raw
     .replace(/<think>[\s\S]*?<\/think>/g, "")
-    .replace(/^\s*```(?:json)?/i, "")
-    .replace(/```\s*$/, "")
+    .replace(/^\s*\x60{3}(?:json)?/i, "")
+    .replace(/\x60{3}\s*$/, "")
     .trim();
   const start = text.indexOf("{");
   if (start < 0) throw new Error("模型未返回 JSON 对象");

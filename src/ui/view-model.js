@@ -1,5 +1,5 @@
 import { memorialDecision } from "../core/memorial-decisions.js";
-import { ACTIONS, scheduleCost } from "../core/turn.js";
+import { ACTIONS, scheduleCost, validateSchedule } from "../core/turn.js";
 import { energyLimit } from "../core/emperor.js";
 import { annualBudget } from "../core/finance.js";
 import { EDICTS, execution } from "../core/edicts.js";
@@ -33,7 +33,9 @@ export function actionMeta(kind) {
   const rule = ACTIONS[kind];
   if (!rule) return "";
   const time = rule.full ? "占满一旬" : rule.slots.length === 3 ? "任意" : rule.slots.join("/");
-  return time + " · " + (kind === "批折" ? "每3本1" : rule.full ? rule.energy+"点" : "精力 " + rule.energy);
+  if (kind === "上朝") return time + " · 精力 " + rule.energy + " · 三本内，可廷议问责";
+  if (kind === "批折") return time + " · 每3本1 · 独断，不经廷议";
+  return time + " · " + (rule.full ? rule.energy+"点" : "精力 " + rule.energy);
 }
 export function energyView(s) {
   const limit = s ? energyLimit(s) : 9, used = s ? scheduleCost(s.schedule) : 0;
@@ -81,4 +83,18 @@ export function scheduleEstimate(s) {
     if(a.kind==="外交"&&a.operation==="和亲")totals.privy-=10;
   }
   return {totals,executions};
+}
+
+// 沿用上旬日程：只沿用不绑定具体奏报或人物结果的行动，逐槽校验，不合规的槽位留空。
+export const REPEATABLE = ["歇息", "后宫", "宴请", "私下行事", "下旨"];
+export function repeatSchedule(s, last) {
+  const next = { 朝: null, 午: null, 夜: null };
+  if (!s || !last) return next;
+  for (const slot of ["朝", "午", "夜"]) {
+    const a = last[slot];
+    if (!a || !REPEATABLE.includes(a.kind) || actionAvailability(s, a.kind)) continue;
+    const trial = { ...next, [slot]: JSON.parse(JSON.stringify(a)) };
+    try { validateSchedule(s, trial); next[slot] = trial[slot]; } catch {}
+  }
+  return next;
 }

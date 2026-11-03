@@ -485,3 +485,22 @@ export function proxyMemorial(state, options = {}) {
     optionId: o.id,
   };
 }
+// 票拟：首辅（或在京最高职官员）按本派立场拟出的建议批答。只给建议，不改状态；
+// 只选国库/内帑/粮储付得起的选项，不选“留中”。
+export function cabinetDraft(state, memorial) {
+  if (!memorial?.options?.length) return null;
+  const minister = state.court.posts
+    .map((p) => state.court.officials.find((o) => o.id === p.holder))
+    .find((o) => o && inCapital(o));
+  if (!minister) return null;
+  const faction = state.court.factions.find((f) => f.id === minister.faction) || state.court.factions[0];
+  const affordable = (o) => ["treasury", "privy", "grain"].every(
+    (k) => (state.nation[k] || 0) >= Math.max(0, -(o.effects?.[k] || 0)));
+  const ranked = memorial.options
+    .map((o, i) => ({ o, i }))
+    .filter(({ o }) => o.id !== "hold" && affordable(o))
+    .map((x) => ({ ...x, score: faction ? factionOptionScore(faction, memorial, x.o) : 0 }))
+    .sort((a, b) => b.score - a.score || a.i - b.i);
+  if (!ranked.length) return null;
+  return { option: ranked[0].o.id, label: ranked[0].o.label, minister: minister.name, faction: faction?.name || "" };
+}

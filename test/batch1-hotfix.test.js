@@ -26,7 +26,7 @@ function controller(state,extra={}){
   const elements=Object.fromEntries(['#talk-form','#talk-form button','#talk-line','#talk-log','#action-document'].map(id=>[id,{value:'说说近况',disabled:false,insertAdjacentHTML(){}}]));
   const errors=[],saves=[];
   const context={scheduleSave:{cancel(){},schedule(){},flush:async()=>{}},classifyMemorialSchedule,state,readOnly:false,busy:false,config,AbortController,createBudget,forecastTurn,commitTurn,validateSchedule,talkAttempt,talkMessages,turnMessages,biographyMessages,validateTalk,
-    $:id=>elements[id],esc:x=>String(x),openDialog(){},closeDialog(){},render(){},toast:m=>errors.push(m),markMetric(){},persist:async()=>{saves.push(structuredClone(context.state));return true;},
+    streamDraft(){},lastSchedule:null,$:id=>elements[id],esc:x=>String(x),openDialog(){},closeDialog(){},render(){},toast:m=>errors.push(m),markMetric(){},persist:async()=>{saves.push(structuredClone(context.state));return true;},
     callJSON:(c,m,o)=>callJSON(c,m,{...o,fetcher:async()=>response({reply:'臣尚须查核旧档，此事未敢轻允。'})}),
     requestTurnNarrative:(c,s,f,o)=>requestTurnNarrative(c,s,f,{...o,fetcher:async()=>response(prose)}),...extra};
   runInNewContext(oldBudget+'\n'+snippets,context);
