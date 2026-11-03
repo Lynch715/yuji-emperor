@@ -5605,6 +5605,7 @@ throw lastError || new Error("本回合请求预算已用完（最多 4 次、24
 return {PRESETS,MODEL_OPTIONS,modelsFor,modelDescription,createBudget,endpoint,requestBody,readResponse,callJSON};
 },
 "src/llm/validate.js":function(__load){
+const { NUMBER_SOURCE, parseNumber, quantityMatches, quantityEvidence, invalidQuantity } = __load("src/llm/quantities.js");
 const { sceneNarrative } = __load("src/llm/mock-narrative.js");
 // Pure JSON repair. Never evaluate model text as JavaScript.
 function parseJSONLoose(raw) {
@@ -5744,109 +5745,8 @@ fixNotes: [],
 };
 }
 // Extract assertions and compare them with typed engine facts; ordinary vocabulary is never a reason to delete prose.
-const NUMERAL = "[0-9０-９零〇一二两三四五六七八九十百千万亿点.,，]+";
-function chineseNumber(text) {
-text = text
-.replace(/[０-９]/g, (c) => String(c.charCodeAt(0) - 65296))
-.replace(/[,，]/g, "");
-if (/^\d+(?:\.\d+)?$/.test(text)) return Number(text);
-const digits = {
-零: 0,
-〇: 0,
-一: 1,
-二: 2,
-两: 2,
-三: 3,
-四: 4,
-五: 5,
-六: 6,
-七: 7,
-八: 8,
-九: 9,
-};
-for (const [unit, mult] of [
-["亿", 100000000],
-["万", 10000],
-]) {
-if (text.includes(unit)) {
-const [left, right] = text.split(unit);
-return chineseNumber(left) * mult + (right ? chineseNumber(right) : 0);
-}
-}
-const [whole, decimal] = text.split("点");
-let result = 0,
-n = 0;
-for (const c of whole) {
-if (/\d/.test(c)) n = n * 10 + Number(c);
-else if (c in digits) n = digits[c];
-else if ({ 十: 10, 百: 100, 千: 1000 }[c]) {
-result += (n || 1) * { 十: 10, 百: 100, 千: 1000 }[c];
-n = 0;
-} else return NaN;
-}
-return (
-result +
-n +
-(decimal
-? Number("0." + [...decimal].map((c) => digits[c] ?? c).join(""))
-: 0)
-);
-}
-function numericEvidence(f) {
-const sets = { money: new Set(), people: new Set(), age: new Set() },
-add = (kind, v) => {
-if (!Number.isFinite(v)) return;
-v = Math.abs(v);
-sets[kind].add(v);
-// 提示词里的钱粮取整到 0.1 万，人数取整；模型据此写出的数字同样有据。
-if (kind === "money") { sets.money.add(Math.round(v / 1000) * 1000); sets.money.add(Math.round(v / 10000) * 10000); }
-else sets[kind].add(Math.round(v));
-};
-const walk = (v) => {
-if (!v || typeof v !== "object") return;
-for (const [k, x] of Object.entries(v)) {
-if (["history", "volumes", "pending", "ledger"].includes(k)) continue;
-if (["treasury", "privy", "arrears", "cost"].includes(k)) add("money", x * 10000);
-if (["troops", "garrison", "enemyTroops"].includes(k)) add("people", x);
-if (k === "pop") add("people", x * 10000);
-if (k === "age") add("age", x);
-if (typeof x === "object") walk(x);
-}
-};
-walk(f.state);
-for (const e of f.entries || []) {
-const kind = /treasury|privy|arrears/.test(e.path)
-? "money"
-: /troops|garrison/.test(e.path)
-? "people"
-: /\.age$/.test(e.path)
-? "age"
-: null;
-if (kind)
-for (const v of [e.before, e.after, e.delta])
-add(kind, v * (kind === "money" ? 10000 : 1));
-}
-const text = JSON.stringify([f.slotResults, f.notes]);
-for (const match of text.matchAll(
-new RegExp("(" + NUMERAL + ")(万两|两|万人|人|名|岁)", "g"),
-)) {
-const kind = /两/.test(match[2])
-? "money"
-: match[2] === "岁"
-? "age"
-: "people";
-add(
-kind,
-chineseNumber(match[1]) * (match[2].startsWith("万") ? 10000 : 1),
-);
-}
-for (const c of f.state.harem.children)
-add("age", Math.floor((f.state.turn - c.born) / 36));
-add("people", f.debate?.length);
-add("people", f.state.court.officials.length);
-add("people", f.state.harem.children.length);
-return sets;
-}
+const NUMERAL = NUMBER_SOURCE;
+function chineseNumber(text) { return parseNumber(text); }
 const ASSERTIONS = [
 ["miscarriage", /小产|流产/g],
 ["pregnancy", /怀孕|身孕|有孕|受孕|喜脉/g],
@@ -5887,7 +5787,7 @@ const fallback = mockNarrative(forecast),
 fixNotes = [],
 chapter = {},
 s = forecast.state,
-numbers = numericEvidence(forecast);
+numbers = quantityEvidence(forecast);
 const facts = forecast.facts || [],
 settlement = [
 ...Object.values(forecast.slotResults || {}).flat(),
@@ -5907,6 +5807,8 @@ const aliases = s.court.posts
 alias: p.title,
 name: s.court.officials.find((o) => o.id === p.holder)?.name,
 }));
+aliases.push(...['皇帝','陛下','新帝','天子'].map(alias=>({alias,name:s.emperor.name})),
+...s.harem.consorts.map(c=>({alias:c.rank,name:c.name})));
 const scrutinize = (raw, slot) => {
 let previousActors = [];
 return raw
@@ -5920,36 +5822,12 @@ for (const a of aliases)
 if (sentence.includes(a.alias) && a.name) actors.push(a.name);
 const subjects = actors.length ? actors : previousActors;
 if (actors.length) previousActors = actors;
-const invalidNumbers = [
-...sentence.matchAll(
-new RegExp(
-"(" +
-NUMERAL +
-")(万两|两银|两|万人|人|名|位|兵马|精兵|禁军|士卒|骑兵|岁)",
-"g",
-),
-),
-].filter((m) => {
-if (m[2] === "两" && (LOOSE_MEASURE.test(sentence.slice(m.index + m[0].length)) || !MONEY_CONTEXT.test(sentence)))
-return false;
-// Generic "两位/一人/三名" describe a scene, not a population assertion.
-if (
-["人", "名", "位"].includes(m[2]) &&
-!/兵|丁|人口|户口|丁口|军|士卒|征发/.test(sentence)
-) return false;
-const kind = /两/.test(m[2])
-? "money"
-: m[2] === "岁"
-? "age"
-: "people",
-value = chineseNumber(m[1]) * (m[2].startsWith("万") ? 10000 : 1);
-return ![...numbers[kind]].some((n) => Math.abs(n - value) < 0.01);
-});
+const invalidNumbers = quantityMatches(sentence).filter(q => invalidQuantity(q, sentence, numbers));
 if (!RETROSPECT.test(sentence))
-for (const m of sentence.matchAll(
-new RegExp("(?:年方|年仅|年届)(" + NUMERAL + ")", "g"),
-))
-if (!numbers.age.has(chineseNumber(m[1]))) invalidNumbers.push(m);
+for (const m of sentence.matchAll(new RegExp("(?:年方|年仅|年届)(" + NUMERAL + ")", "g"))) {
+if (!invalidQuantity({index:m.index,raw:m[0],unit:'岁',kind:'age',value:chineseNumber(m[1])},sentence,numbers)) continue;
+invalidNumbers.push(m);
+}
 if (invalidNumbers.length) {
 fixNotes.push(
 (slot || "附文") + "中无结算或状态依据的金额/人数/年龄已删除",
@@ -5961,6 +5839,12 @@ for (const claim of sentence.matchAll(
 new RegExp(pattern.source, "g"),
 )) {
 if (hypothetical(sentence.slice(0, claim.index)) || retrospective(sentence, kind)) continue;
+if (kind === "death") {
+const fragment=sentence.slice(Math.max(0,claim.index-6),claim.index+claim[0].length+8);
+if (/(?:死去|死了|已死|被杀)[的了]*(?:念头|心|梦|希望)|(?:念头|梦想?|心|希望)[^，。]{0,3}(?:死去|死了|已死)/.test(fragment)) continue;
+// Death requires an explicit person/title in this sentence, never an inherited subject.
+if (!actors.length) continue;
+}
 const compatible = (f) => {
 if (kind === "war") {
 const required = /败北|兵败|战败/.test(claim[0])
@@ -6026,25 +5910,14 @@ return "";
 }
 }
 }
-const executions = facts.filter((f) => f.kind === "execution"),
-topical = executions.filter(
-(f) => f.topic && sentence.includes(f.topic),
-),
-localFacts = executions.filter((f) => f.slot === slot);
-const choices = topical.length
-? topical
-: localFacts.length
-? localFacts
-: executions;
-const expected = choices.length
-? choices.map((f) => f.label)
-: !forecast.facts
-? [
-...(forecast.slotResults?.[slot] || [])
-.join(" ")
-.matchAll(EXECUTION),
-].map((m) => m[0])
-: [];
+const executions = facts.filter(f => f.kind === 'execution');
+const related = f => {
+const people=s.court.officials.filter(o => (forecast.slotResults?.[f.slot]||[]).join(' ').includes(o.name));
+const names=people.flatMap(o=>{const p=s.court.posts.find(p=>p.holder===o.id);return [o.name,p?.title,p?.office,p&&s.postNames?.[p.id]];});
+return [f.topic,f.official,f.office,...names].filter(Boolean).some(word=>sentence.includes(word));
+};
+const choices=executions.filter(related);
+const expected=choices.map(f=>f.label);
 if (new Set(expected).size === 1)
 sentence = sentence.replace(EXECUTION, (word, offset) => {
 if (word === expected[0] || hypothetical(sentence.slice(0, offset)))
@@ -6163,7 +6036,7 @@ const numeral='[0-9０-９零〇一二两三四五六七八九十百千万亿壹
 const measurement = new RegExp(numeral+'(?:'+numeral+'|[点.,，])*\\s*(?:万两|两|兵|人|石|名|位|岁|万人|万石|匹|艘|亩|户|成)');
 const uncommitted = reply.split(/(?<=[。！？\n])/).filter((sentence) =>
 !measurement.test(sentence) &&
-!/遵旨|领旨|奉旨|遵命|领命|奉命|谨遵|应允|允诺|承诺|答应|照办|照准|允准|即刻|立即|马上|拨付|拨款|拨银|给付|交付|调兵|发兵|已拨|已调|已办|办妥|奉行|依旨|尽力|定当|必当|定会|必会|这就|便去/.test(sentence),
+![...sentence.matchAll(/遵旨|领旨|奉旨|遵命|领命|奉命|谨遵|应允|允诺|承诺|答应|照办|照准|允准|即刻|立即|马上|拨付|拨款|拨银|给付|交付|调兵|发兵|已拨|已调|已办|办妥|奉行|依旨|尽力|定当|必当|定会|必会|这就|便去/g)].some(m => !/不|未|难|办不到|无法|岂能/.test(sentence.slice(Math.max(0,m.index-5),m.index+m[0].length+5))),
 ).join("");
 const checked = state ? validateTurn({ chapter: { 朝: "", 午: uncommitted, 夜: "" } }, {
 state, die: result.die, fate: "面谈", newMemorials: [],
@@ -6217,6 +6090,65 @@ return sections.join("\n\n");
 
 return {parseJSONLoose,repairJSON,cleanText,validateProbe,mockHook,mockNarrative,chineseNumber,retrospective,validateTurn,validateWorld,validateTalk,extractPartialChapter};
 },
+"src/llm/quantities.js":function(__load){
+// Quantities use base units. A 斛 needs explicit evidence: do not assume a dynasty's conversion.
+const NUMBER_SOURCE='[0-9０-９零〇一二两三四五六七八九十百千万亿点][0-9０-９零〇一二两三四五六七八九十百千万亿点.,，]*';
+const QUANTITY_UNITS={两银:['money',1],两:['money',1],石:['grain',1],斛:['hu',1],亩:['area',1],顷:['area',100],成:['ratio',10],'%':['ratio',1],'％':['ratio',1],户:['households',1],匹:['horses',1],岁:['age',1],兵马:['people',1],精兵:['people',1],禁军:['people',1],士卒:['people',1],骑兵:['people',1],人:['people',1],名:['people',1],位:['people',1]};
+function parseNumber(raw){
+const text=String(raw).replace(/[０-９]/g,c=>String(c.charCodeAt(0)-65296)).replace(/[,，]/g,'');
+if(/^\d+(?:\.\d+)?$/.test(text))return Number(text);
+for(const [unit,n]of [['亿',1e8],['万',1e4]]){const i=text.lastIndexOf(unit);if(i>=0)return parseNumber(text.slice(0,i)||'一')*n+(text.slice(i+1)?parseNumber(text.slice(i+1)):0);}
+const digits={零:0,〇:0,一:1,二:2,两:2,三:3,四:4,五:5,六:6,七:7,八:8,九:9};
+const [whole,decimal]=text.split('点');let total=0,part='';
+for(const c of whole){if(/\d/.test(c))part+=c;else if(c in digits)part+=digits[c];else if({十:10,百:100,千:1000}[c]){total+=(part?Number(part):1)*{十:10,百:100,千:1000}[c];part='';}else return NaN;}
+return total+Number(part||0)+(decimal?Number('0.'+[...decimal].map(c=>digits[c]??c).join('')):0);
+}
+function quantityMatches(text){
+return [...text.matchAll(new RegExp('('+NUMBER_SOURCE+')\\s*('+Object.keys(QUANTITY_UNITS).join('|')+')','g'))].map(m=>({index:m.index,raw:m[0],number:m[1],unit:m[2],kind:QUANTITY_UNITS[m[2]][0],value:parseNumber(m[1])*QUANTITY_UNITS[m[2]][1]}));
+}
+function nearbyOwners(text,index,owners){
+const found=[];
+for(const owner of owners)for(const alias of owner.aliases.filter(Boolean)){
+let at=text.indexOf(alias);while(at>=0){found.push({owner,before:at<=index,distance:at<=index?index-at-alias.length:at-index});at=text.indexOf(alias,at+1);}
+}
+if(!found.length)return [];
+const pool=found.some(x=>x.before)?found.filter(x=>x.before):found;
+const distance=Math.min(...pool.map(x=>Math.max(0,x.distance)));
+return [...new Set(pool.filter(x=>Math.max(0,x.distance)===distance).map(x=>x.owner))];
+}
+function quantityEvidence(f){
+const sets=Object.fromEntries(['money','grain','hu','area','ratio','households','horses','people','age'].map(k=>[k,new Set()]));
+const add=(kind,v)=>{if(!Number.isFinite(v))return;v=Math.abs(v);sets[kind].add(v);sets[kind].add(Math.round(v));if(kind==='money'){sets[kind].add(Math.round(v/1000)*1000);sets[kind].add(Math.round(v/10000)*10000);}};
+const keys={treasury:['money',1e4],privy:['money',1e4],arrears:['money',1e4],cost:['money',1e4],grain:['grain',1e4],grainArrears:['grain',1e4],troops:['people',1],garrison:['people',1],enemyTroops:['people',1],pop:['people',1e4],age:['age',1],area:['area',1],landArea:['area',1],households:['households',1],horses:['horses',1],execRate:['ratio',100],rate:['ratio',100],factor:['ratio',100],progress:['ratio',1]};
+const walk=v=>{if(!v||typeof v!=='object')return;for(const [k,x]of Object.entries(v)){if(['history','volumes','pending','ledger'].includes(k))continue;if(keys[k])add(keys[k][0],x*keys[k][1]);if(typeof x==='object')walk(x);}};
+walk(f.state);
+const pathKind=p=>/grain/.test(p)?['grain',1e4]:/treasury|privy|arrears/.test(p)?['money',1e4]:/troops|garrison/.test(p)?['people',1]:/\.age$/.test(p)?['age',1]:null;
+for(const e of f.entries||[]){const spec=pathKind(e.path);if(spec)for(const v of [e.before,e.after,e.delta])add(spec[0],v*spec[1]);}
+for(const q of quantityMatches(JSON.stringify([f.slotResults,f.notes])))add(q.kind,q.value);
+const s=f.state,ageOwners=[];
+const owner=(o,aliases,path,age=o.age)=>({aliases:[o.name,...aliases],values:[age,...(f.entries||[]).filter(e=>e.path===path).flatMap(e=>[e.before,e.after])]});
+ageOwners.push(owner(s.emperor,['皇帝','陛下','新帝','天子'],'emperor.age'));
+for(const o of s.court.officials){const p=s.court.posts.find(p=>p.holder===o.id);ageOwners.push(owner(o,[p?.title,p&&s.postNames?.[p.id]],'official.'+o.id+'.age'));}
+for(const c of s.harem.consorts)ageOwners.push(owner(c,[c.rank],'consort.'+c.id+'.age'));
+for(const c of s.harem.children)ageOwners.push(owner(c,[], 'child.'+c.id+'.age',Math.floor((s.turn-c.born)/36)));
+const armyOwners=[{aliases:['京营','禁军'],values:[s.nation.army.capital.troops,...(f.entries||[]).filter(e=>e.path==='nation.army.capital.troops').flatMap(e=>[e.before,e.after])]}];
+s.nation.army.frontiers.forEach((b,i)=>armyOwners.push({aliases:[b.dir+'境',b.dir+'边',b.dir+'军',b.name],values:[b.troops,...(f.entries||[]).filter(e=>e.path==='nation.army.frontiers.'+i+'.troops').flatMap(e=>[e.before,e.after])]}));
+for(const p of s.nation.provinces)armyOwners.push({aliases:[p.name],values:[p.garrison]});
+for(const w of s.campaigns||[]){const country=s.foreign.find(c=>c.id===w.country);armyOwners.push({aliases:[country?.name,w.title,...((s.campaigns||[]).filter(w=>!w.done).length===1?['敌军']:[])],values:[w.enemyTroops]});}
+return {sets,ageOwners,armyOwners,add};
+}
+function invalidQuantity(q,sentence,evidence){
+if(q.unit==='两'&&(/^[句声步眼行旁侧下回趟遍口天日个分笔字语言]/.test(sentence.slice(q.index+q.raw.length))||!/银|库|帑|款|饷|税|赏|拨|贿|俸|赋|钱粮|万两/.test(sentence)))return false;
+if(['人','名','位'].includes(q.unit)&&!/兵|丁|人口|户口|丁口|军|士卒|征发/.test(sentence))return false;
+// Historical ages are background; current object ages must match that object.
+if(q.kind==='age'&&/先帝|当年|昔年|那年|往年|早年|生前|追忆|曾经/.test(sentence))return false;
+const owners=q.kind==='age'?nearbyOwners(sentence,q.index,evidence.ageOwners):q.kind==='people'?nearbyOwners(sentence,q.index,evidence.armyOwners):null;
+const values=owners?(owners.length?owners.flatMap(o=>o.values):[]):[...evidence.sets[q.kind]];
+return !Number.isFinite(q.value)||!values.some(v=>Number.isFinite(v)&&Math.abs(Math.abs(v)-q.value)<0.01);
+}
+
+return {NUMBER_SOURCE,QUANTITY_UNITS,parseNumber,quantityMatches,quantityEvidence,invalidQuantity};
+},
 "src/ui/turn-request.js":function(__load){
 const { callJSON, createBudget } = __load("src/llm/client.js");
 const { turnMessages } = __load("src/llm/prompts.js");
@@ -6264,7 +6196,7 @@ const { postTitle, scenarioById } = __load("src/core/scenarios.js");
 const STYLES = {
   court: { label: "庙堂", rules: "端正克制，重礼仪、言外之意与施政得失。", sample: "辰正，百官依班而立。户部尚书出班奏事，言辞恭谨，句句留有余地。御座上没有立刻答话，殿中便静得能听见笏板相触。良久，一句“着该部详议”落下，几位老臣交换了眼色，都明白这事今日不会有定论。" },
   modern: { label: "现代文", rules: "正文、人物对话、面谈、奏折、诏书和国书统一使用现代汉语白话，句意清楚，对话自然；奏折说清事情、理由与请求。保留古代称谓、官职与礼仪，不引入现代科技、现实机构或网络流行语。", sample: "早朝结束，皇帝留下户部尚书，问起地方送来的奏折。尚书说：「陛下，情况还不够清楚，臣想先核对账目，再请您定夺。」皇帝合上折子：「先查清楚，别让百姓一直等着。」尚书应了一声，收好折子退出殿外。" },
-  cold: { label: "冷峻", rules: "短句、冷笔，少评语，写出权力代价。", sample: "折子递上来。准了。三个字，一州的税便少了两成。户部的人退下时没有抬头。他知道，少的这两成，明年要从别处找补。窗外起风，檐角铁马响了一声，又停了。" },
+  cold: { label: "冷峻", rules: "短句、冷笔，少评语，写出权力代价。", sample: "折子递上来。准了。三个字，一州的税便少征了些。户部的人退下时没有抬头。他知道，少征的这笔税，明年要从别处找补。窗外起风，檐角铁马响了一声，又停了。" },
   palace: { label: "宫闱", rules: "细写人物言行与情感，亲密场景止于帘落。", sample: "她把茶盏往前推了半寸，手指在盏沿停了停，才收回袖中。“陛下近日睡得晚。”话说得轻，眼却一直落在案上那叠折子上。宫灯一晃，帘外有人放轻了脚步。" },
   history: { label: "野史", rules: "以逸闻写人情世态，轻巧而不使用现代词。", sample: "坊间传说，那日御膳房多备了一碟酱瓜，皇帝竟就着它多用了半碗粥。管膳的太监得了赏，逢人便讲，讲到后来，酱瓜成了贡品，酱园的掌柜也挂上了御笔的匾。" },
   classic: { label: "简古", rules: "文言浅白，叙述简练，不用生僻典故。", sample: "是日朝罢，上独坐便殿，召户部侍郎问岁入。侍郎具对，言北地旱，秋粮恐减。上默然良久，曰：“民食为天，卿其慎之。”侍郎顿首而出。" },
@@ -6274,7 +6206,7 @@ const STYLES = {
   intrigue: { label: "权谋", rules: "重算计与暗线，对话多机锋、话里有话，每段至少埋一处伏笔。", sample: "首辅笑着替同僚圆了场，转身时却把那份名单收进了袖里。“此事不急，”他说，“等吏部的考语下来再议。”在座的人都听懂了——考语，是他门生写的。" },
   harem: { label: "宫斗", rules: "细写位分、眼色、赏赐与站队，杀机藏于礼数，不写血腥与身体细节。", sample: "赏下来的是一对玉镯，成色比昭仪宫里那对还好半分。她笑着谢恩，转手便叫人把镯子供在了佛前。“这样的恩典，”她对贴身宫女说，“戴在手上，是要招人眼的。”" },
   strange: { label: "志怪", rules: "以天象、传说和异兆营造幽异气氛，异兆不决定事情成败。", sample: "是夜钦天监奏，荧惑入南斗，光芒赤如炭。同时京郊有农人报称，井水忽甜三日。两事并呈御前，殿中无人敢先开口，烛火却无风自动了一下。" },
-  gazette: { label: "邸报", rules: "公文体，条陈式短段，多用“奉旨”“着即”“该部知道”等官腔。", sample: "一、户部题：北地被旱，请蠲免本年钱粮三成。奉旨：着即会议具奏。一、兵部题：边镇缺饷，请拨银接济。奉旨：该部知道。一、礼部题：恭请秋祭事宜。奉旨：依议。" },
+  gazette: { label: "邸报", rules: "公文体，条陈式短段，多用“奉旨”“着即”“该部知道”等官腔。", sample: "一、户部题：北地被旱，请酌减本年钱粮。奉旨：着即会议具奏。一、兵部题：边镇缺饷，请拨银接济。奉旨：该部知道。一、礼部题：恭请秋祭事宜。奉旨：依议。" },
   farce: { label: "戏说", rules: "诙谐轻快，允许温和的喜剧化与夸张，人物仍守礼数，不用网络流行语与现代词。", sample: "户部尚书算盘打得噼啪响，算到一半忽然停了，抬头望天，又低头看账，最后把算盘轻轻放下：“陛下，臣算了三遍，国库里的银子，好像自己长了腿。”" },
   frontier: { label: "边塞", rules: "苍凉开阔，写风物、兵民与远方消息，适合边事、亲征与出巡。", sample: "关外的风从早吹到晚，旗子一直没垂下来过。守卒说，今年的雁回得早，怕是冬天要来得急。驿道上一骑远远奔来，扬起的尘土在夕阳里拖得很长。" },
 };
