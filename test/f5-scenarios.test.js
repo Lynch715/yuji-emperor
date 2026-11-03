@@ -64,7 +64,7 @@ test('F5 剧本开局走 createOpening 时不请求模型铸世',async()=>{
   assert.equal(called,false);assert.equal(s.emperor.name,'刘彻');assert.equal(s.scenario,'han-wudi');
 });
 test('F5 存档 v10：旧档补剧本字段为空',()=>{
-  assert.equal(VERSION,10);const s=createState({seed:'f5-mig'});s.v=9;for(const k of ['scenario','postNames','governorTitle','childNaming','weddingNames'])delete s[k];
+  assert.ok(VERSION>=11);const s=createState({seed:'f5-mig'});s.v=9;for(const k of ['scenario','postNames','governorTitle','childNaming','weddingNames'])delete s[k];
   const m=migrate(s);for(const k of ['scenario','postNames','governorTitle','childNaming','weddingNames'])assert.equal(m[k],null,k);
 });
 for(const sc of SCENARIOS)test('F5 剧本 '+sc.id+' 跑满 40 年无模型模拟不出错',()=>{

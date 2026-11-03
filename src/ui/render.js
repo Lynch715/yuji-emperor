@@ -541,7 +541,7 @@ export function renderApp(
           })
           .join("") +
         '</div></details><div class="turnbar"><div class="estimate"><span>' +
-        (money ? "预估：" + money : "本旬暂无额外开销") +
+        (money ? "预估：" + money : Object.values(s.schedule).some(a=>a?.kind==='下旨'&&a.text?.trim()) ? "御旨待发，支出随办理事项记入起居注" : "本旬暂无额外开销") +
         "</span>" +
         (estimate.executions.length
           ? "<small>成算：" +

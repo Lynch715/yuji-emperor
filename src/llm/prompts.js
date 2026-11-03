@@ -208,6 +208,7 @@ export function turnMessages(state, forecast) {
       id: a.id, title: a.title, progress: a.progress,
       剧情目标: a.objectives.filter((o) => o.type === "story" && !o.done).map((o) => ({ objectiveId: o.id, keywords: o.keywords })),
     })),
+    玩家口谕裁决: (state.intentResults||[]).map(({type,status,actual,summary})=>({type,status,actual,summary})),
     本旬前后变化: {
       国势: { 之前: nationSummary(before), 之后: nationSummary(state) },
       人物旧况: oldRoster.filter((line) => !newRoster.includes(line)),
@@ -236,7 +237,7 @@ export function worldMessages(state) {
 // 面谈按真实多轮组织：同一人本旬的每一句在后续请求中原样重现，便于命中缓存。
 // 好感、秘密等会变的信息只放在最后一条。
 function talkTurnLine(t) {
-  return "朕：" + t.line + "\n【引擎判定】" + stable({ kind: t.kind, die: t.die, success: t.success, denied: t.denied, cap: t.cap, effects: t.effects });
+  return "朕：" + t.line + "\n【引擎判定】" + stable({ kind: t.kind, die: t.die, success: t.success, denied: t.denied, cap: t.cap, effects: t.effects, ...(t.intentResults?.length?{口谕裁决:t.intentResults.map(({type,status,actual,summary})=>({type,status,actual,summary}))}:{}) });
 }
 export function talkMessages(state, result, log = []) {
   const npc =

@@ -3,7 +3,7 @@ import { seedNumber, random, DRAFT } from "./rng.js";
 import { uniqueName } from "./names.js";
 import { chooseRegent } from "./regency-info.js";
 import {factionPowers} from './politics.js';
-export const VERSION = 10;
+export const VERSION = 11;
 export const TALENTS = ["政略", "权谋", "武略", "文采", "魅力"];
 export const SLOTS = ["朝", "午", "夜"];
 export const POST_NAMES = [
@@ -289,6 +289,7 @@ export function createState(options = {}) {
       xun: 0,
       startTurn: 0,
     },
+    intentResults: [],
     settings: {
       freedom: options.freedom || "mid",
       difficulty: options.difficulty || "normal",
@@ -470,6 +471,9 @@ export function migrate(input) {
   }
   // Saved forecasts are immutable receipts. Upgrade their resulting state only
   // on commit; never rerun an old schedule, roll, settlement or calendar.
+  if (input.v >= 11 && !Array.isArray(s.intentResults)) throw new Error("口谕裁决记录损坏");
+  s.intentResults ??= [];
+  s.settings.freedom ??= "mid";
   s.v = VERSION;
   s.volumeIndex ??= [];
   // v9：叙事篇幅与视角。
@@ -620,6 +624,10 @@ export function assertState(s) {
   if(s.v>=8){
     if(!Array.isArray(s.volumeIndex))throw new Error('分卷目录损坏');
     for(const ref of s.volumeIndex)if(!ref||typeof ref.key!=='string'||!Number.isSafeInteger(ref.from)||!Number.isSafeInteger(ref.to)||ref.from<0||ref.to<ref.from||typeof ref.checksum!=='string'||!/^[0-9a-f]{8}$/.test(ref.checksum))throw new Error('分卷目录损坏');
+  }
+  if(s.v>=11){
+    if(!Array.isArray(s.intentResults))throw new Error('口谕裁决记录损坏');
+    for(const r of s.intentResults)if(!r||typeof r.id!=='string'||!Number.isSafeInteger(r.turn)||!['success','partial','failed','narrative'].includes(r.status)||!r.actual||typeof r.actual!=='object')throw new Error('口谕裁决记录损坏');
   }
   const walk = (x) => {
     if (typeof x === "number" && !Number.isFinite(x))

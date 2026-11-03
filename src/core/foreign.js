@@ -53,12 +53,13 @@ export function diplomacy(state, action, die) {
     0,
     (ownPower - other.power) * 0.2 + (other.attitude - 50) * 0.3,
   );
+  if(action.intent && s.settings.freedom==='free')c.success=true;
   if (operation === "宣战") {
     const border=s.nation.army.frontiers.find(b=>b.dir===other.frontier);
     if(!border)throw new Error('外邦未绑定有效边境');
     const breach=['婚盟','朝贡'].includes(other.status);
     if(breach&&!action.confirmBreach)throw new Error('宣战将撕毁盟约，请再次确认');
-    if (s.nation.treasury < 25 || s.nation.grain < 30)
+    if (!action.intent && (s.nation.treasury < 25 || s.nation.grain < 30))
       throw new Error("宣战需要国库 25 万两、军粮 30 万石");
     if (other.status === "交战") throw new Error("已经处于交战");
     other.status = "交战";
@@ -76,7 +77,7 @@ export function diplomacy(state, action, die) {
       personal: !!action.personal,
       regent: action.regent || s.court.posts.find((p) => p.id === "p0")?.holder,
     });
-    s = applyPackage(s, { treasury: -25, grain: -30, ...(breach?{prestige:-5,virtue:-5}:{}) }, breach?"背盟宣战：皇威圣德受损":"宣战备军");
+    s = applyPackage(s, { treasury: -Math.min(25,s.nation.treasury), grain: -Math.min(30,s.nation.grain), ...(breach?{prestige:-5,virtue:-5}:{}) }, breach?"背盟宣战：皇威圣德受损":"宣战备军");
     return { state: s, note: "向 " + other.name + " 宣战，战役开始" };
   }
   if (operation === "和亲") {

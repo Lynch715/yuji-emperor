@@ -201,7 +201,7 @@ export function appoint(state, action) {
     note: removing ? "处分 " + old?.name : person.name + " 出任 " + post.title,
   };
 }
-export function talkAttempt(state, personId, line) {
+export function talkAttempt(state, personId, line, structured = false) {
   if (
     state.talks.filter((t) => t.person === personId && t.turn === state.turn)
       .length >= 3
@@ -216,7 +216,7 @@ export function talkAttempt(state, personId, line) {
   const post = s.court.posts.find((p) => p.holder === personId),
     isOfficial = !!person.abilities;
   const requested = Number(line.match(/(\d+(?:\.\d+)?)\s*万?两/)?.[1] || 0),
-    asking = /拨|钱|银|挪|给|赏|借/.test(line);
+    asking = !structured && /拨|钱|银|挪|给|赏|借/.test(line);
   const used = state.talks
     .filter((t) => t.person === personId && t.turn === state.turn)
     .reduce((n, t) => n + (t.effects?.privy || 0), 0);

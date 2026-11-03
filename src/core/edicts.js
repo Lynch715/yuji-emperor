@@ -192,7 +192,7 @@ export function issueEdict(state, action, die) {
   )
     throw new Error("钱粮不足，无法下发此旨");
   let current = state,
-    exec = execution(state, type, die),
+    exec = action.intent && state.settings.freedom==='free' ? {...execution(state,type,die),tier:1,label:"照办",rate:1,delay:1} : execution(state, type, die),
     forced = false;
   if (exec.tier === 4 && action.force) {
     const r = roll(current);

@@ -179,6 +179,7 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
       if(key!==breachTarget){$('#confirm-breach').checked=false;breachTarget=key;}
       text+='；'+country.frontier+'境 · '+country.status;
     }
+    if(kind==='下旨'&&$('#edict-text')?.value.trim())text='精力 '+rule.energy+'；御旨已拟，起驾后可查看办理结果与支出。';
     $("#action-estimate").textContent = text;
     const show=(id,visible)=>$("#"+id)?.classList.toggle("hidden",!visible);
     show("edict-amount-field",["转内帑","转国库"].includes($("#edict-type")?.value));

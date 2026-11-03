@@ -58,7 +58,7 @@ export function palacePanel(s, name) {
       ) +
       '<h3 class="section-spacer">官员名录</h3>' +
       fold(
-        s.court.officials.map(
+        s.court.officials.filter(o=>o.alive).map(
           (o) =>
             '<div class="card"><div class="row"><span class="portrait" aria-hidden="true">' +
             esc(o.name[0]) +

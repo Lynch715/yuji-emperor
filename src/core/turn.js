@@ -1,3 +1,4 @@
+import { resolveIntents } from "./intents.js";
 import { compactChapter } from "./archive.js";
 import { memorialDecision } from "./memorial-decisions.js";
 import { calendarEra, globalYear } from "./calendar.js";
@@ -129,14 +130,16 @@ export function initialTurn(state) {
 export function forecastTurn(
   state,
   schedule = { 朝: null, 午: null, 夜: null },
+  intents = [],
 ) {
-  return withDraft(() => forecastDraft(state, schedule));
+  return withDraft(() => forecastDraft(state, schedule, intents));
 }
-function forecastDraft(state, schedule) {
+function forecastDraft(state, schedule, intents = []) {
   if (state.ending) throw new Error("此局已封卷");
   validateSchedule(state, schedule);
   let s = clone(state);
   s.pending = null;
+  s.intentResults = (s.intentResults || []).filter(r => r.turn === state.turn);
   s.ledger = [...(state.interimEntries || [])];
   const baseRevision = s.revision,
     turnId = s.runId + ":" + (s.turn + 1) + ":" + baseRevision;
@@ -212,6 +215,12 @@ function forecastDraft(state, schedule) {
       }
       s = growTalent(s, "政略", 0.2);
     } else if (action.kind === "下旨") {
+      const playerActions=intents.filter(a=>a.slot===slot);
+      if(playerActions.length){
+        const resolved=resolveIntents(s,playerActions,{slot});s=resolved.state;
+        slotResults[slot].push(...resolved.results.map(r=>r.summary));
+        continue;
+      }
       result = issueEdict(s, action, die);
       s = result.state;
       slotResults[slot].push(result.note);
@@ -381,7 +390,7 @@ function forecastDraft(state, schedule) {
     notes,
     slotResults,
     debate,
-    facts: turnFacts(state, s, schedule, slotResults),
+    facts: [...turnFacts(state, s, schedule, slotResults), ...s.intentResults.flatMap(r=>r.facts||[])],
     newMemorials: s.memorials.filter(
       (m) => !state.memorials.some((old) => old.id === m.id),
     ),
@@ -451,6 +460,7 @@ function commitDraft(state, forecast, narrative = {}) {
     turn: s.turn,
     era: clone(state.era),
     chapter: narrative.chapter || {},
+    ...(s.intentResults.length ? {intentResults:clone(s.intentResults)} : {}),
     summary: String(narrative.summary || "本旬诸事已入起居注").slice(0, 100),
     ...(typeof narrative.hook === "string" && narrative.hook.trim() ? { hook: narrative.hook.slice(0, 60) } : {}),
     entries: clone(s.ledger),

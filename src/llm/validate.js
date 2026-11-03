@@ -117,8 +117,10 @@ export function mockHook(forecast) {
   return project ? "下旬，" + (project.name || project.type || "在途政务") + "尚未竣事。" : "";
 }
 export function mockNarrative(forecast) {
+  const chapter=sceneNarrative(forecast);
+  for(const r of forecast.state?.intentResults||[])if(chapter[r.slot]!==undefined)chapter[r.slot]+=' '+r.summary+'。';
   return {
-    chapter:sceneNarrative(forecast),
+    chapter,
     summary: "本旬" + forecast.fate,
     hook: mockHook(forecast),
     memorialTexts: forecast.newMemorials.map((m) => ({
@@ -151,12 +153,12 @@ const ASSERTIONS = [
   ],
   [
     "war",
-    /大获全胜|大捷|战败|败北|兵败|攻克|收复|夺回|失守|陷落|入寇|宣战|开战/g,
+    /大获全胜|大捷|战败|败北|兵败|攻克|收复|夺回|失守|陷落|入寇|宣战|开战|议和|出兵/g,
   ],
 ];
 const EXECUTION = /雷厉风行|照办|敷衍|阳奉阴违|封驳/g;
 function hypothetical(prefix) {
-  return /若|倘|假如|担心|恐怕|盼|但愿|希望|拟|奏请|请求|不曾|未曾|尚未|并未|没有|不敢|不可|切勿/.test(
+  return /未能|未获|不能|拒绝|若|倘|假如|担心|恐怕|盼|但愿|希望|拟|奏请|请求|不曾|未曾|尚未|并未|没有|不敢|不可|切勿/.test(
     prefix.slice(-18),
   );
 }
@@ -240,7 +242,7 @@ export function validateTurn(data, forecast) {
             }
             const compatible = (f) => {
               if (kind === "war") {
-                const required = /败北|兵败|战败/.test(claim[0])
+                const required = /议和/.test(claim[0]) ? '议和' : /出兵/.test(claim[0]) ? '出兵' : /败北|兵败|战败/.test(claim[0])
                   ? "失利"
                   : /全胜|大捷|攻克|收复|夺回/.test(claim[0])
                     ? "胜利"
@@ -342,12 +344,13 @@ export function validateTurn(data, forecast) {
     }
   const whole = Object.values(chapter).join("\n"),
     reactions = [];
-  let reactionTotal = 0;
+  let reactionTotal = (s.intentResults||[]).filter(r=>r.type==='favor'&&['success','partial'].includes(r.status)).reduce((n,r)=>n+Math.abs(r.actual.amount||0),0);
   for (const r of Array.isArray(data.reactions)
     ? data.reactions.slice(0, 10)
     : []) {
     const npc = s.court.officials.find((o) => o.name === r.name && o.alive);
     if (!npc || !Number.isFinite(Number(r.favorDelta))) { fixNotes.push("未知人物反应未采用。"); continue; }
+    if ((s.intentResults||[]).some(r=>r.type==='favor'&&r.actual.targetId===npc.id&&['success','partial'].includes(r.status))) continue;
     if (reactions.some((x) => x.id === npc.id) || !whole.includes(npc.name)) continue;
     let delta = Math.max(-5, Math.min(5, Math.round(Number(r.favorDelta))));
     delta = Math.sign(delta) * Math.min(Math.abs(delta), 10 - reactionTotal);
@@ -422,6 +425,11 @@ export function validateWorld(data) {
 export function validateTalk(data, result, state) {
   const reply = cleanText(data.reply, 1200);
   if (!reply) throw new Error("面谈回复为空");
+  if(result.intentResults?.length){
+    const f={state,die:result.die,newMemorials:[],slotResults:{朝:[],午:[],夜:[]},entries:result.intentEntries||[],notes:[],facts:result.intentFacts||[]};
+    const checked=validateTurn({chapter:{朝:'',午:reply,夜:''}},f).chapter.午;
+    return {reply:checked||result.intentResults.map(r=>r.summary).join('；'),innerThought:result.innerThought||'',effects:null};
+  }
   if (result.denied || !result.success) {
     // Remove entire unsupported promise/number sentences so removing a word
     // cannot turn a refusal into an apparent agreement.

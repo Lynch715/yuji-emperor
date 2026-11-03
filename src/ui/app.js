@@ -1,3 +1,5 @@
+import { requestScheduleIntents, requestPlayerIntents } from "./intent-request.js";
+import { resolveTalkIntents } from "../core/intents.js";
 import { postTitle, SCENARIOS, scenarioPreview } from "../core/scenarios.js";
 import { createDebouncedSave } from "../store/debounce.js";
 import { classifyMemorialSchedule } from "../llm/remark-classifier.js";
@@ -435,7 +437,8 @@ async function advance(local = false) {
         budget:createBudget(),signal:ac.signal,onMetric:markMetric,
         validate:data=>{if(!['嘉奖','申饬','附旨','无'].includes(data.kind))throw new Error('朱批分类无效');return {kind:data.kind};},
       }));
-      const forecast = forecastTurn({ ...state, turnBudget: null }, schedule);
+      const intents=await requestScheduleIntents(config,state,schedule,{local,signal:ac.signal,onMetric:markMetric});
+      const forecast = forecastTurn({ ...state, turnBudget: null }, schedule, intents);
       state = {
         ...state,
         pending: { forecast },
@@ -532,13 +535,15 @@ function startTalk(person) {
     button.disabled = true;
     busy = true;
     try {
-      const attempt = talkAttempt(state, person, line);
+      const intents=await requestPlayerIntents(config,state,[{id:'talk-'+state.turn+'-'+state.talks.length,slot:'午',text:line}],{onMetric:markMetric});
+      let attempt = talkAttempt(state, person, line, intents.some(a=>a.type!=='other'));
+      if(intents.length)attempt=resolveTalkIntents(attempt.state,attempt.result,intents);
       state = attempt.state;
       state.schedule.午 = { kind: "召见", person, label: npc.name };
       const result = attempt.result;
       await persist();
       let response = {
-        reply: state.settings.prose === "modern" ? modernTalkFallback(result) : result.reply,
+        reply: result.intentResults?.length ? result.intentResults.map(r=>r.summary).join("；") : state.settings.prose === "modern" ? modernTalkFallback(result) : result.reply,
         innerThought: result.innerThought,
       };
       if (!state.settings.demo) {

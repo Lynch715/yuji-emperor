@@ -58,6 +58,7 @@ export function scheduleEstimate(s) {
   const totals={treasury:0,privy:0,grain:0}, executions=[];
   if (!s) return {totals,executions};
   for (const a of Object.values(s.schedule).filter(Boolean)) {
+    if (a.kind === "下旨" && a.text?.trim()) continue;
     if (a.kind === "下旨" && EDICTS[a.edictType]) {
       const e=EDICTS[a.edictType];
       if (a.edictType === "转内帑" || a.edictType === "转国库") {
