@@ -110,13 +110,13 @@ test('D3 编辑逐本朱批互不串折，旧字符串共用朱批转成对象�
  assert.match(memorialHTML(s,reopened),/御笔朱批（本折）/);assert.doesNotMatch(memorialHTML(s,reopened),/本次共用/);
 });
 test('D3 v1至v6共用朱批迁移到v7，v4/v5/v6已存预演不重算不重掷',()=>{
- assert.equal(VERSION,7);
- for(let v=1;v<=6;v++){const {s}=remarkState();s.v=v;const id=s.memorials[0].id;s.schedule.朝={kind:'上朝',memorials:[id],decision:'remark',remark:'旧共用'};const n=migrate(s);assert.equal(n.v,7);assert.deepEqual(n.schedule.朝.decisions[id],{option:'remark',remark:'旧共用'});}
+ assert.equal(VERSION,8);
+ for(let v=1;v<=6;v++){const {s}=remarkState();s.v=v;const id=s.memorials[0].id;s.schedule.朝={kind:'上朝',memorials:[id],decision:'remark',remark:'旧共用'};const n=migrate(s);assert.equal(n.v,8);assert.deepEqual(n.schedule.朝.decisions[id],{option:'remark',remark:'旧共用'});}
  for(const v of [4,5,6]){
   const s=JSON.parse(readFileSync(new URL(`./fixtures/v${v}-pending.json`,import.meta.url),'utf8'));
   const forecast=s.pending.forecast,raw=JSON.stringify(forecast),n=migrate(s);
   assert.equal(JSON.stringify(n.pending.forecast),raw);const committed=commitTurn(n,n.pending.forecast,{});
-  assert.equal(committed.v,7);assert.equal(committed.lastTurn.die,forecast.die);assert.equal(committed.rng,forecast.state.rng);
+  assert.equal(committed.v,8);assert.equal(committed.lastTurn.die,forecast.die);assert.equal(committed.rng,forecast.state.rng);
   for(const key of ['treasury','grain','privy','morale','governance'])assert.equal(committed.nation[key],forecast.state.nation[key]);
  }
 });

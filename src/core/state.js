@@ -3,7 +3,7 @@ import { seedNumber, random, DRAFT } from "./rng.js";
 import { uniqueName } from "./names.js";
 import { chooseRegent } from "./regency-info.js";
 import {factionPowers} from './politics.js';
-export const VERSION = 7;
+export const VERSION = 8;
 export const TALENTS = ["政略", "权谋", "武略", "文采", "魅力"];
 export const SLOTS = ["朝", "午", "夜"];
 export const POST_NAMES = [
@@ -371,6 +371,7 @@ export function createState(options = {}) {
     schedule: { 朝: null, 午: null, 夜: null },
     history: [],
     volumes: [],
+    volumeIndex: [],
     ledger: [],
     facts: [],
     knowledge: [],
@@ -419,7 +420,11 @@ export function migrate(input) {
   )
     throw new Error("存档版本不受支持，已进入保护模式");
   const s = structuredClone(input);
-  if(s.schedule)for(const slot of ["朝","午","夜"])s.schedule[slot]=normalizeMemorialAction(s.schedule[slot]);
+  if(s.schedule)for(const slot of ["朝","午","夜"]){
+    const action=s.schedule[slot];
+    if(s.v<8&&action&&["上朝","批折"].includes(action.kind)&&action.memorials===undefined)action.memorials=(s.memorials||[]).slice(0,3).map(m=>m.id);
+    s.schedule[slot]=normalizeMemorialAction(action);
+  }
   for (const key of [
     "emperor",
     "nation",
@@ -458,6 +463,7 @@ export function migrate(input) {
   // Saved forecasts are immutable receipts. Upgrade their resulting state only
   // on commit; never rerun an old schedule, roll, settlement or calendar.
   s.v = VERSION;
+  s.volumeIndex ??= [];
   s.nation.arrears ??= 0;
   s.nation.privyArrears ??= 0;
   s.nation.grainArrears ??= 0;
@@ -597,6 +603,10 @@ export function assertState(s) {
     for(const o of s.court.officials)if(!Number.isSafeInteger(o.banquetTurn))throw new Error('宴请时序无效');
     for(const f of s.foreign)if(f.trade!==null&&(!f.trade||!Number.isSafeInteger(f.trade.start)||!Number.isSafeInteger(f.trade.until)||f.trade.start<0||f.trade.until!==f.trade.start+36||!Number.isFinite(f.trade.income)||f.trade.income<0||f.trade.income>6))throw new Error('互市条款无效');
     for(const p of s.projects)if(p.edictType==='征兵'&&!['capital','all-frontiers',...s.nation.army.frontiers.map(b=>b.dir)].includes(p.armyTarget))throw new Error('征兵目标无效');
+  }
+  if(s.v>=8){
+    if(!Array.isArray(s.volumeIndex))throw new Error('分卷目录损坏');
+    for(const ref of s.volumeIndex)if(!ref||typeof ref.key!=='string'||!Number.isSafeInteger(ref.from)||!Number.isSafeInteger(ref.to)||ref.from<0||ref.to<ref.from||typeof ref.checksum!=='string'||!/^[0-9a-f]{8}$/.test(ref.checksum))throw new Error('分卷目录损坏');
   }
   const walk = (x) => {
     if (typeof x === "number" && !Number.isFinite(x))

@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "databaseVersion": 3,
+  "saveVersion": 8,
+  "turns": 40,
+  "recentChapters": 22,
+  "archivedChapters": 18,
+  "mainBytes": 431698,
+  "recoveryBytes": 53241,
+  "conflictProtected": true
+}

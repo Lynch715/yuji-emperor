@@ -1,10 +1,8 @@
+import { restoreRecovery } from "./preview-delta.js";
+import { hashText } from "./checksum.js";
+import { storedLayout, recoveryState, sameEnvelope, envelopeIdentity } from "./layout.js";
 // Three independent slots. Corruption/conflicts lock the slot; no automatic repair writes.
-export function checksum(text) {
-  let h = 2166136261;
-  for (let i = 0; i < text.length; i++)
-    h = Math.imul(h ^ text.charCodeAt(i), 16777619);
-  return (h >>> 0).toString(16).padStart(8, "0");
-}
+export function checksum(text){return hashText(text);}
 export function pack(state, revision = 1, previous = null) {
   const payload = JSON.stringify(state);
   return {
@@ -59,7 +57,7 @@ export function createIDB(indexedDB, timeout = 4000) {
       };
       let rq;
       try {
-        rq = indexedDB.open("yuji-emperor", 2);
+        rq = indexedDB.open("yuji-emperor", 3);
       } catch (e) {
         finish(e);
         return;
@@ -71,6 +69,7 @@ export function createIDB(indexedDB, timeout = 4000) {
         }
         if (!rq.result.objectStoreNames.contains("slots"))
           rq.result.createObjectStore("slots");
+        if (!rq.result.objectStoreNames.contains("volumes"))rq.result.createObjectStore("volumes");
         if (!rq.result.objectStoreNames.contains("archives"))
           rq.result.createObjectStore("archives");
       };
@@ -113,6 +112,13 @@ export function createIDB(indexedDB, timeout = 4000) {
     archive: (id, record) =>
       transaction("readwrite", (st) => st.put(record, id), "archives"),
     archives: () => transaction("readonly", (st) => st.getAll(), "archives"),
+    removeArchive: id=>transaction("readwrite",st=>st.delete(id),"archives"),
+    getVolume: key=>transaction("readonly",st=>st.get(key),"volumes"),
+    appendVolume: async(key,volume)=>{
+      const existing=await transaction("readonly",st=>st.get(key),"volumes");
+      if(existing){if(JSON.stringify(existing)!==JSON.stringify(volume)){const error=new Error('分卷内容冲突，原卷已保留');error.code='VOLUME_CONFLICT';throw error;}return;}
+      return transaction("readwrite",st=>st.add(volume,key),"volumes");
+    },
     get: (slot) => transaction("readonly", (st) => st.get(slot)),
     put: (slot, record) =>
       transaction("readwrite", (st) => st.put(record, slot)),
@@ -139,8 +145,7 @@ export function createIDB(indexedDB, timeout = 4000) {
         };
         rq.onsuccess = () => {
           if (
-            JSON.stringify(rq.result ?? null) !==
-            JSON.stringify(expected ?? null)
+            !sameEnvelope(rq.result,expected)
           ) {
             conflict = true;
             tx.abort();
@@ -162,7 +167,7 @@ export function createIDB(indexedDB, timeout = 4000) {
 }
 export function createSaveStore({ primary, backup, validate = (x) => x }) {
   const known = new Map(),
-    locked = new Set();
+    locked = new Set(),writtenVolumes=new Map();
   const key = (slot) => {
     if (![1, 2, 3].includes(slot)) throw new Error("存档位须为 1–3");
     return "yuji:slot:" + slot;
@@ -178,7 +183,7 @@ export function createSaveStore({ primary, backup, validate = (x) => x }) {
     );
   }
   const token = (cs) =>
-    JSON.stringify(cs.map((c) => (c.error ? "unavailable" : (c.raw ?? null))));
+    JSON.stringify(cs.map((c) => (c.error ? "unavailable" : envelopeIdentity(c.raw))));
   async function load(slot) {
     const cs = await copies(slot),
       valid = [],
@@ -192,7 +197,7 @@ export function createSaveStore({ primary, backup, validate = (x) => x }) {
       if (c.raw != null) {
         try {
           const r = unpack(c.raw);
-          r.state = validate(r.state);
+          r.state = validate(restoreRecovery(r.state));
           valid.push(r);
         } catch {
           problems.push((i ? "恢复副本" : "主档") + "损坏或版本不受支持");
@@ -212,12 +217,23 @@ export function createSaveStore({ primary, backup, validate = (x) => x }) {
         a.revision > b.revision &&
         a.backupAnchor === b.checksum &&
         a.backupRevision === b.revision;
-      if (!(immediate || tracedBackup)) {
+      const coreBackup=valid[1].envelope.backupOf;
+      const paired=coreBackup&&a.revision===coreBackup.revision&&a.checksum===coreBackup.checksum;
+      if (!(immediate || tracedBackup || paired)) {
         locked.add(slot);
         problems.push("主档与恢复副本发生冲突");
       }
     }
-    known.set(slot, { token: token(cs), envelope: valid[0]?.envelope || null });
+    const chosen=valid[0];
+    if(chosen?.state.volumeIndex?.length){
+      try{
+        const volumes=[];
+        for(const ref of chosen.state.volumeIndex){const v=await primary.getVolume?.(ref.key);if(!v||!Array.isArray(v.chapters)||v.from!==ref.from||v.to!==ref.to||ref.checksum&&hashText(JSON.stringify(v))!==ref.checksum)throw new Error('分卷缺失');volumes.push(v);writtenVolumes.set(ref.key,ref.checksum);}
+        chosen.state={...chosen.state,volumes,volumeIndex:[]};
+      }catch{locked.add(slot);problems.push('分卷缺失或不可用，请导出原始副本，不要覆盖旧档');}
+    }
+    if(chosen?.state.recoveryOnly)problems.push('已恢复核心进度；历史正文请从导出备份找回');
+    known.set(slot, { token: token(cs), envelope: chosen?.envelope || null });
     return {
       state: valid[0]?.state || null,
       readOnly: locked.has(slot),
@@ -236,9 +252,10 @@ export function createSaveStore({ primary, backup, validate = (x) => x }) {
       locked.add(slot);
       throw new Error("存档已被其他页面修改，已进入只读保护模式");
     }
-    validate(state);
+    const {main,volumes}=storedLayout(state);
+    validate(main);
     const envelope = pack(
-      state,
+      main,
       (previous.envelope?.revision || 0) + 1,
       previous.envelope?.checksum || null,
     );
@@ -250,11 +267,17 @@ export function createSaveStore({ primary, backup, validate = (x) => x }) {
     let count = 0;
     const warnings = [];
     try {
+      for(const volume of volumes){
+        if(writtenVolumes.get(volume.key)===volume.checksum)continue;
+        if(!primary.appendVolume)throw new Error('分卷存储不可用');
+        await primary.appendVolume(volume.key,volume.value);writtenVolumes.set(volume.key,volume.checksum);
+      }
       if (primary.comparePut)
         await primary.comparePut(slot, envelope, cs[0].raw);
       else await primary.put(slot, envelope);
       count++;
     } catch (e) {
+      if(e.code==='VOLUME_CONFLICT'){locked.add(slot);throw e;}
       if (e.code === "CONFLICT") {
         locked.add(slot);
         throw new Error("存档已被其他页面修改，已进入只读保护模式");
@@ -263,13 +286,15 @@ export function createSaveStore({ primary, backup, validate = (x) => x }) {
     }
     try {
       if (
-        backup.getItem(key(slot)) !== cs[1].raw &&
-        !(backup.getItem(key(slot)) == null && cs[1].raw == null)
+        !sameEnvelope(backup.getItem(key(slot)),cs[1].raw)
       ) {
         locked.add(slot);
         throw new Error("副本被其他页面修改");
       }
-      backup.setItem(key(slot), JSON.stringify(envelope));
+      const recovery=pack(recoveryState(state),envelope.revision,envelope.previous);
+      recovery.backupOf={revision:envelope.revision,checksum:envelope.checksum};
+      recovery.backupAnchor=envelope.backupAnchor;recovery.backupRevision=envelope.backupRevision;
+      backup.setItem(key(slot), JSON.stringify(recovery));
       count++;
     } catch {
       warnings.push("恢复副本写入失败");
@@ -280,8 +305,9 @@ export function createSaveStore({ primary, backup, validate = (x) => x }) {
     return { warnings, revision: envelope.revision };
   }
   async function importJSON(slot, raw) {
-    if (raw.length > 30000000) throw new Error("导入文件超过 30 MB");
-    const state = validate(unpack(raw).state);
+    if (raw.length > 150000000) throw new Error("导入文件超过 150 MB");
+    const state = validate(restoreRecovery(unpack(raw).state));
+    if(state.volumeIndex?.length)throw new Error('此为分卷主档，请先载入各卷后导出完整 JSON');
     const current = await load(slot);
     if (current.readOnly || current.state)
       throw new Error("导入仅允许写入空白且未受保护的存档位");
@@ -307,7 +333,7 @@ export function createSaveStore({ primary, backup, validate = (x) => x }) {
     if (current.readOnly) throw new Error("受保护的存档不能被替换");
     if (!current.state) return save(slot, state);
     const id =
-        slot + "-" + Date.now() + "-" + known.get(slot).envelope.checksum,
+        slot + "-" + Date.now() + "-" + known.get(slot).envelope.revision + "-" + known.get(slot).envelope.checksum,
       record = {
         id,
         slot,
@@ -317,20 +343,10 @@ export function createSaveStore({ primary, backup, validate = (x) => x }) {
         data: JSON.stringify(pack(current.state)),
         raw: current.raw,
       };
-    let retained = 0;
-    try {
-      if (primary.archive) {
-        await primary.archive(id, record);
-        retained++;
-      }
-    } catch {}
-    try {
-      const index = JSON.parse(backup.getItem("yuji:archive-index") || "[]");
-      backup.setItem("yuji:archive:" + id, JSON.stringify(record));
-      backup.setItem("yuji:archive-index", JSON.stringify([...index, id]));
-      retained++;
-    } catch {}
-    if (!retained) throw new Error("旧卷未能封存，已停止替换；原档完整保留");
+    const archives=await primary.archives?.()||[];
+    if(archives.length>=5)throw new Error('封存已满5份，请先导出旧卷并移出已备份的封存；原档保留');
+    try{if(!primary.archive)throw new Error();await primary.archive(id,record);}
+    catch{throw new Error('旧卷未能封存，已停止替换；原档完整保留');}
     return save(slot, state);
   }
   return {
@@ -339,6 +355,7 @@ export function createSaveStore({ primary, backup, validate = (x) => x }) {
     importJSON,
     listArchives,
     archiveAndSave,
-    exportJSON: (state) => JSON.stringify(pack(validate(state)), null, 2),
+    removeArchive:async id=>{if(!primary.removeArchive)throw new Error('无法移出封存');await primary.removeArchive(id);},
+    exportJSON: (state) => {if(state.volumeIndex?.length)throw new Error('分卷未完整载入，无法导出全本；请导出原始副本');return JSON.stringify(pack(validate(state)), null, 2);},
   };
 }

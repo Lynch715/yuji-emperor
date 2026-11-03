@@ -1,7 +1,7 @@
 import { clone } from "./state.js";
-import { roll, check } from "./rng.js";
+import { check } from "./rng.js";
 import { applyPackage, growTalent } from "./effects.js";
-export function privateAction(state, action) {
+export function privateAction(state, action, die = 11) {
   let s = clone(state);
   const operation = action.operation || "闲谈";
   if(operation==='经筵') {
@@ -24,11 +24,9 @@ export function privateAction(state, action) {
   if (!target) throw new Error("请选择可接触的官员");
   if (operation === "收买" && s.nation.privy < 5)
     throw new Error("内帑不足以收买");
-  const r = roll(s);
-  s = r.state;
   const verdict = check(
     s.emperor.talents[spec[0]],
-    r.value,
+    die,
     spec[1],
     target.abilities.才,
     s.emperor.mood < 20 ? -10 : 0,

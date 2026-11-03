@@ -67,7 +67,7 @@ test('C3 当前版迁移补新字段且v1至v5旧预演逐字保留，提交不�
   let s=start();s.pending={forecast:forecastTurn(s,{朝:null,午:null,夜:null})};s.v=v;s.pending.forecast.state.v=v;
   delete s.nation.privyArrears;delete s.nation.grainArrears;delete s.emperor.depressedMonths;
   s.foreign.forEach(f=>delete f.trade);s.court.officials.forEach(o=>delete o.banquetTurn);
-  const old=hash(s),pending=hash(s.pending.forecast),n=migrate(s);assert.equal(VERSION,7);assert.equal(n.v,VERSION);assert.equal(n.nation.privyArrears,0);assert.equal(n.nation.grainArrears,0);assert.equal(n.emperor.depressedMonths,0);assert.ok(n.foreign.every(f=>f.trade===null));assert.equal(hash(s),old);assert.equal(hash(n.pending.forecast),pending);
+  const old=hash(s),pending=hash(s.pending.forecast),n=migrate(s);assert.equal(VERSION,8);assert.equal(n.v,VERSION);assert.equal(n.nation.privyArrears,0);assert.equal(n.nation.grainArrears,0);assert.equal(n.emperor.depressedMonths,0);assert.ok(n.foreign.every(f=>f.trade===null));assert.equal(hash(s),old);assert.equal(hash(n.pending.forecast),pending);
   const c=commitTurn(n,n.pending.forecast,{});assert.equal(c.v,VERSION);assert.equal(c.lastTurn.die,s.pending.forecast.die);assert.equal(c.nation.treasury,s.pending.forecast.state.nation.treasury);assert.equal(c.rng,s.pending.forecast.state.rng);assert.deepEqual(commitTurn(c,n.pending.forecast,{}),c);
  }
  const bad=start();bad.nation.privyArrears=-1;assert.throws(()=>migrate(bad));

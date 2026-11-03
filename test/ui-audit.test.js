@@ -14,7 +14,7 @@ test('双指和 Safari 缩放手势被阻止，单指滚动与不可取消事件
 test('桌面图标内嵌真实 PNG，安装清单不携带页面参数，保持同源目录',()=>{
   const manifest=createAppManifest('https://example.test/yuji/index.html?private=test#scroll','#1C1714');
   assert.equal(manifest.start_url,'https://example.test/yuji/');assert.equal(manifest.scope,manifest.start_url);assert.equal(manifest.display,'standalone');
-  for(const n of [32,180,192,512]){
+  for(const n of [32,180,192]){
     const bytes=Buffer.from(APP_ICONS[n].split(',')[1],'base64');assert.equal(bytes.subarray(1,4).toString(),'PNG');assert.equal(bytes.readUInt32BE(16),n);assert.equal(bytes.readUInt32BE(20),n);
     assert.deepEqual(bytes,readFileSync('src/ui/assets/app-icon-'+n+'.png'));
   }

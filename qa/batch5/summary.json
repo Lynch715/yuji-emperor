@@ -1,0 +1,75 @@
+{
+  "base": "d7e971c",
+  "test": {
+    "passed": 261,
+    "failed": 0,
+    "skipped": 0
+  },
+  "simulate": {
+    "years": 200,
+    "turns": 7200,
+    "exitCode": 0
+  },
+  "balance": {
+    "exitCode": 1,
+    "identical": true,
+    "newFailures": [],
+    "baseline": 7,
+    "after": 7,
+    "failures": [
+      {
+        "strategy": "rest",
+        "seed": "御极·长治",
+        "check": "collapseWithin15Years"
+      },
+      {
+        "strategy": "rest",
+        "seed": "御极·宫闱",
+        "check": "collapseWithin15Years"
+      },
+      {
+        "strategy": "random",
+        "seed": "御极·两百年",
+        "check": "invasions"
+      },
+      {
+        "strategy": "random",
+        "seed": "御极·长治",
+        "check": "invasions"
+      },
+      {
+        "strategy": "random",
+        "seed": "御极·边政",
+        "check": "invasions"
+      },
+      {
+        "strategy": "random",
+        "seed": "御极·宫闱",
+        "check": "invasions"
+      },
+      {
+        "strategy": "diligent",
+        "seed": "御极·边政",
+        "check": "events"
+      }
+    ]
+  },
+  "storage": {
+    "turns": 7200,
+    "roundTrips": 1000,
+    "paragraphCharacters": 300,
+    "maxMain": 1147283,
+    "maxBackup": 704444,
+    "pendingMain": 1802914,
+    "pendingBackup": 737431,
+    "volumes": 398,
+    "talks": 35,
+    "exportBytes": 84048441
+  },
+  "build": {
+    "bytes": 394723,
+    "sha256": "42aa9cd1db2846c8547bdbbb24f659479b89a407a931ca83d53452641e201ba1",
+    "iconModuleBytes": 33524
+  },
+  "formatHashesIdentical": true
+}

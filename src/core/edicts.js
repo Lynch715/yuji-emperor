@@ -3,7 +3,6 @@ import { clone } from "./state.js";
 import { applyPackage, clamp } from "./effects.js";
 import { addEvent } from "./events.js";
 import { roll } from "./rng.js";
-import { fateModifier } from "./rng.js";
 export const EDICTS = {
   赈灾: {
     cost: 30,

@@ -11,7 +11,7 @@ const state = () => initialTurn(createState({ seed: "test" }));
 test("deterministic initial world and pure forecast, immutable engine result through retry", () => {
   const s = state(),
     before = structuredClone(s),
-    f = forecastTurn(s, { 朝: { kind: "上朝" }, 午: null, 夜: null }),
+    f = forecastTurn(s, { 朝: { kind: "上朝", memorials: s.memorials.slice(0,3).map(m=>m.id) }, 午: null, 夜: null }),
     again = forecastTurn(s, f.schedule);
   assert.deepEqual(s, before);
   assert.deepEqual(f, again);
@@ -65,7 +65,7 @@ test("month, quarter, year rollover and talent growth annual limits", () => {
   let s = state();
   for (let i = 0; i < 36; i++) {
     const f = forecastTurn(s, {
-      朝: { kind: "上朝", decision: "reject" },
+      朝: { kind: "上朝", memorials: [], decision: "reject" },
       午: null,
       夜: null,
     });

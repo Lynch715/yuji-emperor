@@ -55,7 +55,7 @@ test('审计批次未涉及的核心、LLM、存储源码与阶段9前逐字一�
  const protectedFiles=JSON.parse(readFileSync('qa/stage9-protected-before.json','utf8'));
  // Batch 1/2 explicitly change the listed engine files. Keep the historical
  // hash lock for every untouched core, LLM and storage file.
- const hotfixFiles=new Set(['src/core/effects.js','src/core/finance.js','src/core/emperor.js','src/core/court.js','src/core/turn.js','src/llm/prompts.js','src/llm/validate.js','src/core/state.js','src/core/ambitions.js','src/core/chronicles.js','src/core/edicts.js','src/core/events.js','src/core/foreign.js','src/core/harem.js','src/core/nation.js','src/core/private.js','src/core/succession.js','src/core/world.js']);
+ const hotfixFiles=new Set(['src/store/save.js','src/core/effects.js','src/core/finance.js','src/core/emperor.js','src/core/court.js','src/core/turn.js','src/llm/prompts.js','src/llm/validate.js','src/core/state.js','src/core/ambitions.js','src/core/chronicles.js','src/core/edicts.js','src/core/events.js','src/core/foreign.js','src/core/harem.js','src/core/nation.js','src/core/private.js','src/core/succession.js','src/core/world.js']);
  for(const [file,sha]of Object.entries(protectedFiles))if(!hotfixFiles.has(file))assert.equal(createHash('sha256').update(readFileSync(file)).digest('hex'),sha,file);
  const css=readFileSync('src/ui/style.css','utf8'),end=css.indexOf('\n}');
  assert.ok(!/#[\da-fA-F]{3,8}\b|rgba?\(|hsla?\(/.test(css.slice(end+2)));

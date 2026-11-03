@@ -1,3 +1,4 @@
+import { createDebouncedSave } from "../store/debounce.js";
 import { classifyMemorialSchedule } from "../llm/remark-classifier.js";
 import { initAppIcon } from "./icon.js";
 import {
@@ -68,6 +69,8 @@ let state = null,
   metrics = loadMetrics(),
   preferred = "朝",
   saveQueue = Promise.resolve();
+const scheduleSave=createDebouncedSave(()=>persist());
+window.addEventListener("pagehide",()=>scheduleSave.flush());
 function render() {
   const y = window.scrollY;
   $("#app").innerHTML = renderApp(state, { readOnly, busy, saveStatus });
@@ -86,6 +89,7 @@ function guard() {
   if (state.ending) throw new Error("本局已经封卷");
 }
 async function persist() {
+  scheduleSave.cancel();
   const snapshot = clone(state);
   const currentSlot = slot;
   const work = saveQueue
@@ -128,6 +132,7 @@ function markMetric(m) {
   } catch {}
 }
 async function showSaves() {
+  await scheduleSave.flush();
   const slots = [];
   for (let i = 1; i <= 3; i++) slots.push({ id: i, ...(await store.load(i)) });
   const archives = await store.listArchives();
@@ -201,7 +206,7 @@ async function showSaves() {
                 a.slot +
                 ' 卷</p><button data-archive-export="' +
                 esc(a.id) +
-                '">导出旧卷</button></div>',
+                '">导出旧卷</button><button data-archive-remove="'+esc(a.id)+'">移出已备份封存</button></div>',
             )
             .join("") +
           "</details>"
@@ -209,6 +214,7 @@ async function showSaves() {
   );
 }
 async function newGame() {
+  await scheduleSave.flush();
   if (busy) return;
   const available = [],
     occupied = new Map(),
@@ -348,7 +354,7 @@ function arrange(which, action) {
   const next = { ...state.schedule, [which]: action };
   validateSchedule(state, next);
   state = { ...state, schedule: next };
-  persist();
+  scheduleSave.schedule();
   render();
   toast(action.kind + " 已放入" + which + "槽");
 }
@@ -665,8 +671,7 @@ async function command(name) {
     palacePanel(state, "史馆");
     return;
   }
-  if (name === "export-json" && state)
-    return download("御极-第" + slot + "卷.json", store.exportJSON(state));
+  if (name === "export-json" && state){await scheduleSave.flush();return download("御极-第" + slot + "卷.json", store.exportJSON(state));}
   if (name === "export-md") return exportMarkdown();
   if (name === "menu") return openDialog('御前菜单','<div class="grid"><button data-command="saves">存档</button><button data-command="settings">设置</button><button data-command="self">天子心事</button><button data-command="oral">拟口谕</button></div>','drawer');
   if (name === "stats") return openDialog('国势全览',metricsHTML(state),'drawer');
@@ -748,7 +753,7 @@ document.addEventListener("click", async (e) => {
       )
         throw new Error("面谈结果已落账，须完成本旬");
       state.schedule[b.dataset.clear] = null;
-      await persist();
+      scheduleSave.schedule();
       render();
     } else if (b.dataset.memorial) {
       guard();
@@ -798,6 +803,7 @@ document.addEventListener("click", async (e) => {
       };
     } else if (b.dataset.load) {
       if (busy) throw new Error("请待本旬续写结束再读档");
+      await scheduleSave.flush();
       await saveQueue.catch(() => {});
       const l = await store.load(Number(b.dataset.load));
       if (!l.state) throw new Error("此卷没有可读进度");
@@ -817,6 +823,9 @@ document.addEventListener("click", async (e) => {
           "御极-第" + b.dataset.exportSlot + "卷.json",
           store.exportJSON(l.state),
         );
+    } else if (b.dataset.archiveRemove) {
+      if(!confirm('请确认已导出此封存。移出后请保管好备份文件。'))return;
+      await store.removeArchive(b.dataset.archiveRemove);await showSaves();
     } else if (b.dataset.archiveExport) {
       const a = (await store.listArchives()).find(
         (a) => a.id === b.dataset.archiveExport,

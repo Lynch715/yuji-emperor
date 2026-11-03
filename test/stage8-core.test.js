@@ -193,7 +193,7 @@ test("提交不改变原状态或预演；全数值账目逐字段守恒", async
   for (let turn = 0; turn < 25; turn++) {
     const old = clone(s),
       f = forecastTurn(s, {
-        朝: { kind: "上朝", decision: "reject" },
+        朝: { kind: "上朝", memorials: [], decision: "reject" },
         午: null,
         夜: null,
       }),

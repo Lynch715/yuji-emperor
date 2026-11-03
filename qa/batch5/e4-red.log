@@ -1,0 +1,32 @@
+✖ E4 私下行动复用传入骰子不改RNG、上朝批折必须显式选折、事实先查类型 (15.991459ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 205.583
+
+✖ failing tests:
+
+test at test/batch5-engineering.test.js:34:1
+✖ E4 私下行动复用传入骰子不改RNG、上朝批折必须显式选折、事实先查类型 (15.991459ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+
+  + 9525628
+  - 489966764
+
+      at TestContext.<anonymous> (file:///Users/ruis/Claude/Projects/%E7%9A%87%E5%B8%9D%E6%A8%A1%E6%8B%9F%E5%99%A8/test/batch5-engineering.test.js:36:9)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1201:25)
+      at Test.start (node:internal/test_runner/test:1096:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:385:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 9525628,
+    expected: 489966764,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

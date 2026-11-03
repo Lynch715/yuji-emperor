@@ -47,9 +47,10 @@ test("old version-1 saves fill compatible optional fields, future saves stay pro
   });
   assert.throws(() => migrate({ ...s, v: VERSION+1 }));
 });
-test("one hundred played turns keep history exportable, no duplicate receipts or blocked states", () => {
+test("E1 one thousand played turns keep history exportable, no duplicate receipts or blocked states", () => {
   let s = initial();
-  for (let i = 0; i < 100; i++) {
+  s.settings.freedom='free';s.emperor.lifespan=400;
+  for (let i = 0; i < 1000; i++) {
     const f = forecastTurn(s, {
       朝: {
         kind: "上朝",
@@ -62,10 +63,11 @@ test("one hundred played turns keep history exportable, no duplicate receipts or
     s = commitTurn(s, f, validateTurn(mockNarrative(f), f));
   }
   const chapters = [...s.volumes.flatMap((v) => v.chapters), ...s.history];
-  assert.equal(chapters.length, 100);
-  assert.equal(new Set(chapters.map((h) => h.id)).size, 100);
+  assert.equal(chapters.length, 1000);
+  assert.equal(new Set(chapters.map((h) => h.id)).size, 1000);
   assert.equal(new Set(s.receipts).size, s.receipts.length);
-  assert.doesNotThrow(() => migrate(unpack(pack(s)).state));
+  const restored=migrate(unpack(pack(s)).state),roundtrip=[...restored.volumes.flatMap(v=>v.chapters),...restored.history];
+  for(let i=0;i<1000;i++)assert.equal(JSON.stringify(roundtrip[i]),JSON.stringify(chapters[i]),'第'+(i+1)+'旬');
 });
 test("six prose styles and safe UI escaping of imported/model names", () => {
   assert.equal(Object.keys(STYLES).length, 6);

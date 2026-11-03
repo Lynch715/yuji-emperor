@@ -1,0 +1,12 @@
+{
+  "turns": 7200,
+  "roundTrips": 1000,
+  "paragraphCharacters": 300,
+  "maxMain": 1147283,
+  "maxBackup": 704444,
+  "pendingMain": 1802914,
+  "pendingBackup": 1360499,
+  "volumes": 398,
+  "talks": 35,
+  "exportBytes": 84048441
+}

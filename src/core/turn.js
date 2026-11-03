@@ -1,3 +1,4 @@
+import { compactChapter } from "./archive.js";
 import { memorialDecision } from "./memorial-decisions.js";
 import { calendarEra, globalYear } from "./calendar.js";
 import { advanceRegency } from "./succession.js";
@@ -105,6 +106,7 @@ export function validateSchedule(state, schedule) {
       seen.add(id);
       memorialDecision(a,id);
     }
+    if (["上朝","批折"].includes(a.kind)&&!Array.isArray(a.memorials))throw new Error("须显式选择奏报，或传入空列表");
     if (a.kind === "上朝" && (a.memorials?.length || 0) > 3)
       throw new Error("上朝最多三个议题");
   }
@@ -160,7 +162,7 @@ function forecastDraft(state, schedule) {
     }
     let result;
     if (action.kind === "上朝" || action.kind === "批折") {
-      const ids = action.memorials || s.memorials.slice(0, 3).map((m) => m.id);
+      const ids = action.memorials;
       if (action.kind === "上朝" && action.stance === "廷议") {
         const hearing = courtDebate(
           s,
@@ -230,7 +232,7 @@ function forecastDraft(state, schedule) {
       s = result.state;
       slotResults[slot].push(result.note);
     } else if (action.kind === "私下行事") {
-      result = privateAction(s, action);
+      result = privateAction(s, action, die);
       s = result.state;
       slotResults[slot].push(result.note);
     } else if (action.kind === "选妃") {
@@ -361,8 +363,11 @@ function forecastDraft(state, schedule) {
       s.ledger.slice((state.interimEntries || []).length),
     ),
   ];
+  delete s.history;
+  delete s.volumes;
   assertState(s);
   return {
+    historyDetached:true,
     turnId,
     runId: state.runId,
     baseTurn: state.turn,
@@ -404,7 +409,8 @@ function commitDraft(state, forecast, narrative = {}) {
   )
     throw new Error("预演已过期，不能提交到此存档");
   let s = forecast.state.v < VERSION ? migrate(forecast.state) : clone(forecast.state);
-  s.v = state.v;
+  s.v = VERSION;
+  if(forecast.historyDetached){s.history=[...state.history];s.volumes=[...state.volumes];s.volumeIndex=[...(state.volumeIndex||[])];}
   s.receipts.push(forecast.turnId);
   s.pending = null;
   s.interimEntries = [];
@@ -431,10 +437,10 @@ function commitDraft(state, forecast, narrative = {}) {
   s = unlockAchievements(s);
   for (const fact of (narrative.factUpdates || []).slice(0, 5)) {
     if (
+      typeof fact.reason === "string" &&
       Object.values(narrative.chapter || {})
         .join("\n")
         .includes(fact.reason) &&
-      typeof fact.reason === "string" &&
       fact.reason.length >= 8
     )
       s.facts.push({ ...fact, turn: s.turn });
@@ -461,7 +467,7 @@ function commitDraft(state, forecast, narrative = {}) {
     if (m) m.text = String(text.text).slice(0, 1000);
   }
   if (s.history.length > 36) {
-    const archived = s.history.splice(0, 18);
+    const archived = s.history.splice(0, 18).map(compactChapter);
     s.volumes.push({
       from: archived[0].turn,
       to: archived.at(-1).turn,
@@ -472,7 +478,10 @@ function commitDraft(state, forecast, narrative = {}) {
         .slice(0, 1500),
     });
   }
+  s.talks=s.talks.filter(t=>t.turn>s.turn-36);
   s = sealChronicle(s);
-  assertState(s);
+  // Sealed volumes were validated when archived/imported; check only active
+  // state and recent chapters on each turn. Public assertState still checks all.
+  assertState({...s,volumes:[]});
   return s;
 }

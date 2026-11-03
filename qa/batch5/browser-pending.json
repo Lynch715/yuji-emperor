@@ -1,0 +1,9 @@
+{
+  "passed": true,
+  "originalDie": 10,
+  "recoveredDie": 10,
+  "treasury": 854.5693343406404,
+  "recoveryWarnings": [
+    "已恢复核心进度；历史正文请从导出备份找回"
+  ]
+}

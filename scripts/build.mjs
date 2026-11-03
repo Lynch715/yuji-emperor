@@ -30,6 +30,9 @@ async function bundle(file) {
     ),
   ].map((m) => m[1]);
   code = code.replace(/^export\s+/gm, "");
+  // Remove indentation only when JS cannot contain a multiline literal.
+  // Preserve all newlines (ASI), templates, escapes and regular expressions.
+  if(!code.includes(String.fromCharCode(96))&&!/\\\r?\n/.test(code))code=code.split("\n").map(line=>line.trimStart()).join("\n").replace(/\n{2,}/g,"\n");
   modules.set(id, code + "\nreturn {" + exports.join(",") + "};");
   return id;
 }
@@ -50,7 +53,7 @@ const template = await readFile(resolve(root, "src/ui/shell.html"), "utf8"),
 await writeFile(
   resolve(root, "index.html"),
   template
-    .replace("/* INLINE_CSS */", css)
+    .replace("/* INLINE_CSS */", css.split("\n").map(line=>line.trim()).join("\n"))
     .replace("/* INLINE_JS */", js.replace(/<\/script/gi, "<\\/script")),
 );
 console.log(

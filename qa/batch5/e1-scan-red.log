@@ -1,0 +1,25 @@
+✖ E1 回合预演和提交不重复遍历不可变的旧分卷 (20.657292ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 281.190416
+
+✖ failing tests:
+
+test at test/batch5-engineering.test.js:66:1
+✖ E1 回合预演和提交不重复遍历不可变的旧分卷 (20.657292ms)
+  Error: 不应逐旬读取已封存章节
+      at get chapters (file:///Users/ruis/Claude/Projects/%E7%9A%87%E5%B8%9D%E6%A8%A1%E6%8B%9F%E5%99%A8/test/batch5-engineering.test.js:67:64)
+      at Object.values (<anonymous>)
+      at walk (file:///Users/ruis/Claude/Projects/%E7%9A%87%E5%B8%9D%E6%A8%A1%E6%8B%9F%E5%99%A8/src/core/state.js:606:60)
+      at walk (file:///Users/ruis/Claude/Projects/%E7%9A%87%E5%B8%9D%E6%A8%A1%E6%8B%9F%E5%99%A8/src/core/state.js:606:71)
+      at walk (file:///Users/ruis/Claude/Projects/%E7%9A%87%E5%B8%9D%E6%A8%A1%E6%8B%9F%E5%99%A8/src/core/state.js:606:71)
+      at assertState (file:///Users/ruis/Claude/Projects/%E7%9A%87%E5%B8%9D%E6%A8%A1%E6%8B%9F%E5%99%A8/src/core/state.js:608:3)
+      at forecastDraft (file:///Users/ruis/Claude/Projects/%E7%9A%87%E5%B8%9D%E6%A8%A1%E6%8B%9F%E5%99%A8/src/core/turn.js:366:3)
+      at file:///Users/ruis/Claude/Projects/%E7%9A%87%E5%B8%9D%E6%A8%A1%E6%8B%9F%E5%99%A8/src/core/turn.js:133:26
+      at withDraft (file:///Users/ruis/Claude/Projects/%E7%9A%87%E5%B8%9D%E6%A8%A1%E6%8B%9F%E5%99%A8/src/core/state.js:56:20)
+      at forecastTurn (file:///Users/ruis/Claude/Projects/%E7%9A%87%E5%B8%9D%E6%A8%A1%E6%8B%9F%E5%99%A8/src/core/turn.js:133:10)
