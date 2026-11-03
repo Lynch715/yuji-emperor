@@ -48,6 +48,8 @@ import {
   classifyMessages,
   biographyMessages,
   STYLES,
+  LENGTHS,
+  POVS,
 } from "../llm/prompts.js";
 import {
   extractPartialChapter,
@@ -257,7 +259,7 @@ async function newGame() {
       Object.entries(STYLES)
         .map(([k, v]) => '<option value="' + k + '">' + v.label + "</option>")
         .join("") +
-      '</select></div><div><label for="new-slot">启用存档位</label><select id="new-slot">' +
+      '</select></div>' + narrativeFields() + '<div><label for="new-slot">启用存档位</label><select id="new-slot">' +
       available
         .map(
           (n) =>
@@ -317,7 +319,8 @@ async function newGame() {
       const options = {
         name: value("emperor-name").trim(), era: value("era-name").trim(),
         freedom: value("freedom"), difficulty: value("difficulty"),
-        prose: value("prose-style"), demo: form.querySelector("#demo-mode").checked,
+        prose: value("prose-style"), length: value("prose-length"), pov: value("prose-pov"),
+        demo: form.querySelector("#demo-mode").checked,
         seed: createGameSeed(),
       };
       const selected = Number(value("new-slot"));
@@ -365,6 +368,13 @@ async function newGame() {
       render();
     }
   };
+}
+// 篇幅与视角下拉，开局与中途设置共用。
+function narrativeFields(current = {}) {
+  const select = (id, label, table, value) => '<div><label for="' + id + '">' + label + '</label><select id="' + id + '">' +
+    Object.entries(table).map(([k, v]) => '<option value="' + k + '"' + (k === value ? " selected" : "") + ">" + esc(v.label) + "</option>").join("") +
+    "</select></div>";
+  return select("prose-length", "篇幅", LENGTHS, current.length || "standard") + select("prose-pov", "视角", POVS, current.pov || "third");
 }
 function lastScheduleFor(s) {
   return lastSchedule && s && lastSchedule.runId === s.runId && lastSchedule.turn === s.turn ? lastSchedule.schedule : null;
@@ -657,6 +667,27 @@ async function command(name) {
           (state.settings.demo ? "保存并用于正文" : "切换为试读") +
           "</button></div>",
       );
+      $("#modal").insertAdjacentHTML(
+        "beforeend",
+        '<section class="narrative-settings" aria-label="叙事笔法"><h3>叙事笔法</h3><div class="fields"><div><label for="prose-style">文风</label><select id="prose-style">' +
+          Object.entries(STYLES).map(([k, v]) => '<option value="' + k + '"' + (k === state.settings.prose ? " selected" : "") + ">" + esc(v.label) + "</option>").join("") +
+          "</select></div>" + narrativeFields(state.settings) +
+          '</div><p class="muted" id="prose-note">' + esc(STYLES[state.settings.prose]?.rules || "") + ' 下一旬起生效，已写章节不变。</p></section>',
+      );
+      for (const id of ["prose-style", "prose-length", "prose-pov"])
+        $("#" + id).onchange = () => {
+          if (readOnly || busy || state.pending) {
+            toast("请先完成当前回合，再改叙事笔法");
+            $("#prose-style").value = state.settings.prose;
+            $("#prose-length").value = state.settings.length || "standard";
+            $("#prose-pov").value = state.settings.pov || "third";
+            return;
+          }
+          state = { ...state, settings: { ...state.settings, prose: $("#prose-style").value, length: $("#prose-length").value, pov: $("#prose-pov").value } };
+          $("#prose-note").textContent = (STYLES[state.settings.prose]?.rules || "") + " 下一旬起生效，已写章节不变。";
+          scheduleSave.schedule();
+          toast("叙事笔法已更新：" + STYLES[state.settings.prose].label + " · " + LENGTHS[state.settings.length].label + " · " + POVS[state.settings.pov].label);
+        };
       $("#mode-toggle").onclick = () => {
         if (readOnly) {
           toast("存档处于只读保护模式");
