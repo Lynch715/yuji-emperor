@@ -1,4 +1,4 @@
-import { esc } from "./common.js";
+import { esc, gameText } from "./common.js";
 import {
   memorialAssignments,
   memorialCounts,
@@ -146,6 +146,48 @@ export function metricsHTML(s, mobile = false) {
     "</div>"
   );
 }
+export function ledgerLabel(path) {
+  const key = path.split(".").at(-1);
+  return {
+    treasury: "国库",
+    arrears: "欠饷与积欠",
+    privyArrears: "内帑积欠",
+    grainArrears: "缺粮积欠",
+    depressedMonths: "郁结月数",
+    powerModifier: "政局影响",
+    proxyTurn: "上次代批旬次",
+    banquetTurn: "上次赴宴旬次",
+    income: "互市季入",
+    start: "起始旬次",
+    until: "有效至旬",
+    untilQuarter: "税政期限（季）",
+    privy: "内帑",
+    grain: "粮储",
+    morale: "民心",
+    governance: "吏治",
+    health: "健康",
+    mood: "心情",
+    prestige: "皇威",
+    virtue: "圣德",
+    favor: "好感",
+    energy: "精力",
+    age: "年岁",
+    power: "势力",
+    attitude: "态度",
+    readiness: "军备",
+    troops: "兵力",
+    pop: "人口",
+    tax: "赋税",
+    education: "教养",
+    progress: "政务进度",
+    enemyTroops: "敌军兵力",
+    enemyReadiness: "敌军军备",
+    round: "战役旬数",
+    threat: "边患",
+    灾情: "灾情",
+    disaster: "灾情",
+  }[key] || (/[\u3400-\u9fff]/.test(key) ? key : "其他变化");
+}
 export function ledgerHTML(entries) {
   return (
     "<ul>" +
@@ -153,52 +195,9 @@ export function ledgerHTML(entries) {
       .map(
         (e) =>
           "<li>" +
-          esc(e.source) +
+          esc(gameText(e.source)) +
           "：" +
-          esc(
-            {
-              treasury: "国库",
-              arrears: "欠饷与积欠",
-              privyArrears: "内帑积欠",
-              grainArrears: "缺粮积欠",
-              depressedMonths: "郁结月数",
-              powerModifier: "政局影响",
-              proxyTurn: "上次代批旬次",
-              banquetTurn: "上次赴宴旬次",
-              income: "互市季入",
-              start: "起始旬次",
-              until: "有效至旬",
-              untilQuarter: "税政期限（季）",
-              privy: "内帑",
-              grain: "粮储",
-              morale: "民心",
-              governance: "吏治",
-              health: "健康",
-              mood: "心情",
-              prestige: "皇威",
-              virtue: "圣德",
-              favor: "好感",
-              energy: "精力",
-              age: "年岁",
-              power: "势力",
-              attitude: "态度",
-              readiness: "军备",
-              troops: "兵力",
-              pop: "人口",
-              tax: "赋税",
-              education: "教养",
-              progress: "政务进度",
-              enemyTroops: "敌军兵力",
-              enemyReadiness: "敌军军备",
-              round: "战役旬数",
-              threat: "边患",
-              灾情: "灾情",
-              disaster: "灾情",
-            }[e.path.split(".").at(-1)] ||
-              (/[\u3400-\u9fff]/.test(e.path.split(".").at(-1))
-                ? e.path.split(".").at(-1)
-                : "相关数值"),
-          ) +
+          esc(ledgerLabel(e.path)) +
           ' <span class="' +
           ((e.path === "nation.arrears" ? e.delta <= 0 : e.delta >= 0)
             ? "positive"
@@ -214,9 +213,17 @@ export function ledgerHTML(entries) {
 }
 export function chapterTitle(summary) {
   return String(summary || "").replace(
-    /^(本旬(?:大凶|凶|平常|吉|大吉))，诸事已据实落账$/,
+    /^(本旬(?:大凶|凶|不顺|平常|顺遂|吉|大吉))，诸事已据实落账[。]?$/,
     "$1",
-  );
+  ).replace(/^本旬诸事已入起居注$/, "本旬纪事");
+}
+export function chapterNotes(h) {
+  // Keep diagnostics in saves, outside the chronicle.
+  const diagnostic = new RegExp("^(?:(?:朝|午|夜|附文)(?:" +
+    "中无结算或状态依据的金额/人数/年龄已删除|中没有对应结算的.*陈述已删除|" +
+    "执行度由.*改为.*|段经核对后无可保留文字，以平实叙述补足)|" +
+    "亲密场景已收束为含蓄叙述。|未知人物反应未采用。)$");
+  return (h.notes || []).filter((n) => !diagnostic.test(n)).map(gameText);
 }
 export function chapterHTML(h, ambitions = []) {
   return (
@@ -248,11 +255,11 @@ export function chapterHTML(h, ambitions = []) {
     Object.entries(h.settlement?.slotResults || {})
       .map(
         ([slot, results]) =>
-          "<p>" + slot + "：" + results.map(esc).join("；") + "</p>",
+          "<p>" + slot + "：" + results.map((r) => esc(gameText(r))).join("；") + "</p>",
       )
       .join("") +
     ledgerHTML(h.entries) +
-    (h.notes || []).map((n) => "<p>" + esc(n) + "</p>").join("") +
+    chapterNotes(h).map((n) => "<p>" + esc(n) + "</p>").join("") +
     "</div></details><details><summary>风闻 " +
     (h.rumors?.length || 0) +
     ' 条</summary><div class="chapter-detail">' +
@@ -313,7 +320,7 @@ export function memorialListHTML(s) {
     " 本</h3>" +
     (pending.length
       ? list(pending)
-      : '<p class="muted">本旬奏报已拟批，可起驾落账。</p>') +
+      : '<p class="muted">奏报已批好，可以起驾了。</p>') +
     "</section>" +
     (queued.length
       ? '<section class="memorial-group"><h3>已拟批 · ' +
@@ -385,13 +392,13 @@ export function introHTML() {
   return (
     '<div class="intro"><div class="eyebrow">架空帝王 · 文字经营</div><h1>御 极</h1><p class="motto">一人之志，天下之重。</p><div class' +
     '="rule"></div><p>朱笔落下，是一人心事，亦是万民生计。</p><p>在朝堂与宫闱之间，写下你的本纪。</p><div class="start-actions"><button class="primar' +
-    'y" data-command="new">登基开局</button><button data-command="saves">续读旧卷</button></div><small>可接入叙事接口，也可先试读一局。</sm' +
-    'all><div class="onboarding">朝、午、夜，三时由你安排。<br>阅毕奏报，便可起驾；也可歇息一旬。</div></div>'
+    'y" data-command="new">登基开局</button><button data-command="saves">续读旧卷</button></div><small>先试读一局，也可连接 API 体验更丰富的故事。</sm' +
+    'all><div class="onboarding">朝、午、夜，三时由你安排。<br>批好奏报，便可起驾；也可歇息一旬。</div></div>'
   );
 }
 export function renderApp(
   s,
-  { readOnly = false, busy = false, saveStatus = "", canRepeat = false } = {},
+  { readOnly = false, busy = false, saveStatus = "", canRepeat = false, scheduleCollapsed = false } = {},
 ) {
   const last = s?.history.at(-1),
     locked = readOnly || busy || !!s?.ending || !!s?.pending,
@@ -458,9 +465,21 @@ export function renderApp(
     actionsHTML(s, true) +
     '</aside><main class="desk">' +
     (s
-      ? '<section class="planning" aria-label="本旬日程"><div class="planning-title"><h2>本旬日程</h2>' +
+      ? '<section class="planning" aria-label="本旬日程"><details id="schedule-fold" class="planning-fold"' +
+        (scheduleCollapsed ? "" : " open") +
+        '><summary class="planning-title"><span class="planning-heading">本旬日程</span>' +
         energyHTML(s) +
-        '</div><div class="schedule">' +
+        '<span class="planning-overview">' +
+        ["朝", "午", "夜"].map((slot) => {
+          const a = s.schedule[slot], label = a
+            ? (s.regency && a.kind === "私下行事" ? "经筵" : a.kind) +
+              (a.memorials ? " · " + a.memorials.length + "本" : "")
+            : "待安排";
+          return '<span title="' + esc(slot + "：" + label) + '"><small>' + slot +
+            '</small><strong>' + esc(label) + "</strong></span>";
+        }).join("") +
+        '</span><span class="planning-fold-label"><span class="when-open">收起日程 ▴</span>' +
+        '<span class="when-closed">展开日程 ▾</span></span></summary><div class="schedule">' +
         ["朝", "午", "夜"]
           .map((slot) => {
             const a = s.schedule[slot],
@@ -521,7 +540,7 @@ export function renderApp(
             );
           })
           .join("") +
-        '</div><div class="turnbar"><div class="estimate"><span>' +
+        '</div></details><div class="turnbar"><div class="estimate"><span>' +
         (money ? "预估：" + money : "本旬暂无额外开销") +
         "</span>" +
         (estimate.executions.length
@@ -549,7 +568,7 @@ export function renderApp(
         (busy
           ? "正在续写…"
           : s.pending
-            ? "重试本旬叙事"
+            ? "继续本旬故事"
             : scheduled
               ? "起驾"
               : "歇息") +
@@ -559,11 +578,11 @@ export function renderApp(
       ? '<p class="warning">此卷暂不可改写，旧卷已保留。请先导出备份。</p>'
       : "") +
     (s?.pending
-      ? '<div class="warning">本旬待续 · 天命 ' +
+      ? '<div class="warning">故事还没写完 · 天命 ' +
         s.pending.forecast.die +
-        '，钱粮与成败已定。<button data-command="settle" ' +
+        '。重试不改变本旬结果。<button data-command="settle" ' +
         (busy ? "disabled" : "") +
-        ">先记入起居注</button></div>"
+        ">略过故事，进入下旬</button></div>"
       : "") +
     (s?.ending
       ? '<div class="warning">' +
@@ -578,10 +597,10 @@ export function renderApp(
     '<article class="scroll" id="scroll" tabindex="0" aria-label="本旬正文章节">' +
     (last ? chapterHTML(last, s.ambitions) : opening) +
     '<div id="stream" class="streaming" aria-live="polite"></div></article><div class="saved-status">' +
-    esc(
+    esc(gameText(
       saveStatus ||
-        (s ? (s.settings.demo ? "试读中" : "本纪续写中") : "御案待启。"),
-    ) +
+        (s ? (s.settings.demo ? "试读中" : "御案待命") : "御案待启。"),
+    )) +
     '</div></main><aside class="sidebar" aria-label="奏报匣"><div class="side-title"><h2>奏报匣</h2><small>' +
     counts.pending +
     " 本待批 · " +

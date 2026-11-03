@@ -1,5 +1,19 @@
 import { initMobileViewport } from "./mobile.js";
 export const $ = (selector) => document.querySelector(selector);
+// Display labels only; saves stay intact.
+export function gameText(text) {
+  return String(text ?? "")
+    .replace(/^本旬引擎结算：人物、政务与岁时变化$/, "本旬变化")
+    .replace(/^模型人物反应建议：引擎限额采纳$/, "人物态度变化")
+    .replace(/^引擎结算$/, "本旬变化")
+    .replace(/宫闱事件：引擎判定小产/g, "宫中小产")
+    .replace(/；面谈结果已落账/g, "；已在面谈中议定")
+    .replace(/^本旬面谈已落账，午槽须保留对应人物的召见$/, "午间已召见此人，请先过完本旬。")
+    .replace(/^预演已过期，不能提交到此存档$/, "这次安排已过期，请刷新后重试。")
+    .replace(/^本回合请求已达 240 秒预算，请保留预演结果后重试$/, "故事续写超时，请重试本旬。")
+    .replace(/^模型回复未完成或格式有误，原有进度已保留$/, "这次没能续完故事，请重试本旬。")
+    .replace(/^存档处于只读保护模式$/, "此存档暂时无法保存，请先导出备份。");
+}
 export function esc(text) {
   return String(text ?? "").replace(
     /[&<>"']/g,
@@ -83,6 +97,7 @@ function pushModalEntry() {
 }
 let toastTimer;
 export function toast(text) {
+  text = gameText(text);
   $("#notice").textContent = text;
   $("#notice").classList.add("show");
   const dialog=$("#modal");

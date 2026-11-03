@@ -1,10 +1,12 @@
 import { postTitle, SCENARIOS, scenarioPreview } from "../core/scenarios.js";
 import { createDebouncedSave } from "../store/debounce.js";
 import { classifyMemorialSchedule } from "../llm/remark-classifier.js";
+import { modernTalkFallback } from "../llm/mock-narrative.js";
 import { initAppIcon } from "./icon.js";
 import {
   $,
   esc,
+  gameText,
   initCommon,
   toast,
   captureView,
@@ -24,7 +26,7 @@ import {
   actionButton,
   memorialListHTML,
   ambitionsHTML,
-  actionsHTML, metricsHTML, chapterHTML,
+  actionsHTML, metricsHTML, chapterHTML, chapterTitle, chapterNotes, ledgerLabel,
 } from "./render.js";
 import { memorialDialog, scheduledMemorialDialog } from "./memorials.js";
 import { memorialAssignments } from "./memorial-state.js";
@@ -75,6 +77,7 @@ let state = null,
   saveStatus = "",
   config = loadSettings(),
   metrics = loadMetrics(),
+  scheduleCollapsed = loadScheduleCollapsed(),
   preferred = "朝",
   saveQueue = Promise.resolve(),
   lastSchedule = null;
@@ -83,9 +86,9 @@ window.addEventListener("pagehide",()=>scheduleSave.flush());
 function render() {
   const y = window.scrollY, kept = captureView($("#app"));
   const canRepeat = !!state && Object.values(repeatSchedule(state, lastScheduleFor(state))).some(Boolean);
-  $("#app").innerHTML = renderApp(state, { readOnly, busy, saveStatus, canRepeat });
+  $("#app").innerHTML = renderApp(state, { readOnly, busy, saveStatus, canRepeat, scheduleCollapsed });
   document.querySelectorAll("[data-action]").forEach((b) => {
-    const reason=readOnly?'存档只读保护':busy?'本旬正在续写':actionAvailability(state,b.dataset.action);
+    const reason=readOnly?'存档暂时无法保存':busy?'故事正在继续':actionAvailability(state,b.dataset.action);
     b.disabled=!!reason;b.draggable=!reason;
     if(reason&&b.querySelector('.action-copy small'))b.querySelector('.action-copy small').textContent=reason;
   });
@@ -99,13 +102,13 @@ const streamDraft = throttleFrame((raw) => {
   if (raw.length === streamedLength) return;
   streamedLength = raw.length;
   const el = $("#stream");
-  if (el) el.textContent = "正文草稿 · 正在续写\n\n" + extractPartialChapter(raw);
+  if (el) el.textContent = "故事正在继续……\n\n" + extractPartialChapter(raw);
 });
 function guard() {
   if (!state) throw new Error("请先登基开局");
   if (readOnly) throw new Error("存档处于只读保护模式");
   if (busy) throw new Error("本旬正在续写");
-  if (state.pending) throw new Error("请先重试或按结算表完成本旬");
+  if (state.pending) throw new Error("请先续完本旬故事，或略过故事进入下旬。");
   if (state.ending) throw new Error("本局已经封卷");
 }
 async function persist() {
@@ -144,6 +147,18 @@ function loadMetrics() {
     return [];
   }
 }
+function loadScheduleCollapsed() {
+  try { return localStorage.getItem("yuji:schedule-collapsed") === "true"; }
+  catch { return false; }
+}
+// Native disclosure changes only the layout, including during streaming or
+// read-only protection. Keep this preference outside the game save.
+document.addEventListener("toggle", (event) => {
+  const fold = event.target;
+  if (fold.id !== "schedule-fold" || !fold.isConnected) return;
+  scheduleCollapsed = !fold.open;
+  try { localStorage.setItem("yuji:schedule-collapsed", String(scheduleCollapsed)); } catch {}
+}, true);
 function markMetric(m) {
   metrics.push(m);
   if (metrics.length > 100) metrics.shift();
@@ -158,7 +173,7 @@ async function showSaves() {
   const archives = await store.listArchives();
   openDialog(
     "存档阁",
-    '<p class="muted">三卷各自保存。导入请选空卷；遇到损坏或冲突，旧卷会保留，请先导出备份。</p><div class="grid">' +
+    '<p class="muted">三卷分别保存。导入旧档时，请选空卷。</p><div class="grid">' +
       slots
         .map(
           (v) =>
@@ -181,7 +196,7 @@ async function showSaves() {
             ) +
             "</p>" +
             v.problems
-              .map((p) => '<p class="negative">' + esc(p) + "</p>")
+              .map((p) => '<p class="negative">' + esc(gameText(p)) + "</p>")
               .join("") +
             '<div class="row">' +
             (v.state
@@ -251,14 +266,14 @@ async function newGame() {
   }
   available.push(...reusable);
   if (!available.length) {
-    toast("三卷均在保护模式，请先导出原始数据，排查存储问题。");
+    toast("三卷暂时都无法保存，请先到存档阁导出备份。");
     return;
   }
   openDialog(
     "登基 · 定年号",
     '<form id="new-form"><div class="scenario-pick"><label for="scenario">开局</label><select id="scenario"><option value="">自拟王朝（架空）</option>' +
       SCENARIOS.map((sc) => '<option value="' + sc.id + '">' + esc(sc.title) + " · " + esc(sc.difficulty) + "</option>").join("") +
-      '</select><div id="scenario-card" class="scenario-card muted">自拟帝名、年号，由叙事接口铸造人物与州郡。</div></div><div class="fields"><div><label for="emperor-name">皇帝名</label><input id="emperor-name" required maxlength="12" value="萧承熙"></div><div><label for="era-name">年号</label><input id="era-name" required maxlength="8" value="永宁"></div><div><label for="freedom">自由度</label><select id="freedom"><option value="mid">传奇</option><option value="free">随心所欲</option><option value="real">写实</option></select></div><div><label for="difficulty">难度</label><select id="difficulty"><option value="normal">常制</option><option value="easy">宽和</option><option value="hard">艰危</option></select></div><div><label for="prose-style">文笔</label><select id="prose-style">' +
+      '</select><div id="scenario-card" class="scenario-card muted">自拟帝名与年号，开创自己的王朝。</div></div><div class="fields"><div><label for="emperor-name">皇帝名</label><input id="emperor-name" required maxlength="12" value="萧承熙"></div><div><label for="era-name">年号</label><input id="era-name" required maxlength="8" value="永宁"></div><div><label for="freedom">自由度</label><select id="freedom"><option value="mid">传奇</option><option value="free">随心所欲</option><option value="real">写实</option></select></div><div><label for="difficulty">难度</label><select id="difficulty"><option value="normal">常制</option><option value="easy">宽和</option><option value="hard">艰危</option></select></div><div><label for="prose-style">文笔</label><select id="prose-style">' +
       Object.entries(STYLES)
         .map(([k, v]) => '<option value="' + k + '">' + v.label + "</option>")
         .join("") +
@@ -277,7 +292,7 @@ async function newGame() {
         .join("") +
       '</select></div></div><label class="check"><input id="demo-mode" type="checkbox" ' +
       (!config.key ? "checked" : "") +
-      '>先试读一局（无需密钥）</label><p class="muted">试读无需设置。若要接续新故事，请先设置叙事接口。启用已有卷位前，会先封存旧卷。</p><p id="new-result" class="result hidden" role="status" aria-live="polite" tabindex="-1"></p><div class="dialog-actions"><button type="button" data-command="settings">设置接口</button><button type="submit" class="primary">承天践祚</button></div></form>',
+      '>先试读一局（无需密钥）</label><p class="muted">想体验更丰富的故事，可在设置中连接 API。选择已有卷位时，会先封存旧存档。</p><p id="new-result" class="result hidden" role="status" aria-live="polite" tabindex="-1"></p><div class="dialog-actions"><button type="button" data-command="settings">设置接口</button><button type="submit" class="primary">承天践祚</button></div></form>',
   );
   const goalsHTML = ["宏愿", "宏愿", "心事", "心事"]
     .map(
@@ -308,7 +323,7 @@ async function newGame() {
   $("#scenario").onchange = () => {
     const sc = SCENARIOS.find((x) => x.id === $("#scenario").value), card = $("#scenario-card");
     for (const id of ["emperor-name", "era-name"]) $("#" + id).disabled = !!sc;
-    if (!sc) { card.textContent = "自拟帝名、年号，由叙事接口铸造人物与州郡。"; return; }
+    if (!sc) { card.textContent = "自拟帝名与年号，开创自己的王朝。"; return; }
     const v = scenarioPreview(sc);
     $("#emperor-name").value = v.emperor; $("#era-name").value = v.era;
     $("#difficulty").value = { 宽和: "easy", 常制: "normal", 艰危: "hard" }[v.difficulty] || "normal";
@@ -365,7 +380,7 @@ async function newGame() {
       if (saved.warnings.length) toast(saveStatus);
     } catch (err) {
       if (form.isConnected && dialog.open) {
-        showResult(openingErrorMessage(err), true);
+        showResult(gameText(openingErrorMessage(err)), true);
         result.focus();
       }
     } finally {
@@ -383,6 +398,11 @@ async function newGame() {
   };
 }
 // 篇幅与视角下拉，开局与中途设置共用。
+function proseNote() {
+  return state.settings.prose === "modern"
+    ? "句子清楚，对话自然，奏折也用白话。"
+    : STYLES[state.settings.prose]?.rules || "";
+}
 function narrativeFields(current = {}) {
   const select = (id, label, table, value) => '<div><label for="' + id + '">' + label + '</label><select id="' + id + '">' +
     Object.entries(table).map(([k, v]) => '<option value="' + k + '"' + (k === value ? " selected" : "") + ">" + esc(v.label) + "</option>").join("") +
@@ -399,7 +419,7 @@ function arrange(which, action) {
   state = { ...state, schedule: next };
   scheduleSave.schedule();
   render();
-  toast(action.kind + " 已放入" + which + "槽");
+  toast("已安排" + which + "间" + action.kind);
 }
 function chooseAction(kind) {
   guard();
@@ -517,7 +537,10 @@ function startTalk(person) {
       state.schedule.午 = { kind: "召见", person, label: npc.name };
       const result = attempt.result;
       await persist();
-      let response = { reply: result.reply, innerThought: result.innerThought };
+      let response = {
+        reply: state.settings.prose === "modern" ? modernTalkFallback(result) : result.reply,
+        innerThought: result.innerThought,
+      };
       if (!state.settings.demo) {
         try {
           response = await callJSON(
@@ -530,7 +553,7 @@ function startTalk(person) {
             },
           );
         } catch (e) {
-          toast(e.message + "；本次面谈结果已保留。");
+          toast(gameText(e.message) + "；面谈已结束。");
         }
       }
       result.reply = response.reply;
@@ -636,17 +659,17 @@ function exportMarkdown() {
             "## 第 " +
             h.turn +
             " 旬 · " +
-            h.summary +
+            chapterTitle(h.summary) +
             "\n\n" +
             ["朝", "午", "夜"]
               .map((sl) => "### " + sl + "\n\n" + (h.chapter[sl] || "略"))
               .join("\n\n") +
-            "\n\n### 记账\n\n" +
+            "\n\n### 本旬变化\n\n" +
             h.entries
-              .map((e) => "- " + e.source + "：" + e.path + " " + e.delta)
+              .map((e) => "- " + gameText(e.source) + "：" + ledgerLabel(e.path) + " " + (e.delta > 0 ? "+" : "") + e.delta)
               .join("\n") +
             "\n\n" +
-            h.notes.join("\n"),
+            chapterNotes(h).join("\n"),
         )
         .join("\n\n---\n\n") +
       "\n\n" +
@@ -675,31 +698,31 @@ async function command(name) {
       $("#modal").insertAdjacentHTML(
         "beforeend",
         '<p class="muted" id="story-mode">' +
-          (state.settings.demo ? '本卷正在试读。可保存接口并用于后续正文，已有章节保留。' : '本卷使用已保存的接口续写正文。') +
+          (state.settings.demo ? '正在试读。连接 API 后，可续写更丰富的故事。' : '已连接 API，故事随你的选择继续。') +
           '</p><div class="dialog-actions"><button id="mode-toggle">' +
           (state.settings.demo ? "保存并用于正文" : "切换为试读") +
           "</button></div>",
       );
       $("#modal").insertAdjacentHTML(
         "beforeend",
-        '<section class="narrative-settings" aria-label="叙事笔法"><h3>叙事笔法</h3><div class="fields"><div><label for="prose-style">文风</label><select id="prose-style">' +
+        '<section class="narrative-settings" aria-label="故事文风"><h3>故事文风</h3><div class="fields"><div><label for="prose-style">文风</label><select id="prose-style">' +
           Object.entries(STYLES).map(([k, v]) => '<option value="' + k + '"' + (k === state.settings.prose ? " selected" : "") + ">" + esc(v.label) + "</option>").join("") +
           "</select></div>" + narrativeFields(state.settings) +
-          '</div><p class="muted" id="prose-note">' + esc(STYLES[state.settings.prose]?.rules || "") + ' 下一旬起生效，已写章节不变。</p></section>',
+          '</div><p class="muted" id="prose-note">' + esc(proseNote()) + ' 用于之后的新故事。</p></section>',
       );
       for (const id of ["prose-style", "prose-length", "prose-pov"])
         $("#" + id).onchange = () => {
           if (readOnly || busy || state.pending) {
-            toast("请先完成当前回合，再改叙事笔法");
+            toast("请先过完本旬，再换文风");
             $("#prose-style").value = state.settings.prose;
             $("#prose-length").value = state.settings.length || "standard";
             $("#prose-pov").value = state.settings.pov || "third";
             return;
           }
           state = { ...state, settings: { ...state.settings, prose: $("#prose-style").value, length: $("#prose-length").value, pov: $("#prose-pov").value } };
-          $("#prose-note").textContent = (STYLES[state.settings.prose]?.rules || "") + " 下一旬起生效，已写章节不变。";
+          $("#prose-note").textContent = proseNote() + " 用于之后的新故事。";
           scheduleSave.schedule();
-          toast("叙事笔法已更新：" + STYLES[state.settings.prose].label + " · " + LENGTHS[state.settings.length].label + " · " + POVS[state.settings.pov].label);
+          toast("文风已改为" + STYLES[state.settings.prose].label + " · " + LENGTHS[state.settings.length].label + " · " + POVS[state.settings.pov].label);
         };
       $("#mode-toggle").onclick = () => {
         if (readOnly) {
@@ -725,7 +748,7 @@ async function command(name) {
   if (name === "delegate") {
     guard();
     openDialog("委政内阁",
-      '<p class="muted">内阁依票拟批阅非急报，其余时辰歇息；正文按试读笔法简记，不请求叙事接口。遇亡故、孕产、战事、急报或封卷即停，交还御前。</p><div class="dialog-actions">' +
+      '<p class="muted">让内阁代批普通奏报，自己歇息几旬。遇到急报、战事或宫中大事，会停下来请你决断。期间只简记日常，不花费 API 额度。</p><div class="dialog-actions">' +
         [3, 6, 12].map((n) => '<button type="button" data-delegate="' + n + '">' + n + " 旬</button>").join("") + "</div>", "drawer");
     $("#modal").onclick = async (e) => {
       const n = Number(e.target.closest("[data-delegate]")?.dataset.delegate);
@@ -738,7 +761,7 @@ async function command(name) {
         state = { ...state, schedule: plan.schedule };
         const before = state.turn;
         await advance(true);
-        if (state.turn === before) { stop = "落账未完成"; break; }
+        if (state.turn === before) { stop = "本旬尚未结束"; break; }
         stop = delegateStop(state);
         if (stop) { done++; break; }
       }
@@ -846,7 +869,7 @@ document.addEventListener("click", async (e) => {
         state.schedule[b.dataset.clear]?.kind === "召见" &&
         state.talks.some((t) => t.turn === state.turn)
       )
-        throw new Error("面谈结果已落账，须完成本旬");
+        throw new Error("午间已经面谈，请先过完本旬。");
       state.schedule[b.dataset.clear] = null;
       scheduleSave.schedule();
       render();

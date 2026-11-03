@@ -39,7 +39,7 @@ export function palacePanel(s, name) {
             "</small></div>",
         )
         .join("") +
-      '</div></div><h3 class="section-spacer">三省六部 · 实职名册</h3>' +
+      '</div></div><h3 class="section-spacer">官职名册</h3>' +
       fold(
         s.court.posts.map(
           (p) =>
@@ -260,8 +260,8 @@ export function palacePanel(s, name) {
       num(s.nation.privy) +
       ' 万两</p></div><div class="card"><h3>粮储</h3><p>' +
       num(s.nation.grain) +
-      ' 万石</p><p>三年用粮仓容 '+num(grainBudget(s).storageCapacity)+' 万石，超额陈粮每年霉变一成。</p></div><div class="card"><h3>年度预算</h3><p>' +
-      num(annualBudget(s)) + ' 万两</p><p>俸禄、军饷合计一年的开支。余银超过两年预算，每月超额冗费为 ' +
+      ' 万石</p><p>仓库存粮上限 '+num(grainBudget(s).storageCapacity)+' 万石，超出的陈粮每年损耗三成。</p></div><div class="card"><h3>年度预算</h3><p>' +
+      num(annualBudget(s)) + ' 万两</p><p>一年的俸禄与军饷。余银超过两年预算，超出部分每月额外耗费 ' +
       num(wasteQuote(s).rate * 100) + '%。</p></div><div class="card"><h3>欠饷与积欠</h3><p>' +
       num(s.nation.arrears || 0) + ' 万两</p><p>国库不足，便记作欠款；进项先补旧欠。</p></div><div class="card"><h3>内帑积欠</h3><p>'+num(s.nation.privyArrears||0)+' 万两</p><p>皇庄盐课每月入三万两，先补旧欠再付宫用。</p></div><div class="card"><h3>缺粮积欠</h3><p>'+num(s.nation.grainArrears||0)+' 万石</p></div></div><h3 class="section-spacer">近月钱粮明细</h3>' +
       ledgerHTML(entries.filter((e) => e.turn >= s.turn - 3).slice(-60)) +
@@ -278,7 +278,7 @@ export function palacePanel(s, name) {
               (p.done ? "已结" : "在途") +
               "</h3><p>" +
               esc(p.office) +
-              " · 兑现 " +
+              " · 落实 " +
               Math.round(p.execRate * 100) +
               "% · 支出 " +
               p.cost +

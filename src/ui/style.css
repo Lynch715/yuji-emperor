@@ -561,9 +561,59 @@ small {
   gap: var(--s5);
   margin-bottom: var(--s5);
 }
-.planning-title h2 {
+.planning-heading {
+  font: 600 var(--font-document) / 1.4 var(--serif);
   white-space: nowrap;
   color: var(--text-strong);
+}
+.planning-title {
+  min-height: var(--target);
+  padding: var(--s0);
+  list-style: none;
+}
+.planning-title::-webkit-details-marker {
+  display: none;
+}
+.planning-fold-label {
+  color: var(--gold);
+  font-size: var(--font-small);
+  white-space: nowrap;
+}
+.planning-overview,
+.planning-fold[open] .when-closed,
+.planning-fold:not([open]) .when-open,
+.planning-fold:not([open]) .planning-heading {
+  display: none;
+}
+.planning-fold:not([open]) .planning-title {
+  margin-bottom: var(--s0);
+}
+.planning-fold:not([open]) .planning-overview {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s3);
+  flex: 1;
+  min-width: var(--s0);
+}
+.planning-overview > span {
+  min-width: var(--s0);
+}
+.planning-overview small,
+.planning-overview strong {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.4;
+}
+.planning-overview small {
+  color: var(--text-muted);
+  font-size: var(--font-micro);
+}
+.planning-overview strong {
+  color: var(--text-soft);
+  font-size: var(--font-small);
+  font-weight: 500;
 }
 .energy {
   display: flex;
@@ -1757,7 +1807,17 @@ textarea.brush-input::placeholder {
     gap: var(--s4);
   }
   .planning-title {
+    gap: var(--s3);
+    margin-bottom: var(--s3);
+  }
+  .planning-title .energy {
     display: none;
+  }
+  .planning-heading {
+    font-size: var(--font-small);
+  }
+  .planning-fold-label {
+    margin-left: auto;
   }
   .schedule {
     grid-template-columns: 1fr;

@@ -1,5 +1,5 @@
 import { createDialogRequestScope, probeErrorMessage } from "./request-scope.js";
-import { $, esc, openDialog, toast } from "./common.js";
+import { $, esc, gameText, openDialog, toast } from "./common.js";
 import { FONT_SCALES, applyFontScale, storedFontScale } from "./mobile.js";
 import {
   PRESETS,
@@ -33,7 +33,7 @@ export function openSettings(config, metrics, onSave, recordMetric = null) {
     "御前设置",
     '<label for="font-scale">正文字号</label><select id="font-scale">' +
       Object.entries(FONT_SCALES).map(([id, label]) => '<option value="' + id + '"' + (id === storedFontScale() ? " selected" : "") + ">" + label + "</option>").join("") +
-      '</select><p class="muted">立即生效，只影响本机阅读。</p><p class="muted">填写叙事接口，续写本纪。密钥只用于所填地址，不随存档导出。</p><form id="settings-form"><label for="provider">服务商与地域</label><select id="provider">' +
+      '</select><p class="muted">字号立即生效。</p><p class="muted">连接 API，让故事随你的选择继续。密钥只发往所填地址，不随存档导出。</p><form id="settings-form"><label for="provider">服务商与地域</label><select id="provider">' +
       Object.entries(PRESETS)
         .map(
           ([id, p]) =>
@@ -92,12 +92,12 @@ export function openSettings(config, metrics, onSave, recordMetric = null) {
   const explain = () => {
     const name=$("#api-model").value.trim();
     $("#model-description").textContent = ({
-      'deepseek-v4-flash':'默认叙事型号。',
+      'deepseek-v4-flash':'推荐用于续写故事。',
       'deepseek-v4-pro':'进阶选项，请确认账户已开通。',
-      'qwen3.8-flash':'默认叙事型号，地域须与账户一致。',
+      'qwen3.8-flash':'推荐用于续写故事，地域请选择账户所在地区。',
       'qwen3.7-plus':'可选型号，地域须与账户一致。',
       'qwen3.8-max':'可选型号，请确认账户已开通。',
-    })[name] || '按服务商提供的名称填写，接口需支持流式回复和结构化输出。';
+    })[name] || '模型名称请与服务商提供的一致。';
   };
   const presets = () => {
     const choices = modelsFor($("#provider").value);
@@ -180,9 +180,9 @@ export function openSettings(config, metrics, onSave, recordMetric = null) {
         },
         onPartial:()=>{if(scope.current(request))result.textContent='正在等待回音……';},
       });
-      if(scope.current(request))result.textContent='连接成功 · '+reply.message+'。保存设置后用于续写。';
+      if(scope.current(request))result.textContent='连接成功，保存设置后就能续写故事了。';
     } catch(error) {
-      if(scope.current(request))result.textContent=probeErrorMessage(error,lastMetric);
+      if(scope.current(request))result.textContent=gameText(probeErrorMessage(error,lastMetric));
     } finally {
       if(scope.current(request)){
         for(const [el,disabled]of controls)el.disabled=disabled;

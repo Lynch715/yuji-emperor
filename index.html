@@ -576,9 +576,59 @@ justify-content:space-between;
 gap:var(--s5);
 margin-bottom:var(--s5);
 }
-.planning-title h2{
+.planning-heading{
+font:600 var(--font-document) / 1.4 var(--serif);
 white-space:nowrap;
 color:var(--text-strong);
+}
+.planning-title{
+min-height:var(--target);
+padding:var(--s0);
+list-style:none;
+}
+.planning-title::-webkit-details-marker{
+display:none;
+}
+.planning-fold-label{
+color:var(--gold);
+font-size:var(--font-small);
+white-space:nowrap;
+}
+.planning-overview,
+.planning-fold[open] .when-closed,
+.planning-fold:not([open]) .when-open,
+.planning-fold:not([open]) .planning-heading{
+display:none;
+}
+.planning-fold:not([open]) .planning-title{
+margin-bottom:var(--s0);
+}
+.planning-fold:not([open]) .planning-overview{
+display:grid;
+grid-template-columns:repeat(3, minmax(0, 1fr));
+gap:var(--s3);
+flex:1;
+min-width:var(--s0);
+}
+.planning-overview > span{
+min-width:var(--s0);
+}
+.planning-overview small,
+.planning-overview strong{
+display:block;
+overflow:hidden;
+text-overflow:ellipsis;
+white-space:nowrap;
+line-height:1.4;
+}
+.planning-overview small{
+color:var(--text-muted);
+font-size:var(--font-micro);
+}
+.planning-overview strong{
+color:var(--text-soft);
+font-size:var(--font-small);
+font-weight:500;
 }
 .energy{
 display:flex;
@@ -1772,7 +1822,17 @@ padding:var(--s6) var(--s7) var(--s0);
 gap:var(--s4);
 }
 .planning-title{
+gap:var(--s3);
+margin-bottom:var(--s3);
+}
+.planning-title .energy{
 display:none;
+}
+.planning-heading{
+font-size:var(--font-small);
+}
+.planning-fold-label{
+margin-left:auto;
 }
 .schedule{
 grid-template-columns:1fr;
@@ -2444,10 +2504,12 @@ text-indent:0;
 const { postTitle, SCENARIOS, scenarioPreview } = __load("src/core/scenarios.js");
 const { createDebouncedSave } = __load("src/store/debounce.js");
 const { classifyMemorialSchedule } = __load("src/llm/remark-classifier.js");
+const { modernTalkFallback } = __load("src/llm/mock-narrative.js");
 const { initAppIcon } = __load("src/ui/icon.js");
 const {
 $,
 esc,
+gameText,
 initCommon,
 toast,
 captureView,
@@ -2467,7 +2529,7 @@ renderApp,
 actionButton,
 memorialListHTML,
 ambitionsHTML,
-actionsHTML, metricsHTML, chapterHTML,
+actionsHTML, metricsHTML, chapterHTML, chapterTitle, chapterNotes, ledgerLabel,
 } = __load("src/ui/render.js");
 const { memorialDialog, scheduledMemorialDialog } = __load("src/ui/memorials.js");
 const { memorialAssignments } = __load("src/ui/memorial-state.js");
@@ -2518,6 +2580,7 @@ busy = false,
 saveStatus = "",
 config = loadSettings(),
 metrics = loadMetrics(),
+scheduleCollapsed = loadScheduleCollapsed(),
 preferred = "朝",
 saveQueue = Promise.resolve(),
 lastSchedule = null;
@@ -2526,9 +2589,9 @@ window.addEventListener("pagehide",()=>scheduleSave.flush());
 function render() {
 const y = window.scrollY, kept = captureView($("#app"));
 const canRepeat = !!state && Object.values(repeatSchedule(state, lastScheduleFor(state))).some(Boolean);
-$("#app").innerHTML = renderApp(state, { readOnly, busy, saveStatus, canRepeat });
+$("#app").innerHTML = renderApp(state, { readOnly, busy, saveStatus, canRepeat, scheduleCollapsed });
 document.querySelectorAll("[data-action]").forEach((b) => {
-const reason=readOnly?'存档只读保护':busy?'本旬正在续写':actionAvailability(state,b.dataset.action);
+const reason=readOnly?'存档暂时无法保存':busy?'故事正在继续':actionAvailability(state,b.dataset.action);
 b.disabled=!!reason;b.draggable=!reason;
 if(reason&&b.querySelector('.action-copy small'))b.querySelector('.action-copy small').textContent=reason;
 });
@@ -2542,13 +2605,13 @@ const streamDraft = throttleFrame((raw) => {
 if (raw.length === streamedLength) return;
 streamedLength = raw.length;
 const el = $("#stream");
-if (el) el.textContent = "正文草稿 · 正在续写\n\n" + extractPartialChapter(raw);
+if (el) el.textContent = "故事正在继续……\n\n" + extractPartialChapter(raw);
 });
 function guard() {
 if (!state) throw new Error("请先登基开局");
 if (readOnly) throw new Error("存档处于只读保护模式");
 if (busy) throw new Error("本旬正在续写");
-if (state.pending) throw new Error("请先重试或按结算表完成本旬");
+if (state.pending) throw new Error("请先续完本旬故事，或略过故事进入下旬。");
 if (state.ending) throw new Error("本局已经封卷");
 }
 async function persist() {
@@ -2587,6 +2650,18 @@ return Array.isArray(v) ? v.slice(-100) : [];
 return [];
 }
 }
+function loadScheduleCollapsed() {
+try { return localStorage.getItem("yuji:schedule-collapsed") === "true"; }
+catch { return false; }
+}
+// Native disclosure changes only the layout, including during streaming or
+// read-only protection. Keep this preference outside the game save.
+document.addEventListener("toggle", (event) => {
+const fold = event.target;
+if (fold.id !== "schedule-fold" || !fold.isConnected) return;
+scheduleCollapsed = !fold.open;
+try { localStorage.setItem("yuji:schedule-collapsed", String(scheduleCollapsed)); } catch {}
+}, true);
 function markMetric(m) {
 metrics.push(m);
 if (metrics.length > 100) metrics.shift();
@@ -2601,7 +2676,7 @@ for (let i = 1; i <= 3; i++) slots.push({ id: i, ...(await store.load(i)) });
 const archives = await store.listArchives();
 openDialog(
 "存档阁",
-'<p class="muted">三卷各自保存。导入请选空卷；遇到损坏或冲突，旧卷会保留，请先导出备份。</p><div class="grid">' +
+'<p class="muted">三卷分别保存。导入旧档时，请选空卷。</p><div class="grid">' +
 slots
 .map(
 (v) =>
@@ -2624,7 +2699,7 @@ v.state.turn +
 ) +
 "</p>" +
 v.problems
-.map((p) => '<p class="negative">' + esc(p) + "</p>")
+.map((p) => '<p class="negative">' + esc(gameText(p)) + "</p>")
 .join("") +
 '<div class="row">' +
 (v.state
@@ -2694,14 +2769,14 @@ reusable.push(i);
 }
 available.push(...reusable);
 if (!available.length) {
-toast("三卷均在保护模式，请先导出原始数据，排查存储问题。");
+toast("三卷暂时都无法保存，请先到存档阁导出备份。");
 return;
 }
 openDialog(
 "登基 · 定年号",
 '<form id="new-form"><div class="scenario-pick"><label for="scenario">开局</label><select id="scenario"><option value="">自拟王朝（架空）</option>' +
 SCENARIOS.map((sc) => '<option value="' + sc.id + '">' + esc(sc.title) + " · " + esc(sc.difficulty) + "</option>").join("") +
-'</select><div id="scenario-card" class="scenario-card muted">自拟帝名、年号，由叙事接口铸造人物与州郡。</div></div><div class="fields"><div><label for="emperor-name">皇帝名</label><input id="emperor-name" required maxlength="12" value="萧承熙"></div><div><label for="era-name">年号</label><input id="era-name" required maxlength="8" value="永宁"></div><div><label for="freedom">自由度</label><select id="freedom"><option value="mid">传奇</option><option value="free">随心所欲</option><option value="real">写实</option></select></div><div><label for="difficulty">难度</label><select id="difficulty"><option value="normal">常制</option><option value="easy">宽和</option><option value="hard">艰危</option></select></div><div><label for="prose-style">文笔</label><select id="prose-style">' +
+'</select><div id="scenario-card" class="scenario-card muted">自拟帝名与年号，开创自己的王朝。</div></div><div class="fields"><div><label for="emperor-name">皇帝名</label><input id="emperor-name" required maxlength="12" value="萧承熙"></div><div><label for="era-name">年号</label><input id="era-name" required maxlength="8" value="永宁"></div><div><label for="freedom">自由度</label><select id="freedom"><option value="mid">传奇</option><option value="free">随心所欲</option><option value="real">写实</option></select></div><div><label for="difficulty">难度</label><select id="difficulty"><option value="normal">常制</option><option value="easy">宽和</option><option value="hard">艰危</option></select></div><div><label for="prose-style">文笔</label><select id="prose-style">' +
 Object.entries(STYLES)
 .map(([k, v]) => '<option value="' + k + '">' + v.label + "</option>")
 .join("") +
@@ -2720,7 +2795,7 @@ n +
 .join("") +
 '</select></div></div><label class="check"><input id="demo-mode" type="checkbox" ' +
 (!config.key ? "checked" : "") +
-'>先试读一局（无需密钥）</label><p class="muted">试读无需设置。若要接续新故事，请先设置叙事接口。启用已有卷位前，会先封存旧卷。</p><p id="new-result" class="result hidden" role="status" aria-live="polite" tabindex="-1"></p><div class="dialog-actions"><button type="button" data-command="settings">设置接口</button><button type="submit" class="primary">承天践祚</button></div></form>',
+'>先试读一局（无需密钥）</label><p class="muted">想体验更丰富的故事，可在设置中连接 API。选择已有卷位时，会先封存旧存档。</p><p id="new-result" class="result hidden" role="status" aria-live="polite" tabindex="-1"></p><div class="dialog-actions"><button type="button" data-command="settings">设置接口</button><button type="submit" class="primary">承天践祚</button></div></form>',
 );
 const goalsHTML = ["宏愿", "宏愿", "心事", "心事"]
 .map(
@@ -2751,7 +2826,7 @@ const scope = createDialogRequestScope(dialog, form);
 $("#scenario").onchange = () => {
 const sc = SCENARIOS.find((x) => x.id === $("#scenario").value), card = $("#scenario-card");
 for (const id of ["emperor-name", "era-name"]) $("#" + id).disabled = !!sc;
-if (!sc) { card.textContent = "自拟帝名、年号，由叙事接口铸造人物与州郡。"; return; }
+if (!sc) { card.textContent = "自拟帝名与年号，开创自己的王朝。"; return; }
 const v = scenarioPreview(sc);
 $("#emperor-name").value = v.emperor; $("#era-name").value = v.era;
 $("#difficulty").value = { 宽和: "easy", 常制: "normal", 艰危: "hard" }[v.difficulty] || "normal";
@@ -2808,7 +2883,7 @@ closeDialog();
 if (saved.warnings.length) toast(saveStatus);
 } catch (err) {
 if (form.isConnected && dialog.open) {
-showResult(openingErrorMessage(err), true);
+showResult(gameText(openingErrorMessage(err)), true);
 result.focus();
 }
 } finally {
@@ -2826,6 +2901,11 @@ render();
 };
 }
 // 篇幅与视角下拉，开局与中途设置共用。
+function proseNote() {
+return state.settings.prose === "modern"
+? "句子清楚，对话自然，奏折也用白话。"
+: STYLES[state.settings.prose]?.rules || "";
+}
 function narrativeFields(current = {}) {
 const select = (id, label, table, value) => '<div><label for="' + id + '">' + label + '</label><select id="' + id + '">' +
 Object.entries(table).map(([k, v]) => '<option value="' + k + '"' + (k === value ? " selected" : "") + ">" + esc(v.label) + "</option>").join("") +
@@ -2842,7 +2922,7 @@ validateSchedule(state, next);
 state = { ...state, schedule: next };
 scheduleSave.schedule();
 render();
-toast(action.kind + " 已放入" + which + "槽");
+toast("已安排" + which + "间" + action.kind);
 }
 function chooseAction(kind) {
 guard();
@@ -2960,7 +3040,10 @@ state = attempt.state;
 state.schedule.午 = { kind: "召见", person, label: npc.name };
 const result = attempt.result;
 await persist();
-let response = { reply: result.reply, innerThought: result.innerThought };
+let response = {
+reply: state.settings.prose === "modern" ? modernTalkFallback(result) : result.reply,
+innerThought: result.innerThought,
+};
 if (!state.settings.demo) {
 try {
 response = await callJSON(
@@ -2973,7 +3056,7 @@ validate: (d) => validateTalk(d, result, state),
 },
 );
 } catch (e) {
-toast(e.message + "；本次面谈结果已保留。");
+toast(gameText(e.message) + "；面谈已结束。");
 }
 }
 result.reply = response.reply;
@@ -3079,17 +3162,17 @@ chapters
 "## 第 " +
 h.turn +
 " 旬 · " +
-h.summary +
+chapterTitle(h.summary) +
 "\n\n" +
 ["朝", "午", "夜"]
 .map((sl) => "### " + sl + "\n\n" + (h.chapter[sl] || "略"))
 .join("\n\n") +
-"\n\n### 记账\n\n" +
+"\n\n### 本旬变化\n\n" +
 h.entries
-.map((e) => "- " + e.source + "：" + e.path + " " + e.delta)
+.map((e) => "- " + gameText(e.source) + "：" + ledgerLabel(e.path) + " " + (e.delta > 0 ? "+" : "") + e.delta)
 .join("\n") +
 "\n\n" +
-h.notes.join("\n"),
+chapterNotes(h).join("\n"),
 )
 .join("\n\n---\n\n") +
 "\n\n" +
@@ -3118,31 +3201,31 @@ if (state) {
 $("#modal").insertAdjacentHTML(
 "beforeend",
 '<p class="muted" id="story-mode">' +
-(state.settings.demo ? '本卷正在试读。可保存接口并用于后续正文，已有章节保留。' : '本卷使用已保存的接口续写正文。') +
+(state.settings.demo ? '正在试读。连接 API 后，可续写更丰富的故事。' : '已连接 API，故事随你的选择继续。') +
 '</p><div class="dialog-actions"><button id="mode-toggle">' +
 (state.settings.demo ? "保存并用于正文" : "切换为试读") +
 "</button></div>",
 );
 $("#modal").insertAdjacentHTML(
 "beforeend",
-'<section class="narrative-settings" aria-label="叙事笔法"><h3>叙事笔法</h3><div class="fields"><div><label for="prose-style">文风</label><select id="prose-style">' +
+'<section class="narrative-settings" aria-label="故事文风"><h3>故事文风</h3><div class="fields"><div><label for="prose-style">文风</label><select id="prose-style">' +
 Object.entries(STYLES).map(([k, v]) => '<option value="' + k + '"' + (k === state.settings.prose ? " selected" : "") + ">" + esc(v.label) + "</option>").join("") +
 "</select></div>" + narrativeFields(state.settings) +
-'</div><p class="muted" id="prose-note">' + esc(STYLES[state.settings.prose]?.rules || "") + ' 下一旬起生效，已写章节不变。</p></section>',
+'</div><p class="muted" id="prose-note">' + esc(proseNote()) + ' 用于之后的新故事。</p></section>',
 );
 for (const id of ["prose-style", "prose-length", "prose-pov"])
 $("#" + id).onchange = () => {
 if (readOnly || busy || state.pending) {
-toast("请先完成当前回合，再改叙事笔法");
+toast("请先过完本旬，再换文风");
 $("#prose-style").value = state.settings.prose;
 $("#prose-length").value = state.settings.length || "standard";
 $("#prose-pov").value = state.settings.pov || "third";
 return;
 }
 state = { ...state, settings: { ...state.settings, prose: $("#prose-style").value, length: $("#prose-length").value, pov: $("#prose-pov").value } };
-$("#prose-note").textContent = (STYLES[state.settings.prose]?.rules || "") + " 下一旬起生效，已写章节不变。";
+$("#prose-note").textContent = proseNote() + " 用于之后的新故事。";
 scheduleSave.schedule();
-toast("叙事笔法已更新：" + STYLES[state.settings.prose].label + " · " + LENGTHS[state.settings.length].label + " · " + POVS[state.settings.pov].label);
+toast("文风已改为" + STYLES[state.settings.prose].label + " · " + LENGTHS[state.settings.length].label + " · " + POVS[state.settings.pov].label);
 };
 $("#mode-toggle").onclick = () => {
 if (readOnly) {
@@ -3168,7 +3251,7 @@ if (name === "advance") return advance();
 if (name === "delegate") {
 guard();
 openDialog("委政内阁",
-'<p class="muted">内阁依票拟批阅非急报，其余时辰歇息；正文按试读笔法简记，不请求叙事接口。遇亡故、孕产、战事、急报或封卷即停，交还御前。</p><div class="dialog-actions">' +
+'<p class="muted">让内阁代批普通奏报，自己歇息几旬。遇到急报、战事或宫中大事，会停下来请你决断。期间只简记日常，不花费 API 额度。</p><div class="dialog-actions">' +
 [3, 6, 12].map((n) => '<button type="button" data-delegate="' + n + '">' + n + " 旬</button>").join("") + "</div>", "drawer");
 $("#modal").onclick = async (e) => {
 const n = Number(e.target.closest("[data-delegate]")?.dataset.delegate);
@@ -3181,7 +3264,7 @@ if (!plan.schedule) { stop = plan.reason; break; }
 state = { ...state, schedule: plan.schedule };
 const before = state.turn;
 await advance(true);
-if (state.turn === before) { stop = "落账未完成"; break; }
+if (state.turn === before) { stop = "本旬尚未结束"; break; }
 stop = delegateStop(state);
 if (stop) { done++; break; }
 }
@@ -3289,7 +3372,7 @@ if (
 state.schedule[b.dataset.clear]?.kind === "召见" &&
 state.talks.some((t) => t.turn === state.turn)
 )
-throw new Error("面谈结果已落账，须完成本旬");
+throw new Error("午间已经面谈，请先过完本旬。");
 state.schedule[b.dataset.clear] = null;
 scheduleSave.schedule();
 render();
@@ -4670,6 +4753,49 @@ return next;
 
 return {classifyMemorialSchedule};
 },
+"src/llm/mock-narrative.js":function(__load){
+const { seedNumber, random } = __load("src/core/rng.js");
+const SCENES={
+上朝:['朝班肃立，殿门外衣冠相接。','御座前的奏牍铺开，廷臣静候垂询。','殿柱映着衣影，笏板轻触袍袖。'],
+批折:['案头折匣展开，朱笔搁在砚边。','纸页随手翻过，墨香停在窗下。','值房送来文卷，御案渐渐铺满。'],
+下旨:['拟旨的黄纸铺平，词句尚须细察。','中书候在屏外，静听御前措辞。','诏稿置于案侧，烛影掠过纸边。'],
+后宫:['帘幕低垂，宫人放轻了脚步。','内殿茶香未散，屏风后传来衣声。','宫灯映着花影，廊下私语渐轻。'],
+外交:['译官捧来国书，礼臣按仪侍立。','宾馆的回牍送至，礼官候在廊前。','使节话语经译官转述，御前静听。'],
+出巡:['驿路在车前延伸，风里夹着草木气息。','御辇经过田畴，沿途景物收入眼底。','行宫窗外树影摇曳，随驾官员捧册候问。'],
+歇息:['帘外脚步渐远，案边茶盏尚温。','屏风隔去人声，御前暂得安静。','书页停在膝上，檐下风声可闻。'],
+日常:['廊下有人传递文卷，宫门开合如常。','值房灯火未歇，纸墨气息飘过长廊。','内侍垂手候命，殿中只闻衣袖轻响。'],
+};
+const SEASONS=[['春风拂过帘角，庭树新绿。','春雨落在阶前，石色微润。'],['暑气停在檐下，凉扇轻摇。','夏云漫过殿顶，庭荫渐深。'],['秋风吹动帘钩，树叶轻落。','庭中秋色渐浓，阶前微凉。'],['寒风掠过宫墙，炭火轻鸣。','冬日斜照窗棂，炉香缓缓升起。']];
+const MODERN_SCENES={
+上朝:'大臣们在殿里站好，等候皇帝问话。',批折:'皇帝翻开送来的奏折，拿起朱笔准备批阅。',
+下旨:'拟好的旨意摆在桌上，皇帝仔细看过措辞。',后宫:'宫人放轻脚步，内殿里还能闻到茶香。',
+外交:'使节送来国书，礼部官员在旁等候。',出巡:'车驾沿着驿路前行，皇帝看着沿途的田地。',
+歇息:'皇帝暂时放下手里的事，坐在窗边歇一会儿。',日常:'宫里照常有人来往，送来文书，再安静地退下。',
+};
+function modernTalkFallback(result){
+return result.denied?'这件事超出了臣的职权，需要先回去商议。':result.success?'臣明白陛下的意思，会在自己的职权范围内尽力去办。':'臣有些难处，眼下还办不到。';
+}
+function sceneNarrative(forecast){
+let rng=seedNumber(forecast.turnId||'试读');
+const pick=pool=>{const r=random(rng);rng=r.rng;return pool[Math.floor(r.value*pool.length)];};
+const month=forecast.state?.era?.month||1,season=Math.min(3,Math.max(0,Math.floor((month-1)/3)));
+return Object.fromEntries(['朝','午','夜'].map(slot=>{
+const kind=forecast.schedule?.[slot]?.kind||'日常',results=(forecast.slotResults?.[slot]||[]).join(' ');
+const execution=(forecast.facts||[]).find(f=>f.kind==='execution'&&f.slot===slot)?.label||results;
+const difficult=/封驳|阳奉阴违|敷衍|未允|失败|不足|未成/.test(execution);
+const heavy=(forecast.facts||[]).some(f=>['death','war','miscarriage'].includes(f.kind));
+if(forecast.state?.settings?.prose==='modern')return [slot,
+['春风从窗外吹进来，院里的树长出了新叶。','夏天天气热，宫人轻轻摇着扇子。','秋风吹过院子，树叶慢慢落在台阶旁。','冬日的阳光照进窗里，屋内生着炭火。'][season]+
+(MODERN_SCENES[kind]||MODERN_SCENES.日常)+
+pick(difficult?['殿里安静了一会儿，皇帝还在考虑接下来该怎么办。','大家暂时没有开口，仍在琢磨刚才谈到的问题。']:heavy?['传来的消息让众人心情沉重，说话时也比平常谨慎。','殿里的气氛有些沉重，众人说话时都放低了声音。']:['话题暂时停了下来，桌边的茶还温着。','皇帝听着窗外的脚步声，想了想刚才谈过的事。'])];
+const outcome=difficult?['话语间仍有迟疑，案前的气氛未见舒展。','殿中沉默稍久，御前仍在斟酌。']:heavy?['外间消息压在心头，殿内的话语也沉了下来。','纸上消息牵动心绪，廊下的脚步显得急促。']:['御前话语渐缓，案边又添了茶香。','风穿过帘隙，方才的议论仍在心头。','笔锋稍停，内侍垂手静候。'];
+const sensitive=slot==='夜'&&(forecast.facts||[]).some(f=>['pregnancy','birth'].includes(f.kind));
+return [slot,pick(SEASONS[season])+pick(SCENES[kind]||SCENES.日常)+(sensitive?'内殿消息引人牵念，帘内的话语放得更轻。':pick(outcome))];
+}));
+}
+
+return {modernTalkFallback,sceneNarrative};
+},
 "src/ui/icon.js":function(__load){
 const APP_ICONS = {"32":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAkFBMVEX3y3DvuWLprljkqFffnVDAiEjIgEKqgEPAej7DbDahcziWZi61WCyzRCOfTySAViixORymNxuoMhijIxGbLxaaHQ98KRMgFxIfFxIfFhIfFhEeFhIeFhEdFhGcFQoeFREdFRGeDwebCgWNDwePCgWZBQKOBAKFAwKFAABPCAcWEA8VDw8VDg4TDQ4SDA0RCwyeLUoYAAACKElEQVR42q2T25KjIBCGAVk8QQTFaAyj8UxpNO//dtOYZDK1N3uzLQJFf/V30wC6/cPQ/wKKS1WZCrrKjcaYqix+A+ax39flfl9X+Jd1WZZ1f5gPYJbEPyzyXxZFfnI3b6B4JFRKqXWq01SpVKUwEV6yFy+g2nwxtl0v6kkNU9t2Q9e2lvuPH+Duy7buckRrz8uGuq3rru2E/yh/AV07MYRzilTWjuOYptMHaABQ4xigP7VA1EMh4wzjVH5CXEBhYDTkHaWYSYEcxuUvhRVyUFagMK8RrzPMLEO59Pd3Ds0SpW1Xg3jKMEEBAQBnMnqFaJ4KY4i4wB5mKj2AWkSfEEucWomwyrIMiywnbAZARvvlvc3F15owHHIqCMHcAwXaA1D9KEQplx3mGT4R3uceldTrZbyXzVsh0vOUE54RAISmLMB0lvF2aW4NAAZy0N0AgCYB8XhPgp6erAM+SeoBgIARL+xt7bEp72cVf07zCKE9fmK5HYbaC6dxAGArfgoV5/OUEW6Hqe/HmgZz3886Wd/bNC4EVOo0990wDD0NrQPi7V2oyz1Wdhzn2Vo7TtYKbWEq4kdhXqe5npnI0uOuSamkUlorxc5r8WWel/a6nuMkieNn9xyT8/K6tI3bx7qv27bt0JxtzlbnbwAwV6hXVVyKsoBWgsErKsvKHcQBNPCOQMXcDq2/DADnd8DBmevtC77GocZ8mWcOsA7+5nq9uXAH3ByduYLjG0XhZePKL1XsAAAAAElFTkSuQmCC","180":"data:image/png;base64,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","192":"data:image/png;base64,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"};
 function createAppManifest(href,color) {
@@ -4690,6 +4816,20 @@ return {APP_ICONS,createAppManifest,initAppIcon};
 "src/ui/common.js":function(__load){
 const { initMobileViewport } = __load("src/ui/mobile.js");
 const $ = (selector) => document.querySelector(selector);
+// Display labels only; saves stay intact.
+function gameText(text) {
+return String(text ?? "")
+.replace(/^本旬引擎结算：人物、政务与岁时变化$/, "本旬变化")
+.replace(/^模型人物反应建议：引擎限额采纳$/, "人物态度变化")
+.replace(/^引擎结算$/, "本旬变化")
+.replace(/宫闱事件：引擎判定小产/g, "宫中小产")
+.replace(/；面谈结果已落账/g, "；已在面谈中议定")
+.replace(/^本旬面谈已落账，午槽须保留对应人物的召见$/, "午间已召见此人，请先过完本旬。")
+.replace(/^预演已过期，不能提交到此存档$/, "这次安排已过期，请刷新后重试。")
+.replace(/^本回合请求已达 240 秒预算，请保留预演结果后重试$/, "故事续写超时，请重试本旬。")
+.replace(/^模型回复未完成或格式有误，原有进度已保留$/, "这次没能续完故事，请重试本旬。")
+.replace(/^存档处于只读保护模式$/, "此存档暂时无法保存，请先导出备份。");
+}
 function esc(text) {
 return String(text ?? "").replace(
 /[&<>"']/g,
@@ -4773,6 +4913,7 @@ try { history.pushState({ ...(history.state || {}), yujiModal: true }, ""); moda
 }
 let toastTimer;
 function toast(text) {
+text = gameText(text);
 $("#notice").textContent = text;
 $("#notice").classList.add("show");
 const dialog=$("#modal");
@@ -4874,7 +5015,7 @@ else if(returnSelector) document.querySelector(returnSelector)?.focus();
 });
 }
 
-return {$,esc,captureView,restoreView,throttleFrame,setLeaveGuard,toast,openDialog,closeDialog,download,initCommon};
+return {$,gameText,esc,captureView,restoreView,throttleFrame,setLeaveGuard,toast,openDialog,closeDialog,download,initCommon};
 },
 "src/ui/mobile.js":function(__load){
 // Keep the game at its intended scale without delaying ordinary scrolling.
@@ -4941,7 +5082,7 @@ return {GUARDED_EVENTS,blockPinch,createViewportUpdater,FONT_SCALES,applyFontSca
 },
 "src/ui/settings.js":function(__load){
 const { createDialogRequestScope, probeErrorMessage } = __load("src/ui/request-scope.js");
-const { $, esc, openDialog, toast } = __load("src/ui/common.js");
+const { $, esc, gameText, openDialog, toast } = __load("src/ui/common.js");
 const { FONT_SCALES, applyFontScale, storedFontScale } = __load("src/ui/mobile.js");
 const {
 PRESETS,
@@ -4975,7 +5116,7 @@ openDialog(
 "御前设置",
 '<label for="font-scale">正文字号</label><select id="font-scale">' +
 Object.entries(FONT_SCALES).map(([id, label]) => '<option value="' + id + '"' + (id === storedFontScale() ? " selected" : "") + ">" + label + "</option>").join("") +
-'</select><p class="muted">立即生效，只影响本机阅读。</p><p class="muted">填写叙事接口，续写本纪。密钥只用于所填地址，不随存档导出。</p><form id="settings-form"><label for="provider">服务商与地域</label><select id="provider">' +
+'</select><p class="muted">字号立即生效。</p><p class="muted">连接 API，让故事随你的选择继续。密钥只发往所填地址，不随存档导出。</p><form id="settings-form"><label for="provider">服务商与地域</label><select id="provider">' +
 Object.entries(PRESETS)
 .map(
 ([id, p]) =>
@@ -5034,12 +5175,12 @@ remember: $("#remember-key").checked,
 const explain = () => {
 const name=$("#api-model").value.trim();
 $("#model-description").textContent = ({
-'deepseek-v4-flash':'默认叙事型号。',
+'deepseek-v4-flash':'推荐用于续写故事。',
 'deepseek-v4-pro':'进阶选项，请确认账户已开通。',
-'qwen3.8-flash':'默认叙事型号，地域须与账户一致。',
+'qwen3.8-flash':'推荐用于续写故事，地域请选择账户所在地区。',
 'qwen3.7-plus':'可选型号，地域须与账户一致。',
 'qwen3.8-max':'可选型号，请确认账户已开通。',
-})[name] || '按服务商提供的名称填写，接口需支持流式回复和结构化输出。';
+})[name] || '模型名称请与服务商提供的一致。';
 };
 const presets = () => {
 const choices = modelsFor($("#provider").value);
@@ -5122,9 +5263,9 @@ if(scope.current(request))renderMetrics();
 },
 onPartial:()=>{if(scope.current(request))result.textContent='正在等待回音……';},
 });
-if(scope.current(request))result.textContent='连接成功 · '+reply.message+'。保存设置后用于续写。';
+if(scope.current(request))result.textContent='连接成功，保存设置后就能续写故事了。';
 } catch(error) {
-if(scope.current(request))result.textContent=probeErrorMessage(error,lastMetric);
+if(scope.current(request))result.textContent=gameText(probeErrorMessage(error,lastMetric));
 } finally {
 if(scope.current(request)){
 for(const [el,disabled]of controls)el.disabled=disabled;
@@ -5584,12 +5725,14 @@ return project ? "下旬，" + (project.name || project.type || "在途政务") 
 function mockNarrative(forecast) {
 return {
 chapter:sceneNarrative(forecast),
-summary: "本旬" + forecast.fate + "，诸事已据实落账",
+summary: "本旬" + forecast.fate,
 hook: mockHook(forecast),
 memorialTexts: forecast.newMemorials.map((m) => ({
 id: m.id,
 text:
-"臣谨奏：" +
+forecast.state?.settings?.prose === "modern"
+? "陛下，" + m.title + "。这件事关系到地方百姓的生活和朝廷现行的规矩，请您决定如何处理。臣等会按照您的决定去办，并把后续情况及时报上来。"
+: "臣谨奏：" +
 m.title +
 "。事关地方生计与朝廷成法，伏乞陛下裁处，臣等当依旨奉行。",
 })),
@@ -6074,36 +6217,6 @@ return sections.join("\n\n");
 
 return {parseJSONLoose,repairJSON,cleanText,validateProbe,mockHook,mockNarrative,chineseNumber,retrospective,validateTurn,validateWorld,validateTalk,extractPartialChapter};
 },
-"src/llm/mock-narrative.js":function(__load){
-const { seedNumber, random } = __load("src/core/rng.js");
-const SCENES={
-上朝:['朝班肃立，殿门外衣冠相接。','御座前的奏牍铺开，廷臣静候垂询。','殿柱映着衣影，笏板轻触袍袖。'],
-批折:['案头折匣展开，朱笔搁在砚边。','纸页随手翻过，墨香停在窗下。','值房送来文卷，御案渐渐铺满。'],
-下旨:['拟旨的黄纸铺平，词句尚须细察。','中书候在屏外，静听御前措辞。','诏稿置于案侧，烛影掠过纸边。'],
-后宫:['帘幕低垂，宫人放轻了脚步。','内殿茶香未散，屏风后传来衣声。','宫灯映着花影，廊下私语渐轻。'],
-外交:['译官捧来国书，礼臣按仪侍立。','宾馆的回牍送至，礼官候在廊前。','使节话语经译官转述，御前静听。'],
-出巡:['驿路在车前延伸，风里夹着草木气息。','御辇经过田畴，沿途景物收入眼底。','行宫窗外树影摇曳，随驾官员捧册候问。'],
-歇息:['帘外脚步渐远，案边茶盏尚温。','屏风隔去人声，御前暂得安静。','书页停在膝上，檐下风声可闻。'],
-日常:['廊下有人传递文卷，宫门开合如常。','值房灯火未歇，纸墨气息飘过长廊。','内侍垂手候命，殿中只闻衣袖轻响。'],
-};
-const SEASONS=[['春风拂过帘角，庭树新绿。','春雨落在阶前，石色微润。'],['暑气停在檐下，凉扇轻摇。','夏云漫过殿顶，庭荫渐深。'],['秋风吹动帘钩，树叶轻落。','庭中秋色渐浓，阶前微凉。'],['寒风掠过宫墙，炭火轻鸣。','冬日斜照窗棂，炉香缓缓升起。']];
-function sceneNarrative(forecast){
-let rng=seedNumber(forecast.turnId||'试读');
-const pick=pool=>{const r=random(rng);rng=r.rng;return pool[Math.floor(r.value*pool.length)];};
-const month=forecast.state?.era?.month||1,season=Math.min(3,Math.max(0,Math.floor((month-1)/3)));
-return Object.fromEntries(['朝','午','夜'].map(slot=>{
-const kind=forecast.schedule?.[slot]?.kind||'日常',results=(forecast.slotResults?.[slot]||[]).join(' ');
-const execution=(forecast.facts||[]).find(f=>f.kind==='execution'&&f.slot===slot)?.label||results;
-const difficult=/封驳|阳奉阴违|敷衍|未允|失败|不足|未成/.test(execution);
-const heavy=(forecast.facts||[]).some(f=>['death','war','miscarriage'].includes(f.kind));
-const outcome=difficult?['话语间仍有迟疑，案前的气氛未见舒展。','殿中沉默稍久，御前仍在斟酌。']:heavy?['外间消息压在心头，殿内的话语也沉了下来。','纸上消息牵动心绪，廊下的脚步显得急促。']:['御前话语渐缓，案边又添了茶香。','风穿过帘隙，方才的议论仍在心头。','笔锋稍停，内侍垂手静候。'];
-const sensitive=slot==='夜'&&(forecast.facts||[]).some(f=>['pregnancy','birth'].includes(f.kind));
-return [slot,pick(SEASONS[season])+pick(SCENES[kind]||SCENES.日常)+(sensitive?'内殿消息引人牵念，帘内的话语放得更轻。':pick(outcome))];
-}));
-}
-
-return {sceneNarrative};
-},
 "src/ui/turn-request.js":function(__load){
 const { callJSON, createBudget } = __load("src/llm/client.js");
 const { turnMessages } = __load("src/llm/prompts.js");
@@ -6147,9 +6260,10 @@ return {validateTurnNarrative,requestTurnNarrative};
 "src/llm/prompts.js":function(__load){
 const { postTitle, scenarioById } = __load("src/core/scenarios.js");
 // 文风：规则 + 范文。范文只示范笔法，人物与事件不得照搬；它们位于系统提示，
-// 整局不变，同时延长可缓存前缀。
+// 选定笔法后保持稳定，同时延长可缓存前缀。
 const STYLES = {
   court: { label: "庙堂", rules: "端正克制，重礼仪、言外之意与施政得失。", sample: "辰正，百官依班而立。户部尚书出班奏事，言辞恭谨，句句留有余地。御座上没有立刻答话，殿中便静得能听见笏板相触。良久，一句“着该部详议”落下，几位老臣交换了眼色，都明白这事今日不会有定论。" },
+  modern: { label: "现代文", rules: "正文、人物对话、面谈、奏折、诏书和国书统一使用现代汉语白话，句意清楚，对话自然；奏折说清事情、理由与请求。保留古代称谓、官职与礼仪，不引入现代科技、现实机构或网络流行语。", sample: "早朝结束，皇帝留下户部尚书，问起地方送来的奏折。尚书说：「陛下，情况还不够清楚，臣想先核对账目，再请您定夺。」皇帝合上折子：「先查清楚，别让百姓一直等着。」尚书应了一声，收好折子退出殿外。" },
   cold: { label: "冷峻", rules: "短句、冷笔，少评语，写出权力代价。", sample: "折子递上来。准了。三个字，一州的税便少了两成。户部的人退下时没有抬头。他知道，少的这两成，明年要从别处找补。窗外起风，檐角铁马响了一声，又停了。" },
   palace: { label: "宫闱", rules: "细写人物言行与情感，亲密场景止于帘落。", sample: "她把茶盏往前推了半寸，手指在盏沿停了停，才收回袖中。“陛下近日睡得晚。”话说得轻，眼却一直落在案上那叠折子上。宫灯一晃，帘外有人放轻了脚步。" },
   history: { label: "野史", rules: "以逸闻写人情世态，轻巧而不使用现代词。", sample: "坊间传说，那日御膳房多备了一碟酱瓜，皇帝竟就着它多用了半碗粥。管膳的太监得了赏，逢人便讲，讲到后来，酱瓜成了贡品，酱园的掌柜也挂上了御笔的匾。" },
@@ -6159,7 +6273,7 @@ const STYLES = {
   annals: { label: "正史", rules: "编年记事体，冷静客观，先书时日后书事，不加渲染；段末可有一句“史臣曰”式的短评。", sample: "是旬，上御门听政，户部奏北地旱，诏议蠲免。午，召兵部尚书问边事，尚书对以边备粗安，惟粮道艰远。夜，还宫。史臣曰：岁旱而议蠲，忧边而问粮，可谓知本矣。" },
   intrigue: { label: "权谋", rules: "重算计与暗线，对话多机锋、话里有话，每段至少埋一处伏笔。", sample: "首辅笑着替同僚圆了场，转身时却把那份名单收进了袖里。“此事不急，”他说，“等吏部的考语下来再议。”在座的人都听懂了——考语，是他门生写的。" },
   harem: { label: "宫斗", rules: "细写位分、眼色、赏赐与站队，杀机藏于礼数，不写血腥与身体细节。", sample: "赏下来的是一对玉镯，成色比昭仪宫里那对还好半分。她笑着谢恩，转手便叫人把镯子供在了佛前。“这样的恩典，”她对贴身宫女说，“戴在手上，是要招人眼的。”" },
-  strange: { label: "志怪", rules: "天象、谶纬、异兆入叙事，营造幽异气氛，但异兆不改变引擎结果。", sample: "是夜钦天监奏，荧惑入南斗，光芒赤如炭。同时京郊有农人报称，井水忽甜三日。两事并呈御前，殿中无人敢先开口，烛火却无风自动了一下。" },
+  strange: { label: "志怪", rules: "以天象、传说和异兆营造幽异气氛，异兆不决定事情成败。", sample: "是夜钦天监奏，荧惑入南斗，光芒赤如炭。同时京郊有农人报称，井水忽甜三日。两事并呈御前，殿中无人敢先开口，烛火却无风自动了一下。" },
   gazette: { label: "邸报", rules: "公文体，条陈式短段，多用“奉旨”“着即”“该部知道”等官腔。", sample: "一、户部题：北地被旱，请蠲免本年钱粮三成。奉旨：着即会议具奏。一、兵部题：边镇缺饷，请拨银接济。奉旨：该部知道。一、礼部题：恭请秋祭事宜。奉旨：依议。" },
   farce: { label: "戏说", rules: "诙谐轻快，允许温和的喜剧化与夸张，人物仍守礼数，不用网络流行语与现代词。", sample: "户部尚书算盘打得噼啪响，算到一半忽然停了，抬头望天，又低头看账，最后把算盘轻轻放下：“陛下，臣算了三遍，国库里的银子，好像自己长了腿。”" },
   frontier: { label: "边塞", rules: "苍凉开阔，写风物、兵民与远方消息，适合边事、亲征与出巡。", sample: "关外的风从早吹到晚，旗子一直没垂下来过。守卒说，今年的雁回得早，怕是冬天要来得急。驿道上一骑远远奔来，扬起的尘土在夕阳里拖得很长。" },
@@ -6230,10 +6344,11 @@ function worldRules(state) {
   const style = STYLES[state.settings.prose] || STYLES.court,
     pov = POVS[state.settings.pov] || POVS.third;
   const sc = scenarioById(state.scenario);
+  const modern = style === STYLES.modern;
   const frame = sc
     ? `你是「${state.dynasty}」朝的叙事引擎。本局以${sc.year}${sc.title.split(" · ")[0]}即位之初的史实开局，官职、地名用该朝称谓（见王朝设定）。史实只用于人物性格、关系与背景；本局自开局起已偏离史实，生死、成败、任免一律以引擎结算为准，不得按史书预言或补写结局，也不得写开局之后的史事。`
     : `你是架空王朝「${state.dynasty}」的叙事引擎，制度近似明清。`;
-  return `${frame}只输出一个 JSON 对象。\n铁律：引擎记账，模型叙事。所有钱粮、人物、派系、健康、受孕、生育、死亡、升迁、战争胜负、执行度由结算表决定，你不得追加或改写硬结果，不得另给数字。名册姓名一字不改，大臣称陛下、自称臣，妃嫔自称臣妾。人物各有利益。文风「${style.label}」：${style.rules}${pov.rules}\n【文风范文（只学笔法，不照搬人物与事件）】${style.sample}\n白描，禁用嘴角勾起、眼中闪过一丝、现代词；对话用「」。亲密场面点到为止，禁止描写性行为或身体细节。${state.settings.freedom === "free" ? "随心所欲：宽容传奇，仍以引擎结果为准。" : state.settings.freedom === "real" ? "写实：成败有代价，人物不必讨好皇帝。" : "传奇：礼制内的戏剧性，不替玩家决定。"}`;
+  return `${frame}只输出一个 JSON 对象。\n铁律：引擎记账，模型叙事。所有钱粮、人物、派系、健康、受孕、生育、死亡、升迁、战争胜负、执行度由结算表决定，你不得追加或改写硬结果，不得另给数字。名册姓名一字不改，大臣称陛下、自称臣，妃嫔自称臣妾。人物各有利益。文风「${style.label}」：${style.rules}${pov.rules}\n【文风范文（只学笔法，不照搬人物与事件）】${style.sample}\n白描，禁用嘴角勾起、眼中闪过一丝${modern ? "" : "、现代词"}；对话用「」。亲密场面点到为止，禁止描写性行为或身体细节。${state.settings.freedom === "free" ? "随心所欲：宽容传奇，仍以引擎结果为准。" : state.settings.freedom === "real" ? "写实：成败有代价，人物不必讨好皇帝。" : "传奇：礼制内的戏剧性，不替玩家决定。"}`;
 }
 function roster(state) {
   return state.court.officials
@@ -6276,6 +6391,7 @@ function systemPrompt(state) {
   return worldRules(state) + "\n" + TASK_RULES.replace("{{LENGTH}}", (LENGTHS[state.settings.length] || LENGTHS.standard).words);
 }
 const TASK_RULES = `【叙事守则】死亡、怀孕、生产、小产、任免、战果、执行度只在结算表列出时才可写成本旬发生；其余只能作回忆或传闻，并用“曾”“昔”“当年”标明。不写结算表以外的金额、人数、年龄。人物反应仅限官员，须在本章出场，每人好感-5到5，合计绝对值不超过10。宏愿证据须逐字引用本章原句并含该目标全部关键词。长期事实只记本章写明、日后仍成立的事。
+标题、正文、奏折、对白只写游戏中的人和事，禁用“据实落账”“引擎结算”“模型叙事”等开发说明，不向玩家解释生成或校验过程。
 【正文任务】把本旬写成「朝」「午」「夜」三段，每段{{LENGTH}}字，空槽可略写。必须表现结算表的执行度与成败。正文只写故事，不抄结算条目；起居注会另行展示结算。廷议按名单立场写。为新奏报写60–120字正文。风闻只写无关痛痒的市井传言。
 章末 hook 写一句 30 字内的下旬伏笔，只能取自未结奏报、在途政务或新近事实，用“恐”“将”“未知”等未定语气，不得断言结果。
 正文输出：{"chapter":{"朝":"","午":"","夜":""},"summary":"30字内","hook":"","memorialTexts":[{"id":"","text":""}],"reactions":[{"name":"官员全名","favorDelta":0,"mood":"","note":""}],"rumors":[],"ambitionEvidence":[{"id":"","objectiveId":"","evidence":""}],"factUpdates":[{"subject":"","key":"","value":"","reason":""}]}
@@ -9900,7 +10016,7 @@ return s;
 return {applyWorld};
 },
 "src/ui/render.js":function(__load){
-const { esc } = __load("src/ui/common.js");
+const { esc, gameText } = __load("src/ui/common.js");
 const {
 memorialAssignments,
 memorialCounts,
@@ -10048,17 +10164,9 @@ g.stats.map(draw).join("") +
 "</div>"
 );
 }
-function ledgerHTML(entries) {
-return (
-"<ul>" +
-entries
-.map(
-(e) =>
-"<li>" +
-esc(e.source) +
-"：" +
-esc(
-{
+function ledgerLabel(path) {
+const key = path.split(".").at(-1);
+return {
 treasury: "国库",
 arrears: "欠饷与积欠",
 privyArrears: "内帑积欠",
@@ -10096,11 +10204,18 @@ round: "战役旬数",
 threat: "边患",
 灾情: "灾情",
 disaster: "灾情",
-}[e.path.split(".").at(-1)] ||
-(/[\u3400-\u9fff]/.test(e.path.split(".").at(-1))
-? e.path.split(".").at(-1)
-: "相关数值"),
-) +
+}[key] || (/[\u3400-\u9fff]/.test(key) ? key : "其他变化");
+}
+function ledgerHTML(entries) {
+return (
+"<ul>" +
+entries
+.map(
+(e) =>
+"<li>" +
+esc(gameText(e.source)) +
+"：" +
+esc(ledgerLabel(e.path)) +
 ' <span class="' +
 ((e.path === "nation.arrears" ? e.delta <= 0 : e.delta >= 0)
 ? "positive"
@@ -10116,9 +10231,17 @@ num(e.delta) +
 }
 function chapterTitle(summary) {
 return String(summary || "").replace(
-/^(本旬(?:大凶|凶|平常|吉|大吉))，诸事已据实落账$/,
+/^(本旬(?:大凶|凶|不顺|平常|顺遂|吉|大吉))，诸事已据实落账[。]?$/,
 "$1",
-);
+).replace(/^本旬诸事已入起居注$/, "本旬纪事");
+}
+function chapterNotes(h) {
+// Keep diagnostics in saves, outside the chronicle.
+const diagnostic = new RegExp("^(?:(?:朝|午|夜|附文)(?:" +
+"中无结算或状态依据的金额/人数/年龄已删除|中没有对应结算的.*陈述已删除|" +
+"执行度由.*改为.*|段经核对后无可保留文字，以平实叙述补足)|" +
+"亲密场景已收束为含蓄叙述。|未知人物反应未采用。)$");
+return (h.notes || []).filter((n) => !diagnostic.test(n)).map(gameText);
 }
 function chapterHTML(h, ambitions = []) {
 return (
@@ -10150,11 +10273,11 @@ h.entries.length +
 Object.entries(h.settlement?.slotResults || {})
 .map(
 ([slot, results]) =>
-"<p>" + slot + "：" + results.map(esc).join("；") + "</p>",
+"<p>" + slot + "：" + results.map((r) => esc(gameText(r))).join("；") + "</p>",
 )
 .join("") +
 ledgerHTML(h.entries) +
-(h.notes || []).map((n) => "<p>" + esc(n) + "</p>").join("") +
+chapterNotes(h).map((n) => "<p>" + esc(n) + "</p>").join("") +
 "</div></details><details><summary>风闻 " +
 (h.rumors?.length || 0) +
 ' 条</summary><div class="chapter-detail">' +
@@ -10215,7 +10338,7 @@ pending.length +
 " 本</h3>" +
 (pending.length
 ? list(pending)
-: '<p class="muted">本旬奏报已拟批，可起驾落账。</p>') +
+: '<p class="muted">奏报已批好，可以起驾了。</p>') +
 "</section>" +
 (queued.length
 ? '<section class="memorial-group"><h3>已拟批 · ' +
@@ -10287,13 +10410,13 @@ function introHTML() {
 return (
 '<div class="intro"><div class="eyebrow">架空帝王 · 文字经营</div><h1>御 极</h1><p class="motto">一人之志，天下之重。</p><div class' +
 '="rule"></div><p>朱笔落下，是一人心事，亦是万民生计。</p><p>在朝堂与宫闱之间，写下你的本纪。</p><div class="start-actions"><button class="primar' +
-'y" data-command="new">登基开局</button><button data-command="saves">续读旧卷</button></div><small>可接入叙事接口，也可先试读一局。</sm' +
-'all><div class="onboarding">朝、午、夜，三时由你安排。<br>阅毕奏报，便可起驾；也可歇息一旬。</div></div>'
+'y" data-command="new">登基开局</button><button data-command="saves">续读旧卷</button></div><small>先试读一局，也可连接 API 体验更丰富的故事。</sm' +
+'all><div class="onboarding">朝、午、夜，三时由你安排。<br>批好奏报，便可起驾；也可歇息一旬。</div></div>'
 );
 }
 function renderApp(
 s,
-{ readOnly = false, busy = false, saveStatus = "", canRepeat = false } = {},
+{ readOnly = false, busy = false, saveStatus = "", canRepeat = false, scheduleCollapsed = false } = {},
 ) {
 const last = s?.history.at(-1),
 locked = readOnly || busy || !!s?.ending || !!s?.pending,
@@ -10360,9 +10483,21 @@ metricsHTML(s, true) +
 actionsHTML(s, true) +
 '</aside><main class="desk">' +
 (s
-? '<section class="planning" aria-label="本旬日程"><div class="planning-title"><h2>本旬日程</h2>' +
+? '<section class="planning" aria-label="本旬日程"><details id="schedule-fold" class="planning-fold"' +
+(scheduleCollapsed ? "" : " open") +
+'><summary class="planning-title"><span class="planning-heading">本旬日程</span>' +
 energyHTML(s) +
-'</div><div class="schedule">' +
+'<span class="planning-overview">' +
+["朝", "午", "夜"].map((slot) => {
+const a = s.schedule[slot], label = a
+? (s.regency && a.kind === "私下行事" ? "经筵" : a.kind) +
+(a.memorials ? " · " + a.memorials.length + "本" : "")
+: "待安排";
+return '<span title="' + esc(slot + "：" + label) + '"><small>' + slot +
+'</small><strong>' + esc(label) + "</strong></span>";
+}).join("") +
+'</span><span class="planning-fold-label"><span class="when-open">收起日程 ▴</span>' +
+'<span class="when-closed">展开日程 ▾</span></span></summary><div class="schedule">' +
 ["朝", "午", "夜"]
 .map((slot) => {
 const a = s.schedule[slot],
@@ -10423,7 +10558,7 @@ slot +
 );
 })
 .join("") +
-'</div><div class="turnbar"><div class="estimate"><span>' +
+'</div></details><div class="turnbar"><div class="estimate"><span>' +
 (money ? "预估：" + money : "本旬暂无额外开销") +
 "</span>" +
 (estimate.executions.length
@@ -10451,7 +10586,7 @@ e.excess +
 (busy
 ? "正在续写…"
 : s.pending
-? "重试本旬叙事"
+? "继续本旬故事"
 : scheduled
 ? "起驾"
 : "歇息") +
@@ -10461,11 +10596,11 @@ e.excess +
 ? '<p class="warning">此卷暂不可改写，旧卷已保留。请先导出备份。</p>'
 : "") +
 (s?.pending
-? '<div class="warning">本旬待续 · 天命 ' +
+? '<div class="warning">故事还没写完 · 天命 ' +
 s.pending.forecast.die +
-'，钱粮与成败已定。<button data-command="settle" ' +
+'。重试不改变本旬结果。<button data-command="settle" ' +
 (busy ? "disabled" : "") +
-">先记入起居注</button></div>"
+">略过故事，进入下旬</button></div>"
 : "") +
 (s?.ending
 ? '<div class="warning">' +
@@ -10480,10 +10615,10 @@ esc(s.ending.cause) +
 '<article class="scroll" id="scroll" tabindex="0" aria-label="本旬正文章节">' +
 (last ? chapterHTML(last, s.ambitions) : opening) +
 '<div id="stream" class="streaming" aria-live="polite"></div></article><div class="saved-status">' +
-esc(
+esc(gameText(
 saveStatus ||
-(s ? (s.settings.demo ? "试读中" : "本纪续写中") : "御案待启。"),
-) +
+(s ? (s.settings.demo ? "试读中" : "御案待命") : "御案待启。"),
+)) +
 '</div></main><aside class="sidebar" aria-label="奏报匣"><div class="side-title"><h2>奏报匣</h2><small>' +
 counts.pending +
 " 本待批 · " +
@@ -10507,7 +10642,7 @@ mobileNavHTML(s)
 );
 }
 
-return {num,date,actionButton,actionsHTML,energyHTML,metricsHTML,ledgerHTML,chapterTitle,chapterHTML,memorialHTML,memorialListHTML,mobileNavHTML,ambitionsHTML,introHTML,renderApp};
+return {num,date,actionButton,actionsHTML,energyHTML,metricsHTML,ledgerLabel,ledgerHTML,chapterTitle,chapterNotes,chapterHTML,memorialHTML,memorialListHTML,mobileNavHTML,ambitionsHTML,introHTML,renderApp};
 },
 "src/ui/memorial-state.js":function(__load){
 const { memorialDecision } = __load("src/core/memorial-decisions.js");
@@ -10724,7 +10859,7 @@ if (!available.some((m) => m.id === startId))
 throw new Error("此折已拟批，请从原日程改批。");
 ids = [startId];
 }
-if (!ids.length) throw new Error("本旬奏报均已拟批，起驾后落账。");
+if (!ids.length) throw new Error("奏报已批好，可以起驾了。");
 const choices = {},
 remarks = {};
 for (const id of ids) {
@@ -10808,7 +10943,7 @@ esc(m.title) +
 esc(assigned.slot) +
 "间 · " +
 esc(label) +
-"</p><p>此折已收入本旬日程，起驾时一并落账，不再重复列入待批。</p>" +
+"</p><p>这本奏折已批好，起驾后便会传旨。</p>" +
 (assigned.remark
 ? '<p class="saved-remark">朱批：' + esc(assigned.remark) + "</p>"
 : "") +
@@ -11706,7 +11841,7 @@ esc(f.demand) +
 "</small></div>",
 )
 .join("") +
-'</div></div><h3 class="section-spacer">三省六部 · 实职名册</h3>' +
+'</div></div><h3 class="section-spacer">官职名册</h3>' +
 fold(
 s.court.posts.map(
 (p) =>
@@ -11927,8 +12062,8 @@ num(s.nation.treasury) +
 num(s.nation.privy) +
 ' 万两</p></div><div class="card"><h3>粮储</h3><p>' +
 num(s.nation.grain) +
-' 万石</p><p>三年用粮仓容 '+num(grainBudget(s).storageCapacity)+' 万石，超额陈粮每年霉变一成。</p></div><div class="card"><h3>年度预算</h3><p>' +
-num(annualBudget(s)) + ' 万两</p><p>俸禄、军饷合计一年的开支。余银超过两年预算，每月超额冗费为 ' +
+' 万石</p><p>仓库存粮上限 '+num(grainBudget(s).storageCapacity)+' 万石，超出的陈粮每年损耗三成。</p></div><div class="card"><h3>年度预算</h3><p>' +
+num(annualBudget(s)) + ' 万两</p><p>一年的俸禄与军饷。余银超过两年预算，超出部分每月额外耗费 ' +
 num(wasteQuote(s).rate * 100) + '%。</p></div><div class="card"><h3>欠饷与积欠</h3><p>' +
 num(s.nation.arrears || 0) + ' 万两</p><p>国库不足，便记作欠款；进项先补旧欠。</p></div><div class="card"><h3>内帑积欠</h3><p>'+num(s.nation.privyArrears||0)+' 万两</p><p>皇庄盐课每月入三万两，先补旧欠再付宫用。</p></div><div class="card"><h3>缺粮积欠</h3><p>'+num(s.nation.grainArrears||0)+' 万石</p></div></div><h3 class="section-spacer">近月钱粮明细</h3>' +
 ledgerHTML(entries.filter((e) => e.turn >= s.turn - 3).slice(-60)) +
@@ -11945,7 +12080,7 @@ esc(p.edictType) +
 (p.done ? "已结" : "在途") +
 "</h3><p>" +
 esc(p.office) +
-" · 兑现 " +
+" · 落实 " +
 Math.round(p.execRate * 100) +
 "% · 支出 " +
 p.cost +

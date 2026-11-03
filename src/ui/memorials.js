@@ -47,7 +47,7 @@ export function createMemorialSession(
       throw new Error("此折已拟批，请从原日程改批。");
     ids = [startId];
   }
-  if (!ids.length) throw new Error("本旬奏报均已拟批，起驾后落账。");
+  if (!ids.length) throw new Error("奏报已批好，可以起驾了。");
   const choices = {},
     remarks = {};
   for (const id of ids) {
@@ -131,7 +131,7 @@ export function scheduledMemorialDialog(s, id) {
       esc(assigned.slot) +
       "间 · " +
       esc(label) +
-      "</p><p>此折已收入本旬日程，起驾时一并落账，不再重复列入待批。</p>" +
+      "</p><p>这本奏折已批好，起驾后便会传旨。</p>" +
       (assigned.remark
         ? '<p class="saved-remark">朱批：' + esc(assigned.remark) + "</p>"
         : "") +

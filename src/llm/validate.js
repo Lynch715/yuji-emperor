@@ -118,12 +118,14 @@ export function mockHook(forecast) {
 export function mockNarrative(forecast) {
   return {
     chapter:sceneNarrative(forecast),
-    summary: "本旬" + forecast.fate + "，诸事已据实落账",
+    summary: "本旬" + forecast.fate,
     hook: mockHook(forecast),
     memorialTexts: forecast.newMemorials.map((m) => ({
       id: m.id,
       text:
-        "臣谨奏：" +
+        forecast.state?.settings?.prose === "modern"
+        ? "陛下，" + m.title + "。这件事关系到地方百姓的生活和朝廷现行的规矩，请您决定如何处理。臣等会按照您的决定去办，并把后续情况及时报上来。"
+        : "臣谨奏：" +
         m.title +
         "。事关地方生计与朝廷成法，伏乞陛下裁处，臣等当依旨奉行。",
     })),
