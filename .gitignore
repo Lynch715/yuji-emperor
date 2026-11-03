@@ -31,3 +31,4 @@ qa/stage9-legacy/*
 !qa/stage9-legacy/common.js
 !qa/RELEASE.json
 《御极》皇帝模拟器：游戏框架与 Codex 开发提示词.md
+index.html.*.tmp

@@ -1,4 +1,4 @@
-import { readFile, writeFile } from "node:fs/promises";
+import { readFile, writeFile, rename } from "node:fs/promises";
 import { resolve, relative, dirname } from "node:path";
 const root = resolve(import.meta.dirname, ".."),
   modules = new Map();
@@ -59,12 +59,15 @@ const js =
   ");})();";
 const template = await readFile(resolve(root, "src/ui/shell.html"), "utf8"),
   css = await readFile(resolve(root, "src/ui/style.css"), "utf8");
+// 先写临时文件再原子改名：测试并行重建时，其他测试不会读到写了一半的页面。
+const temporary = resolve(root, "index.html." + process.pid + ".tmp");
 await writeFile(
-  resolve(root, "index.html"),
+  temporary,
   template
     .replace("/* INLINE_CSS */", compactCSS(css))
     .replace("/* INLINE_JS */", js.replace(/<\/script/gi, "<\\/script")),
 );
+await rename(temporary, resolve(root, "index.html"));
 console.log(
   "已构建 index.html · " +
     modules.size +
