@@ -165,5 +165,123 @@
       "tribute-books"
     ]
   },
-  "scopedPassed": false
+  "scopedPassed": false,
+  "artifactRetention": {
+    "tracked": "summary.json only",
+    "rawOutputs": "local-only; files kept on disk, removed from Git tracking",
+    "files": [
+      {
+        "path": "qa/batch4/after.json",
+        "bytes": 1636983,
+        "sha256": "5864a68104cd3f37bac0198b9e26dca24f784ce2405223288ce5adab534c728b"
+      },
+      {
+        "path": "qa/batch4/browser.json",
+        "bytes": 861,
+        "sha256": "26d91bafd905f69e01c2e1918ce4e87bda0deb077121b8fa162b2e37e72af368"
+      },
+      {
+        "path": "qa/batch4/diversity.json",
+        "bytes": 732,
+        "sha256": "24c484d8529c191bc41a15b878a81c85855750725c89ddcfe7221c9567dcdc6a"
+      },
+      {
+        "path": "qa/batch4/grain.json",
+        "bytes": 457,
+        "sha256": "55c463d65ea110c201a43b23ab05c26698b0d1446d006d59dd3fbf43b097a681"
+      },
+      {
+        "path": "qa/batch4/simulate.json",
+        "bytes": 78615,
+        "sha256": "3fe071de88189d1309a4c81889ada5df96eabb8cf39fa4956dd110994e9eddcb"
+      },
+      {
+        "path": "qa/batch4/tdd.json",
+        "bytes": 1685,
+        "sha256": "4dabf4fd9c54600465de0ead4c48b2ea45e9a5455b94a50e18f8b0af6f758ab6"
+      },
+      {
+        "path": "qa/batch4/tests.log",
+        "bytes": 76810,
+        "sha256": "bf51b45c1942d50f7e11a71499099ad8d6379789a0f591878074de281b578df2"
+      }
+    ]
+  },
+  "tdd": {
+    "note": "每条目首次失败均在改该条目代码之前运行，原始输出见本线程工具记录；此文件为摘要，不伪造原始日志。",
+    "cases": [
+      {
+        "item": "C2",
+        "test": "C2 audit3先急件一律准奏30年不超仓容1.2倍，连灾减产且超仓年霉变三成",
+        "initialFailure": "季粮/季军粮=26.00756756756757，超出1.2–1.5"
+      },
+      {
+        "item": "D1",
+        "test": "D1 三十种国势模板覆盖灾边亏欠贪举河盐宗言使，50年标题至少二十五种且无灾不请赈",
+        "initialFailure": "ENOENT: src/core/memorial-templates.js"
+      },
+      {
+        "item": "D2",
+        "test": "D2 试读随回合季节场景与结算组句，固定回合可重试且不编数字硬结果",
+        "initialFailure": "旧正文固定，不能通过场景/回合变化断言"
+      },
+      {
+        "item": "D3",
+        "test": "D3 每本独立准驳朱批按fromId落账，正则保留责成并识别不必嘉奖等否定",
+        "initialFailure": "对象决定抛“无此处置选项”；UI remarks 未定义；VERSION=6；分类无小枚举"
+      },
+      {
+        "item": "D4",
+        "test": "D4 同朝同档连续封卷谥号庙号不重复，跨朝独立且重封幂等",
+        "initialFailure": "连续两位同档谥号“平”重复"
+      },
+      {
+        "item": "D5",
+        "test": "D5 本纪五段由本朝台账生成，年度取最大事件补叙且没有循环段落",
+        "initialFailure": "段落数1≠5"
+      },
+      {
+        "item": "D1补",
+        "test": "D1 空仓核报粮缺，不请求翻晒搬运不存在的库存",
+        "initialFailure": "空仓仍出现grain-air，而非grain-shortage"
+      }
+    ]
+  },
+  "browser": {
+    "origin": "http://localhost:4189",
+    "browser": "Codex In-app Browser",
+    "desktop": true,
+    "mobile": {
+      "width": 360,
+      "documentScrollWidth": 360,
+      "reviewControlMinWidth": 44,
+      "reviewControlMinHeight": 44
+    },
+    "perMemorial": {
+      "remarks": [
+        "勤勉可嘉",
+        "严加申饬",
+        "责成查明，不必嘉奖"
+      ],
+      "persistedAfterReload": true,
+      "ledgerFavorChanges": [
+        2,
+        -3
+      ]
+    },
+    "legacyPending": {
+      "fixture": "test/fixtures/v6-pending.json",
+      "originalEngineCommit": "01cb56860b6739f7b8d863f44716ea2fc9167992",
+      "beforeDie": 6,
+      "afterDie": 6,
+      "treasuryAfterCommit": 476,
+      "grainAfterCommit": 650,
+      "persistedAfterReload": true
+    },
+    "consoleErrors": [],
+    "screenshots": [
+      "output/batch4/per-memorial-360.jpg",
+      "output/batch4/v6-pending-committed-360.jpg"
+    ]
+  }
 }

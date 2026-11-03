@@ -13,7 +13,7 @@
 | C0-1 | `src/core/foreign.js` 校准方向外邦压力；`scripts/simulate.mjs` 按真实新生边警线程计入寇；`scripts/stage8-1-balance.mjs` 新增 120–200 次硬断言；`test/batch3-c0.test.js`；`test/batch2-engine.test.js` 将旧友好下降样本明确为正式婚盟；重建 `index.html` | **C0-1 中性通好边患月增0.8至1.0，正式婚盟和朝贡可下降且保持纯函数**；**C0-1 balance保留入寇120至200次硬断言，模拟按真实边警线程计数** | 两条通过；中性月增 0.9、盟约中性 −0.15；四组入寇 159 / 153 / 176 / 159，入寇断言全部通过。亡国率门槛仍失败。 |
 | C0-2 | `src/core/foreign.js` 用既有线程记录连续困局，取消随机亡国，九旬出三选项急报、十八旬硬上限，恢复可重置；`src/core/events.js` 处理急报逾期与危机解除；`test/batch3-c0.test.js`；重建 `index.html` | **C0-2 危机连续三个月才出京畿民变急报，同旬重复检查不计时不掷骰**；**C0-2 京畿急报逾期或危机持续六个月才亡国，已处置仍须恢复国势**；**C0-2 民心或国库恢复即中断连续危机，存取后继续计时且自由模式不亡国** | 三条通过；同旬幂等、不消耗 RNG、纯函数、存取延续、自由模式、恢复重置、处理后仍困顿的边界均覆盖。200 年全部 13 次亡国来自六个月持续困局。 |
 | C0-3 | `scripts/simulate.mjs` 提取可测的 `makeSimulationSchedule`，减赋随机一州、批折最多六本、选项同时检查钱粮内帑且预留 8 万两；`test/batch3-c0.test.js` | **C0-3 模拟减赋随机指定一州，批折最多六本且各资源可负担并留八万两** | 通过；只抽可负担选项，累计扣支出，不能负粮或负内帑，无选项则跳过，输入状态不变。 |
-| C0 门槛 | `test/core.test.js` 恢复严格亡国率断言；`CHANGELOG.md`、`docs/ACCEPTANCE.md`、本文件；`qa/batch3/c0-balance.json`、`qa/batch3/c0-summary.json` 留存基线 | **200-year seeded random strategy stays bounded and includes endings**；四种子的 `economicChecks().collapseRate` | **失败并停止**。单测亡国率 57.14%；四种子亡国率 57.14% / 62.5% / 0% / 80%，均未在 10%–35%。未删种子、未放宽门槛。 |
+| C0 门槛 | `test/core.test.js` 恢复严格亡国率断言；`CHANGELOG.md`、`docs/ACCEPTANCE.md`、本文件；[批次 3 摘要](../qa/batch3/summary.json) 的 `c0` 收录基线；原始 `c0-balance.json` / `c0-summary.json` 仅本地留存 | **200-year seeded random strategy stays bounded and includes endings**；四种子的 `economicChecks().collapseRate` | **失败并停止**。单测亡国率 57.14%；四种子亡国率 57.14% / 62.5% / 0% / 80%，均未在 10%–35%。未删种子、未放宽门槛。 |
 | C1–C9 | 无改动 | 未添加、未运行这些条目的新断言 | **未开始**：用户明确要求 C0 不能恢复亡国率则停止，不继续 C1。 |
 
 ## 规则与 DESIGN 差异的理由
@@ -41,7 +41,7 @@
 - 六条新回归首轮 6/6 失败，修复后 6/6 通过；本地输出 `qa/batch3/c0-red-tests.log`、`c0-target-tests.log`。
 - `npm test`：**192/193 通过，1 失败，0 跳过，退出码 1**。唯一失败为上述 200 年单测的严格亡国率断言。此前迁移、待续预演 / RNG、幂等、署名、摄政等既有回归均通过。
 - `npm run simulate`：**200 年 / 7,200 旬，退出码 0**。
-- `npm run balance`：**passed=false，退出码 1**；完整结果存入 [C0 原始基线](https://github.com/Lynch715/yuji-emperor/blob/codex/audit-batch2-engine/qa/batch3/c0-balance.json)，结果摘要见 [C0 摘要](https://github.com/Lynch715/yuji-emperor/blob/codex/audit-batch2-engine/qa/batch3/c0-summary.json)。
+- `npm run balance`：**passed=false，退出码 1**；结果摘要见 [批次 3 摘要](../qa/batch3/summary.json) 的 `c0` 字段；`qa/batch3/c0-balance.json`、`c0-summary.json` 原始文件仅本地留存。
 - `npm run build`：40 模块，脚本 902,433 字节，产出单文件 `index.html`。
 - 新版 Codex In-app Browser 经恢复流程新建 localhost 页面，在独立空卷导入合成样本；360×900 实走京畿急报三选项、罪己诏入排程、推进、刷新保留第 10 章 / 原骰 6。民心 17→21、皇威 58→52；无横向溢出、所查有效控件 ≥44px、无控制台错误。截图本地 `output/batch3/c0-capital-warning-360.png`。没有覆盖用户卷位，没有真实付费接口或实体手机验收。
 

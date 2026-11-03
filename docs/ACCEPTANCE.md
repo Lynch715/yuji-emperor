@@ -1,5 +1,13 @@
 # 施工与验收记录
 
+## PR #3 验收附件精简（2026-11-03）
+
+`qa/batch2`–`qa/batch5` 仅跟踪各批的 `summary.json`。37 份原始报告、日志及验收辅助文件（共 8,989,212 字节）已取消 Git 跟踪，**全部原文件仍留本地，未删除**。各摘要的 `artifactRetention` 列出原文件路径、大小和 SHA256；原始文件路径仅供本地查找，不作为仓库下载链接。
+
+C0 的历史摘要合入批次 3 的 `c0` 字段；批次 4 的首轮失败证据与浏览器结果、批次 5 的格式化固定哈希与浏览器结果合入对应摘要。E3 回归直接读取摘要中的原固定哈希，不依赖本地原始文件。以下各批的数值、原失败项和验收结论保持原样。
+
+清理后复验 `npm test` **261/261 通过，0 失败 / 跳过**，`npm run simulate` **200 年 / 7200 旬，退出码 0**；另从 Git 索引导出不含原始附件的干净文件快照，E3 回归通过。37 个原始文件逐一核对 SHA256 与清理前相同，运行用 `index.html` 字节不变。结果见 [批次 5 摘要](../qa/batch5/summary.json) 的 `artifactCleanup`，本次完整日志亦仅本地留存。
+
 ## 批次 5：E1–E4（2026-11-03）
 
 从 `origin/main` 的 `fe84b59` 新建 `codex/audit-batch5-engineering`。按用户答复先合入批次 2–4（`41605e9`），合并点 `d7e971c` 为本批基线；本批不修数值、不放宽 balance。存档结构依 AGENTS 升 **v8**，IDB schema **v3**。审计表的旧构建 350KB 目标按本轮用户明确的 **<400KB** 执行。逐项文件 → 测试名 → 结果及偏离理由见 [PR 说明](PR-BATCH5-ENGINEERING.md)。
@@ -17,9 +25,9 @@
 | 200 年完整 JSON 导出 | 84,048,441 | 保留完整各卷，非主档体积 |
 | IDB 已封存分卷 / 最终面谈记录 | 398 卷 / 35 条 | 只追加 / 最近 36 旬 |
 
-前 **1000 旬的每一旬** 都完整导出，导入全新存储再读回，整个状态的 SHA256 与导出前一致，合计 **1000 次**。另将原 100 旬回归扩展到 **1000 旬**，导出 / 读入后 1000 章逐章一致，无重复 receipt。原始报告见 [storage.json](../qa/batch5/storage.json)、[长跑日志](../qa/batch5/storage.log)。
+前 **1000 旬的每一旬** 都完整导出，导入全新存储再读回，整个状态的 SHA256 与导出前一致，合计 **1000 次**。另将原 100 旬回归扩展到 **1000 旬**，导出 / 读入后 1000 章逐章一致，无重复 receipt。结果见 [批次 5 摘要](../qa/batch5/summary.json) 的 `storage`；原始 `storage.json`、`storage.log` 仅本地留存。
 
-第一轮 7200 旬实测发现 pending 恢复副本 **1,360,499** 字节超标，见 [差量编码前](../qa/batch5/storage-before-delta.json)。随后先补「E1 待续恢复副本不复制未变核心，读回后原骰和预演账目一致」的失败测试，加入仅用于内部恢复副本的差量编码，完整重跑相同 7200 旬 / 1000 次往返，才取得上表。正常导出保持完整 forecast，不要求外部导入方识别内部差量。
+第一轮 7200 旬实测发现 pending 恢复副本 **1,360,499** 字节超标，见 [批次 5 摘要](../qa/batch5/summary.json) 的 `storageBeforeDelta`（原始 `storage-before-delta.json` 仅本地留存）。随后先补「E1 待续恢复副本不复制未变核心，读回后原骰和预演账目一致」的失败测试，加入仅用于内部恢复副本的差量编码，完整重跑相同 7200 旬 / 1000 次往返，才取得上表。正常导出保持完整 forecast，不要求外部导入方识别内部差量。
 
 主档只有最近 18–36 旬及 `volumeIndex`，从 IDB 读回并校验各卷后恢复全本。新封存仅写 IDB，满 5 份拒绝替换并提示先导出；用户确认备份后可以移出封存。历史版本的 localStorage 封存保留只读兼容，不静默删旧数据。导入上限从 30MB 调整为 150MB，以接纳程序自身 84MB 的长局全本；校验、空位限制和保护模式继续保留。缺卷目录只能导出原始副本，不可冒充完整 JSON 导入。
 
@@ -28,10 +36,10 @@ v1–v7 旧档迁移通过；v4 / v5 / v6 / v7 的旧引擎 pending 夹具保持
 ### E2–E4：体积、格式与规则
 
 - **E2**：`src/ui/icon.js` **33,524 字节**，仅 32 / 180 / 192 的调色板 PNG；512 / 1024 迁至 docs。最终 `index.html` **394,723 字节**（<400,000），构建只压缩安全模块缩进和 CSS 缩进，无新增构建依赖。图标与 embedded PNG 字节一致，180 图标视觉检查清晰。
-- **E3**：render / memorials / style 按逻辑格式化，长 HTML 字面量拆成等值拼接，每行 <200 字符。用 Stage 9 固定 fixture 重放七条路径，格式化前后完整 forecast 的 **7 个 SHA256 全相同**，见 [before](../qa/batch5/format-before.json) / [after](../qa/batch5/format-after.json)。比较在同一 v8 / E4 状态下进行，仅隔离格式化变化。
+- **E3**：render / memorials / style 按逻辑格式化，长 HTML 字面量拆成等值拼接，每行 <200 字符。用 Stage 9 固定 fixture 重放七条路径，格式化前后完整 forecast 的 **7 个 SHA256 全相同**，固定哈希见 [批次 5 摘要](../qa/batch5/summary.json) 的 `formatForecastHashes`；原始 before / after 仅本地留存。比较在同一 v8 / E4 状态下进行，仅隔离格式化变化。
 - **E4**：删除无用 `fateModifier` 导入；私下行动使用本旬 die，不再另掷；上朝 / 批折须明确传入 memorials，空列表允许；fact.reason 先验字符串再 includes。旧档的隐式前三本排程迁移为明确 ID，已保存预演不改。**执行度维持 ×1**，通用属性判定仍为 DESIGN 的 ×4：执行度使用加权分与五档兑现，扩大至 ±38 会重调已有下旨数值，超出工程范围。此选择在修改前已写入 PR 说明。
 
-每条先有失败回归，RED 日志：[E1](../qa/batch5/e1-red.log)、[E1 待续副本](../qa/batch5/e1-pending-red.log)、[E1 导入保护](../qa/batch5/e1-import-red.log)、[E2](../qa/batch5/e2-merged-red.log)、[E3](../qa/batch5/e3-red.log)、[E4](../qa/batch5/e4-red.log)。最终 `npm test` **261/261 通过，0 失败 / 跳过**，见 [日志](../qa/batch5/tests.log)；`npm run simulate` **7200 旬 / 200 年，退出码 0**，见 [日志](../qa/batch5/simulate.log)。
+每条先有失败回归，E1–E4 的 RED 日志仅本地留存于 `qa/batch5/*-red.log`。最终 `npm test` **261/261 通过，0 失败 / 跳过**；`npm run simulate` **7200 旬 / 200 年，退出码 0**，结果见 [批次 5 摘要](../qa/batch5/summary.json) 的 `test` / `simulate`；原始 `tests.log`、`simulate.log` 仅本地留存。
 
 ### balance：原七项保持，新增零项
 
@@ -47,13 +55,13 @@ v1–v7 旧档迁移通过；v4 / v5 / v6 / v7 的旧引擎 pending 夹具保持
 | 乱批 / 宫闱，入寇 | 113 → 113 | 120–200 |
 | 尽职 / 边政，十年事件峰值 | 86 → 86 | ≤80 |
 
-证据：[基线](../qa/batch5/balance-before.json)、[施工后](../qa/batch5/balance-after.json)、[差集](../qa/batch5/balance-comparison.json)、[运行日志](../qa/batch5/balance.log)、[本批摘要及构建哈希](../qa/batch5/summary.json)。新增失败 **0**；四策略全部报告相同，因此原来的饱和、标准差、战役与低民心矩阵结论也保持原样。
+证据见 [本批摘要及构建哈希](../qa/batch5/summary.json) 的 `balance`；`balance-before.json`、`balance-after.json`、`balance-comparison.json` 和 `balance.log` 原始文件仅本地留存。新增失败 **0**；四策略全部报告相同，因此原来的饱和、标准差、战役与低民心矩阵结论也保持原样。
 
 ### 浏览器验收与边界
 
-Codex In-app Browser 经 localhost:4190 的合成存档页验证真实 **IDB v2→v3**、旧 v7→v8、40 旬分卷 / 加载和陈旧写者保护：[结果](../qa/batch5/browser-idb.json)、[截图](../output/batch5/idb-upgrade.jpg)。独立恢复副本重建 pending 后原骰 **10→10**、原结算国库 **854.5693343406404** 一致，见 [结果](../qa/batch5/browser-pending.json)、[截图](../output/batch5/pending-restore.jpg)。
+Codex In-app Browser 经 localhost:4190 的合成存档页验证真实 **IDB v2→v3**、旧 v7→v8、40 旬分卷 / 加载和陈旧写者保护，见 [批次 5 摘要](../qa/batch5/summary.json) 的 `browser.idb`、[截图](../output/batch5/idb-upgrade.jpg)。独立恢复副本重建 pending 后原骰 **10→10**、原结算国库 **854.5693343406404** 一致，见同一摘要的 `browser.pending`、[截图](../output/batch5/pending-restore.jpg)；原始浏览器 JSON 仅本地留存。
 
-另在 127.0.0.1:4190 的新试读局完成三种不同选折决定 → 保存页冲刷 → 刷新保留 → 起驾 → 再刷新，原骰 **15**、国库 **478** 保留；360px 宽无横向滚动，可见按钮宽高均 ≥44px，页面无 console error，见 [手机排程](../output/batch5/mobile-schedule.jpg)、[提交恢复](../output/batch5/mobile-committed.jpg)、[最终页面指标](../qa/batch5/browser-ui.json)。未访问用户正式局、未调用真实付费 API；未声称实体手机、软键盘或线上部署验收。新建草稿 PR，不合并、不部署。
+另在 127.0.0.1:4190 的新试读局完成三种不同选折决定 → 保存页冲刷 → 刷新保留 → 起驾 → 再刷新，原骰 **15**、国库 **478** 保留；360px 宽无横向滚动，可见按钮宽高均 ≥44px，页面无 console error，见 [手机排程](../output/batch5/mobile-schedule.jpg)、[提交恢复](../output/batch5/mobile-committed.jpg)、[批次 5 摘要](../qa/batch5/summary.json) 的 `browser.ui`。未访问用户正式局、未调用真实付费 API；未声称实体手机、软键盘或线上部署验收。新建草稿 PR，不合并、不部署。
 
 ---
 
@@ -61,7 +69,7 @@ Codex In-app Browser 经 localhost:4190 的合成存档页验证真实 **IDB v2�
 
 继续原 `codex/audit-batch2-engine`，存档升级 v7。本轮只修改 C2 和批次 4 内容。**功能回归全部通过，但 balance 出现新增失败，因此未达到“无新增失败”的完成标准。** 没有删除原七项记录、放宽门槛、改种子、裁剪事件或修改 C0 边患公式。
 
-`npm test` **247/247 通过**；`npm run simulate` 完成 7200 旬 / 200 年；`npm run balance` 完整跑完四策略 × 四种子 × 200 年，返回 1。低民心矩阵 108/108 通过，同等战役 179/400（44.75%）通过。原始结果见 [施工前](../qa/batch3/after.json)、[施工后](../qa/batch4/after.json)、[本轮摘要](../qa/batch4/summary.json)、[测试日志](../qa/batch4/tests.log)。
+`npm test` **247/247 通过**；`npm run simulate` 完成 7200 旬 / 200 年；`npm run balance` 完整跑完四策略 × 四种子 × 200 年，返回 1。低民心矩阵 108/108 通过，同等战役 179/400（44.75%）通过。结果见 [批次 3 摘要](../qa/batch3/summary.json)、[批次 4 摘要](../qa/batch4/summary.json)；施工前后 `after.json`、`tests.log` 等原始文件仅本地留存。
 
 ### C2 与内容验收
 
@@ -121,7 +129,7 @@ Codex In-app Browser 经 localhost:4190 的合成存档页验证真实 **IDB v2�
 
 ### 同口径施工前后比较
 
-先定义四类策略，再记录C1前基线。四类均跑200年 / 7,200旬；标准差为前720旬的总体标准差，饱和比例为民心 / 吏治 / 圣德任一≥95的旬数占比。无为完整200年的比较统计补采自隔离的C0旧引擎，首次亡国旬次与施工前原15年样本逐一一致；仅添加报告查询适配，没有改旧规则。亡国率分母为已结束在位期。原始资料见 [施工前](../qa/batch3/before.json)、[施工后](../qa/batch3/after.json)。
+先定义四类策略，再记录C1前基线。四类均跑200年 / 7,200旬；标准差为前720旬的总体标准差，饱和比例为民心 / 吏治 / 圣德任一≥95的旬数占比。无为完整200年的比较统计补采自隔离的C0旧引擎，首次亡国旬次与施工前原15年样本逐一一致；仅添加报告查询适配，没有改旧规则。亡国率分母为已结束在位期。结果见 [批次 3 摘要](../qa/batch3/summary.json) 的 `balance`；原始 `before.json`、`after.json` 仅本地留存。
 
 | 策略 | 种子 | 亡国率：前 → 后 | 饱和比例：前 → 后 | 前标准差：民心 / 吏治 / 圣德 / 皇威 | 后标准差：同顺序 |
 |---|---|---|---|---|---|
@@ -158,7 +166,7 @@ Codex In-app Browser 经 localhost:4190 的合成存档页验证真实 **IDB v2�
 
 已通过：四种子尽职 / 乱批的四项标准差均≥5、贪心四组饱和比例0%、全部主动策略粮储有限增长 / 国库峰值 / 年度现金守恒、400场同等战役179胜（44.75%）、108/108低民心经济场景。入寇与事件率等未通过的组合保留失败。全部16组各7,200旬，没有跳过失败种子。
 
-C1前基线 `qa/batch3/before.json`、最终原始报告 `qa/batch3/after.json`、指标 / 回归摘要 `qa/batch3/summary.json`、失败来源 `qa/batch3/failure-diagnostic.json`。恢复系数1.8% / 1.9% / 1.95%的同种子敏感性检查均未找到全部通过的组合；结果不是单调关系，财政缺口、恢复条件、跨朝RNG与仅4–5个完整在位期的离散分母共同造成路径跳变。这是诊断，不能替代通过的平衡证明。
+C1前基线 `qa/batch3/before.json`、最终原始报告 `qa/batch3/after.json`、失败来源 `qa/batch3/failure-diagnostic.json` 均仅本地留存；指标 / 回归与诊断见 [批次 3 摘要](../qa/batch3/summary.json)。恢复系数1.8% / 1.9% / 1.95%的同种子敏感性检查均未找到全部通过的组合；结果不是单调关系，财政缺口、恢复条件、跨朝RNG与仅4–5个完整在位期的离散分母共同造成路径跳变。这是诊断，不能替代通过的平衡证明。
 
 ### 实现、存档与浏览器
 
@@ -195,7 +203,7 @@ C1前基线 `qa/batch3/before.json`、最终原始报告 `qa/batch3/after.json`�
 
 **停下的原因：** 13 次亡国全部是“京畿困局持续满六个月，民变攻入京师”，无旧随机亡国、无急报逾期亡国。边患频度回到要求区间仍不足以恢复亡国率。对第一组首次亡国的逐旬诊断表明，第 1389–1406 旬国库持续为 0、治理度在 0–1.76；第 1402 旬开仓后民心短暂升至 5.08，仍低于 18，最终触发六个月上限。期间补欠饷扣 64.87、例行月结扣 21.15、银库失窃扣 8，季度实收 64.87 随即被欠款吸收；积压与逾期继续损失治理 / 民心。这说明既有财政、欠款与治理反馈仍有失衡；该诊断不是单变量因果证明。按用户要求不越过门槛实施 C1–C9。
 
-完整的 C1 前基线见 [C0 balance 原始结果](../qa/batch3/c0-balance.json)，精简指标、测试名、诊断见 [C0 摘要](../qa/batch3/c0-summary.json)，逐条文件 / 测试 / DESIGN 差异见 [本次 PR 说明](PR-BATCH3-C0.md)。
+C1 前基线的精简指标、测试名、诊断见 [批次 3 摘要](../qa/batch3/summary.json) 的 `c0` 字段；原始 `qa/batch3/c0-balance.json`、`c0-summary.json` 仅本地留存。逐条文件 / 测试 / DESIGN 差异见 [本次 PR 说明](PR-BATCH3-C0.md)。
 
 ### 测试、浏览器与构建
 

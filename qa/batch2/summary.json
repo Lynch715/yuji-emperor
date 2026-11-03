@@ -277,5 +277,10 @@
     "inlineScriptBytes": 900018
   },
   "realProviderCalls": false,
-  "physicalMobileDeviceTested": false
+  "physicalMobileDeviceTested": false,
+  "artifactRetention": {
+    "tracked": "summary.json only",
+    "rawOutputs": "local-only; files kept on disk, removed from Git tracking",
+    "files": []
+  }
 }
