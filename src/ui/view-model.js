@@ -1,10 +1,11 @@
 import { memorialDecision } from "../core/memorial-decisions.js";
-import { ACTIONS, scheduleCost } from "../core/turn.js";
+import { ACTIONS, scheduleCost, validateSchedule } from "../core/turn.js";
 import { energyLimit } from "../core/emperor.js";
 import { annualBudget } from "../core/finance.js";
 import { EDICTS, execution } from "../core/edicts.js";
 import { globalYear } from "../core/calendar.js";
 import { availableMemorials } from "./memorial-state.js";
+import { cabinetDraft } from "../core/court.js";
 export const ACTION_GROUPS = [
   ["朝政", ["上朝", "批折", "下旨", "任命"]],
   ["人事", ["召见", "宴请", "外交", "私下行事"]],
@@ -33,7 +34,9 @@ export function actionMeta(kind) {
   const rule = ACTIONS[kind];
   if (!rule) return "";
   const time = rule.full ? "占满一旬" : rule.slots.length === 3 ? "任意" : rule.slots.join("/");
-  return time + " · " + (kind === "批折" ? "每3本1" : rule.full ? rule.energy+"点" : "精力 " + rule.energy);
+  if (kind === "上朝") return time + " · 精力 " + rule.energy + " · 三本内，可廷议问责";
+  if (kind === "批折") return time + " · 每3本1 · 独断，不经廷议";
+  return time + " · " + (rule.full ? rule.energy+"点" : "精力 " + rule.energy);
 }
 export function energyView(s) {
   const limit = s ? energyLimit(s) : 9, used = s ? scheduleCost(s.schedule) : 0;
@@ -81,4 +84,42 @@ export function scheduleEstimate(s) {
     if(a.kind==="外交"&&a.operation==="和亲")totals.privy-=10;
   }
   return {totals,executions};
+}
+
+// 沿用上旬日程：只沿用不绑定具体奏报或人物结果的行动，逐槽校验，不合规的槽位留空。
+export const REPEATABLE = ["歇息", "后宫", "宴请", "私下行事", "下旨"];
+export function repeatSchedule(s, last) {
+  const next = { 朝: null, 午: null, 夜: null };
+  if (!s || !last) return next;
+  for (const slot of ["朝", "午", "夜"]) {
+    const a = last[slot];
+    if (!a || !REPEATABLE.includes(a.kind) || actionAvailability(s, a.kind)) continue;
+    const trial = { ...next, [slot]: JSON.parse(JSON.stringify(a)) };
+    try { validateSchedule(s, trial); next[slot] = trial[slot]; } catch {}
+  }
+  return next;
+}
+
+// 委政内阁：内阁依票拟批最多六本非急报，其余时辰歇息。有急报、御驾在外或封卷时不可委政。
+export function delegateSchedule(s) {
+  if (!s || s.ending || s.pending) return { schedule: null, reason: "本旬尚未完结" };
+  if (s.memorials.some((m) => m.urgent)) return { schedule: null, reason: "有急报待亲裁" };
+  if (s.campaigns.some((w) => w.personal && !w.done)) return { schedule: null, reason: "御驾在外" };
+  const picks = s.memorials.map((m) => ({ m, d: cabinetDraft(s, m) })).filter((x) => x.d).slice(0, 6);
+  const schedule = { 朝: null, 午: null, 夜: { kind: "歇息" } };
+  if (picks.length)
+    schedule.朝 = { kind: "批折", memorials: picks.map((x) => x.m.id), stance: "依旨施行", target: s.court.officials[0]?.id || "",
+      decisions: Object.fromEntries(picks.map((x) => [x.m.id, { option: x.d.option, remark: "" }])), label: "内阁票拟 " + picks.length + " 本" };
+  try { validateSchedule(s, schedule); } catch (e) { return { schedule: null, reason: e.message }; }
+  return { schedule, reason: "" };
+}
+// 本旬落账后若出现生死、孕产、战事、急报或封卷，停止委政，交还御前。
+export const DELEGATE_STOPS = { death: "有人亡故", war: "边事有变", birth: "皇嗣诞生", pregnancy: "宫中有喜", miscarriage: "宫中小产" };
+export function delegateStop(s) {
+  if (!s) return "无卷";
+  if (s.ending) return "本朝封卷";
+  const last = s.history.at(-1), fact = (last?.settlement?.facts || []).find((f) => DELEGATE_STOPS[f.kind]);
+  if (fact) return DELEGATE_STOPS[fact.kind];
+  if (s.memorials.some((m) => m.urgent)) return "急报呈至";
+  return "";
 }

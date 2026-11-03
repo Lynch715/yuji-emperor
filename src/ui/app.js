@@ -1,3 +1,4 @@
+import { postTitle, SCENARIOS, scenarioPreview } from "../core/scenarios.js";
 import { createDebouncedSave } from "../store/debounce.js";
 import { classifyMemorialSchedule } from "../llm/remark-classifier.js";
 import { initAppIcon } from "./icon.js";
@@ -6,8 +7,12 @@ import {
   esc,
   initCommon,
   toast,
+  captureView,
+  restoreView,
+  throttleFrame,
   openDialog,
   closeDialog,
+  setLeaveGuard,
   download,
 } from "./common.js";
 import { loadSettings, openSettings } from "./settings.js";
@@ -23,7 +28,7 @@ import {
 } from "./render.js";
 import { memorialDialog, scheduledMemorialDialog } from "./memorials.js";
 import { memorialAssignments } from "./memorial-state.js";
-import { actionAvailability } from "./view-model.js";
+import { actionAvailability, repeatSchedule, delegateSchedule, delegateStop } from "./view-model.js";
 import { actionDialog } from "./actions.js";
 import { palacePanel } from "./panels.js";
 import { createSaveStore, createIDB } from "../store/save.js";
@@ -44,6 +49,8 @@ import {
   classifyMessages,
   biographyMessages,
   STYLES,
+  LENGTHS,
+  POVS,
 } from "../llm/prompts.js";
 import {
   extractPartialChapter,
@@ -51,6 +58,7 @@ import {
   validateTalk,
 } from "../llm/validate.js";
 initCommon();
+setLeaveGuard(() => busy);
 initAppIcon();
 const store = createSaveStore({
   primary: createIDB(globalThis.indexedDB),
@@ -68,19 +76,31 @@ let state = null,
   config = loadSettings(),
   metrics = loadMetrics(),
   preferred = "朝",
-  saveQueue = Promise.resolve();
+  saveQueue = Promise.resolve(),
+  lastSchedule = null;
 const scheduleSave=createDebouncedSave(()=>persist());
 window.addEventListener("pagehide",()=>scheduleSave.flush());
 function render() {
-  const y = window.scrollY;
-  $("#app").innerHTML = renderApp(state, { readOnly, busy, saveStatus });
+  const y = window.scrollY, kept = captureView($("#app"));
+  const canRepeat = !!state && Object.values(repeatSchedule(state, lastScheduleFor(state))).some(Boolean);
+  $("#app").innerHTML = renderApp(state, { readOnly, busy, saveStatus, canRepeat });
   document.querySelectorAll("[data-action]").forEach((b) => {
     const reason=readOnly?'存档只读保护':busy?'本旬正在续写':actionAvailability(state,b.dataset.action);
     b.disabled=!!reason;b.draggable=!reason;
     if(reason&&b.querySelector('.action-copy small'))b.querySelector('.action-copy small').textContent=reason;
   });
   window.scrollTo(0, y);
+  restoreView($("#app"), kept);
 }
+// Streaming chunks arrive faster than a phone can paint; redraw at most once
+// per frame and only when the draft has grown.
+let streamedLength = -1;
+const streamDraft = throttleFrame((raw) => {
+  if (raw.length === streamedLength) return;
+  streamedLength = raw.length;
+  const el = $("#stream");
+  if (el) el.textContent = "正文草稿 · 正在续写\n\n" + extractPartialChapter(raw);
+});
 function guard() {
   if (!state) throw new Error("请先登基开局");
   if (readOnly) throw new Error("存档处于只读保护模式");
@@ -236,11 +256,13 @@ async function newGame() {
   }
   openDialog(
     "登基 · 定年号",
-    '<form id="new-form"><div class="fields"><div><label for="emperor-name">皇帝名</label><input id="emperor-name" required maxlength="12" value="萧承熙"></div><div><label for="era-name">年号</label><input id="era-name" required maxlength="8" value="永宁"></div><div><label for="freedom">自由度</label><select id="freedom"><option value="mid">传奇</option><option value="free">随心所欲</option><option value="real">写实</option></select></div><div><label for="difficulty">难度</label><select id="difficulty"><option value="normal">常制</option><option value="easy">宽和</option><option value="hard">艰危</option></select></div><div><label for="prose-style">文笔</label><select id="prose-style">' +
+    '<form id="new-form"><div class="scenario-pick"><label for="scenario">开局</label><select id="scenario"><option value="">自拟王朝（架空）</option>' +
+      SCENARIOS.map((sc) => '<option value="' + sc.id + '">' + esc(sc.title) + " · " + esc(sc.difficulty) + "</option>").join("") +
+      '</select><div id="scenario-card" class="scenario-card muted">自拟帝名、年号，由叙事接口铸造人物与州郡。</div></div><div class="fields"><div><label for="emperor-name">皇帝名</label><input id="emperor-name" required maxlength="12" value="萧承熙"></div><div><label for="era-name">年号</label><input id="era-name" required maxlength="8" value="永宁"></div><div><label for="freedom">自由度</label><select id="freedom"><option value="mid">传奇</option><option value="free">随心所欲</option><option value="real">写实</option></select></div><div><label for="difficulty">难度</label><select id="difficulty"><option value="normal">常制</option><option value="easy">宽和</option><option value="hard">艰危</option></select></div><div><label for="prose-style">文笔</label><select id="prose-style">' +
       Object.entries(STYLES)
         .map(([k, v]) => '<option value="' + k + '">' + v.label + "</option>")
         .join("") +
-      '</select></div><div><label for="new-slot">启用存档位</label><select id="new-slot">' +
+      '</select></div>' + narrativeFields() + '<div><label for="new-slot">启用存档位</label><select id="new-slot">' +
       available
         .map(
           (n) =>
@@ -283,6 +305,16 @@ async function newGame() {
     );
   const form = $("#new-form"), dialog = $("#modal"), result = $("#new-result");
   const scope = createDialogRequestScope(dialog, form);
+  $("#scenario").onchange = () => {
+    const sc = SCENARIOS.find((x) => x.id === $("#scenario").value), card = $("#scenario-card");
+    for (const id of ["emperor-name", "era-name"]) $("#" + id).disabled = !!sc;
+    if (!sc) { card.textContent = "自拟帝名、年号，由叙事接口铸造人物与州郡。"; return; }
+    const v = scenarioPreview(sc);
+    $("#emperor-name").value = v.emperor; $("#era-name").value = v.era;
+    $("#difficulty").value = { 宽和: "easy", 常制: "normal", 艰危: "hard" }[v.difficulty] || "normal";
+    card.innerHTML = "<strong>" + esc(v.dynasty + " · " + v.year + " · " + v.emperor + " " + v.age + " 岁") + "</strong><p>" + esc(v.blurb) +
+      "</p><small>朝中：" + esc(v.cast.join("、")) + "等</small>";
+  };
   const showResult = (text, error = false) => {
     result.classList.remove("hidden");
     result.setAttribute("role", error ? "alert" : "status");
@@ -298,9 +330,10 @@ async function newGame() {
     try {
       const value = (id) => form.querySelector("#" + id).value;
       const options = {
-        name: value("emperor-name").trim(), era: value("era-name").trim(),
+        name: value("emperor-name").trim(), era: value("era-name").trim(), scenario: value("scenario") || null,
         freedom: value("freedom"), difficulty: value("difficulty"),
-        prose: value("prose-style"), demo: form.querySelector("#demo-mode").checked,
+        prose: value("prose-style"), length: value("prose-length"), pov: value("prose-pov"),
+        demo: form.querySelector("#demo-mode").checked,
         seed: createGameSeed(),
       };
       const selected = Number(value("new-slot"));
@@ -349,6 +382,16 @@ async function newGame() {
     }
   };
 }
+// 篇幅与视角下拉，开局与中途设置共用。
+function narrativeFields(current = {}) {
+  const select = (id, label, table, value) => '<div><label for="' + id + '">' + label + '</label><select id="' + id + '">' +
+    Object.entries(table).map(([k, v]) => '<option value="' + k + '"' + (k === value ? " selected" : "") + ">" + esc(v.label) + "</option>").join("") +
+    "</select></div>";
+  return select("prose-length", "篇幅", LENGTHS, current.length || "standard") + select("prose-pov", "视角", POVS, current.pov || "third");
+}
+function lastScheduleFor(s) {
+  return lastSchedule && s && lastSchedule.runId === s.runId && lastSchedule.turn === s.turn ? lastSchedule.schedule : null;
+}
 function arrange(which, action) {
   guard();
   const next = { ...state.schedule, [which]: action };
@@ -393,15 +436,11 @@ async function advance(local = false) {
         budget: state.turnBudget,
         signal: ac.signal,
         onMetric: markMetric,
-        onPartial: (raw) => {
-          const el = $("#stream");
-          if (el)
-            el.textContent =
-              "正文草稿 · 正在续写\n\n" + extractPartialChapter(raw);
-        },
+        onPartial: streamDraft,
       });
     }
     state = commitTurn(state, f, narrative);
+    lastSchedule = { runId: state.runId, turn: state.turn, schedule: f.schedule };
     if (state.ending && !state.settings.demo) {
       try {
         const record = state.chronicles.find((r) => r.id === reignId(state)),
@@ -460,7 +499,7 @@ function startTalk(person) {
   const refreshTalkPaper=()=>{
     if(!$('#talk-form')||!$('#action-document'))return;
     const live=state.court.officials.find(o=>o.id===person)||state.harem.consorts.find(o=>o.id===person)||state.foreign.find(o=>o.id===person)||npc;
-    $('#action-document').innerHTML='<span class="portrait" aria-hidden="true">'+esc(live.name[0])+'</span><h3>'+esc(live.name)+'</h3><p>'+esc(state.court.posts.find(p=>p.holder===person)?.title||live.family||live.status||'御前候见')+'</p><p>'+esc(live.age?live.age+' 岁':'')+(live.favor!==undefined?' · 好感 '+live.favor:'')+'</p><p class="muted">垂询有度。拨款与让步须在此人职权之内，过分要求仍须回部再议。</p>';
+    $('#action-document').innerHTML='<span class="portrait" aria-hidden="true">'+esc(live.name[0])+'</span><h3>'+esc(live.name)+'</h3><p>'+esc(postTitle(state,state.court.posts.find(p=>p.holder===person))||live.family||live.status||'御前候见')+'</p><p>'+esc(live.age?live.age+' 岁':'')+(live.favor!==undefined?' · 好感 '+live.favor:'')+'</p><p class="muted">垂询有度。拨款与让步须在此人职权之内，过分要求仍须回部再议。</p>';
   };
   refreshTalkPaper();
   $("#talk-form").onsubmit = async (e) => {
@@ -641,6 +680,27 @@ async function command(name) {
           (state.settings.demo ? "保存并用于正文" : "切换为试读") +
           "</button></div>",
       );
+      $("#modal").insertAdjacentHTML(
+        "beforeend",
+        '<section class="narrative-settings" aria-label="叙事笔法"><h3>叙事笔法</h3><div class="fields"><div><label for="prose-style">文风</label><select id="prose-style">' +
+          Object.entries(STYLES).map(([k, v]) => '<option value="' + k + '"' + (k === state.settings.prose ? " selected" : "") + ">" + esc(v.label) + "</option>").join("") +
+          "</select></div>" + narrativeFields(state.settings) +
+          '</div><p class="muted" id="prose-note">' + esc(STYLES[state.settings.prose]?.rules || "") + ' 下一旬起生效，已写章节不变。</p></section>',
+      );
+      for (const id of ["prose-style", "prose-length", "prose-pov"])
+        $("#" + id).onchange = () => {
+          if (readOnly || busy || state.pending) {
+            toast("请先完成当前回合，再改叙事笔法");
+            $("#prose-style").value = state.settings.prose;
+            $("#prose-length").value = state.settings.length || "standard";
+            $("#prose-pov").value = state.settings.pov || "third";
+            return;
+          }
+          state = { ...state, settings: { ...state.settings, prose: $("#prose-style").value, length: $("#prose-length").value, pov: $("#prose-pov").value } };
+          $("#prose-note").textContent = (STYLES[state.settings.prose]?.rules || "") + " 下一旬起生效，已写章节不变。";
+          scheduleSave.schedule();
+          toast("叙事笔法已更新：" + STYLES[state.settings.prose].label + " · " + LENGTHS[state.settings.length].label + " · " + POVS[state.settings.pov].label);
+        };
       $("#mode-toggle").onclick = () => {
         if (readOnly) {
           toast("存档处于只读保护模式");
@@ -662,6 +722,41 @@ async function command(name) {
   if (name === "new") return newGame();
   if (name === "saves") return showSaves();
   if (name === "advance") return advance();
+  if (name === "delegate") {
+    guard();
+    openDialog("委政内阁",
+      '<p class="muted">内阁依票拟批阅非急报，其余时辰歇息；正文按试读笔法简记，不请求叙事接口。遇亡故、孕产、战事、急报或封卷即停，交还御前。</p><div class="dialog-actions">' +
+        [3, 6, 12].map((n) => '<button type="button" data-delegate="' + n + '">' + n + " 旬</button>").join("") + "</div>", "drawer");
+    $("#modal").onclick = async (e) => {
+      const n = Number(e.target.closest("[data-delegate]")?.dataset.delegate);
+      if (!n) return;
+      closeDialog();
+      let done = 0, stop = "";
+      for (; done < n; done++) {
+        const plan = delegateSchedule(state);
+        if (!plan.schedule) { stop = plan.reason; break; }
+        state = { ...state, schedule: plan.schedule };
+        const before = state.turn;
+        await advance(true);
+        if (state.turn === before) { stop = "落账未完成"; break; }
+        stop = delegateStop(state);
+        if (stop) { done++; break; }
+      }
+      toast("委政 " + done + " 旬" + (stop ? "，" + stop + "，请御前裁处" : "，已交还御前"));
+    };
+    return;
+  }
+  if (name === "repeat") {
+    guard();
+    const next = repeatSchedule(state, lastScheduleFor(state));
+    if (!Object.values(next).some(Boolean)) { toast("上旬安排本旬无法沿用"); return; }
+    validateSchedule(state, next);
+    state = { ...state, schedule: next };
+    scheduleSave.schedule();
+    render();
+    toast("已沿用上旬可重复的安排");
+    return;
+  }
   if (name === "settle") return advance(true);
   if (name === "complete") {
     guard();

@@ -1,3 +1,4 @@
+import { postTitle } from "../core/scenarios.js";
 import { annualBudget, wasteQuote,grainBudget } from "../core/finance.js";
 import { esc, openDialog } from "./common.js";
 import { num, ledgerHTML, chapterHTML, chapterTitle, ambitionsHTML } from "./render.js";
@@ -43,7 +44,7 @@ export function palacePanel(s, name) {
         s.court.posts.map(
           (p) =>
             '<div class="card"><h3>' +
-            esc(p.title) +
+            esc(postTitle(s, p)) +
             '</h3><span class="' +
             (p.holder ? "" : "negative") +
             '">' +

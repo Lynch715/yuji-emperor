@@ -159,9 +159,11 @@ button {
   cursor: pointer;
   font-size: var(--font-ui);
 }
-button:hover {
-  background: var(--panel-active);
-  border-color: var(--gold);
+@media (hover: hover) {
+  button:hover {
+    background: var(--panel-active);
+    border-color: var(--gold);
+  }
 }
 button:disabled {
   cursor: not-allowed;
@@ -179,8 +181,10 @@ button.primary {
   font-weight: 600;
   letter-spacing: var(--tracking);
 }
-button.primary:hover {
-  border-color: var(--gold);
+@media (hover: hover) {
+  button.primary:hover {
+    border-color: var(--gold);
+  }
 }
 button.quiet {
   background: var(--clear);
@@ -831,8 +835,10 @@ small {
   flex: none;
   min-width: var(--s0);
 }
-.memorial:hover {
-  background: var(--paper-chip);
+@media (hover: hover) {
+  .memorial:hover {
+    background: var(--paper-chip);
+  }
 }
 .memorial-rail {
   width: var(--rail);
@@ -1711,8 +1717,10 @@ textarea.brush-input::placeholder {
     border: var(--s0);
     text-align: left;
   }
-  .mobile-stats:hover {
-    background: var(--clear);
+  @media (hover: hover) {
+    .mobile-stats:hover {
+      background: var(--clear);
+    }
   }
   .mobile-stats .metric {
     background: var(--panel);
@@ -2339,4 +2347,81 @@ textarea::placeholder {
     min-width: var(--s0);
     overflow-wrap: anywhere;
   }
+}
+/* F1: touch feedback, tap highlight and reader font size. */
+html {
+  -webkit-tap-highlight-color: transparent;
+}
+button,
+.memorial,
+.slot,
+[data-action],
+[data-panel] {
+  transition:
+    transform 80ms ease-out,
+    background-color 120ms ease-out,
+    border-color 120ms ease-out;
+}
+button:not(:disabled):active,
+.memorial:active,
+[data-action]:not(:disabled):active {
+  transform: scale(0.97);
+  background: var(--panel-active);
+  border-color: var(--gold);
+}
+button.primary:not(:disabled):active {
+  background: var(--cinnabar);
+  filter: brightness(1.12);
+}
+:root[data-font="l"] .prose {
+  font-size: 18px;
+}
+:root[data-font="xl"] .prose {
+  font-size: 20px;
+}
+@media (prefers-reduced-motion: reduce) {
+  button:not(:disabled):active,
+  .memorial:active,
+  [data-action]:not(:disabled):active {
+    transform: none;
+  }
+}
+.cabinet-draft {
+  margin: var(--s2) var(--s0);
+  font-size: var(--font-note);
+  color: var(--text-muted);
+}
+.review-footer:has([data-review-drafts]) {
+  grid-template-columns: 1fr 1fr 2fr;
+}
+@media (max-width: 420px) {
+  .review-footer:has([data-review-drafts]) {
+    grid-template-columns: 1fr 1fr;
+  }
+  .review-footer:has([data-review-drafts]) #review-next {
+    grid-column: 1 / -1;
+  }
+}
+.repeat-trigger {
+  background: var(--clear);
+  padding: var(--s2);
+  flex: none;
+}
+.scenario-pick {
+  margin-bottom: var(--s5);
+}
+.scenario-card {
+  margin-top: var(--s3);
+  padding: var(--s4);
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-button);
+  font-size: var(--font-note);
+}
+.scenario-card p {
+  margin: var(--s2) var(--s0);
+}
+.chapter-hook {
+  margin-top: var(--s5);
+  color: var(--gold);
+  text-indent: 0;
 }

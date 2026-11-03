@@ -1,5 +1,6 @@
 import { createDialogRequestScope, probeErrorMessage } from "./request-scope.js";
 import { $, esc, openDialog, toast } from "./common.js";
+import { FONT_SCALES, applyFontScale, storedFontScale } from "./mobile.js";
 import {
   PRESETS,
   callJSON,
@@ -22,10 +23,17 @@ export function loadSettings() {
     return defaults;
   }
 }
+export function cacheSummary(metrics) {
+  const input = metrics.reduce((t, m) => t + (m.inputTokens || 0), 0),
+    cached = metrics.reduce((t, m) => t + (m.cachedTokens || 0), 0);
+  return input ? "缓存命中 " + Math.round((cached / input) * 100) + "%（" + cached + " / " + input + " 输入 tokens）。" : "";
+}
 export function openSettings(config, metrics, onSave, recordMetric = null) {
   openDialog(
     "御前设置",
-    '<p class="muted">填写叙事接口，续写本纪。密钥只用于所填地址，不随存档导出。</p><form id="settings-form"><label for="provider">服务商与地域</label><select id="provider">' +
+    '<label for="font-scale">正文字号</label><select id="font-scale">' +
+      Object.entries(FONT_SCALES).map(([id, label]) => '<option value="' + id + '"' + (id === storedFontScale() ? " selected" : "") + ">" + label + "</option>").join("") +
+      '</select><p class="muted">立即生效，只影响本机阅读。</p><p class="muted">填写叙事接口，续写本纪。密钥只用于所填地址，不随存档导出。</p><form id="settings-form"><label for="provider">服务商与地域</label><select id="provider">' +
       Object.entries(PRESETS)
         .map(
           ([id, p]) =>
@@ -50,7 +58,7 @@ export function openSettings(config, metrics, onSave, recordMetric = null) {
       (config.remember ? "checked" : "") +
       '>在本机记住密钥</label><p class="muted">只在这台设备保存密钥，取消勾选即可清除。</p><div class="dialog-actions"><button type="button" id="probe">测试连接</button><button class="primary" type="submit">保存设置</button></div></form><div id="probe-result" class="result hidden" role="status" aria-live="polite"></div><details><summary>请求统计 · <span id="request-count">' +
       metrics.length +
-      '</span> 次</summary><p class="muted">只留用量记录，不保存密钥和正文。</p><div id="metric-list">' +
+      '</span> 次</summary><p class="muted">只留用量记录，不保存密钥和正文。' + cacheSummary(metrics) + '</p><div id="metric-list">' +
       metrics
         .slice(-10)
         .map(
@@ -65,11 +73,14 @@ export function openSettings(config, metrics, onSave, recordMetric = null) {
             m.inputTokens +
             "/" +
             m.outputTokens +
-            " tokens</p>",
+            " tokens" +
+            (m.cachedTokens ? " · 缓存 " + m.cachedTokens : "") +
+            "</p>",
         )
         .join("") +
       "</div></details>",
   );
+  $("#font-scale").onchange = (e) => applyFontScale(e.target.value);
   const read = () => ({
     provider: $("#provider").value,
     base: $("#api-base").value.trim(),

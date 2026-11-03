@@ -3,15 +3,15 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {APP_ICONS,createAppManifest} from '../src/ui/icon.js';
-test('E2 图标只保留32、180、192且单文件小于400KB',()=>{
+test('E2 图标只保留32、180、192且单文件小于460KB（第二轮审计为剧本与文风数据放宽，图标预算不变）',()=>{
  assert.deepEqual(Object.keys(APP_ICONS),['32','180','192']);
  assert.ok(Buffer.byteLength(readFileSync('src/ui/icon.js'))<60000);
  execFileSync(process.execPath,['scripts/build.mjs']);
- assert.ok(readFileSync('index.html').length<400000);
+ assert.ok(readFileSync('index.html').length<460000);
  assert.deepEqual(createAppManifest('https://example.com/game/?x=1','#123').icons.map(i=>i.sizes),['192x192']);
 });
 
-import {createState,migrate} from '../src/core/state.js';
+import {createState,migrate,VERSION} from '../src/core/state.js';
 import {initialTurn,forecastTurn,commitTurn} from '../src/core/turn.js';
 import {createSaveStore,unpack} from '../src/store/save.js';
 const start=()=>initialTurn(createState({seed:'E工程',freedom:'free'}));
@@ -60,7 +60,7 @@ test('E1 分卷遗失或校验不符进入只读保护，不覆盖原档',async(
 });
 
 test('E1 v1至v3旧外壳与待续保留硬结果，v8补分卷目录',()=>{
- for(const v of [1,2,3]){const s=JSON.parse(readFileSync('test/fixtures/v4-pending.json'));s.v=v;s.pending.forecast.state.v=v;delete s.volumeIndex;const raw=JSON.stringify(s.pending.forecast),n=migrate(s);assert.equal(n.v,8);assert.deepEqual(n.volumeIndex,[]);assert.equal(JSON.stringify(n.pending.forecast),raw);const committed=commitTurn(n,n.pending.forecast,{});assert.equal(committed.lastTurn.die,s.pending.forecast.die);assert.equal(committed.rng,s.pending.forecast.state.rng);}
+ for(const v of [1,2,3]){const s=JSON.parse(readFileSync('test/fixtures/v4-pending.json'));s.v=v;s.pending.forecast.state.v=v;delete s.volumeIndex;const raw=JSON.stringify(s.pending.forecast),n=migrate(s);assert.equal(n.v,VERSION);assert.deepEqual(n.volumeIndex,[]);assert.equal(JSON.stringify(n.pending.forecast),raw);const committed=commitTurn(n,n.pending.forecast,{});assert.equal(committed.lastTurn.die,s.pending.forecast.die);assert.equal(committed.rng,s.pending.forecast.state.rng);}
 });
 
 test('E1 回合预演和提交不重复遍历不可变的旧分卷',()=>{

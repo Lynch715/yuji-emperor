@@ -1,3 +1,4 @@
+import { postTitle } from "../core/scenarios.js";
 import { $, esc, openDialog, toast, closeDialog } from "./common.js";
 import { ACTIONS, scheduleCost } from "../core/turn.js";
 import { EDICTS, execution } from "../core/edicts.js";
@@ -42,7 +43,7 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
             '<option value="' +
             p.id +
             '">' +
-            esc(p.title) +
+            esc(postTitle(s, p)) +
             " · " +
             esc(
               s.court.officials.find((o) => o.id === p.holder)?.name || "空缺",
@@ -191,7 +192,7 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
   const paper=()=>{
     const person=s.court.officials.find(o=>o.id===$('#person')?.value)||s.harem.consorts.find(o=>o.id===$('#person')?.value)||s.foreign.find(o=>o.id===$('#country')?.value)||s.harem.candidates.find(o=>o.id===$('#person')?.value);
     let html='<div class="eyebrow">'+kind+' · 待定</div><h3>'+esc(person?.name||$('#edict-type')?.value||kind)+'</h3>';
-    if(person)html+='<p>'+esc(person.family||person.personality||s.court.posts.find(p=>p.holder===person.id)?.title||person.status||'御前候命')+'</p><p>'+esc(person.age?person.age+' 岁':'')+(person.favor!==undefined?' · 好感 '+person.favor:'')+'</p>';
+    if(person)html+='<p>'+esc(person.family||person.personality||postTitle(s,s.court.posts.find(p=>p.holder===person.id))||person.status||'御前候命')+'</p><p>'+esc(person.age?person.age+' 岁':'')+(person.favor!==undefined?' · 好感 '+person.favor:'')+'</p>';
     if(kind==='下旨'){
       const r=EDICTS[$('#edict-type').value];
       html+='<p>主办　'+r.office+'</p><p>所需 '+r.cost+' 万两'+(r.grain?'、'+r.grain+' 万石':'')+'，预计 '+r.months+' 个月。</p><p>预计成算「'+execution(s,$('#edict-type').value,11).label+'」</p>';

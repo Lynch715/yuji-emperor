@@ -36,6 +36,15 @@ async function bundle(file) {
   modules.set(id, code + "\nreturn {" + exports.join(",") + "};");
   return id;
 }
+// CSS: drop comments, indentation, the space after a declaration's property
+// name and before an opening brace. Selectors and values are left intact.
+function compactCSS(css) {
+  return css.replace(/\/\*[\s\S]*?\*\//g, "").split("\n").map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => /^-{0,2}[a-z][a-z0-9-]*: /i.test(line) && !line.endsWith("{") ? line.replace(": ", ":") : line)
+    .map((line) => line.replace(/ \{$/, "{"))
+    .join("\n");
+}
 const entry = await bundle("src/ui/app.js");
 const js =
   '(() => { "use strict"; const __modules = {' +
@@ -53,7 +62,7 @@ const template = await readFile(resolve(root, "src/ui/shell.html"), "utf8"),
 await writeFile(
   resolve(root, "index.html"),
   template
-    .replace("/* INLINE_CSS */", css.split("\n").map(line=>line.trim()).join("\n"))
+    .replace("/* INLINE_CSS */", compactCSS(css))
     .replace("/* INLINE_JS */", js.replace(/<\/script/gi, "<\\/script")),
 );
 console.log(

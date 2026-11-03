@@ -13,10 +13,12 @@ export function imperialWedding(state) {
   s.reign.married=true;
   const owner=reignId(s);
   for(let i=0;i<3;i++){
-    const named=uniqueName(s);s=named.state;
+    // 历史剧本预设的大婚人选优先；重名或用尽时照常取名。
+    const preset=s.weddingNames?.[i];
+    const named=uniqueName(s,preset?{names:[preset]}:{});s=named.state;
     const draw=(a,b)=>{const r=roll(s,a,b);s=r.state;return r.value;};
     s.harem.consorts.push({id:owner+'-c'+i,name:named.name,age:Math.max(18,Math.min(s.emperor.age,24))+i,
-      rank:['皇后','妃','嫔'][i],family:'新朝内廷',faction:'f'+i,favor:60-i*8,mood:70,
+      rank:['皇后','妃','嫔'][i],family:preset&&named.name===preset?preset.replace(/氏$/,'')+'氏':'新朝内廷',faction:'f'+i,favor:60-i*8,mood:70,
       ambition:draw(20,60),scheming:draw(20,65),health:85,preg:null,relations:{},secret:'家族旧事有待查明。',
       confined:false,cold:false,retired:false,reignId:owner,recoveryUntil:0});
   }

@@ -5,7 +5,7 @@ import {blockPinch} from '../src/ui/mobile.js';
 import {APP_ICONS,createAppManifest} from '../src/ui/icon.js';
 import {introHTML,chapterTitle} from '../src/ui/render.js';
 
-test('双指和 Safari 缩放手势被阻止，单指滚动与不可取消事件不受干扰',()=>{
+test('双指和 Safari 缩放手势被阻止，单指滚动与不可取消事件不受干扰（Android 双指由 touch-action 阻止）',()=>{
   for(const [type,count,cancelable,expected]of [['touchstart',2,true,true],['touchmove',2,true,true],['touchmove',1,true,false],['gesturestart',0,true,true],['gesturechange',0,true,true],['touchmove',2,false,false]]){
     let prevented=false;blockPinch({type,touches:Array(count),cancelable,preventDefault(){prevented=true;}});assert.equal(prevented,expected,type+' '+count);
   }
