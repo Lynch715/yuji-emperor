@@ -69,8 +69,8 @@ test("E1 one thousand played turns keep history exportable, no duplicate receipt
   const restored=migrate(unpack(pack(s)).state),roundtrip=[...restored.volumes.flatMap(v=>v.chapters),...restored.history];
   for(let i=0;i<1000;i++)assert.equal(JSON.stringify(roundtrip[i]),JSON.stringify(chapters[i]),'第'+(i+1)+'旬');
 });
-test("six prose styles and safe UI escaping of imported/model names", () => {
-  assert.equal(Object.keys(STYLES).length, 6);
+test("prose styles (14 since 第二轮审计 F4) and safe UI escaping of imported/model names", () => {
+  assert.equal(Object.keys(STYLES).length, 14);
   const s = initial();
   s.emperor.name = "<img src=x onerror=alert(1)>";
   const html = renderApp(s);

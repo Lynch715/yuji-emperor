@@ -3,7 +3,7 @@ import { seedNumber, random, DRAFT } from "./rng.js";
 import { uniqueName } from "./names.js";
 import { chooseRegent } from "./regency-info.js";
 import {factionPowers} from './politics.js';
-export const VERSION = 8;
+export const VERSION = 9;
 export const TALENTS = ["政略", "权谋", "武略", "文采", "魅力"];
 export const SLOTS = ["朝", "午", "夜"];
 export const POST_NAMES = [
@@ -287,6 +287,8 @@ export function createState(options = {}) {
       freedom: options.freedom || "mid",
       difficulty: options.difficulty || "normal",
       prose: options.prose || "court",
+      length: options.length || "standard",
+      pov: options.pov || "third",
       demo: options.demo !== false,
     },
     emperor,
@@ -464,6 +466,9 @@ export function migrate(input) {
   // on commit; never rerun an old schedule, roll, settlement or calendar.
   s.v = VERSION;
   s.volumeIndex ??= [];
+  // v9：叙事篇幅与视角。
+  s.settings.length ??= "standard";
+  s.settings.pov ??= "third";
   s.nation.arrears ??= 0;
   s.nation.privyArrears ??= 0;
   s.nation.grainArrears ??= 0;
