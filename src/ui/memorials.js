@@ -3,6 +3,7 @@ import { onDialogExit } from "./request-scope.js";
 import { $, esc, openDialog, closeDialog, toast } from "./common.js";
 import { forecastTurn, validateSchedule } from "../core/turn.js";
 import { EDICTS, execution } from "../core/edicts.js";
+import { cabinetDraft } from "../core/court.js";
 import {
   memorialAssignments,
   availableMemorials,
@@ -65,6 +66,18 @@ export function createMemorialSession(
     target: old?.target || s.court.officials[0]?.id || "",
     remark: old?.remark || "",
   };
+}
+// 未选择的非急报按票拟填入；急报必须御览亲裁。返回填入的本数。
+export function applyCabinetDrafts(s, session) {
+  let filled = 0;
+  for (const id of session.ids) {
+    if (session.choices[id]) continue;
+    const m = s.memorials.find((x) => x.id === id);
+    if (!m || m.urgent) continue;
+    const draft = cabinetDraft(s, m);
+    if (draft) { session.choices[id] = draft.option; filled++; }
+  }
+  return filled;
 }
 function legacyChoice(m, value) {
   if (value === "opt0" && m.options[0]?.id === value) return "approve";
@@ -244,6 +257,7 @@ export function memorialHTML(s, session) {
       m.title.includes(p.name),
   );
   const opts = memorialOptions(s, m),
+    draft = cabinetDraft(s, m),
     selected = session.choices[m.id],
     debate = debateFor(s, session),
     assigned = memorialAssignments(s);
@@ -305,7 +319,9 @@ export function memorialHTML(s, session) {
           ? "执行度预估「" + execution(s, o.edictType, 11).label + "」"
           : chosen
             ? "已选"
-            : i < 4
+            : draft?.option === o.id
+              ? "票拟"
+              : i < 4
               ? "按 " + (i + 1)
               : "";
       return (
@@ -422,7 +438,11 @@ export function memorialHTML(s, session) {
     (session.index + 1) +
     " / " +
     session.ids.length +
-    ' 本</small></div><div class="review-options" role="radiogroup" aria-label="处置选项">' +
+    ' 本</small></div>' +
+    (draft
+      ? '<p class="cabinet-draft">票拟 · ' + esc(draft.minister) + (draft.faction ? "（" + esc(draft.faction) + "）" : "") + "：" + esc(draft.label) + "</p>"
+      : "") +
+    '<div class="review-options" role="radiogroup" aria-label="处置选项">' +
     cards +
     "</div>" +
     (session.kind === "上朝"
@@ -476,7 +496,11 @@ export function memorialHTML(s, session) {
       : "") +
     ('<p class="review-help"><span class="keyboard-help">1–4 择批 · Enter 下一本 · Esc 暂退</span></p><p id="review-error" ' +
       'class="review-error" role="status" aria-live="polite"></p></section></div><footer class="review-footer"><butto' +
-      'n type="button" data-review-hold>留中不发</button><button type="button" id="review-next" class="primary" data-revi' +
+      'n type="button" data-review-hold>留中不发</button>') +
+    (session.ids.some((id) => !session.choices[id] && !s.memorials.find((x) => x.id === id)?.urgent)
+      ? '<button type="button" data-review-drafts>未批者依票拟</button>'
+      : "") +
+    ('<button type="button" id="review-next" class="primary" data-revi' +
       "ew-next>") +
     (session.index === session.ids.length - 1
       ? "拟批完毕，入日程"
@@ -621,6 +645,12 @@ export function memorialDialog(
       session.index = Math.min(session.index, session.ids.length - 1);
       paint();
       d.querySelector(".queue-picker").open = true;
+    } else if (b.hasAttribute("data-review-drafts")) {
+      const filled = applyCabinetDrafts(s, session);
+      const missing = session.ids.findIndex((id) => !session.choices[id]);
+      if (missing >= 0) session.index = missing;
+      paint("#memorial-title");
+      showError(filled ? "已依票拟填入 " + filled + " 本" + (missing >= 0 ? "；急报须亲裁" : "，可拟批完毕") : "急报须亲裁，未填入");
     } else if (b.hasAttribute("data-review-hold")) {
       session.choices[session.ids[session.index]] = "hold";
       next();

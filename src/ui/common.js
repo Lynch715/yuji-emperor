@@ -9,6 +9,78 @@ export function esc(text) {
       ],
   );
 }
+// Full re-renders replace the DOM. Keep inner scroll positions (the phone
+// layout scrolls inside fixed-height containers) and the focused control.
+function nodePath(node, root) {
+  const path = [];
+  while (node && node !== root) {
+    const parent = node.parentElement;
+    if (!parent) return null;
+    path.unshift([...parent.children].indexOf(node));
+    node = parent;
+  }
+  return node === root ? path : null;
+}
+function nodeAt(root, path) {
+  let node = root;
+  for (const i of path) { node = node?.children?.[i]; if (!node) return null; }
+  return node;
+}
+function keyOf(el, root) {
+  if (el.id) return { id: el.id };
+  for (const name of ["scrollKey", "command", "action", "slot", "panel", "clear"])
+    if (el.dataset?.[name]) return { data: name, value: el.dataset[name] };
+  return { path: nodePath(el, root) };
+}
+function find(root, key) {
+  if (key.id) return root.querySelector("#" + CSS.escape(key.id));
+  if (key.data) return root.querySelector("[data-" + key.data.replace(/[A-Z]/g, (c) => "-" + c.toLowerCase()) + '="' + CSS.escape(key.value) + '"]');
+  return key.path ? nodeAt(root, key.path) : null;
+}
+export function captureView(root) {
+  if (!root) return { scrolls: [], focus: null };
+  const scrolls = [];
+  for (const el of root.querySelectorAll("*"))
+    if (el.scrollTop > 0 || el.scrollLeft > 0)
+      scrolls.push({ key: keyOf(el, root), top: el.scrollTop, left: el.scrollLeft });
+  const active = document.activeElement;
+  const focus = active && active !== document.body && root.contains(active)
+    ? { key: keyOf(active, root), start: active.selectionStart ?? null, end: active.selectionEnd ?? null }
+    : null;
+  return { scrolls, focus };
+}
+export function restoreView(root, view) {
+  if (!root || !view) return;
+  for (const s of view.scrolls) {
+    const el = find(root, s.key);
+    if (el) { el.scrollTop = s.top; el.scrollLeft = s.left; }
+  }
+  if (view.focus) {
+    const el = find(root, view.focus.key);
+    if (el && !el.disabled) {
+      el.focus({ preventScroll: true });
+      if (view.focus.start !== null && typeof el.setSelectionRange === "function")
+        try { el.setSelectionRange(view.focus.start, view.focus.end); } catch {}
+    }
+  }
+}
+export function throttleFrame(fn, schedule = (f) => requestAnimationFrame(f)) {
+  let queued = false, latest;
+  return (...args) => {
+    latest = args;
+    if (queued) return;
+    queued = true;
+    schedule(() => { queued = false; fn(...latest); });
+  };
+}
+// Back gestures close the open dialog instead of leaving the game. One history
+// entry is pushed per dialog session; replacing the dialog content reuses it.
+let modalEntry = false, closingFromHistory = false, pendingBack = 0, leaveGuard = () => false;
+export function setLeaveGuard(fn) { leaveGuard = fn; }
+function pushModalEntry() {
+  if (modalEntry) return;
+  try { history.pushState({ ...(history.state || {}), yujiModal: true }, ""); modalEntry = true; } catch {}
+}
 let toastTimer;
 export function toast(text) {
   $("#notice").textContent = text;
@@ -49,6 +121,7 @@ export function openDialog(title, body, className = "") {
     body;
   $("#close-modal").onclick = () => d.close();
   d.showModal();
+  pushModalEntry();
   document.documentElement.classList.add("modal-open");
   d.scrollTop = 0;
 }
@@ -84,8 +157,27 @@ export function initCommon() {
     const at=items.indexOf(document.activeElement);
     if((e.shiftKey&&at<=0)||(!e.shiftKey&&(at===items.length-1||at<0))){e.preventDefault();items[e.shiftKey?items.length-1:0].focus();}
   });
+  window.addEventListener("popstate", () => {
+    if (pendingBack > 0) {
+      // Our own history.back() after a close. If a new dialog opened before the
+      // traversal landed, the entry we arrived on still belongs to a dialog.
+      pendingBack--;
+      modalEntry = $("#modal").open;
+      return;
+    }
+    if (!modalEntry) return;
+    modalEntry = false;
+    if ($("#modal").open) { closingFromHistory = true; $("#modal").close(); }
+  });
+  window.addEventListener("beforeunload", (e) => {
+    if (!leaveGuard()) return;
+    e.preventDefault();
+    e.returnValue = "";
+  });
   $("#modal").addEventListener("close", () => {
     if($("#modal").open)return;
+    if (closingFromHistory) closingFromHistory = false;
+    else if (modalEntry) { modalEntry = false; pendingBack++; try { history.back(); } catch { pendingBack--; } }
     document.documentElement.classList.remove("modal-open");
     if (returnFocus?.isConnected) returnFocus.focus();
     else if(returnSelector) document.querySelector(returnSelector)?.focus();

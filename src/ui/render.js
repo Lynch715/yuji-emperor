@@ -390,7 +390,7 @@ export function introHTML() {
 }
 export function renderApp(
   s,
-  { readOnly = false, busy = false, saveStatus = "" } = {},
+  { readOnly = false, busy = false, saveStatus = "", canRepeat = false } = {},
 ) {
   const last = s?.history.at(-1),
     locked = readOnly || busy || !!s?.ending || !!s?.pending,
@@ -533,7 +533,11 @@ export function renderApp(
             e.excess +
             " 点：劳累、健康与心情受损</strong>"
           : "") +
-        '</div><button class="oral-trigger" data-command="oral" ' +
+        "</div>" +
+        (canRepeat && !scheduled && !locked
+          ? '<button class="repeat-trigger" data-command="repeat">沿用上旬</button>'
+          : "") +
+        '<button class="oral-trigger" data-command="oral" ' +
         (locked ? "disabled" : "") +
         '>口谕</button><button class="primary advance" data-command="advance" ' +
         (readOnly || busy || s.ending ? "disabled" : "") +

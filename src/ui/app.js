@@ -6,8 +6,12 @@ import {
   esc,
   initCommon,
   toast,
+  captureView,
+  restoreView,
+  throttleFrame,
   openDialog,
   closeDialog,
+  setLeaveGuard,
   download,
 } from "./common.js";
 import { loadSettings, openSettings } from "./settings.js";
@@ -23,7 +27,7 @@ import {
 } from "./render.js";
 import { memorialDialog, scheduledMemorialDialog } from "./memorials.js";
 import { memorialAssignments } from "./memorial-state.js";
-import { actionAvailability } from "./view-model.js";
+import { actionAvailability, repeatSchedule } from "./view-model.js";
 import { actionDialog } from "./actions.js";
 import { palacePanel } from "./panels.js";
 import { createSaveStore, createIDB } from "../store/save.js";
@@ -51,6 +55,7 @@ import {
   validateTalk,
 } from "../llm/validate.js";
 initCommon();
+setLeaveGuard(() => busy);
 initAppIcon();
 const store = createSaveStore({
   primary: createIDB(globalThis.indexedDB),
@@ -68,19 +73,31 @@ let state = null,
   config = loadSettings(),
   metrics = loadMetrics(),
   preferred = "朝",
-  saveQueue = Promise.resolve();
+  saveQueue = Promise.resolve(),
+  lastSchedule = null;
 const scheduleSave=createDebouncedSave(()=>persist());
 window.addEventListener("pagehide",()=>scheduleSave.flush());
 function render() {
-  const y = window.scrollY;
-  $("#app").innerHTML = renderApp(state, { readOnly, busy, saveStatus });
+  const y = window.scrollY, kept = captureView($("#app"));
+  const canRepeat = !!state && Object.values(repeatSchedule(state, lastScheduleFor(state))).some(Boolean);
+  $("#app").innerHTML = renderApp(state, { readOnly, busy, saveStatus, canRepeat });
   document.querySelectorAll("[data-action]").forEach((b) => {
     const reason=readOnly?'存档只读保护':busy?'本旬正在续写':actionAvailability(state,b.dataset.action);
     b.disabled=!!reason;b.draggable=!reason;
     if(reason&&b.querySelector('.action-copy small'))b.querySelector('.action-copy small').textContent=reason;
   });
   window.scrollTo(0, y);
+  restoreView($("#app"), kept);
 }
+// Streaming chunks arrive faster than a phone can paint; redraw at most once
+// per frame and only when the draft has grown.
+let streamedLength = -1;
+const streamDraft = throttleFrame((raw) => {
+  if (raw.length === streamedLength) return;
+  streamedLength = raw.length;
+  const el = $("#stream");
+  if (el) el.textContent = "正文草稿 · 正在续写\n\n" + extractPartialChapter(raw);
+});
 function guard() {
   if (!state) throw new Error("请先登基开局");
   if (readOnly) throw new Error("存档处于只读保护模式");
@@ -349,6 +366,9 @@ async function newGame() {
     }
   };
 }
+function lastScheduleFor(s) {
+  return lastSchedule && s && lastSchedule.runId === s.runId && lastSchedule.turn === s.turn ? lastSchedule.schedule : null;
+}
 function arrange(which, action) {
   guard();
   const next = { ...state.schedule, [which]: action };
@@ -393,15 +413,11 @@ async function advance(local = false) {
         budget: state.turnBudget,
         signal: ac.signal,
         onMetric: markMetric,
-        onPartial: (raw) => {
-          const el = $("#stream");
-          if (el)
-            el.textContent =
-              "正文草稿 · 正在续写\n\n" + extractPartialChapter(raw);
-        },
+        onPartial: streamDraft,
       });
     }
     state = commitTurn(state, f, narrative);
+    lastSchedule = { runId: state.runId, turn: state.turn, schedule: f.schedule };
     if (state.ending && !state.settings.demo) {
       try {
         const record = state.chronicles.find((r) => r.id === reignId(state)),
@@ -662,6 +678,17 @@ async function command(name) {
   if (name === "new") return newGame();
   if (name === "saves") return showSaves();
   if (name === "advance") return advance();
+  if (name === "repeat") {
+    guard();
+    const next = repeatSchedule(state, lastScheduleFor(state));
+    if (!Object.values(next).some(Boolean)) { toast("上旬安排本旬无法沿用"); return; }
+    validateSchedule(state, next);
+    state = { ...state, schedule: next };
+    scheduleSave.schedule();
+    render();
+    toast("已沿用上旬可重复的安排");
+    return;
+  }
   if (name === "settle") return advance(true);
   if (name === "complete") {
     guard();
