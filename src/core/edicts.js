@@ -155,6 +155,8 @@ export function issueEdict(state, action, die) {
   if (!rule) throw new Error("无法识别此旨意，请选择模板");
   const blocked=edictBlock(state,type,action.province);if(blocked)throw new Error(blocked);
   if(action.province&&!state.nation.provinces.some(p=>p.id===action.province))throw new Error("请选择有效州郡");
+  const armyTarget=action.armyTarget||'capital';
+  if(type==='征兵'&&!['capital',...state.nation.army.frontiers.map(b=>b.dir)].includes(armyTarget))throw new Error('请选择有效军队');
   if (type === "立储") {
     const s = clone(state),
       child = s.harem.children.find(
@@ -233,6 +235,7 @@ export function issueEdict(state, action, die) {
         Object.entries(rule.effects).map(([k, v]) => [k, v * exec.rate]),
       ),
       province: action.province || null,
+      ...(type==='征兵'?{armyTarget}:{}),
       done: false,
     });
   if(exec.tier===3)s.facts.push({subject:exec.official,key:"截留侵吞",value:type+"截留侵吞 "+(rule.cost*0.7).toFixed(1)+" 万两（已含于发付钱粮，不重复扣款）",turn:s.turn});
@@ -270,7 +273,8 @@ export function advanceProjects(state) {
         }
       }
       project.progress = 100;
-      s = applyPackage(s, project.effects, "政务竣结：" + project.edictType);
+      const effects=project.province&&Number.isFinite(project.effects.morale)?{...project.effects,morale:undefined,province:{id:project.province,morale:project.effects.morale}}:project.effects;
+      s = applyPackage(s, effects, "政务竣结：" + project.edictType);
       if (project.province && project.edictType === "赈灾")
         s = applyPackage(
           s,
@@ -283,12 +287,14 @@ export function advanceProjects(state) {
           },
           "地方赈济到位",
         );
-      if (project.edictType === "征兵")
-        s.nation.army.frontiers = s.nation.army.frontiers.map((f) => ({
+      if (project.edictType === "征兵"){
+        if(project.armyTarget==='capital')s.nation.army.capital.troops=Math.min(45000,s.nation.army.capital.troops+3000);
+        s.nation.army.frontiers = s.nation.army.frontiers.map((f) => project.armyTarget==='all-frontiers'||project.armyTarget===f.dir?({
           ...f,
           troops: Math.min(1000000, f.troops + 3000),
           readiness: clamp(f.readiness + 5),
-        }));
+        }):f);
+      }
     }
   }
   return s;

@@ -7,6 +7,9 @@ import {mockNarrative} from '../src/llm/validate.js';
 export const SEED='御极·夜御案验收';
 export function stage9Fixture(visual=false){
  let s=initialTurn(selectAmbitions(createState({seed:SEED,demo:true})));
+ // This fixture checks historical UI serialization, not C5 takeover rules.
+ // Keep the original memorial IDs available through its setup turn.
+ s.court.officials.forEach(o=>o.ambition=0);
  const f=forecastTurn(s);s=commitTurn(s,f,mockNarrative(f));
  s.memorials=s.memorials.slice(0,6);
  if(visual){

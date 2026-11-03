@@ -1,0 +1,1822 @@
+{
+  "date": "2026-11-02",
+  "branch": "codex/audit-batch2-engine",
+  "baseCommit": "e6b6f95da987e8e3cecffb867eb49eec60407af4",
+  "scope": [
+    "C1",
+    "C2",
+    "C3",
+    "C4",
+    "C5",
+    "C6",
+    "C7",
+    "C8",
+    "C9"
+  ],
+  "c0Retained": true,
+  "saveVersion": 6,
+  "programVersion": "0.9.1",
+  "acceptanceComplete": false,
+  "tests": {
+    "total": 230,
+    "passed": 230,
+    "failed": 0,
+    "skipped": 0,
+    "newRegressionCount": 37,
+    "initialRed": {
+      "numbers": 15,
+      "strategies": 3
+    },
+    "names": [
+      {
+        "file": "test/batch3-numbers.test.js",
+        "name": "C1 民心按人口加权，普遍效果乘0.3且相关州效果不波及别州，四项高值收益递减并记实际账"
+      },
+      {
+        "file": "test/batch3-numbers.test.js",
+        "name": "C1 六部履职成为治理回归目标，圣德皇威心情按月回归，例行准奏只加0.1吏治且驳回不扣民心"
+      },
+      {
+        "file": "test/batch3-numbers.test.js",
+        "name": "C2 季度新粮按人口灾情，军粮和灾州月耗，三年仓容超额年霉变10%"
+      },
+      {
+        "file": "test/batch3-numbers.test.js",
+        "name": "C2 粮储不足一月军粮才使战力减三成，足粮战力不受影响"
+      },
+      {
+        "file": "test/batch3-numbers.test.js",
+        "name": "C3 钱粮不足的每一份差额进入分币种积欠，收入先还欠且不重复记账"
+      },
+      {
+        "file": "test/batch3-numbers.test.js",
+        "name": "C3 皇庄盐课每月收入三万两，节俭真实降低宫费三成"
+      },
+      {
+        "file": "test/batch3-numbers.test.js",
+        "name": "C3 v6迁移补新字段且v1至v5旧预演逐字保留，提交不重掷不重算"
+      },
+      {
+        "file": "test/batch3-numbers.test.js",
+        "name": "C4 京营按四万五编制月补1%并付饷，民心或军粮不足不补，征兵可指定一军"
+      },
+      {
+        "file": "test/batch3-numbers.test.js",
+        "name": "C5 派系势力取决于在任职位能力，任免立即改变且无人执政不凭空同步漂移"
+      },
+      {
+        "file": "test/batch3-numbers.test.js",
+        "name": "C5 任一在任官员野心势力低皇威可触发真实代批，弱势者不会每旬代批"
+      },
+      {
+        "file": "test/batch3-numbers.test.js",
+        "name": "C6 郁结连续满三个月后按月损健康，恢复心情重置，常规月心情回归55"
+      },
+      {
+        "file": "test/batch3-numbers.test.js",
+        "name": "C7 官员年龄死亡率有阶梯，七十岁请致仕可准留，科举按空缺取一至五人"
+      },
+      {
+        "file": "test/batch3-numbers.test.js",
+        "name": "C8 宫斗发起者按心机加权且选择最差关系目标，小产概率独立限制2至8%"
+      },
+      {
+        "file": "test/batch3-numbers.test.js",
+        "name": "C9 宴请好感按俭常盛加2加4加7，同客六旬内减半且不影响其他宾客"
+      },
+      {
+        "file": "test/batch3-numbers.test.js",
+        "name": "C9 互市成功只设季度收入与一年期限，同国外邦一年只能议一次，交战停收"
+      },
+      {
+        "file": "test/batch3-numbers.test.js",
+        "name": "C6 当廷驳回另记皇威来源，成功问责祭天胜仗和代批仍走核心效果包"
+      },
+      {
+        "file": "test/batch3-numbers.test.js",
+        "name": "C1 例行积压每月记一次治理成本，低治理影响各州民心但不篡改全国口径"
+      },
+      {
+        "file": "test/batch3-numbers.test.js",
+        "name": "C1 有灾请赈的驳回损圣德，普通案牍驳回不扣民心圣德"
+      },
+      {
+        "file": "test/batch3-numbers.test.js",
+        "name": "C6 真实急报逾期损皇威，普通案牍逾期不额外损皇威"
+      },
+      {
+        "file": "test/batch3-numbers.test.js",
+        "name": "C3 超过旧余额上限的短缺仍完整记债，不把积欠截成一百万"
+      },
+      {
+        "file": "test/batch3-numbers.test.js",
+        "name": "C1 天灾当旬损当地民心，拨银救灾的收益作用于受灾州且不普遍白给"
+      },
+      {
+        "file": "test/batch3-numbers.test.js",
+        "name": "C6 权臣实批损皇威，分币种积欠在界面记账有中文名称"
+      },
+      {
+        "file": "test/batch3-numbers.test.js",
+        "name": "C1 单州减赋项目竣结只改变该州民心，其他州保持原值"
+      },
+      {
+        "file": "test/batch3-numbers.test.js",
+        "name": "C6 月中恢复心情即解除连续郁结，不能把恢复前后的月份拼接扣健康"
+      },
+      {
+        "file": "test/batch3-numbers.test.js",
+        "name": "C1 民心稳定时各州每月向55修复百分之一点八，全局低于25不白给恢复且全国仍人口加权"
+      },
+      {
+        "file": "test/batch3-numbers.test.js",
+        "name": "C1 钱粮足付且全国稳定时可修复低民心州，欠饷或全局危机时不白给恢复"
+      },
+      {
+        "file": "test/batch3-numbers.test.js",
+        "name": "C5 地方在任官员也可构成权臣，由同派在京官员实际代批；新局势力不等月结才突变"
+      },
+      {
+        "file": "test/batch3-numbers.test.js",
+        "name": "C3 真实v4和v5无新字段待续快照原样读入，提交只补v6字段而不改旧钱粮与骰子"
+      },
+      {
+        "file": "test/batch3-numbers.test.js",
+        "name": "C6 长期郁结时健康净减1而不被太医回血抵消，满健康不重复扣回血"
+      },
+      {
+        "file": "test/batch3-numbers.test.js",
+        "name": "C6 事务预演中的长期郁结也净减健康1，事务副本不得让回血抵消伤害"
+      },
+      {
+        "file": "test/batch3-numbers.test.js",
+        "name": "C2 模拟粮储峰值包含年结霉变之前的真实入仓峰值"
+      },
+      {
+        "file": "test/batch3-numbers.test.js",
+        "name": "C7 留任后不每年重复生成同一人的七十岁致仕请求，既有事件保留"
+      },
+      {
+        "file": "test/batch3-numbers.test.js",
+        "name": "C5 权臣每月最多代批一本，同旬重调不结第二本，留守指定代批沿用独立机制"
+      },
+      {
+        "file": "test/batch3-strategies.test.js",
+        "name": "C1 验收口径 四类策略按同一规则选件，尽职与贪心先急后到期且不改原匣"
+      },
+      {
+        "file": "test/batch3-strategies.test.js",
+        "name": "C1 验收口径 贪心每旬准奏急件前三本，尽职保留八分支与可负担性"
+      },
+      {
+        "file": "test/batch3-strategies.test.js",
+        "name": "C1 验收口径 绝对亡国率只观察，乱批不优于尽职且饱和与波动门槛保留"
+      },
+      {
+        "file": "test/batch3-strategies.test.js",
+        "name": "C1 验收口径 无为也统计完整200年和前20年波动，15年门槛检查第一次亡国"
+      }
+    ]
+  },
+  "simulation": {
+    "years": 200,
+    "turns": 7200,
+    "strategy": "diligent",
+    "exitCode": 0,
+    "identicalToBalance": true
+  },
+  "balance": {
+    "passed": false,
+    "exitCode": 1,
+    "failures": [
+      {
+        "strategy": "rest",
+        "seed": "御极·长治",
+        "check": "collapseWithin15Years"
+      },
+      {
+        "strategy": "rest",
+        "seed": "御极·宫闱",
+        "check": "collapseWithin15Years"
+      },
+      {
+        "strategy": "random",
+        "seed": "御极·两百年",
+        "check": "invasions"
+      },
+      {
+        "strategy": "random",
+        "seed": "御极·边政",
+        "check": "invasions"
+      },
+      {
+        "strategy": "random",
+        "seed": "御极·宫闱",
+        "check": "invasions"
+      },
+      {
+        "strategy": "diligent",
+        "seed": "御极·长治",
+        "check": "children"
+      },
+      {
+        "strategy": "diligent",
+        "seed": "御极·边政",
+        "check": "events"
+      }
+    ],
+    "before": {
+      "rest": [
+        {
+          "seed": "御极·两百年",
+          "strategy": "rest",
+          "turns": 7200,
+          "firstCollapseTurn": 183,
+          "collapseCount": 37,
+          "completedReigns": 37,
+          "collapseRate": 100,
+          "saturationRatio": 0,
+          "nationalStddev": {
+            "morale": 21.29629834452034,
+            "governance": 19.03218226233082,
+            "virtue": 4.919439737041835,
+            "prestige": 0
+          },
+          "strongmanTurns": 0,
+          "invasionCount": 29,
+          "meanChildren": 0,
+          "maxTreasury": 1128.1975091181662,
+          "maxGrain": 1747.7272727272702,
+          "eventRange": [
+            44,
+            64
+          ]
+        },
+        {
+          "seed": "御极·长治",
+          "strategy": "rest",
+          "turns": 7200,
+          "firstCollapseTurn": 191,
+          "collapseCount": 37,
+          "completedReigns": 37,
+          "collapseRate": 100,
+          "saturationRatio": 0,
+          "nationalStddev": {
+            "morale": 21.147022858642572,
+            "governance": 19.667634575469844,
+            "virtue": 5.174939613173825,
+            "prestige": 0
+          },
+          "strongmanTurns": 0,
+          "invasionCount": 26,
+          "meanChildren": 0,
+          "maxTreasury": 1158.9204290009425,
+          "maxGrain": 1812.4999999999986,
+          "eventRange": [
+            37,
+            66
+          ]
+        },
+        {
+          "seed": "御极·边政",
+          "strategy": "rest",
+          "turns": 7200,
+          "firstCollapseTurn": 194,
+          "collapseCount": 37,
+          "completedReigns": 37,
+          "collapseRate": 100,
+          "saturationRatio": 0,
+          "nationalStddev": {
+            "morale": 21.063971297917814,
+            "governance": 19.084391167239176,
+            "virtue": 0,
+            "prestige": 0
+          },
+          "strongmanTurns": 0,
+          "invasionCount": 30,
+          "meanChildren": 0,
+          "maxTreasury": 1125.575556898346,
+          "maxGrain": 1794.7727272727243,
+          "eventRange": [
+            41,
+            69
+          ]
+        },
+        {
+          "seed": "御极·宫闱",
+          "strategy": "rest",
+          "turns": 7200,
+          "firstCollapseTurn": 200,
+          "collapseCount": 37,
+          "completedReigns": 37,
+          "collapseRate": 100,
+          "saturationRatio": 0,
+          "nationalStddev": {
+            "morale": 21.269447388573074,
+            "governance": 19.04047868649627,
+            "virtue": 4.8463193185650235,
+            "prestige": 0
+          },
+          "strongmanTurns": 0,
+          "invasionCount": 35,
+          "meanChildren": 0,
+          "maxTreasury": 1158.7168041047937,
+          "maxGrain": 1764.5454545454536,
+          "eventRange": [
+            41,
+            61
+          ]
+        }
+      ],
+      "random": [
+        {
+          "seed": "御极·两百年",
+          "strategy": "random",
+          "turns": 7200,
+          "collapseCount": 4,
+          "completedReigns": 7,
+          "collapseRate": 57.14,
+          "saturationRatio": 0.8597222222222223,
+          "nationalStddev": {
+            "morale": 10.087609154028923,
+            "governance": 15.87482186689216,
+            "virtue": 8.667391778782822,
+            "prestige": 11.862317786004786
+          },
+          "strongmanTurns": 0,
+          "invasionCount": 159,
+          "meanChildren": 6.86,
+          "maxTreasury": 1654.3122087306256,
+          "maxGrain": 23114.09090909096,
+          "eventRange": [
+            45,
+            69
+          ],
+          "checks": {
+            "invasions": true,
+            "complete": true,
+            "treasuryPeak": true,
+            "latePeak": true,
+            "children": true,
+            "events": true,
+            "annualCash": true,
+            "mortalityComparison": true,
+            "saturation": true,
+            "variation": true,
+            "strongman": true
+          }
+        },
+        {
+          "seed": "御极·长治",
+          "strategy": "random",
+          "turns": 7200,
+          "collapseCount": 5,
+          "completedReigns": 8,
+          "collapseRate": 62.5,
+          "saturationRatio": 0.8388888888888889,
+          "nationalStddev": {
+            "morale": 9.752420981389498,
+            "governance": 6.252631761400566,
+            "virtue": 9.276566787234584,
+            "prestige": 11.604807100486727
+          },
+          "strongmanTurns": 0,
+          "invasionCount": 153,
+          "meanChildren": 7.13,
+          "maxTreasury": 1782.2599901157682,
+          "maxGrain": 12268.636363636551,
+          "eventRange": [
+            48,
+            67
+          ],
+          "checks": {
+            "invasions": true,
+            "complete": true,
+            "treasuryPeak": true,
+            "latePeak": true,
+            "children": true,
+            "events": true,
+            "annualCash": true,
+            "mortalityComparison": true,
+            "saturation": true,
+            "variation": true,
+            "strongman": true
+          }
+        },
+        {
+          "seed": "御极·边政",
+          "strategy": "random",
+          "turns": 7200,
+          "collapseCount": 0,
+          "completedReigns": 7,
+          "collapseRate": 0,
+          "saturationRatio": 0.8388888888888889,
+          "nationalStddev": {
+            "morale": 7.606895413883301,
+            "governance": 16.577902569696224,
+            "virtue": 10.059034078354772,
+            "prestige": 11.34798819664146
+          },
+          "strongmanTurns": 0,
+          "invasionCount": 176,
+          "meanChildren": 4.57,
+          "maxTreasury": 1450.532743051268,
+          "maxGrain": 35077.272727272066,
+          "eventRange": [
+            43,
+            69
+          ],
+          "checks": {
+            "invasions": true,
+            "complete": true,
+            "treasuryPeak": true,
+            "latePeak": true,
+            "children": true,
+            "events": true,
+            "annualCash": true,
+            "mortalityComparison": true,
+            "saturation": true,
+            "variation": true,
+            "strongman": true
+          }
+        },
+        {
+          "seed": "御极·宫闱",
+          "strategy": "random",
+          "turns": 7200,
+          "collapseCount": 4,
+          "completedReigns": 5,
+          "collapseRate": 80,
+          "saturationRatio": 0.8472222222222222,
+          "nationalStddev": {
+            "morale": 10.907818589407748,
+            "governance": 22.363534957751398,
+            "virtue": 10.324147496417288,
+            "prestige": 11.17367341585402
+          },
+          "strongmanTurns": 0,
+          "invasionCount": 159,
+          "meanChildren": 7.8,
+          "maxTreasury": 1155.994019180477,
+          "maxGrain": 15679.545454545812,
+          "eventRange": [
+            39,
+            69
+          ],
+          "checks": {
+            "invasions": true,
+            "complete": true,
+            "treasuryPeak": true,
+            "latePeak": true,
+            "children": true,
+            "events": true,
+            "annualCash": true,
+            "mortalityComparison": true,
+            "saturation": true,
+            "variation": true,
+            "strongman": true
+          }
+        }
+      ],
+      "diligent": [
+        {
+          "seed": "御极·两百年",
+          "strategy": "diligent",
+          "turns": 7200,
+          "collapseCount": 0,
+          "completedReigns": 5,
+          "collapseRate": 0,
+          "saturationRatio": 0.9166666666666666,
+          "nationalStddev": {
+            "morale": 8.495868285022425,
+            "governance": 16.287423328012874,
+            "virtue": 7.6813940470574655,
+            "prestige": 12.07999469840802
+          },
+          "strongmanTurns": 0,
+          "invasionCount": 172,
+          "meanChildren": 6.8,
+          "maxTreasury": 1599.8227175714994,
+          "maxGrain": 34298.18181818137,
+          "eventRange": [
+            45,
+            68
+          ],
+          "checks": {
+            "invasions": true,
+            "complete": true,
+            "treasuryPeak": true,
+            "latePeak": true,
+            "children": true,
+            "events": true,
+            "annualCash": true,
+            "mortalityComparison": true,
+            "saturation": true,
+            "variation": true,
+            "strongman": false
+          }
+        },
+        {
+          "seed": "御极·长治",
+          "strategy": "diligent",
+          "turns": 7200,
+          "collapseCount": 0,
+          "completedReigns": 4,
+          "collapseRate": 0,
+          "saturationRatio": 0.9291666666666667,
+          "nationalStddev": {
+            "morale": 7.726686569742409,
+            "governance": 21.034586141868893,
+            "virtue": 7.637950442355649,
+            "prestige": 11.84073347119158
+          },
+          "strongmanTurns": 0,
+          "invasionCount": 173,
+          "meanChildren": 8,
+          "maxTreasury": 1475.670471274249,
+          "maxGrain": 34138.18181818136,
+          "eventRange": [
+            47,
+            73
+          ],
+          "checks": {
+            "invasions": true,
+            "complete": true,
+            "treasuryPeak": true,
+            "latePeak": true,
+            "children": true,
+            "events": true,
+            "annualCash": true,
+            "mortalityComparison": true,
+            "saturation": true,
+            "variation": true,
+            "strongman": false
+          }
+        },
+        {
+          "seed": "御极·边政",
+          "strategy": "diligent",
+          "turns": 7200,
+          "collapseCount": 0,
+          "completedReigns": 8,
+          "collapseRate": 0,
+          "saturationRatio": 0.9013888888888889,
+          "nationalStddev": {
+            "morale": 8.3638975659095,
+            "governance": 17.30112630563903,
+            "virtue": 8.002335770122055,
+            "prestige": 11.257824246755083
+          },
+          "strongmanTurns": 0,
+          "invasionCount": 176,
+          "meanChildren": 4.63,
+          "maxTreasury": 1548.6930971924426,
+          "maxGrain": 34278.18181818136,
+          "eventRange": [
+            43,
+            67
+          ],
+          "checks": {
+            "invasions": true,
+            "complete": true,
+            "treasuryPeak": true,
+            "latePeak": true,
+            "children": true,
+            "events": true,
+            "annualCash": true,
+            "mortalityComparison": true,
+            "saturation": true,
+            "variation": true,
+            "strongman": false
+          }
+        },
+        {
+          "seed": "御极·宫闱",
+          "strategy": "diligent",
+          "turns": 7200,
+          "collapseCount": 0,
+          "completedReigns": 5,
+          "collapseRate": 0,
+          "saturationRatio": 0.8972222222222223,
+          "nationalStddev": {
+            "morale": 8.893288827252157,
+            "governance": 20.577554989361463,
+            "virtue": 8.719745295861156,
+            "prestige": 11.093034906530209
+          },
+          "strongmanTurns": 0,
+          "invasionCount": 173,
+          "meanChildren": 7.2,
+          "maxTreasury": 1043.970210731136,
+          "maxGrain": 34358.181818181416,
+          "eventRange": [
+            46,
+            67
+          ],
+          "checks": {
+            "invasions": true,
+            "complete": true,
+            "treasuryPeak": true,
+            "latePeak": true,
+            "children": true,
+            "events": true,
+            "annualCash": true,
+            "mortalityComparison": true,
+            "saturation": true,
+            "variation": true,
+            "strongman": false
+          }
+        }
+      ],
+      "greedy": [
+        {
+          "seed": "御极·两百年",
+          "strategy": "greedy",
+          "turns": 7200,
+          "collapseCount": 0,
+          "completedReigns": 4,
+          "collapseRate": 0,
+          "saturationRatio": 0.9555555555555556,
+          "nationalStddev": {
+            "morale": 4.2325440971005905,
+            "governance": 5.039614713675785,
+            "virtue": 6.777617114443727,
+            "prestige": 14.136241770864068
+          },
+          "strongmanTurns": 0,
+          "invasionCount": 172,
+          "meanChildren": 0,
+          "maxTreasury": 1699.7932544864634,
+          "maxGrain": 40468.181818182435,
+          "eventRange": [
+            45,
+            64
+          ],
+          "checks": {
+            "invasions": true,
+            "complete": true,
+            "treasuryPeak": true,
+            "latePeak": true,
+            "children": false,
+            "events": true,
+            "annualCash": true,
+            "mortalityComparison": true,
+            "saturation": false,
+            "variation": true,
+            "strongman": true
+          }
+        },
+        {
+          "seed": "御极·长治",
+          "strategy": "greedy",
+          "turns": 7200,
+          "collapseCount": 0,
+          "completedReigns": 4,
+          "collapseRate": 0,
+          "saturationRatio": 0.9638888888888889,
+          "nationalStddev": {
+            "morale": 5.055021760409975,
+            "governance": 4.687716364646897,
+            "virtue": 6.773953839323318,
+            "prestige": 15.412006052281301
+          },
+          "strongmanTurns": 0,
+          "invasionCount": 173,
+          "meanChildren": 0,
+          "maxTreasury": 1639.717620453294,
+          "maxGrain": 40468.181818182435,
+          "eventRange": [
+            49,
+            76
+          ],
+          "checks": {
+            "invasions": true,
+            "complete": true,
+            "treasuryPeak": true,
+            "latePeak": true,
+            "children": false,
+            "events": true,
+            "annualCash": true,
+            "mortalityComparison": true,
+            "saturation": false,
+            "variation": true,
+            "strongman": true
+          }
+        },
+        {
+          "seed": "御极·边政",
+          "strategy": "greedy",
+          "turns": 7200,
+          "collapseCount": 0,
+          "completedReigns": 4,
+          "collapseRate": 0,
+          "saturationRatio": 0.9708333333333333,
+          "nationalStddev": {
+            "morale": 4.2555181795652,
+            "governance": 4.951359895436054,
+            "virtue": 5.75566749676642,
+            "prestige": 13.765268668928229
+          },
+          "strongmanTurns": 0,
+          "invasionCount": 176,
+          "meanChildren": 0,
+          "maxTreasury": 1929.607653874721,
+          "maxGrain": 40468.181818182435,
+          "eventRange": [
+            35,
+            70
+          ],
+          "checks": {
+            "invasions": true,
+            "complete": true,
+            "treasuryPeak": true,
+            "latePeak": true,
+            "children": false,
+            "events": true,
+            "annualCash": true,
+            "mortalityComparison": true,
+            "saturation": false,
+            "variation": true,
+            "strongman": true
+          }
+        },
+        {
+          "seed": "御极·宫闱",
+          "strategy": "greedy",
+          "turns": 7200,
+          "collapseCount": 0,
+          "completedReigns": 4,
+          "collapseRate": 0,
+          "saturationRatio": 0.9583333333333334,
+          "nationalStddev": {
+            "morale": 6.737323178334919,
+            "governance": 4.102600744390581,
+            "virtue": 8.861668390696265,
+            "prestige": 11.317390406683144
+          },
+          "strongmanTurns": 0,
+          "invasionCount": 173,
+          "meanChildren": 0,
+          "maxTreasury": 1656.8856516606388,
+          "maxGrain": 40468.181818182435,
+          "eventRange": [
+            44,
+            68
+          ],
+          "checks": {
+            "invasions": true,
+            "complete": true,
+            "treasuryPeak": true,
+            "latePeak": true,
+            "children": false,
+            "events": true,
+            "annualCash": true,
+            "mortalityComparison": true,
+            "saturation": false,
+            "variation": true,
+            "strongman": true
+          }
+        }
+      ]
+    },
+    "after": {
+      "rest": [
+        {
+          "seed": "御极·两百年",
+          "strategy": "rest",
+          "turns": 7200,
+          "firstCollapseTurn": 504,
+          "collapseCount": 15,
+          "completedReigns": 15,
+          "collapseRate": 100,
+          "saturationRatio": 0,
+          "nationalStddev": {
+            "morale": 14.925167224435699,
+            "governance": 15.818890487378304,
+            "virtue": 6.1771668906918675,
+            "prestige": 18.02477651645548
+          },
+          "strongmanTurns": 2344,
+          "invasionCount": 123,
+          "meanChildren": 0,
+          "maxTreasury": 1108.3462007412968,
+          "maxGrain": 20064.909906379555,
+          "eventRange": [
+            48,
+            68
+          ],
+          "checks": {
+            "complete": true,
+            "collapseWithin15Years": true
+          }
+        },
+        {
+          "seed": "御极·长治",
+          "strategy": "rest",
+          "turns": 7200,
+          "firstCollapseTurn": 545,
+          "collapseCount": 15,
+          "completedReigns": 15,
+          "collapseRate": 100,
+          "saturationRatio": 0,
+          "nationalStddev": {
+            "morale": 15.071312836855936,
+            "governance": 15.275299923085353,
+            "virtue": 5.746834197358872,
+            "prestige": 17.67188419752882
+          },
+          "strongmanTurns": 2355,
+          "invasionCount": 121,
+          "meanChildren": 0,
+          "maxTreasury": 1172.8603895607223,
+          "maxGrain": 19525.48313704211,
+          "eventRange": [
+            46,
+            73
+          ],
+          "checks": {
+            "complete": true,
+            "collapseWithin15Years": false
+          }
+        },
+        {
+          "seed": "御极·边政",
+          "strategy": "rest",
+          "turns": 7200,
+          "firstCollapseTurn": 473,
+          "collapseCount": 15,
+          "completedReigns": 15,
+          "collapseRate": 100,
+          "saturationRatio": 0,
+          "nationalStddev": {
+            "morale": 14.118813508441146,
+            "governance": 15.348287537066982,
+            "virtue": 5.796449769989593,
+            "prestige": 16.34737831401895
+          },
+          "strongmanTurns": 2270,
+          "invasionCount": 118,
+          "meanChildren": 0,
+          "maxTreasury": 1104.614219277039,
+          "maxGrain": 19739.294278116107,
+          "eventRange": [
+            52,
+            75
+          ],
+          "checks": {
+            "complete": true,
+            "collapseWithin15Years": true
+          }
+        },
+        {
+          "seed": "御极·宫闱",
+          "strategy": "rest",
+          "turns": 7200,
+          "firstCollapseTurn": 577,
+          "collapseCount": 15,
+          "completedReigns": 15,
+          "collapseRate": 100,
+          "saturationRatio": 0,
+          "nationalStddev": {
+            "morale": 15.432413912079708,
+            "governance": 15.962927999848306,
+            "virtue": 6.37857324206503,
+            "prestige": 17.82403401429352
+          },
+          "strongmanTurns": 2360,
+          "invasionCount": 119,
+          "meanChildren": 0,
+          "maxTreasury": 1164.6239409385748,
+          "maxGrain": 19352.354076055315,
+          "eventRange": [
+            47,
+            68
+          ],
+          "checks": {
+            "complete": true,
+            "collapseWithin15Years": false
+          }
+        }
+      ],
+      "random": [
+        {
+          "seed": "御极·两百年",
+          "strategy": "random",
+          "turns": 7200,
+          "firstCollapseTurn": 302,
+          "collapseCount": 18,
+          "completedReigns": 18,
+          "collapseRate": 100,
+          "saturationRatio": 0,
+          "nationalStddev": {
+            "morale": 15.113494994965986,
+            "governance": 13.806964933107892,
+            "virtue": 7.973149081154103,
+            "prestige": 5.842361888657406
+          },
+          "strongmanTurns": 262,
+          "invasionCount": 108,
+          "meanChildren": 5.56,
+          "maxTreasury": 1091.935444049431,
+          "maxGrain": 19717.995925759955,
+          "eventRange": [
+            49,
+            66
+          ],
+          "checks": {
+            "invasions": false,
+            "complete": true,
+            "treasuryPeak": true,
+            "latePeak": true,
+            "children": true,
+            "events": true,
+            "annualCash": true,
+            "grainBounded": true,
+            "mortalityComparison": true,
+            "saturation": true,
+            "variation": true,
+            "strongman": true
+          }
+        },
+        {
+          "seed": "御极·长治",
+          "strategy": "random",
+          "turns": 7200,
+          "firstCollapseTurn": 302,
+          "collapseCount": 17,
+          "completedReigns": 17,
+          "collapseRate": 100,
+          "saturationRatio": 0,
+          "nationalStddev": {
+            "morale": 18.214110007671724,
+            "governance": 14.663595140077764,
+            "virtue": 12.315281618310637,
+            "prestige": 7.991990973809995
+          },
+          "strongmanTurns": 426,
+          "invasionCount": 121,
+          "meanChildren": 6.41,
+          "maxTreasury": 1182.8691139492037,
+          "maxGrain": 20300.68634398732,
+          "eventRange": [
+            47,
+            77
+          ],
+          "checks": {
+            "invasions": true,
+            "complete": true,
+            "treasuryPeak": true,
+            "latePeak": true,
+            "children": true,
+            "events": true,
+            "annualCash": true,
+            "grainBounded": true,
+            "mortalityComparison": true,
+            "saturation": true,
+            "variation": true,
+            "strongman": true
+          }
+        },
+        {
+          "seed": "御极·边政",
+          "strategy": "random",
+          "turns": 7200,
+          "firstCollapseTurn": 338,
+          "collapseCount": 18,
+          "completedReigns": 18,
+          "collapseRate": 100,
+          "saturationRatio": 0,
+          "nationalStddev": {
+            "morale": 17.26860380075839,
+            "governance": 15.689618957456775,
+            "virtue": 10.534616722936807,
+            "prestige": 6.880224195969368
+          },
+          "strongmanTurns": 227,
+          "invasionCount": 112,
+          "meanChildren": 5.44,
+          "maxTreasury": 1086.9608410109522,
+          "maxGrain": 20257.31078427509,
+          "eventRange": [
+            47,
+            69
+          ],
+          "checks": {
+            "invasions": false,
+            "complete": true,
+            "treasuryPeak": true,
+            "latePeak": true,
+            "children": true,
+            "events": true,
+            "annualCash": true,
+            "grainBounded": true,
+            "mortalityComparison": true,
+            "saturation": true,
+            "variation": true,
+            "strongman": true
+          }
+        },
+        {
+          "seed": "御极·宫闱",
+          "strategy": "random",
+          "turns": 7200,
+          "firstCollapseTurn": 554,
+          "collapseCount": 17,
+          "completedReigns": 17,
+          "collapseRate": 100,
+          "saturationRatio": 0,
+          "nationalStddev": {
+            "morale": 13.648550059546888,
+            "governance": 10.905989827456455,
+            "virtue": 10.099658960077974,
+            "prestige": 6.294428469175826
+          },
+          "strongmanTurns": 252,
+          "invasionCount": 112,
+          "meanChildren": 5.71,
+          "maxTreasury": 1153.4006105344877,
+          "maxGrain": 17715.777139500544,
+          "eventRange": [
+            46,
+            71
+          ],
+          "checks": {
+            "invasions": false,
+            "complete": true,
+            "treasuryPeak": true,
+            "latePeak": true,
+            "children": true,
+            "events": true,
+            "annualCash": true,
+            "grainBounded": true,
+            "mortalityComparison": true,
+            "saturation": true,
+            "variation": true,
+            "strongman": true
+          }
+        }
+      ],
+      "diligent": [
+        {
+          "seed": "御极·两百年",
+          "strategy": "diligent",
+          "turns": 7200,
+          "firstCollapseTurn": 5927,
+          "collapseCount": 1,
+          "completedReigns": 4,
+          "collapseRate": 25,
+          "saturationRatio": 0,
+          "nationalStddev": {
+            "morale": 9.118566889341047,
+            "governance": 11.627404955659358,
+            "virtue": 10.400382494682859,
+            "prestige": 5.64907669924723
+          },
+          "strongmanTurns": 5,
+          "invasionCount": 169,
+          "meanChildren": 8.75,
+          "maxTreasury": 1043.656168807997,
+          "maxGrain": 24645.771276535983,
+          "eventRange": [
+            54,
+            78
+          ],
+          "checks": {
+            "invasions": true,
+            "complete": true,
+            "treasuryPeak": true,
+            "latePeak": true,
+            "children": true,
+            "events": true,
+            "annualCash": true,
+            "grainBounded": true,
+            "mortalityComparison": true,
+            "saturation": true,
+            "variation": true,
+            "strongman": true
+          }
+        },
+        {
+          "seed": "御极·长治",
+          "strategy": "diligent",
+          "turns": 7200,
+          "firstCollapseTurn": 5841,
+          "collapseCount": 1,
+          "completedReigns": 5,
+          "collapseRate": 20,
+          "saturationRatio": 0,
+          "nationalStddev": {
+            "morale": 8.27853593485869,
+            "governance": 7.430978791944494,
+            "virtue": 15.928139846445692,
+            "prestige": 6.084075915124786
+          },
+          "strongmanTurns": 27,
+          "invasionCount": 170,
+          "meanChildren": 9.8,
+          "maxTreasury": 1087.462418122605,
+          "maxGrain": 22347.89453525904,
+          "eventRange": [
+            46,
+            77
+          ],
+          "checks": {
+            "invasions": true,
+            "complete": true,
+            "treasuryPeak": true,
+            "latePeak": true,
+            "children": false,
+            "events": true,
+            "annualCash": true,
+            "grainBounded": true,
+            "mortalityComparison": true,
+            "saturation": true,
+            "variation": true,
+            "strongman": true
+          }
+        },
+        {
+          "seed": "御极·边政",
+          "strategy": "diligent",
+          "turns": 7200,
+          "firstCollapseTurn": 2300,
+          "collapseCount": 2,
+          "completedReigns": 5,
+          "collapseRate": 40,
+          "saturationRatio": 0,
+          "nationalStddev": {
+            "morale": 8.04862508148631,
+            "governance": 9.469545430253211,
+            "virtue": 11.21820980850691,
+            "prestige": 5.705130065074943
+          },
+          "strongmanTurns": 35,
+          "invasionCount": 164,
+          "meanChildren": 6.2,
+          "maxTreasury": 1039.835277061132,
+          "maxGrain": 24197.544060717402,
+          "eventRange": [
+            47,
+            83
+          ],
+          "checks": {
+            "invasions": true,
+            "complete": true,
+            "treasuryPeak": true,
+            "latePeak": true,
+            "children": true,
+            "events": false,
+            "annualCash": true,
+            "grainBounded": true,
+            "mortalityComparison": true,
+            "saturation": true,
+            "variation": true,
+            "strongman": true
+          }
+        },
+        {
+          "seed": "御极·宫闱",
+          "strategy": "diligent",
+          "turns": 7200,
+          "firstCollapseTurn": null,
+          "collapseCount": 0,
+          "completedReigns": 5,
+          "collapseRate": 0,
+          "saturationRatio": 0,
+          "nationalStddev": {
+            "morale": 5.1206987528226895,
+            "governance": 7.442254023177084,
+            "virtue": 12.314133403967574,
+            "prestige": 5.815612931068512
+          },
+          "strongmanTurns": 33,
+          "invasionCount": 173,
+          "meanChildren": 7.8,
+          "maxTreasury": 1051.661219943103,
+          "maxGrain": 22524.82863841751,
+          "eventRange": [
+            44,
+            73
+          ],
+          "checks": {
+            "invasions": true,
+            "complete": true,
+            "treasuryPeak": true,
+            "latePeak": true,
+            "children": true,
+            "events": true,
+            "annualCash": true,
+            "grainBounded": true,
+            "mortalityComparison": true,
+            "saturation": true,
+            "variation": true,
+            "strongman": true
+          }
+        }
+      ],
+      "greedy": [
+        {
+          "seed": "御极·两百年",
+          "strategy": "greedy",
+          "turns": 7200,
+          "firstCollapseTurn": null,
+          "collapseCount": 0,
+          "completedReigns": 3,
+          "collapseRate": 0,
+          "saturationRatio": 0,
+          "nationalStddev": {
+            "morale": 0.9927018625761473,
+            "governance": 4.08320500725268,
+            "virtue": 4.584127661111181,
+            "prestige": 5.483614072918607
+          },
+          "strongmanTurns": 300,
+          "invasionCount": 172,
+          "meanChildren": 0,
+          "maxTreasury": 1062.8177146015828,
+          "maxGrain": 30870.906179572674,
+          "eventRange": [
+            42,
+            70
+          ],
+          "checks": {
+            "invasions": true,
+            "complete": true,
+            "treasuryPeak": true,
+            "latePeak": true,
+            "children": true,
+            "events": true,
+            "annualCash": true,
+            "grainBounded": true,
+            "mortalityComparison": true,
+            "saturation": true,
+            "variation": true,
+            "strongman": true
+          }
+        },
+        {
+          "seed": "御极·长治",
+          "strategy": "greedy",
+          "turns": 7200,
+          "firstCollapseTurn": null,
+          "collapseCount": 0,
+          "completedReigns": 4,
+          "collapseRate": 0,
+          "saturationRatio": 0,
+          "nationalStddev": {
+            "morale": 1.0136135535437283,
+            "governance": 2.091815736283447,
+            "virtue": 4.864465213436224,
+            "prestige": 5.396293235840168
+          },
+          "strongmanTurns": 237,
+          "invasionCount": 173,
+          "meanChildren": 0,
+          "maxTreasury": 1061.3761130893909,
+          "maxGrain": 32201.0530065971,
+          "eventRange": [
+            49,
+            69
+          ],
+          "checks": {
+            "invasions": true,
+            "complete": true,
+            "treasuryPeak": true,
+            "latePeak": true,
+            "children": true,
+            "events": true,
+            "annualCash": true,
+            "grainBounded": true,
+            "mortalityComparison": true,
+            "saturation": true,
+            "variation": true,
+            "strongman": true
+          }
+        },
+        {
+          "seed": "御极·边政",
+          "strategy": "greedy",
+          "turns": 7200,
+          "firstCollapseTurn": null,
+          "collapseCount": 0,
+          "completedReigns": 4,
+          "collapseRate": 0,
+          "saturationRatio": 0,
+          "nationalStddev": {
+            "morale": 2.84441029470709,
+            "governance": 6.772661741641354,
+            "virtue": 4.638140877890153,
+            "prestige": 8.16531448414357
+          },
+          "strongmanTurns": 133,
+          "invasionCount": 176,
+          "meanChildren": 0,
+          "maxTreasury": 1105.4885054340887,
+          "maxGrain": 31448.69273760321,
+          "eventRange": [
+            45,
+            78
+          ],
+          "checks": {
+            "invasions": true,
+            "complete": true,
+            "treasuryPeak": true,
+            "latePeak": true,
+            "children": true,
+            "events": true,
+            "annualCash": true,
+            "grainBounded": true,
+            "mortalityComparison": true,
+            "saturation": true,
+            "variation": true,
+            "strongman": true
+          }
+        },
+        {
+          "seed": "御极·宫闱",
+          "strategy": "greedy",
+          "turns": 7200,
+          "firstCollapseTurn": null,
+          "collapseCount": 0,
+          "completedReigns": 5,
+          "collapseRate": 0,
+          "saturationRatio": 0,
+          "nationalStddev": {
+            "morale": 1.1802958472848817,
+            "governance": 3.1002197795916704,
+            "virtue": 5.803350697392125,
+            "prestige": 5.273413890813192
+          },
+          "strongmanTurns": 216,
+          "invasionCount": 173,
+          "meanChildren": 0,
+          "maxTreasury": 1073.0651947194353,
+          "maxGrain": 33586.77483560428,
+          "eventRange": [
+            45,
+            78
+          ],
+          "checks": {
+            "invasions": true,
+            "complete": true,
+            "treasuryPeak": true,
+            "latePeak": true,
+            "children": true,
+            "events": true,
+            "annualCash": true,
+            "grainBounded": true,
+            "mortalityComparison": true,
+            "saturation": true,
+            "variation": true,
+            "strongman": true
+          }
+        }
+      ]
+    },
+    "lowMoralePassed": 108,
+    "lowMoraleTotal": 108,
+    "equalPowerWar": {
+      "samples": 400,
+      "wins": 179,
+      "rate": 0.4475,
+      "passed": true
+    },
+    "sensitivity": [
+      {
+        "rate": 0.018,
+        "passed": false,
+        "seeds": [
+          {
+            "seed": "御极·两百年",
+            "mortality": 25,
+            "checks": {
+              "invasions": true,
+              "complete": true,
+              "treasuryPeak": true,
+              "latePeak": true,
+              "children": true,
+              "events": true,
+              "annualCash": true,
+              "mortalityComparison": true,
+              "saturation": true,
+              "variation": true,
+              "strongman": true
+            }
+          },
+          {
+            "seed": "御极·长治",
+            "mortality": 20,
+            "checks": {
+              "invasions": true,
+              "complete": true,
+              "treasuryPeak": true,
+              "latePeak": true,
+              "children": false,
+              "events": true,
+              "annualCash": true,
+              "mortalityComparison": true,
+              "saturation": true,
+              "variation": true,
+              "strongman": true
+            }
+          },
+          {
+            "seed": "御极·边政",
+            "mortality": 40,
+            "checks": {
+              "invasions": true,
+              "complete": true,
+              "treasuryPeak": true,
+              "latePeak": true,
+              "children": true,
+              "events": false,
+              "annualCash": true,
+              "mortalityComparison": true,
+              "saturation": true,
+              "variation": true,
+              "strongman": true
+            }
+          },
+          {
+            "seed": "御极·宫闱",
+            "mortality": 0,
+            "checks": {
+              "invasions": true,
+              "complete": true,
+              "treasuryPeak": true,
+              "latePeak": true,
+              "children": true,
+              "events": true,
+              "annualCash": true,
+              "mortalityComparison": true,
+              "saturation": true,
+              "variation": true,
+              "strongman": true
+            }
+          }
+        ]
+      },
+      {
+        "rate": 0.019,
+        "passed": false,
+        "seeds": [
+          {
+            "seed": "御极·两百年",
+            "mortality": 0,
+            "checks": {
+              "invasions": true,
+              "complete": true,
+              "treasuryPeak": true,
+              "latePeak": true,
+              "children": false,
+              "events": true,
+              "annualCash": true,
+              "mortalityComparison": true,
+              "saturation": true,
+              "variation": true,
+              "strongman": true
+            }
+          },
+          {
+            "seed": "御极·长治",
+            "mortality": 16.67,
+            "checks": {
+              "invasions": true,
+              "complete": true,
+              "treasuryPeak": true,
+              "latePeak": true,
+              "children": true,
+              "events": true,
+              "annualCash": true,
+              "mortalityComparison": true,
+              "saturation": true,
+              "variation": true,
+              "strongman": true
+            }
+          },
+          {
+            "seed": "御极·边政",
+            "mortality": 0,
+            "checks": {
+              "invasions": true,
+              "complete": true,
+              "treasuryPeak": true,
+              "latePeak": true,
+              "children": true,
+              "events": false,
+              "annualCash": true,
+              "mortalityComparison": true,
+              "saturation": true,
+              "variation": true,
+              "strongman": true
+            }
+          },
+          {
+            "seed": "御极·宫闱",
+            "mortality": 0,
+            "checks": {
+              "invasions": true,
+              "complete": true,
+              "treasuryPeak": true,
+              "latePeak": true,
+              "children": false,
+              "events": true,
+              "annualCash": true,
+              "mortalityComparison": true,
+              "saturation": true,
+              "variation": false,
+              "strongman": true
+            }
+          }
+        ]
+      },
+      {
+        "rate": 0.0195,
+        "passed": false,
+        "seeds": [
+          {
+            "seed": "御极·两百年",
+            "mortality": 0,
+            "checks": {
+              "invasions": true,
+              "complete": true,
+              "treasuryPeak": true,
+              "latePeak": true,
+              "children": false,
+              "events": false,
+              "annualCash": true,
+              "mortalityComparison": true,
+              "saturation": true,
+              "variation": true,
+              "strongman": true
+            }
+          },
+          {
+            "seed": "御极·长治",
+            "mortality": 0,
+            "checks": {
+              "invasions": true,
+              "complete": true,
+              "treasuryPeak": true,
+              "latePeak": true,
+              "children": false,
+              "events": true,
+              "annualCash": true,
+              "mortalityComparison": true,
+              "saturation": true,
+              "variation": true,
+              "strongman": true
+            }
+          },
+          {
+            "seed": "御极·边政",
+            "mortality": 20,
+            "checks": {
+              "invasions": true,
+              "complete": true,
+              "treasuryPeak": true,
+              "latePeak": true,
+              "children": true,
+              "events": false,
+              "annualCash": true,
+              "mortalityComparison": true,
+              "saturation": true,
+              "variation": true,
+              "strongman": false
+            }
+          },
+          {
+            "seed": "御极·宫闱",
+            "mortality": 16.67,
+            "checks": {
+              "invasions": true,
+              "complete": true,
+              "treasuryPeak": true,
+              "latePeak": true,
+              "children": true,
+              "events": true,
+              "annualCash": true,
+              "mortalityComparison": true,
+              "saturation": true,
+              "variation": false,
+              "strongman": true
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "diagnostic": {
+    "peakDecade": 6,
+    "peakCount": 83,
+    "types": {
+      "天灾": 49,
+      "边警": 9,
+      "致仕": 11,
+      "宫闱": 12,
+      "民变": 2
+    },
+    "allTypes": {
+      "天灾": 840,
+      "宫闱": 120,
+      "边警": 164,
+      "致仕": 112,
+      "民变": 26,
+      "京畿民变": 2
+    },
+    "accountedEvents": 1264,
+    "reportedEvents": 1264,
+    "collapseTails": [
+      {
+        "elapsed": 2300,
+        "turn": 2300,
+        "cause": "京畿困局持续满六个月，民变攻入京师",
+        "morale": 7.098540569184777,
+        "treasury": 0,
+        "capital": 45000
+      },
+      {
+        "elapsed": 3812,
+        "turn": 1512,
+        "cause": "京畿困局持续满六个月，民变攻入京师",
+        "morale": 6.360536056516661,
+        "treasury": 0,
+        "capital": 42780
+      }
+    ],
+    "longzhiChildren": [
+      {
+        "id": "run-1so6d4n",
+        "turns": 1404,
+        "ending": "驾崩",
+        "cause": "寿终正寝",
+        "children": 8
+      },
+      {
+        "id": "run-1so6d4n:reign:2",
+        "turns": 792,
+        "ending": "驾崩",
+        "cause": "寿终正寝",
+        "children": 9
+      },
+      {
+        "id": "run-1so6d4n:reign:3",
+        "turns": 1980,
+        "ending": "驾崩",
+        "cause": "寿终正寝",
+        "children": 15
+      },
+      {
+        "id": "run-1so6d4n:reign:4",
+        "turns": 144,
+        "ending": "驾崩",
+        "cause": "寿终正寝",
+        "children": 4
+      },
+      {
+        "id": "run-1so6d4n:reign:5",
+        "turns": 1521,
+        "ending": "亡国",
+        "cause": "京畿困局持续满六个月，民变攻入京师",
+        "children": 13
+      }
+    ],
+    "restDelays": [
+      {
+        "seed": "御极·长治",
+        "firstCollapseTurn": 545,
+        "year15": {
+          "year": 15,
+          "openingTreasury": 289.72,
+          "income": 139.71,
+          "expense": 429.43,
+          "taxIncome": 139.71,
+          "wasteExpense": 0,
+          "resetAdjustment": 0,
+          "peakTreasury": 289.72,
+          "closingTreasury": 0,
+          "budgetAtYearEnd": 273.53,
+          "morale": 3.34,
+          "governance": 2,
+          "arrears": 143.77,
+          "turns": 36
+        }
+      },
+      {
+        "seed": "御极·宫闱",
+        "firstCollapseTurn": 577,
+        "year15": {
+          "year": 15,
+          "openingTreasury": 564.37,
+          "income": 224.9,
+          "expense": 539.28,
+          "taxIncome": 224.9,
+          "wasteExpense": 0,
+          "resetAdjustment": 0,
+          "peakTreasury": 564.37,
+          "closingTreasury": 250,
+          "budgetAtYearEnd": 292.12,
+          "morale": 12.32,
+          "governance": 1.97,
+          "arrears": 0,
+          "turns": 36
+        }
+      }
+    ],
+    "chaotic": [
+      {
+        "seed": "御极·两百年",
+        "invasions": 108,
+        "dynasties": 19,
+        "meanReignYears": 10.83,
+        "collapses": 18
+      },
+      {
+        "seed": "御极·长治",
+        "invasions": 121,
+        "dynasties": 18,
+        "meanReignYears": 11.71,
+        "collapses": 17
+      },
+      {
+        "seed": "御极·边政",
+        "invasions": 112,
+        "dynasties": 19,
+        "meanReignYears": 11.01,
+        "collapses": 18
+      },
+      {
+        "seed": "御极·宫闱",
+        "invasions": 112,
+        "dynasties": 18,
+        "meanReignYears": 11.09,
+        "collapses": 17
+      }
+    ]
+  },
+  "artifacts": {
+    "before": {
+      "path": "qa/batch3/before.json",
+      "sha256": "f5a9e95aecae8619a240d27fac7d9860c056cc6fd37e39f8a20f213887234993"
+    },
+    "after": {
+      "path": "qa/batch3/after.json",
+      "sha256": "376f52225e330478d216f6e858eb1616396575614cf80c7a8307c1d90e44be0d"
+    },
+    "v5Fixture": {
+      "path": "test/fixtures/v5-pending.json",
+      "sha256": "b452d611a6e3a287bfe95ab261e77491c5f134e80328cf8a140e268906e5628b"
+    },
+    "index": {
+      "path": "index.html",
+      "sha256": "adce4500057ce7ad3c44d3ead1f7506e75a9451ac82551b10333411eef6a3264"
+    }
+  },
+  "build": {
+    "modules": 41,
+    "javascriptBytes": 914313
+  },
+  "browser": {
+    "surface": "Codex In-app Browser",
+    "origin": "http://localhost:4188",
+    "fileChooserRecoveredWithNewTab": true,
+    "viewports": [
+      360,
+      1280
+    ],
+    "horizontalOverflow": false,
+    "checkedEffectiveTargetsAtLeast44": true,
+    "consoleErrors": [],
+    "recruit": {
+      "initialCapital": 35000,
+      "finalCapital": 38199,
+      "frontiers": [
+        35000,
+        35000,
+        35000,
+        35000
+      ],
+      "turns": 6,
+      "retainedAfterReload": true
+    },
+    "oldPending": {
+      "version": 4,
+      "dieBefore": 16,
+      "dieAfterReload": 16,
+      "chapter": 1,
+      "treasury": 480,
+      "morale": 61.1
+    },
+    "screenshots": [
+      "output/batch3/recruit-capital-360.jpg",
+      "output/batch3/v4-pending-committed-v6-360.jpg"
+    ],
+    "paidApiTested": false,
+    "physicalPhoneTested": false
+  },
+  "acceptancePolicy": {
+    "absoluteMortality": "reference",
+    "relativeMortality": "random >= diligent",
+    "otherThresholds": "unchanged"
+  }
+}

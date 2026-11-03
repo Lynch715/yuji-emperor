@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { createState, migrate, clone, reignId } from "../src/core/state.js";
+import { createState, migrate, clone, reignId,VERSION } from "../src/core/state.js";
 import { initialTurn, forecastTurn, commitTurn } from "../src/core/turn.js";
 import {
   courtDebate,
@@ -182,7 +182,7 @@ test("v1/v2补权谋与在位信息，不重新抽随机数，旧预演仍可提
   s.pending = { forecast: f };
   const rng = s.rng,
     m = migrate(s);
-  assert.equal(m.v, 5);
+  assert.equal(m.v,VERSION);
   assert.equal(m.rng, rng);
   assert.ok(m.court.officials.every((o) => Number.isFinite(o.abilities.权谋)));
   assert.equal(commitTurn(m, m.pending.forecast, {}).turn, 1);

@@ -195,13 +195,9 @@ export function haremMonth(state) {
   }
   const r = roll(s, 1, 100);
   s = r.state;
-  const schemer = s.harem.consorts
-    .filter((c) => !c.retired && !c.cold && c.ambition > 50)
-    .sort((a, b) => b.scheming - a.scheming)[0];
-  if (r.value < 8 && schemer && s.harem.consorts.length > 1) {
-    const target = s.harem.consorts.find(
-      (c) => !c.retired && c.id !== schemer.id && !c.cold,
-    );
+  if (r.value < 8) {
+    const plot=choosePalacePlot(s);s=plot.state;
+    const schemer=s.harem.consorts.find(c=>c.id===plot.schemerId),target=s.harem.consorts.find(c=>c.id===plot.targetId);
     if (target) {
       s = addEvent(
         s,
@@ -216,10 +212,12 @@ export function haremMonth(state) {
       );
       const t = s.harem.consorts.find((c) => c.id === target.id);
       t.mood = clamp(t.mood - 5);
-      if (t.preg && r.value === 1) {
-        t.preg = null;
-        t.health = clamp(t.health - 10);
-        s = applyPackage(s, { mood: -8 }, "宫闱事件：引擎判定小产");
+      if (t.preg) {
+        const loss=roll(s,1,10000);s=loss.state;
+        if(loss.value<=miscarriageChance(schemer,t)*10000){
+          const victim=s.harem.consorts.find(c=>c.id===target.id);victim.preg=null;victim.health=clamp(victim.health-10);
+          s = applyPackage(s, { mood: -8 }, "宫闱事件：引擎判定小产");
+        }
       }
     }
   }
@@ -233,6 +231,15 @@ export function haremMonth(state) {
     }
   }
   return s;
+}
+export function miscarriageChance(schemer,target){return clamp(0.04+(schemer.scheming-target.scheming)/2000,0.02,0.08);}
+export function choosePalacePlot(state){
+ let s=clone(state);const alive=s.harem.consorts.filter(c=>!c.retired&&!c.cold&&c.health>0),pool=alive.filter(c=>c.ambition>50);
+ if(alive.length<2||!pool.length)return {state:s,schemerId:null,targetId:null};
+ const weights=pool.map(c=>Math.max(1,Math.round(c.scheming))),draw=roll(s,1,weights.reduce((a,b)=>a+b,0));s=draw.state;
+ let point=draw.value,schemer=pool.at(-1);for(let i=0;i<pool.length;i++){point-=weights[i];if(point<=0){schemer=pool[i];break;}}
+ const rivals=alive.filter(c=>c.id!==schemer.id),worst=Math.min(...rivals.map(c=>schemer.relations[c.id]??50)),targets=rivals.filter(c=>(schemer.relations[c.id]??50)===worst),target=roll(s,0,targets.length-1);s=target.state;
+ return {state:s,schemerId:schemer.id,targetId:targets[target.value].id};
 }
 export function haremYear(state) {
   const s = clone(state);

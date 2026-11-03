@@ -4,23 +4,27 @@ import { canVisit } from "../src/core/harem.js";
 import { succeedEmperor } from "../src/core/succession.js";
 import { reignId } from "../src/core/state.js";
 import { edictBlock } from "../src/core/edicts.js";
-import { annualBudget } from "../src/core/finance.js";
+import { annualBudget,grainBudget } from "../src/core/finance.js";
 import { random, seedNumber } from "../src/core/rng.js";
-export function makeSimulationSchedule(s,pick,strategy="random") {
-    const action = strategy === "rest" ? -1 : pick(8),
+export const SIMULATION_STRATEGIES=Object.freeze({rest:'无为',random:'乱批',diligent:'尽职',greedy:'贪心'});
+export function makeSimulationSchedule(s,pick,strategy="diligent") {
+    if(!Object.hasOwn(SIMULATION_STRATEGIES,strategy))throw new Error('未知模拟策略');
+    const action = strategy === "rest" ? -1 : strategy==='greedy'?0:pick(8),
       schedule = { 朝: null, 午: null, 夜: null };
     if (action >= 0 && action < 4) {
       // Court hearings retain three issues; a dedicated paperwork slot processes
       // six memorials at the existing two-energy cost.
-      const ms = s.memorials.slice(0, action < 2 ? 3 : 6);
+      const ordered=strategy==='random'?s.memorials:[...s.memorials].sort((a,b)=>Number(!!b.urgent)-Number(!!a.urgent)||(a.due??Infinity)-(b.due??Infinity));
+      const ms = ordered.slice(0, action < 2 ? 3 : 6);
       const available = {treasury:Math.max(0,s.nation.treasury-8),grain:s.nation.grain,privy:s.nation.privy};
       const selected=[];
       const decisions = {};
       for (const m of ms) {
         // Choose uniformly among affordable engine options, including hold.
-        const choices = m.options.filter(o => Object.keys(available).every(k=>Math.max(0,-(o.effects?.[k]||0))<=available[k]));
+        const approved=m.options.find(o=>o.id==='approve') || m.options[0];
+        const choices = (strategy==='greedy'?[approved]:m.options).filter(o => o&&Object.keys(available).every(k=>Math.max(0,-(o.effects?.[k]||0))<=available[k]));
         if(!choices.length)continue;
-        const option = choices[pick(choices.length)];
+        const option = choices[strategy==='greedy'?0:pick(choices.length)];
         decisions[m.id] = option.id;selected.push(m.id);
         for(const k of Object.keys(available))available[k]-=Math.max(0,-(option.effects?.[k]||0));
       }
@@ -66,6 +70,8 @@ export function makeSimulationSchedule(s,pick,strategy="random") {
     return schedule;
 }
 export function simulate(years = 200, seed = "御极·两百年", options = {}) {
+  const policy=options.strategy||'diligent',sums={morale:0,governance:0,virtue:0,prestige:0},squares={...sums};
+  let sampleTurns=0,saturatedTurns=0,strongmanTurns=0,maxGrain=0,maxGrainFirst50=0,maxGrainLast50=0,maxGrainCapacity=0,maxAnnualGrainProduction=0,firstCollapseTurn=null;
   let strategy = seedNumber(seed),
     life = 0,
     s = initialTurn(createState({ seed: seed + "-" + life })),
@@ -98,7 +104,7 @@ export function simulate(years = 200, seed = "御极·两百年", options = {}) 
       income: 0, expense: 0, taxIncome: 0, wasteExpense: 0,
       resetAdjustment: 0, peakTreasury: s.nation.treasury,
     };
-    const schedule = makeSimulationSchedule(s,pick,options.strategy || "random");
+    const schedule = makeSimulationSchedule(s,pick,policy);
     // Mock chapters contain no narrative. Discard them after their state has been checked.
     s.history = [];
     s.volumes = [];
@@ -110,6 +116,19 @@ export function simulate(years = 200, seed = "御极·两百年", options = {}) 
     options.onForecast?.(s,f);
     s = commitTurn(s, f, {});
     assertState(s);
+    if(i<20*36){
+      sampleTurns++;
+      const values={morale:s.nation.morale,governance:s.nation.governance,virtue:s.emperor.virtue,prestige:s.emperor.prestige};
+      if(values.morale>=95||values.governance>=95||values.virtue>=95)saturatedTurns++;
+      for(const k of Object.keys(sums)){sums[k]+=values[k];squares[k]+=values[k]**2;}
+    }
+    if(f.entries.some(e=>e.source.endsWith('代批：皇权旁落')&&!e.source.includes('摄政')&&!e.source.includes('留守')))strongmanTurns++;
+    const grainPeak=Math.max(s.nation.grain,...f.entries.filter(e=>e.path==='nation.grain').flatMap(e=>[e.before,e.after]));
+    maxGrain=Math.max(maxGrain,grainPeak);
+    maxGrainCapacity=Math.max(maxGrainCapacity,grainBudget(s).storageCapacity);
+    maxAnnualGrainProduction=Math.max(maxAnnualGrainProduction,s.nation.provinces.reduce((n,p)=>n+p.pop*0.15*4,0));
+    if(i<50*36)maxGrainFirst50=Math.max(maxGrainFirst50,grainPeak);
+    if(i>=Math.max(0,years-50)*36)maxGrainLast50=Math.max(maxGrainLast50,grainPeak);
     const delta = s.stats.events - before;
     events += delta;
     totalBirths += s.stats.births - birthBefore;
@@ -140,6 +159,7 @@ export function simulate(years = 200, seed = "御极·两百年", options = {}) 
       decadeEvents = 0;
     }
     if (s.ending) {
+      if(s.ending.type==='亡国'&&firstCollapseTurn===null)firstCollapseTurn=completedTurns;
       deaths += s.ending.type === "驾崩" ? 1 : 0;
       collapse += s.ending.type === "亡国" ? 1 : 0;
       completed.push({
@@ -184,7 +204,12 @@ export function simulate(years = 200, seed = "御极·两百年", options = {}) 
   return {
     seed,
     years,
-    strategy: options.strategy || "random",
+    strategy: policy,
+    strategyLabel:SIMULATION_STRATEGIES[policy],
+    sampleTurns,saturationRatio:sampleTurns?saturatedTurns/sampleTurns:0,
+    nationalStddev:Object.fromEntries(Object.keys(sums).map(k=>[k,Math.sqrt(Math.max(0,squares[k]/(sampleTurns||1)-(sums[k]/(sampleTurns||1))**2))])),
+    strongmanTurns,maxGrain,maxGrainFirst50,maxGrainLast50,maxGrainCapacity,maxAnnualGrainProduction,
+    firstCollapseTurn,
     actualYears: Math.round(completedTurns / 36 * 100) / 100,
     ending: s.ending?.type || null,
     turns: completedTurns,

@@ -1,7 +1,8 @@
 import { seedNumber, random, DRAFT } from "./rng.js";
 import { uniqueName } from "./names.js";
 import { chooseRegent } from "./regency-info.js";
-export const VERSION = 5;
+import {factionPowers} from './politics.js';
+export const VERSION = 6;
 export const TALENTS = ["政略", "权谋", "武略", "文采", "魅力"];
 export const SLOTS = ["朝", "午", "夜"];
 export const POST_NAMES = [
@@ -79,6 +80,7 @@ export function clone(state) {
   const copied = {
     ...structuredClone(active),
     court: {
+      ...court,
       factions: structuredClone(court.factions),
       posts: structuredClone(court.posts),
       officials: court.officials.map((o) => (o.alive ? structuredClone(o) : o)),
@@ -107,6 +109,7 @@ export function createState(options = {}) {
       id: "f" + i,
       name,
       power: n(25, 55),
+      powerModifier:0,
       attitude: n(42, 68),
       demand: [
         "纳谏清议",
@@ -197,6 +200,7 @@ export function createState(options = {}) {
     secretKnown: false,
     memory: [],
     life: [],
+    banquetTurn:-1000000,
   }));
   const posts = POST_NAMES.map((title, i) => ({
     id: "p" + i,
@@ -252,6 +256,7 @@ export function createState(options = {}) {
     health: 85,
     energy: 9,
     mood: 70,
+    depressedMonths:0,
     prestige: 58,
     virtue: 60,
     talents: Object.fromEntries(TALENTS.map((t) => [t, n(42, 75)])),
@@ -297,6 +302,8 @@ export function createState(options = {}) {
     nation: {
       treasury: 480,
       arrears: 0,
+      privyArrears:0,
+      grainArrears:0,
       privy: 90,
       grain: 650,
       morale: 62,
@@ -312,7 +319,7 @@ export function createState(options = {}) {
         })),
       },
     },
-    court: { factions, posts, officials },
+    court: { factions, posts, officials,proxyTurn:-1000000 },
     harem: {
       consorts: ["陆令仪", "沈清蘅", "裴映雪"].map((name, i) => ({
         id: "c" + i,
@@ -354,6 +361,7 @@ export function createState(options = {}) {
       tribute: 5,
       authorization: 15,
       frontier: ["北", "西", "南", "东"][i % 4],
+      trade:null,
     })),
     ambitions: [],
     memorials: [],
@@ -396,6 +404,7 @@ export function createState(options = {}) {
     for (const item of group) if (item.name === state.emperor.name) {
       const r=uniqueName(state,{excludeId:item.id});state=r.state;item.name=r.name;
     }
+  state.court.factions=factionPowers(state);
   return state;
 }
 export function migrate(input) {
@@ -448,6 +457,14 @@ export function migrate(input) {
   // on commit; never rerun an old schedule, roll, settlement or calendar.
   s.v = VERSION;
   s.nation.arrears ??= 0;
+  s.nation.privyArrears ??= 0;
+  s.nation.grainArrears ??= 0;
+  s.emperor.depressedMonths ??= 0;
+  s.court.proxyTurn ??= -1000000;
+  for(const f of s.foreign)f.trade ??= null;
+  for(const f of s.court.factions)f.powerModifier ??= 0;
+  for(const o of s.court.officials)o.banquetTurn ??= -1000000;
+  for(const p of s.projects)if(p.edictType==='征兵')p.armyTarget ??= 'all-frontiers';
   for (const p of s.nation.provinces) {
     p.rebellion ??= false;
     p.rebellionQuarter ??= -1;
@@ -569,6 +586,15 @@ export function assertState(s) {
     for(const f of s.foreign)if(!s.nation.army.frontiers.some(b=>b.dir===f.frontier))throw new Error('外邦边境资料无效');
     for(const p of s.nation.provinces)for(const k of ['taxRelief','taxSurge'])if(p[k]!==null&&(!p[k]||!Number.isFinite(p[k].factor)||p[k].factor<=0||!Number.isSafeInteger(p[k].untilQuarter)||p[k].untilQuarter<0))throw new Error('州税政策资料无效');
     for(const p of s.court.posts)if(p.provinceId&&!s.nation.provinces.some(z=>z.id===p.provinceId))throw new Error('地方官职资料无效');
+  }
+  if(s.v>=6){
+    if(!Number.isSafeInteger(s.court.proxyTurn))throw new Error('权臣代批时序无效');
+    for(const f of ['arrears','privyArrears','grainArrears'])range(s.nation[f],0,Number.MAX_SAFE_INTEGER);
+    if(!Number.isSafeInteger(s.emperor.depressedMonths)||s.emperor.depressedMonths<0)throw new Error('郁结时长无效');
+    for(const f of s.court.factions)range(f.powerModifier,-30,30);
+    for(const o of s.court.officials)if(!Number.isSafeInteger(o.banquetTurn))throw new Error('宴请时序无效');
+    for(const f of s.foreign)if(f.trade!==null&&(!f.trade||!Number.isSafeInteger(f.trade.start)||!Number.isSafeInteger(f.trade.until)||f.trade.start<0||f.trade.until!==f.trade.start+36||!Number.isFinite(f.trade.income)||f.trade.income<0||f.trade.income>6))throw new Error('互市条款无效');
+    for(const p of s.projects)if(p.edictType==='征兵'&&!['capital','all-frontiers',...s.nation.army.frontiers.map(b=>b.dir)].includes(p.armyTarget))throw new Error('征兵目标无效');
   }
   const walk = (x) => {
     if (typeof x === "number" && !Number.isFinite(x))

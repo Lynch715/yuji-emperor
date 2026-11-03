@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
-import {createState,migrate} from '../src/core/state.js';
+import {createState,migrate,VERSION} from '../src/core/state.js';
 import {initialTurn,forecastTurn,commitTurn} from '../src/core/turn.js';
 import {foreignMonth,checkCollapse} from '../src/core/foreign.js';
 import {resolveMemorial,expireMemorials} from '../src/core/events.js';
@@ -10,7 +10,7 @@ import * as simulation from '../scripts/simulate.mjs';
 import {economicChecks} from '../scripts/stage8-1-balance.mjs';
 const initial=()=>initialTurn(createState({seed:'C0前置校准'}));
 const hash=v=>createHash('sha256').update(JSON.stringify(v)).digest('hex');
-function critical(){const s=initial();s.nation.morale=0;s.nation.treasury=0;s.memorials=[];s.threads=[];return s;}
+function critical(){const s=initial();s.nation.morale=0;s.nation.provinces.forEach(p=>p.morale=0);s.nation.treasury=0;s.memorials=[];s.threads=[];return s;}
 function through(s,turn){for(let t=s.turn+1;t<=turn;t++)s=checkCollapse({...s,turn:t});return s;}
 
 test('C0-1 中性通好边患月增0.8至1.0，正式婚盟和朝贡可下降且保持纯函数',()=>{
@@ -44,10 +44,10 @@ test('C0-2 民心或国库恢复即中断连续危机，存取后继续计时且
   let s=through(critical(),8);Object.assign(s.nation,recover);s=checkCollapse({...s,turn:9});s.nation.morale=0;s.nation.treasury=0;
   s=through(s,17);assert.equal(s.memorials.length,0);s=through(s,18);assert.equal(s.memorials.length,1);
  }
- let s=through(critical(),6);const before=hash(s),stored=migrate(unpack(pack(s)).state);assert.equal(hash(s),before);assert.equal(stored.v,5);
+ let s=through(critical(),6);const before=hash(s),stored=migrate(unpack(pack(s)).state);assert.equal(hash(s),before);assert.equal(stored.v,VERSION);
  s=through(stored,9);assert.equal(s.memorials.length,1);assert.equal(s.ending,null);
  s.settings.freedom='free';s=through(s,30);s=expireMemorials({...s,turn:50});assert.notEqual(s.ending?.type,'亡国');
- const base=critical();base.nation.morale=17;let recover=through(base,9);const warning=recover.memorials[0];assert.ok(warning);
+ const base=critical();base.nation.morale=17;base.nation.provinces.forEach(p=>p.morale=17);let recover=through(base,9);const warning=recover.memorials[0];assert.ok(warning);
  recover=resolveMemorial(recover,warning.id,warning.options[2].id).state;assert.ok(recover.nation.morale>=18);recover=checkCollapse(recover);assert.equal(through(recover,25).ending,null);
 });
 

@@ -50,7 +50,7 @@ test('A1 面谈后超过240秒仍可请求正文，三轮面谈与分类不占�
 test('A1 待续重载只保留已用次数，重新计时且重试不重掷',async()=>{
   let s=initial();const f=forecastTurn(s),before=hash(f);
   s.pending={forecast:f};s.turnBudget={...createBudget(0),used:1};
-  s=migrate(unpack(pack(s)).state);assert.equal(VERSION,5);
+  s=migrate(unpack(pack(s)).state);assert.equal(s.v,VERSION);
   let calls=0;const options={budget:s.turnBudget,now:()=>600000,fetcher:async()=>{calls++;return new Response('',{status:401});}};
   await assert.rejects(()=>requestTurnNarrative(config,s,s.pending.forecast,options),/401/);
   assert.equal(calls,1);assert.deepEqual(s.turnBudget,{used:2});assert.equal(hash(s.pending.forecast),before);

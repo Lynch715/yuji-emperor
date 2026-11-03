@@ -3,6 +3,7 @@ import { applyPackage, clamp } from "./effects.js";
 import { roll, check } from "./rng.js";
 import { proxyMemorial, inCapital } from "./court.js";
 import { addEvent, pickMemorialist } from "./events.js";
+import {monthlyBudget} from './finance.js';
 export function foreignMonth(state) {
   let s = clone(state);
   for (const b of s.nation.army.frontiers) {
@@ -24,6 +25,7 @@ export function diplomacyBlock(state, action) {
   if(!other)return '请选择外邦';
   if(other.status==='交战'&&!['议和','接见'].includes(operation))return '交战中只允许议和和接见';
   if(operation==='议和'&&other.status!=='交战')return '当前未交战';
+  if(operation==='互市'&&other.trade&&state.turn-other.trade.start<36)return '同一外邦一年内只能议互市一次';
   if(operation==='宣战'){
     if(!state.nation.army.frontiers.some(b=>b.dir===other.frontier))return '外邦未绑定有效边境';
     if(['婚盟','朝贡'].includes(other.status)&&!action.confirmBreach)return '宣战将撕毁盟约，请再次确认';
@@ -108,13 +110,10 @@ export function diplomacy(state, action, die) {
         }
     }
   } else if (operation === "互市") {
+    other.trade={start:s.turn,until:s.turn+36,income:0};
     if (c.success) {
       other.status = "通好";
-      s = applyPackage(
-        s,
-        { treasury: Math.min(10, other.authorization) },
-        "互市获准",
-      );
+      other.trade.income=Math.min(6,other.authorization/2);
     }
   } else if (operation === "册封" || operation === "索贡") {
     if (c.success) other.status = "朝贡";
@@ -169,7 +168,8 @@ export function advanceCampaigns(state) {
     const generals=['兵部尚书',war.dir+'境总兵'].map(title=>s.court.officials.find(o=>o.id===s.court.posts.find(p=>p.title===title)?.holder&&inCapital({...o,inCapital:true}))).filter(Boolean);
     const general=generals.sort((a,b)=>b.abilities.军-a.abilities.军)[0];
     const power=border.troops*border.readiness/100*(1+((general?.abilities.军 ?? 50)-50)/100)
-      *(war.personal?1+s.emperor.talents.武略/200:1)*(s.nation.grain>=6?1:0.7);
+      *(war.personal?1+s.emperor.talents.武略/200:1)*(s.nation.grain>=monthlyBudget(s).grain?1:0.7);
+    if(s.nation.grain<monthlyBudget(s).grain)s.facts.push({subject:war.id,key:'缺粮战力',value:'粮储不足一月军粮，当旬战力为七成',turn:s.turn});
     const enemy=war.enemyTroops*war.enemyReadiness/100;
     const victory=power*(1+(r.value-10.5)*0.04)>=enemy;
     war.round++;war.score=(war.score||0)+(victory?1:-1);

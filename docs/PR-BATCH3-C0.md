@@ -1,5 +1,7 @@
 # 批次 2 引擎修正与 C0 前置校准（数值门槛未通过）
 
+本文件是当时的历史快照。用户已撤销停止限制，后续 C1–C9 与当前验收口径见 [批次3数值说明](PR-BATCH3-NUMBERS.md)。
+
 本 PR 继续使用 `codex/audit-batch2-engine`，base 仍为 `codex/audit-batch1-hotfix`，包含此前批次 2 引擎修正与本次 C0 增量。批次 2 的逐条说明保留于 [PR-BATCH2-ENGINE.md](https://github.com/Lynch715/yuji-emperor/blob/codex/audit-batch2-engine/docs/PR-BATCH2-ENGINE.md)。本次从批次 2 提交 `38451ac236f549b134c2eca74d2cd32da71d2405` 继续，没有新建基于 main 的分支。
 
 **C0 实现后四种子亡国率仍未回到 10%–35%，已按要求停止。C1–C9 未开始，批次 3 未完成。** 这是失败基线的可审阅记录，不能视为平衡验收通过；此前批次 2 允许超标的许可不适用于本次。

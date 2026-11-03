@@ -1,11 +1,11 @@
 import { clone } from "./state.js";
 import { clamp, applyPackage } from "./effects.js";
 import {
-  monthlyBudget, wasteQuote, provinceTaxFactor, settleArrears, quarterIndex,
+  monthlyBudget, grainBudget, wasteQuote, provinceTaxFactor, settleArrears, quarterIndex,
 } from "./finance.js";
 export function nationMonth(state) {
-  let s = settleArrears(clone(state));
-  const { salaries, armyPay, grain } = monthlyBudget(s);
+  let s = settleArrears(applyPackage(state,{privy:3},'月结：皇庄与盐课收入'));
+  const { salaries, armyPay } = monthlyBudget(s),grain=grainBudget(s).monthly;
   const due = armyPay + salaries,
     paid = Math.min(s.nation.treasury, due),
     unpaid = due - paid,
@@ -15,9 +15,9 @@ export function nationMonth(state) {
     {
       treasury: -paid,
       arrears: unpaid,
-      privy: -2 - s.harem.consorts.length * 0.15,
+      privy: -(2+s.harem.consorts.filter(c=>!c.retired&&c.health>0).length*0.15)*(s.emperor.tags.includes('节俭')?0.7:1),
       grain: -grain,
-      morale: deficit ? -3 : s.nation.governance > 60 ? 0.5 : -0.2,
+      morale: deficit ? -3 : s.nation.governance<45?(s.nation.governance-45)/30:0,
       governance: s.nation.morale < 25 ? -1 : 0,
     },
     "月结：俸禄、军饷与宫用",
@@ -40,14 +40,21 @@ export function nationMonth(state) {
     s = applyPackage(s, { treasury: -waste.amount }, "冗费与侵吞");
     s.stats.expense += waste.amount;
   }
+  const canRepair=!deficit&&s.nation.arrears===0&&s.nation.morale>=25;
   s.nation.provinces = s.nation.provinces.map((p) => ({
     ...p,
     morale: clamp(
-      p.morale + (s.nation.morale - p.morale) * 0.1 - (p.disaster > 0 ? 1 : 0),
+      p.morale + (canRepair&&!p.rebellion?(55-p.morale)*0.018:0) - (p.disaster > 0 ? 1 : 0),
     ),
     disaster: clamp(p.disaster - 2),
     rebellion: p.rebellion && p.morale < 40,
   }));
+  s=applyPackage(s,{},'月结：各州民心归并');
+  const reinforcement=Math.ceil(Math.max(0,45000-s.nation.army.capital.troops)*0.01),pay=reinforcement/1000;
+  if(reinforcement>0&&s.nation.morale>=30&&s.nation.grain>=grainBudget(s).military&&s.nation.treasury>=pay){
+    s=applyPackage(s,{treasury:-pay},'月结：京营补员付饷');
+    s.nation.army.capital.troops+=reinforcement;
+  }
   return s;
 }
 export function nationQuarter(state) {
@@ -63,12 +70,14 @@ export function nationQuarter(state) {
       3;
   let s = applyPackage(
     state,
-    { treasury: income, grain: 75 },
+    { treasury: income, grain: state.nation.provinces.reduce((n,p)=>n+p.pop*0.15*(1-p.disaster/100),0) },
     "季结：赋税实收 " + Math.round(rate * 100) + "% 与新粮入仓",
   );
   s.stats.income += income;
+  const trade=s.foreign.filter(f=>f.status!=='交战'&&f.trade&&s.turn>f.trade.start&&s.turn<=f.trade.until).reduce((n,f)=>n+f.trade.income,0);
+  if(trade){s=applyPackage(s,{treasury:trade},'季结：外邦互市岁入');s.stats.income+=trade;}
   const surging=s.nation.provinces.filter(p=>p.taxSurge&&quarterIndex(s.turn)<p.taxSurge.untilQuarter);
-  if(surging.length)s=applyPackage(s,{morale:-2},'季结：加税失民心');
+  for(const p of surging)s=applyPackage(s,{province:{id:p.id,morale:-2}},'季结：加税失民心');
   for(const p of s.nation.provinces){
     if(p.taxRelief&&quarterIndex(s.turn)>=p.taxRelief.untilQuarter)p.taxRelief=null;
     if(p.taxSurge&&quarterIndex(s.turn)>=p.taxSurge.untilQuarter)p.taxSurge=null;
@@ -77,6 +86,8 @@ export function nationQuarter(state) {
 }
 export function nationYear(state) {
   let s = clone(state);
+  const spoiled=Math.max(0,s.nation.grain-grainBudget(s).storageCapacity)*0.1;
+  if(spoiled)s=applyPackage(s,{grain:-spoiled},'年结：超仓陈粮霉变一成');
   s.nation.provinces = s.nation.provinces.map((p) => ({
     ...p,
     pop: Math.round(p.pop * (p.morale > 40 ? 1.002 : 0.995)),

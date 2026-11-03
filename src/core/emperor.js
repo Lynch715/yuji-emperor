@@ -23,23 +23,30 @@ export function settleEnergy(state, cost) {
   return s;
 }
 export function emperorMonth(state) {
+  const startingHealth=state.emperor.health;
   let s = applyPackage(
     state,
     {
       health: state.emperor.status.includes("劳累") ? -2 : 1,
-      mood: state.emperor.mood < 20 ? 1 : -1,
+      mood: (55-state.emperor.mood)*0.05,
+      virtue:(50-state.emperor.virtue)*0.02,
+      prestige:(50-state.emperor.prestige)*0.02,
     },
     "太医月诊与心绪",
   );
+  const recovered=Math.max(0,s.emperor.health-startingHealth);
   const tags = s.emperor.tags;
   if (tags.includes("勤政"))
     s = applyPackage(s, { governance: 0.3, mood: -0.5 }, "性格：勤政");
   if (tags.includes("仁厚")) s = applyPackage(s, { virtue: 0.3 }, "性格：仁厚");
-  if (tags.includes("节俭"))
-    s = applyPackage(s, { privy: 1 }, "性格：节俭，核减宫费");
   if (tags.includes("多疑")) s = applyPackage(s, { mood: -0.3 }, "性格：多疑");
   if (tags.includes("嗜酒"))
     s = applyPackage(s, { health: -0.5, mood: 1 }, "性格：嗜酒");
+  s.emperor.depressedMonths=s.emperor.mood<20?(state.emperor.depressedMonths||0)+1:0;
+  if(s.emperor.depressedMonths>=3){
+    if(recovered)s=applyPackage(s,{health:-recovered},'连续郁结：月诊未能回补');
+    s=applyPackage(s,{health:-1},'连续郁结：月损圣躬');
+  }
   if (s.emperor.health < 30 && s.settings.freedom !== "free")
     s.emperor.lifespan = Math.max(s.emperor.age + 1, s.emperor.lifespan - 0.1);
   if (s.settings.freedom === "free")

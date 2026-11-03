@@ -59,7 +59,7 @@ export function succeedEmperor(state) {
   let name=decision.successor;
   if(!child){const prefix=s.imperialSurname+'承';const named=uniqueName(s,{names:IMPERIAL_CHARS.map(c=>prefix+c),prefix});s=named.state;name=named.name;}
   const lifespan=Math.max(age+1,draw(55,80)),tag=['勤政','仁厚','节俭','多疑'][draw(0,3)];
-  s.emperor={name,age,lifespan,health:Math.max(55,child?.health||85),energy:9,mood:65,prestige:50,virtue:55,
+  s.emperor={name,age,lifespan,health:Math.max(55,child?.health||85),energy:9,mood:65,depressedMonths:0,prestige:50,virtue:55,
     talents,tags:[tag],status:[],growth:Object.fromEntries(TALENTS.map(t=>[t,0]))};
   const mother=s.harem.consorts.find(c=>c.id===child?.mother&&c.health>0);if(mother)s.dowager=mother.name;
   for(const c of s.harem.consorts)c.retired=true;

@@ -183,6 +183,7 @@ function forecastDraft(state, schedule) {
         const option = action.decisions?.[id] || action.decision || "approve";
         result = resolveMemorial(s, id, option, action.remark);
         s = result.state;
+        if(action.kind==='上朝'&&option==='reject')s=applyPackage(s,{prestige:2},'当廷驳回');
         slotResults[slot].push(result.note);
       }
       if (action.stance === "当廷问责") {

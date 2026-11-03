@@ -31,6 +31,7 @@ test("one audience caps total transfers and hides inner voice below charisma 60"
 });
 test("dismissal angers faction and triggers retaliation within 3 months", () => {
   let s = initial();
+  s.emperor.prestige=100;
   const old = s.court.officials.find((o) => o.id === s.court.posts[0].holder),
     favor = s.court.factions.find((f) => f.id === old.faction).attitude;
   s = appoint(s, { post: "p0", operation: "remove" }).state;
@@ -42,6 +43,7 @@ test("dismissal angers faction and triggers retaliation within 3 months", () => 
 });
 test("appointments enforce qualification and maintain unique held offices", () => {
   let s = initial();
+  s.emperor.prestige=100;
   assert.throws(() => appoint(s, { post: "p0", person: "missing" }));
   s = appoint(s, { post: "p1", person: "o2", operation: "appoint" }).state;
   assert.equal(s.court.posts.filter((p) => p.holder === "o2").length, 1);
@@ -54,9 +56,10 @@ test("banquet requires 2–6 distinct eligible guests, spends privy not treasury
   assert.equal(r.state.nation.privy, s.nation.privy - 12);
   assert.equal(r.state.nation.treasury, s.nation.treasury);
 });
-test("strongman conditions need both high power and weak prestige", () => {
+test("strongman faction branch requires high power and weak prestige when ambition is absent", () => {
   const s = initial();
   s.court.factions[0].power = 90;
+  s.court.officials.forEach(o=>o.ambition=0);
   assert.equal(strongman(s), false);
   s.emperor.prestige = 30;
   assert.equal(strongman(s), true);
@@ -88,6 +91,6 @@ test("private actions are bounded, referrals expire and imperial examinations ad
   assert.equal(s.memorials[0].due, 7);
   s.turn = 108;
   const n = courtYear(s);
-  assert.equal(n.court.officials.length, 28);
-  assert.equal(new Set(n.court.officials.map((o) => o.name)).size, 28);
+  assert.equal(n.court.officials.length,30);
+  assert.equal(new Set(n.court.officials.map((o) => o.name)).size,30);
 });

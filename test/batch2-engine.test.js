@@ -35,7 +35,7 @@ test('B1 五十年十二州均有天灾且同季同州不重复，请赈只来�
 });
 
 test('B2 上奏人按衙门和州选取且朱批按ID区分同名官员',()=>{
- assert.equal(typeof events.pickMemorialist,'function');let s=initial();
+ assert.equal(typeof events.pickMemorialist,'function');let s=initial();s.emperor.prestige=100;
  const p=s.court.posts.find(p=>p.provinceId==='z0');s=appoint(s,{post:p.id,person:'o13',operation:'appoint'}).state;
  assert.equal(events.pickMemorialist(s,'请赈','z0').fromId,'o13');
  const money=s.court.posts.find(p=>p.title==='户部尚书').holder;
@@ -114,7 +114,7 @@ test('B7 减赋加税由季结真实收税，目标州冷却隔离且政策到�
  let s=advanceProjects(relief.state);assert.equal(s.nation.provinces[0].taxRelief.factor,0.8);
  const plain=structuredClone(s);plain.nation.provinces[0].taxRelief=null;assert.ok(nationQuarter(s).stats.income<nationQuarter(plain).stats.income);
  const tax=issueEdict(base,{edictType:'加税',province:'z0'},20);assert.equal(tax.state.nation.treasury,base.nation.treasury);tax.state.turn=tax.state.projects[0].end;s=advanceProjects(tax.state);
- const before=s.nation.morale;const n=nationQuarter(s);assert.equal(n.nation.morale,before-2);assert.equal(s.nation.provinces[0].taxSurge.factor,1.2);
+ const before=s.nation.provinces[0].morale;const n=nationQuarter(s);assert.equal(n.nation.provinces[0].morale,before-2);assert.equal(s.nation.provinces[0].taxSurge.factor,1.2);
  s.turn=(s.nation.provinces[0].taxSurge.untilQuarter+1)*9;const expired=nationQuarter(s);assert.equal(expired.nation.morale,s.nation.morale);
  const aid=issueEdict(base,{edictType:'赈灾',province:'z0'},20).state;assert.doesNotThrow(()=>issueEdict(aid,{edictType:'赈灾',province:'z1'},20));
 });
@@ -143,7 +143,7 @@ test('B9 留守代批执行真实效果并结束线程，最多两本不静默�
 });
 
 test('B10 起用清除处分残留，空职处分报错，巡抚同步且宴请须在京',()=>{
- let s=initial();assert.throws(()=>appoint(s,{post:'p29',operation:'remove'}),/此职空缺/);
+ let s=initial();s.emperor.prestige=100;assert.throws(()=>appoint(s,{post:'p29',operation:'remove'}),/此职空缺/);
  s.court.officials[1].jailed=true;assert.throws(()=>appoint(s,{post:'p1',person:'o1',operation:'appoint'}),/赦免/);
  let n=appoint(s,{post:'p1',person:'o1',operation:'appoint',pardon:true}).state;assert.equal(n.court.officials[1].jailed,false);
  n.court.officials[1].retired=true;n=appoint(n,{post:'p29',person:'o1',operation:'appoint'}).state;assert.equal(n.court.officials[1].retired,false);assert.equal(n.nation.provinces[0].governor,'o1');assert.equal(n.court.officials[1].inCapital,false);
@@ -173,9 +173,9 @@ test('v5迁移 v1至v4补字段但旧pending逐字保留，读入提交幂等且
   if(v<3){delete s.reign;delete s.pending.forecast.state.reign;for(const state of [s,s.pending.forecast.state])for(const o of state.court.officials){delete o.abilities.权谋;delete o.inCapital;}}
   if(v<4)for(const state of [s,s.pending.forecast.state])for(const p of state.nation.provinces){delete p.rebellion;delete p.rebellionQuarter;}
   const before=hash(s),pendingHash=hash(s.pending.forecast),n=migrate(unpack(pack(s)).state);
-  assert.equal(VERSION,5);assert.equal(n.v,5);assert.equal(n.imperialSurname,'朱');assert.equal(n.regency,null);assert.ok(n.nation.provinces.every(p=>p.taxRelief===null&&p.taxSurge===null));assert.ok(n.foreign.every(f=>['北','西','南','东'].includes(f.frontier)));assert.equal(n.era.startTurn,0);assert.equal(n.court.posts.filter(p=>p.provinceId).length,12);
+  assert.equal(n.v,VERSION);assert.equal(n.imperialSurname,'朱');assert.equal(n.regency,null);assert.ok(n.nation.provinces.every(p=>p.taxRelief===null&&p.taxSurge===null));assert.ok(n.foreign.every(f=>['北','西','南','东'].includes(f.frontier)));assert.equal(n.era.startTurn,0);assert.equal(n.court.posts.filter(p=>p.provinceId).length,12);
   assert.equal(hash(s),before);assert.equal(n.rng,s.rng);assert.equal(hash(n.pending.forecast),pendingHash);
-  const committed=commitTurn(n,n.pending.forecast,{});assert.equal(committed.v,5);assert.equal(committed.turn,1);assert.equal(committed.lastTurn.die,s.pending.forecast.die);assert.equal(hash(n.pending.forecast),pendingHash);assert.deepEqual(commitTurn(committed,n.pending.forecast,{}),committed);assert.equal(migrate(unpack(pack(n)).state).rng,n.rng);
+  const committed=commitTurn(n,n.pending.forecast,{});assert.equal(committed.v,VERSION);assert.equal(committed.turn,1);assert.equal(committed.lastTurn.die,s.pending.forecast.die);assert.equal(hash(n.pending.forecast),pendingHash);assert.deepEqual(commitTurn(committed,n.pending.forecast,{}),committed);assert.equal(migrate(unpack(pack(n)).state).rng,n.rng);
  }
  const baby=infant();baby.v=4;baby.emperor.age=0;delete baby.regency;assert.ok(migrate(baby).regency);
 });

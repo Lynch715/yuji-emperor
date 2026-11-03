@@ -2,6 +2,7 @@ import { clone } from "./state.js";
 import { roll } from "./rng.js";
 import { applyPackage } from "./effects.js";
 import { quarterIndex } from "./finance.js";
+import {factionPowers} from './politics.js';
 export function pickMemorialist(state, type, provinceId = null) {
   const eligible=state.court.posts.flatMap(post=>{
     const o=state.court.officials.find(o=>o.id===post.holder&&o.post===post.id&&o.alive&&o.health>0&&!o.jailed&&!o.retired);
@@ -78,13 +79,13 @@ export function seedMemorials(state) {
           label: "准奏",
           effects:
             relief
-              ? { treasury: -8, morale: 2, virtue: 1 }
-              : { treasury: -2, governance: 0.5 },
+              ? { treasury: -8, province:{id:z.id,morale:2,disaster:-5}, virtue: 1 }
+              : { treasury: -2, governance: 0.1 },
         },
         {
           id: "reject",
           label: "驳回",
-          effects: { prestige: 0.2, morale: -0.3 },
+          effects: { prestige: 0.2,...(relief?{virtue:-2}:{}) },
         },
         { id: "hold", label: "留中", effects: {} },
       ],
@@ -148,14 +149,22 @@ export function resolveMemorial(
     state.nation.treasury < -chosen.effects.treasury
   )
     throw new Error("国库不足以准奏此事");
+  const regional=m.provinceId&&state.nation.provinces.some(p=>p.id===m.provinceId)&&Number.isFinite(chosen.effects.morale);
+  const effects=regional?{...chosen.effects,morale:undefined,province:{...chosen.effects.province,id:m.provinceId,morale:(chosen.effects.province?.morale||0)+chosen.effects.morale}}:chosen.effects;
   let s = applyPackage(
     state,
-    chosen.effects,
+    effects,
     sourcePrefix + "：" + m.title + " / " + chosen.label,
   );
   s.memorials = s.memorials.filter((x) => x.id !== id);
   s.stats.petitions++;
   const t = s.threads.find((x) => x.id === m.threadId);
+  if(m.type==='致仕'&&chosen.id==='opt0'){
+    const o=s.court.officials.find(o=>o.id===t?.actors[0]&&o.alive);
+    if(o){o.retired=true;o.post=null;o.life.push({turn:s.turn,event:'准奏致仕'});for(const p of s.court.posts)if(p.holder===o.id)p.holder=null;}
+    for(const p of s.nation.provinces)p.governor=s.court.posts.find(x=>x.provinceId===p.id)?.holder||null;
+    s.court.factions=factionPowers(s);
+  }
   if (t && t.stage !== "结束") {
     t.stage = "结束";
     t.updated = s.turn;
@@ -176,7 +185,7 @@ export function expireMemorials(state) {
     }
     s = applyPackage(
       s,
-      { morale: m.urgent ? (m.threadId ? -0.4 : -0.23) : -0.03, governance: -0.08 },
+      { morale: m.urgent ? -0.4 : -0.03, governance: -0.08,prestige:m.urgent?-0.5:0 },
       "奏报逾期：" + m.title,
     );
     const t = s.threads.find((t) => t.id === m.threadId);
@@ -197,8 +206,8 @@ export function expireMemorials(state) {
     }
   }
   s.memorials = s.memorials.filter((m) => m.due >= s.turn);
-  if (s.memorials.length > 12)
-    s = applyPackage(s, { governance: -1 }, "奏报积压超过十二本");
+  if (s.memorials.length > 12 && s.turn%3===0)
+    s = applyPackage(s, { governance: -1 }, "奏报积压超过十二本：月度案牍考成");
   return s;
 }
 export function eventsMonth(state) {
@@ -220,7 +229,7 @@ export function eventsMonth(state) {
         label: "拨银赈济",
         effects: {
           treasury: -12,
-          morale: 3,
+          morale: 8,
           virtue: 2,
           province: { id: z.id, disaster: -20 },
         },
@@ -232,7 +241,7 @@ export function eventsMonth(state) {
     ], [z.name], z.id);
     s = applyPackage(
       s,
-      { province: { id: z.id, disaster: 25 } },
+      { province: { id: z.id, disaster: 25,morale:-4 } },
       kind + "发生",
     );
     }

@@ -2593,7 +2593,8 @@ return {createGameSeed,createOpening,openingErrorMessage};
 const { seedNumber, random, DRAFT } = __load("src/core/rng.js");
 const { uniqueName } = __load("src/core/names.js");
 const { chooseRegent } = __load("src/core/regency-info.js");
-const VERSION = 5;
+const {factionPowers} = __load("src/core/politics.js");
+const VERSION = 6;
 const TALENTS = ["政略", "权谋", "武略", "文采", "魅力"];
 const SLOTS = ["朝", "午", "夜"];
 const POST_NAMES = [
@@ -2671,6 +2672,7 @@ function clone(state) {
   const copied = {
     ...structuredClone(active),
     court: {
+      ...court,
       factions: structuredClone(court.factions),
       posts: structuredClone(court.posts),
       officials: court.officials.map((o) => (o.alive ? structuredClone(o) : o)),
@@ -2699,6 +2701,7 @@ function createState(options = {}) {
       id: "f" + i,
       name,
       power: n(25, 55),
+      powerModifier:0,
       attitude: n(42, 68),
       demand: [
         "纳谏清议",
@@ -2789,6 +2792,7 @@ function createState(options = {}) {
     secretKnown: false,
     memory: [],
     life: [],
+    banquetTurn:-1000000,
   }));
   const posts = POST_NAMES.map((title, i) => ({
     id: "p" + i,
@@ -2844,6 +2848,7 @@ function createState(options = {}) {
     health: 85,
     energy: 9,
     mood: 70,
+    depressedMonths:0,
     prestige: 58,
     virtue: 60,
     talents: Object.fromEntries(TALENTS.map((t) => [t, n(42, 75)])),
@@ -2889,6 +2894,8 @@ function createState(options = {}) {
     nation: {
       treasury: 480,
       arrears: 0,
+      privyArrears:0,
+      grainArrears:0,
       privy: 90,
       grain: 650,
       morale: 62,
@@ -2904,7 +2911,7 @@ function createState(options = {}) {
         })),
       },
     },
-    court: { factions, posts, officials },
+    court: { factions, posts, officials,proxyTurn:-1000000 },
     harem: {
       consorts: ["陆令仪", "沈清蘅", "裴映雪"].map((name, i) => ({
         id: "c" + i,
@@ -2946,6 +2953,7 @@ function createState(options = {}) {
       tribute: 5,
       authorization: 15,
       frontier: ["北", "西", "南", "东"][i % 4],
+      trade:null,
     })),
     ambitions: [],
     memorials: [],
@@ -2988,6 +2996,7 @@ function createState(options = {}) {
     for (const item of group) if (item.name === state.emperor.name) {
       const r=uniqueName(state,{excludeId:item.id});state=r.state;item.name=r.name;
     }
+  state.court.factions=factionPowers(state);
   return state;
 }
 function migrate(input) {
@@ -3040,6 +3049,14 @@ function migrate(input) {
   // on commit; never rerun an old schedule, roll, settlement or calendar.
   s.v = VERSION;
   s.nation.arrears ??= 0;
+  s.nation.privyArrears ??= 0;
+  s.nation.grainArrears ??= 0;
+  s.emperor.depressedMonths ??= 0;
+  s.court.proxyTurn ??= -1000000;
+  for(const f of s.foreign)f.trade ??= null;
+  for(const f of s.court.factions)f.powerModifier ??= 0;
+  for(const o of s.court.officials)o.banquetTurn ??= -1000000;
+  for(const p of s.projects)if(p.edictType==='征兵')p.armyTarget ??= 'all-frontiers';
   for (const p of s.nation.provinces) {
     p.rebellion ??= false;
     p.rebellionQuarter ??= -1;
@@ -3162,6 +3179,15 @@ function assertState(s) {
     for(const p of s.nation.provinces)for(const k of ['taxRelief','taxSurge'])if(p[k]!==null&&(!p[k]||!Number.isFinite(p[k].factor)||p[k].factor<=0||!Number.isSafeInteger(p[k].untilQuarter)||p[k].untilQuarter<0))throw new Error('州税政策资料无效');
     for(const p of s.court.posts)if(p.provinceId&&!s.nation.provinces.some(z=>z.id===p.provinceId))throw new Error('地方官职资料无效');
   }
+  if(s.v>=6){
+    if(!Number.isSafeInteger(s.court.proxyTurn))throw new Error('权臣代批时序无效');
+    for(const f of ['arrears','privyArrears','grainArrears'])range(s.nation[f],0,Number.MAX_SAFE_INTEGER);
+    if(!Number.isSafeInteger(s.emperor.depressedMonths)||s.emperor.depressedMonths<0)throw new Error('郁结时长无效');
+    for(const f of s.court.factions)range(f.powerModifier,-30,30);
+    for(const o of s.court.officials)if(!Number.isSafeInteger(o.banquetTurn))throw new Error('宴请时序无效');
+    for(const f of s.foreign)if(f.trade!==null&&(!f.trade||!Number.isSafeInteger(f.trade.start)||!Number.isSafeInteger(f.trade.until)||f.trade.start<0||f.trade.until!==f.trade.start+36||!Number.isFinite(f.trade.income)||f.trade.income<0||f.trade.income>6))throw new Error('互市条款无效');
+    for(const p of s.projects)if(p.edictType==='征兵'&&!['capital','all-frontiers',...s.nation.army.frontiers.map(b=>b.dir)].includes(p.armyTarget))throw new Error('征兵目标无效');
+  }
   const walk = (x) => {
     if (typeof x === "number" && !Number.isFinite(x))
       throw new Error("存档含 NaN/Infinity");
@@ -3283,6 +3309,21 @@ function regentPerson(s) {
 }
 
 return {chooseRegent,regentPerson};
+},
+"src/core/politics.js":function(__load){
+// Derive office influence without changing the input state. Event influence is
+// kept separately so removing an official cannot erase an unrelated event.
+function factionPowers(s){
+ return s.court.factions.map(f=>{
+  const offices=s.court.posts.reduce((sum,p)=>{
+   const o=s.court.officials.find(o=>o.id===p.holder&&o.post===p.id&&o.alive&&o.health>0&&!o.retired&&!o.jailed&&o.faction===f.id);
+   return sum+(o?Math.max(1,5-p.rank)*(o.abilities.政+o.abilities.权谋)/2:0);
+  },0);
+  return {...f,power:Math.min(100,Math.max(0,offices/20+(f.powerModifier||0)))};
+ });
+}
+
+return {factionPowers};
 },
 "src/core/turn.js":function(__load){
 const { calendarEra, globalYear } = __load("src/core/calendar.js");
@@ -3470,6 +3511,7 @@ function forecastDraft(state, schedule) {
         const option = action.decisions?.[id] || action.decision || "approve";
         result = resolveMemorial(s, id, option, action.remark);
         s = result.state;
+        if(action.kind==='上朝'&&option==='reject')s=applyPackage(s,{prestige:2},'当廷驳回');
         slotResults[slot].push(result.note);
       }
       if (action.stance === "当廷问责") {
@@ -3837,7 +3879,7 @@ function succeedEmperor(state) {
   let name=decision.successor;
   if(!child){const prefix=s.imperialSurname+'承';const named=uniqueName(s,{names:IMPERIAL_CHARS.map(c=>prefix+c),prefix});s=named.state;name=named.name;}
   const lifespan=Math.max(age+1,draw(55,80)),tag=['勤政','仁厚','节俭','多疑'][draw(0,3)];
-  s.emperor={name,age,lifespan,health:Math.max(55,child?.health||85),energy:9,mood:65,prestige:50,virtue:55,
+  s.emperor={name,age,lifespan,health:Math.max(55,child?.health||85),energy:9,mood:65,depressedMonths:0,prestige:50,virtue:55,
     talents,tags:[tag],status:[],growth:Object.fromEntries(TALENTS.map(t=>[t,0]))};
   const mother=s.harem.consorts.find(c=>c.id===child?.mother&&c.health>0);if(mother)s.dowager=mother.name;
   for(const c of s.harem.consorts)c.retired=true;
@@ -4050,13 +4092,9 @@ function haremMonth(state) {
   }
   const r = roll(s, 1, 100);
   s = r.state;
-  const schemer = s.harem.consorts
-    .filter((c) => !c.retired && !c.cold && c.ambition > 50)
-    .sort((a, b) => b.scheming - a.scheming)[0];
-  if (r.value < 8 && schemer && s.harem.consorts.length > 1) {
-    const target = s.harem.consorts.find(
-      (c) => !c.retired && c.id !== schemer.id && !c.cold,
-    );
+  if (r.value < 8) {
+    const plot=choosePalacePlot(s);s=plot.state;
+    const schemer=s.harem.consorts.find(c=>c.id===plot.schemerId),target=s.harem.consorts.find(c=>c.id===plot.targetId);
     if (target) {
       s = addEvent(
         s,
@@ -4071,10 +4109,12 @@ function haremMonth(state) {
       );
       const t = s.harem.consorts.find((c) => c.id === target.id);
       t.mood = clamp(t.mood - 5);
-      if (t.preg && r.value === 1) {
-        t.preg = null;
-        t.health = clamp(t.health - 10);
-        s = applyPackage(s, { mood: -8 }, "宫闱事件：引擎判定小产");
+      if (t.preg) {
+        const loss=roll(s,1,10000);s=loss.state;
+        if(loss.value<=miscarriageChance(schemer,t)*10000){
+          const victim=s.harem.consorts.find(c=>c.id===target.id);victim.preg=null;victim.health=clamp(victim.health-10);
+          s = applyPackage(s, { mood: -8 }, "宫闱事件：引擎判定小产");
+        }
       }
     }
   }
@@ -4088,6 +4128,15 @@ function haremMonth(state) {
     }
   }
   return s;
+}
+function miscarriageChance(schemer,target){return clamp(0.04+(schemer.scheming-target.scheming)/2000,0.02,0.08);}
+function choosePalacePlot(state){
+ let s=clone(state);const alive=s.harem.consorts.filter(c=>!c.retired&&!c.cold&&c.health>0),pool=alive.filter(c=>c.ambition>50);
+ if(alive.length<2||!pool.length)return {state:s,schemerId:null,targetId:null};
+ const weights=pool.map(c=>Math.max(1,Math.round(c.scheming))),draw=roll(s,1,weights.reduce((a,b)=>a+b,0));s=draw.state;
+ let point=draw.value,schemer=pool.at(-1);for(let i=0;i<pool.length;i++){point-=weights[i];if(point<=0){schemer=pool[i];break;}}
+ const rivals=alive.filter(c=>c.id!==schemer.id),worst=Math.min(...rivals.map(c=>schemer.relations[c.id]??50)),targets=rivals.filter(c=>(schemer.relations[c.id]??50)===worst),target=roll(s,0,targets.length-1);s=target.state;
+ return {state:s,schemerId:schemer.id,targetId:targets[target.value].id};
 }
 function haremYear(state) {
   const s = clone(state);
@@ -4157,20 +4206,25 @@ function assignTutor(state, childId, tutorId) {
   return s;
 }
 
-return {RANKS,RANK_CAPS,rankAvailable,generateCandidates,selectConsort,canVisit,haremAction,haremMonth,haremYear,succession,assignTutor};
+return {RANKS,RANK_CAPS,rankAvailable,generateCandidates,selectConsort,canVisit,haremAction,haremMonth,miscarriageChance,choosePalacePlot,haremYear,succession,assignTutor};
 },
 "src/core/effects.js":function(__load){
 const { clone } = __load("src/core/state.js");
 function clamp(n, low = 0, high = 100) {
   return Math.min(high, Math.max(low, Number.isFinite(n) ? n : 0));
 }
+function populationMorale(state) {
+  const pop=state.nation.provinces.reduce((n,p)=>n+p.pop,0);
+  return pop?state.nation.provinces.reduce((n,p)=>n+p.pop*p.morale,0)/pop:0;
+}
+function diminishing(value,delta){return delta>0?delta*(value>=90?0.25:value>=80?0.5:1):delta;}
 function applyEffects(state, effects = {}, source = "引擎结算") {
   const s = clone(state),
     entries = [];
-  const set = (obj, key, delta, path, max = 100) => {
+  const set = (obj, key, delta, path, max = 100, min = 0) => {
     if (typeof delta !== "number" || !Number.isFinite(delta)) return;
     const old = obj[key];
-    obj[key] = clamp(old + delta, 0, max);
+    obj[key] = clamp(old + delta, min, max);
     if (obj[key] !== old)
       entries.push({
         path,
@@ -4180,22 +4234,32 @@ function applyEffects(state, effects = {}, source = "引擎结算") {
         source,
       });
   };
-  for (const f of ["treasury", "privy", "grain", "arrears"])
-    set(s.nation, f, effects[f], "nation." + f, 1000000);
-  for (const f of ["morale", "governance"])
-    set(s.nation, f, effects[f], "nation." + f);
+  for (const [f,debt] of [['treasury','arrears'],['privy','privyArrears'],['grain','grainArrears']]) {
+    const delta=effects[f];
+    if(Number.isFinite(delta)&&delta<0&&-delta>s.nation[f]){
+      s.nation[debt]??=0;
+      set(s.nation,debt,-delta-s.nation[f],'nation.'+debt,Number.MAX_SAFE_INTEGER);
+    }
+    set(s.nation,f,delta,'nation.'+f,1000000);
+  }
+  for(const f of ['arrears','privyArrears','grainArrears'])if(Number.isFinite(effects[f])){s.nation[f]??=0;set(s.nation,f,effects[f],'nation.'+f,Number.MAX_SAFE_INTEGER);}
+  if(Number.isFinite(effects.morale))for(const p of s.nation.provinces)
+    set(p,'morale',diminishing(p.morale,effects.morale)*0.3,'province.'+p.id+'.morale');
+  set(s.nation,'governance',diminishing(s.nation.governance,effects.governance),'nation.governance');
   for (const f of ["health", "mood", "prestige", "virtue"])
-    set(s.emperor, f, effects[f], "emperor." + f);
+    set(s.emperor, f, ['prestige','virtue'].includes(f)?diminishing(s.emperor[f],effects[f]):effects[f], "emperor." + f);
+  if(s.emperor.mood>=20)s.emperor.depressedMonths=0;
   if (effects.province) {
     const p = s.nation.provinces.find((p) => p.id === effects.province.id);
     if (p)
       for (const f of ["morale", "disaster"])
-        set(p, f, effects.province[f], "province." + p.id + "." + f);
+        set(p, f, f==='morale'?diminishing(p[f],effects.province[f]):effects.province[f], "province." + p.id + "." + f);
   }
+  set(s.nation,'morale',populationMorale(s)-s.nation.morale,'nation.morale');
   if (effects.faction)
     for (const [id, n] of Object.entries(effects.faction)) {
       const f = s.court.factions.find((f) => f.id === id);
-      if (f) set(f, "attitude", n, "faction." + id + ".attitude");
+      if (f) {set(f, "attitude", n, "faction." + id + ".attitude");f.powerModifier??=0;set(f,'powerModifier',n*0.25,'faction.'+id+'.powerModifier',30,-30);set(f,'power',n*0.25,'faction.'+id+'.power');}
     }
   if (effects.official) {
     const o = s.court.officials.find(
@@ -4237,13 +4301,14 @@ function growTalent(state, talent, amount = 1) {
   return s;
 }
 
-return {clamp,applyEffects,applyPackage,growTalent};
+return {clamp,populationMorale,diminishing,applyEffects,applyPackage,growTalent};
 },
 "src/core/events.js":function(__load){
 const { clone } = __load("src/core/state.js");
 const { roll } = __load("src/core/rng.js");
 const { applyPackage } = __load("src/core/effects.js");
 const { quarterIndex } = __load("src/core/finance.js");
+const {factionPowers} = __load("src/core/politics.js");
 function pickMemorialist(state, type, provinceId = null) {
   const eligible=state.court.posts.flatMap(post=>{
     const o=state.court.officials.find(o=>o.id===post.holder&&o.post===post.id&&o.alive&&o.health>0&&!o.jailed&&!o.retired);
@@ -4320,13 +4385,13 @@ function seedMemorials(state) {
           label: "准奏",
           effects:
             relief
-              ? { treasury: -8, morale: 2, virtue: 1 }
-              : { treasury: -2, governance: 0.5 },
+              ? { treasury: -8, province:{id:z.id,morale:2,disaster:-5}, virtue: 1 }
+              : { treasury: -2, governance: 0.1 },
         },
         {
           id: "reject",
           label: "驳回",
-          effects: { prestige: 0.2, morale: -0.3 },
+          effects: { prestige: 0.2,...(relief?{virtue:-2}:{}) },
         },
         { id: "hold", label: "留中", effects: {} },
       ],
@@ -4390,14 +4455,22 @@ function resolveMemorial(
     state.nation.treasury < -chosen.effects.treasury
   )
     throw new Error("国库不足以准奏此事");
+  const regional=m.provinceId&&state.nation.provinces.some(p=>p.id===m.provinceId)&&Number.isFinite(chosen.effects.morale);
+  const effects=regional?{...chosen.effects,morale:undefined,province:{...chosen.effects.province,id:m.provinceId,morale:(chosen.effects.province?.morale||0)+chosen.effects.morale}}:chosen.effects;
   let s = applyPackage(
     state,
-    chosen.effects,
+    effects,
     sourcePrefix + "：" + m.title + " / " + chosen.label,
   );
   s.memorials = s.memorials.filter((x) => x.id !== id);
   s.stats.petitions++;
   const t = s.threads.find((x) => x.id === m.threadId);
+  if(m.type==='致仕'&&chosen.id==='opt0'){
+    const o=s.court.officials.find(o=>o.id===t?.actors[0]&&o.alive);
+    if(o){o.retired=true;o.post=null;o.life.push({turn:s.turn,event:'准奏致仕'});for(const p of s.court.posts)if(p.holder===o.id)p.holder=null;}
+    for(const p of s.nation.provinces)p.governor=s.court.posts.find(x=>x.provinceId===p.id)?.holder||null;
+    s.court.factions=factionPowers(s);
+  }
   if (t && t.stage !== "结束") {
     t.stage = "结束";
     t.updated = s.turn;
@@ -4418,7 +4491,7 @@ function expireMemorials(state) {
     }
     s = applyPackage(
       s,
-      { morale: m.urgent ? (m.threadId ? -0.4 : -0.23) : -0.03, governance: -0.08 },
+      { morale: m.urgent ? -0.4 : -0.03, governance: -0.08,prestige:m.urgent?-0.5:0 },
       "奏报逾期：" + m.title,
     );
     const t = s.threads.find((t) => t.id === m.threadId);
@@ -4439,8 +4512,8 @@ function expireMemorials(state) {
     }
   }
   s.memorials = s.memorials.filter((m) => m.due >= s.turn);
-  if (s.memorials.length > 12)
-    s = applyPackage(s, { governance: -1 }, "奏报积压超过十二本");
+  if (s.memorials.length > 12 && s.turn%3===0)
+    s = applyPackage(s, { governance: -1 }, "奏报积压超过十二本：月度案牍考成");
   return s;
 }
 function eventsMonth(state) {
@@ -4462,7 +4535,7 @@ function eventsMonth(state) {
         label: "拨银赈济",
         effects: {
           treasury: -12,
-          morale: 3,
+          morale: 8,
           virtue: 2,
           province: { id: z.id, disaster: -20 },
         },
@@ -4474,7 +4547,7 @@ function eventsMonth(state) {
     ], [z.name], z.id);
     s = applyPackage(
       s,
-      { province: { id: z.id, disaster: 25 } },
+      { province: { id: z.id, disaster: 25,morale:-4 } },
       kind + "发生",
     );
     }
@@ -4537,6 +4610,10 @@ function annualBudget(state) {
   const b = monthlyBudget(state);
   return 12 * (b.salaries + b.armyPay);
 }
+function grainBudget(state){
+  const military=monthlyBudget(state).grain,relief=state.nation.provinces.filter(p=>p.disaster>0).length*2;
+  return {military,relief,monthly:military+relief,storageCapacity:(military+relief)*36};
+}
 function wasteQuote(state) {
   const budget = annualBudget(state),
     threshold = budget * 2,
@@ -4554,18 +4631,16 @@ function provinceTaxFactor(province, turn) {
   return province.morale < 15 ? 0.2 : province.morale < 30 ? 0.5 : 1;
 }
 function settleArrears(state) {
-  const amount = Math.min(state.nation.treasury, state.nation.arrears || 0);
-  if (amount <= 0) return state;
-  const s = applyPackage(
-    state,
-    { treasury: -amount, arrears: -amount },
-    "补付欠饷与积欠",
-  );
-  s.stats.expense += amount;
+  let s=state;
+  for(const [account,debt,label]of [['treasury','arrears','补付欠饷与积欠'],['privy','privyArrears','补付内帑积欠'],['grain','grainArrears','补付缺粮积欠']]){
+    const amount=Math.min(s.nation[account],s.nation[debt]||0);if(amount<=0)continue;
+    s=applyPackage(s,{[account]:-amount,[debt]:-amount},label);
+    if(account==='treasury')s.stats.expense+=amount;
+  }
   return s;
 }
 
-return {monthlyBudget,annualBudget,wasteQuote,quarterIndex,provinceTaxFactor,settleArrears};
+return {monthlyBudget,annualBudget,grainBudget,wasteQuote,quarterIndex,provinceTaxFactor,settleArrears};
 },
 "src/core/ambitions.js":function(__load){
 const { clone, reignId } = __load("src/core/state.js");
@@ -5335,23 +5410,30 @@ function settleEnergy(state, cost) {
   return s;
 }
 function emperorMonth(state) {
+  const startingHealth=state.emperor.health;
   let s = applyPackage(
     state,
     {
       health: state.emperor.status.includes("劳累") ? -2 : 1,
-      mood: state.emperor.mood < 20 ? 1 : -1,
+      mood: (55-state.emperor.mood)*0.05,
+      virtue:(50-state.emperor.virtue)*0.02,
+      prestige:(50-state.emperor.prestige)*0.02,
     },
     "太医月诊与心绪",
   );
+  const recovered=Math.max(0,s.emperor.health-startingHealth);
   const tags = s.emperor.tags;
   if (tags.includes("勤政"))
     s = applyPackage(s, { governance: 0.3, mood: -0.5 }, "性格：勤政");
   if (tags.includes("仁厚")) s = applyPackage(s, { virtue: 0.3 }, "性格：仁厚");
-  if (tags.includes("节俭"))
-    s = applyPackage(s, { privy: 1 }, "性格：节俭，核减宫费");
   if (tags.includes("多疑")) s = applyPackage(s, { mood: -0.3 }, "性格：多疑");
   if (tags.includes("嗜酒"))
     s = applyPackage(s, { health: -0.5, mood: 1 }, "性格：嗜酒");
+  s.emperor.depressedMonths=s.emperor.mood<20?(state.emperor.depressedMonths||0)+1:0;
+  if(s.emperor.depressedMonths>=3){
+    if(recovered)s=applyPackage(s,{health:-recovered},'连续郁结：月诊未能回补');
+    s=applyPackage(s,{health:-1},'连续郁结：月损圣躬');
+  }
   if (s.emperor.health < 30 && s.settings.freedom !== "free")
     s.emperor.lifespan = Math.max(s.emperor.age + 1, s.emperor.lifespan - 0.1);
   if (s.settings.freedom === "free")
@@ -5384,11 +5466,11 @@ return {energyLimit,settleEnergy,emperorMonth,emperorYear};
 const { clone } = __load("src/core/state.js");
 const { clamp, applyPackage } = __load("src/core/effects.js");
 const {
-  monthlyBudget, wasteQuote, provinceTaxFactor, settleArrears, quarterIndex,
+  monthlyBudget, grainBudget, wasteQuote, provinceTaxFactor, settleArrears, quarterIndex,
 } = __load("src/core/finance.js");
 function nationMonth(state) {
-  let s = settleArrears(clone(state));
-  const { salaries, armyPay, grain } = monthlyBudget(s);
+  let s = settleArrears(applyPackage(state,{privy:3},'月结：皇庄与盐课收入'));
+  const { salaries, armyPay } = monthlyBudget(s),grain=grainBudget(s).monthly;
   const due = armyPay + salaries,
     paid = Math.min(s.nation.treasury, due),
     unpaid = due - paid,
@@ -5398,9 +5480,9 @@ function nationMonth(state) {
     {
       treasury: -paid,
       arrears: unpaid,
-      privy: -2 - s.harem.consorts.length * 0.15,
+      privy: -(2+s.harem.consorts.filter(c=>!c.retired&&c.health>0).length*0.15)*(s.emperor.tags.includes('节俭')?0.7:1),
       grain: -grain,
-      morale: deficit ? -3 : s.nation.governance > 60 ? 0.5 : -0.2,
+      morale: deficit ? -3 : s.nation.governance<45?(s.nation.governance-45)/30:0,
       governance: s.nation.morale < 25 ? -1 : 0,
     },
     "月结：俸禄、军饷与宫用",
@@ -5423,14 +5505,21 @@ function nationMonth(state) {
     s = applyPackage(s, { treasury: -waste.amount }, "冗费与侵吞");
     s.stats.expense += waste.amount;
   }
+  const canRepair=!deficit&&s.nation.arrears===0&&s.nation.morale>=25;
   s.nation.provinces = s.nation.provinces.map((p) => ({
     ...p,
     morale: clamp(
-      p.morale + (s.nation.morale - p.morale) * 0.1 - (p.disaster > 0 ? 1 : 0),
+      p.morale + (canRepair&&!p.rebellion?(55-p.morale)*0.018:0) - (p.disaster > 0 ? 1 : 0),
     ),
     disaster: clamp(p.disaster - 2),
     rebellion: p.rebellion && p.morale < 40,
   }));
+  s=applyPackage(s,{},'月结：各州民心归并');
+  const reinforcement=Math.ceil(Math.max(0,45000-s.nation.army.capital.troops)*0.01),pay=reinforcement/1000;
+  if(reinforcement>0&&s.nation.morale>=30&&s.nation.grain>=grainBudget(s).military&&s.nation.treasury>=pay){
+    s=applyPackage(s,{treasury:-pay},'月结：京营补员付饷');
+    s.nation.army.capital.troops+=reinforcement;
+  }
   return s;
 }
 function nationQuarter(state) {
@@ -5446,12 +5535,14 @@ function nationQuarter(state) {
       3;
   let s = applyPackage(
     state,
-    { treasury: income, grain: 75 },
+    { treasury: income, grain: state.nation.provinces.reduce((n,p)=>n+p.pop*0.15*(1-p.disaster/100),0) },
     "季结：赋税实收 " + Math.round(rate * 100) + "% 与新粮入仓",
   );
   s.stats.income += income;
+  const trade=s.foreign.filter(f=>f.status!=='交战'&&f.trade&&s.turn>f.trade.start&&s.turn<=f.trade.until).reduce((n,f)=>n+f.trade.income,0);
+  if(trade){s=applyPackage(s,{treasury:trade},'季结：外邦互市岁入');s.stats.income+=trade;}
   const surging=s.nation.provinces.filter(p=>p.taxSurge&&quarterIndex(s.turn)<p.taxSurge.untilQuarter);
-  if(surging.length)s=applyPackage(s,{morale:-2},'季结：加税失民心');
+  for(const p of surging)s=applyPackage(s,{province:{id:p.id,morale:-2}},'季结：加税失民心');
   for(const p of s.nation.provinces){
     if(p.taxRelief&&quarterIndex(s.turn)>=p.taxRelief.untilQuarter)p.taxRelief=null;
     if(p.taxSurge&&quarterIndex(s.turn)>=p.taxSurge.untilQuarter)p.taxSurge=null;
@@ -5460,6 +5551,8 @@ function nationQuarter(state) {
 }
 function nationYear(state) {
   let s = clone(state);
+  const spoiled=Math.max(0,s.nation.grain-grainBudget(s).storageCapacity)*0.1;
+  if(spoiled)s=applyPackage(s,{grain:-spoiled},'年结：超仓陈粮霉变一成');
   s.nation.provinces = s.nation.provinces.map((p) => ({
     ...p,
     pop: Math.round(p.pop * (p.morale > 40 ? 1.002 : 0.995)),
@@ -5470,13 +5563,20 @@ function nationYear(state) {
 return {nationMonth,nationQuarter,nationYear};
 },
 "src/core/court.js":function(__load){
-const { resolveMemorial } = __load("src/core/events.js");
+const { resolveMemorial,addEvent } = __load("src/core/events.js");
 const { clone } = __load("src/core/state.js");
 const { applyPackage, clamp } = __load("src/core/effects.js");
 const { uniqueName } = __load("src/core/names.js");
 const { roll, check } = __load("src/core/rng.js");
+const {factionPowers} = __load("src/core/politics.js");
+function strongmanCandidate(s){
+ const candidates=s.court.officials.filter(o=>o.alive&&o.health>0&&!o.retired&&!o.jailed&&s.court.posts.some(p=>p.holder===o.id&&p.id===o.post));
+ return candidates.map(o=>({o,power:s.court.factions.find(f=>f.id===o.faction)?.power||0}))
+  .filter(({o,power})=>s.emperor.prestige<40&&power>70||o.ambition*power*(100-s.emperor.prestige)>150000)
+  .sort((a,b)=>b.o.ambition*b.power-a.o.ambition*a.power)[0]?.o || null;
+}
 function strongman(s) {
-  return s.emperor.prestige < 40 && s.court.factions.some((f) => f.power > 70);
+  return !!strongmanCandidate(s);
 }
 function courtMonth(state) {
   let s = clone(state);
@@ -5505,7 +5605,7 @@ function courtMonth(state) {
       );
       return n + (o ? Math.max(0, o.abilities.政 - o.greed / 2) / 150 : 0);
     }, 0);
-  s = applyPackage(s, { governance: administration }, "月结：六部有司履职");
+  s = applyPackage(s, { governance: (50+administration*5-theft*2-s.nation.governance)*0.03 }, "月结：六部履职与贪墨决定治理回归");
   s = applyPackage(
     s,
     { treasury: -theft, governance: theft > 2 ? -0.5 : 0 },
@@ -5513,33 +5613,39 @@ function courtMonth(state) {
   );
   s.court.factions = s.court.factions.map((f) => ({
     ...f,
-    power: clamp(f.power + (50 - s.emperor.prestige) * 0.006),
+    powerModifier:(f.powerModifier||0)*0.98,
     attitude: clamp(f.attitude + (50 - f.attitude) * 0.015),
   }));
+  s.court.factions=factionPowers(s);
   return s;
 }
 function courtYear(state) {
   let s = clone(state);
-  s.court.officials = s.court.officials.map((o) =>
-    o.alive
-      ? {
-          ...o,
-          age: o.age + 1,
-          health: clamp(o.health - (o.age > 65 ? 3 : 0)),
-        }
-      : o,
-  );
-  for (const o of s.court.officials)
-    if (o.alive && o.health <= 0) {
+  for(const original of s.court.officials.filter(o=>o.alive)){
+    let o=s.court.officials.find(o=>o.id===original.id);o.age++;
+    let died=o.health<=0;const chance=officialDeathChance(o.age);
+    if(chance){const r=roll(s,1,10000);s=r.state;died ||= r.value<=chance*10000;o=s.court.officials.find(o=>o.id===original.id);}
+    if(died){
       o.alive = false;
+      o.health=0;
       o.post = null;
       for (const p of s.court.posts) if (p.holder === o.id) p.holder = null;
+      o.life.push({turn:s.turn,event:'年老病故'});
+    } else if(o.age>=70&&!o.retired&&!o.jailed&&o.post&&!s.threads.some(t=>t.type==='致仕'&&t.actors.includes(o.id))){
+      const post=s.court.posts.find(p=>p.holder===o.id);
+      s=addEvent(s,'致仕',o.name+'请致仕','年届七旬，乞骸骨归里',[
+        {label:'准予致仕',effects:{virtue:0.5}},{label:'温旨留任',effects:{prestige:0.2}},
+      ],[o.id],post?.provinceId||null);
+      const m=s.memorials.at(-1);if(inCapital(o)||post?.provinceId){m.from=o.name;m.fromId=o.id;}
     }
+  }
+  for(const p of s.nation.provinces)p.governor=s.court.posts.find(o=>o.provinceId===p.id)?.holder||null;
   const year = 1 + Math.floor(s.turn / 36);
-  if (year % 3 === 1 && !s.court.officials.some(o=>o.id.startsWith("exam-"+year+"-")) && s.court.officials.filter((o) => o.alive).length < 60) {
+  if (year % 3 === 1 && !s.court.officials.some(o=>o.id.startsWith("exam-"+year+"-"))) {
+    const intake=Math.min(5,s.court.posts.filter(p=>!p.holder).length);
     for (
       let i = 0;
-      i < 3 && s.court.officials.filter((o) => o.alive).length < 60;
+      i < intake;
       i++
     ) {
       const index = s.court.officials.length - 25,
@@ -5568,11 +5674,14 @@ function courtYear(state) {
         secretKnown: false,
         memory: [],
         life: [{ turn: s.turn, event: "登科候选" }],
+        banquetTurn:-1000000,
       });
     }
   }
+  s.court.factions=factionPowers(s);
   return s;
 }
+function officialDeathChance(age){return age>=80?0.15:age>=70?0.06:age>=60?0.02:0;}
 
 function appoint(state, action) {
   let s = clone(state);
@@ -5651,6 +5760,7 @@ function appoint(state, action) {
   }
   for (const province of s.nation.provinces) province.governor=s.court.posts.find(p=>p.provinceId===province.id)?.holder || null;
   s.stats.appointments++;
+  s.court.factions=factionPowers(s);
   return {
     state: s,
     note: removing ? "处分 " + old?.name : person.name + " 出任 " + post.title,
@@ -5763,8 +5873,11 @@ function banquet(state, action) {
     { privy: -cost, mood: 5 },
     "宴请：" + (action.type || "君臣宴"),
   );
-  for (const id of guests)
-    s = applyPackage(s, { official: { id, favor: 5 } }, "宴席宾客礼遇");
+  for (const id of guests){
+    const o=s.court.officials.find(o=>o.id===id),gain={俭:2,常:4,盛:7}[action.cost||'常']*(s.turn-(o.banquetTurn??-1000000)<6?0.5:1);
+    s = applyPackage(s, { official: { id, favor: gain } }, "宴席宾客礼遇");
+    s.court.officials.find(o=>o.id===id).banquetTurn=s.turn;
+  }
   const r = roll(s);
   s = r.state;
   let event = [
@@ -5905,15 +6018,11 @@ function accountability(state, target, die) {
 function proxyMemorial(state, options = {}) {
   if (!options.minister && !strongman(state) || !state.memorials.length)
     return { state: clone(state), note: null };
-  const faction = options.minister ? state.court.factions.find(f=>f.id===options.minister.faction) || state.court.factions[0] : state.court.factions
-    .filter((f) => f.power > 70)
-    .sort((a, b) => b.power - a.power)[0];
-  const minister = options.minister || state.court.officials
-    .filter((o) => inCapital(o) && o.faction === faction.id)
-    .sort(
-      (a, b) => b.abilities.权谋 + b.ambition - (a.abilities.权谋 + a.ambition),
-    )[0];
+  if(!options.minister&&state.turn-(state.court.proxyTurn??-1000000)<3)return {state:clone(state),note:null};
+  const boss=strongmanCandidate(state);
+  const minister = options.minister || (inCapital(boss||{})?boss:state.court.officials.filter(o=>inCapital(o)&&o.faction===boss?.faction&&state.court.posts.some(p=>p.holder===o.id&&p.id===o.post)).sort((a,b)=>b.abilities.权谋-a.abilities.权谋)[0]);
   if (!minister) return { state: clone(state), note: null };
+  const faction=state.court.factions.find(f=>f.id===minister.faction)||state.court.factions[0];
   const choices = state.memorials
     .flatMap((m) =>
       m.options
@@ -5928,6 +6037,7 @@ function proxyMemorial(state, options = {}) {
   if (!choices.length) return { state: clone(state), note: null };
   const { m, o } = choices[0],
     result = resolveMemorial(state, m.id, o.id, "", minister.name + (options.label || "代批"));
+  if(!options.minister)result.state.court.proxyTurn=state.turn;
   return {
     state: applyPackage(
       result.state,
@@ -5941,7 +6051,7 @@ function proxyMemorial(state, options = {}) {
   };
 }
 
-return {strongman,courtMonth,courtYear,appoint,talkAttempt,banquet,inCapital,factionOptionScore,courtDebate,accountability,proxyMemorial};
+return {strongmanCandidate,strongman,courtMonth,courtYear,officialDeathChance,appoint,talkAttempt,banquet,inCapital,factionOptionScore,courtDebate,accountability,proxyMemorial};
 },
 "src/core/foreign.js":function(__load){
 const { clone } = __load("src/core/state.js");
@@ -5949,6 +6059,7 @@ const { applyPackage, clamp } = __load("src/core/effects.js");
 const { roll, check } = __load("src/core/rng.js");
 const { proxyMemorial, inCapital } = __load("src/core/court.js");
 const { addEvent, pickMemorialist } = __load("src/core/events.js");
+const {monthlyBudget} = __load("src/core/finance.js");
 function foreignMonth(state) {
   let s = clone(state);
   for (const b of s.nation.army.frontiers) {
@@ -5970,6 +6081,7 @@ function diplomacyBlock(state, action) {
   if(!other)return '请选择外邦';
   if(other.status==='交战'&&!['议和','接见'].includes(operation))return '交战中只允许议和和接见';
   if(operation==='议和'&&other.status!=='交战')return '当前未交战';
+  if(operation==='互市'&&other.trade&&state.turn-other.trade.start<36)return '同一外邦一年内只能议互市一次';
   if(operation==='宣战'){
     if(!state.nation.army.frontiers.some(b=>b.dir===other.frontier))return '外邦未绑定有效边境';
     if(['婚盟','朝贡'].includes(other.status)&&!action.confirmBreach)return '宣战将撕毁盟约，请再次确认';
@@ -6054,13 +6166,10 @@ function diplomacy(state, action, die) {
         }
     }
   } else if (operation === "互市") {
+    other.trade={start:s.turn,until:s.turn+36,income:0};
     if (c.success) {
       other.status = "通好";
-      s = applyPackage(
-        s,
-        { treasury: Math.min(10, other.authorization) },
-        "互市获准",
-      );
+      other.trade.income=Math.min(6,other.authorization/2);
     }
   } else if (operation === "册封" || operation === "索贡") {
     if (c.success) other.status = "朝贡";
@@ -6115,7 +6224,8 @@ function advanceCampaigns(state) {
     const generals=['兵部尚书',war.dir+'境总兵'].map(title=>s.court.officials.find(o=>o.id===s.court.posts.find(p=>p.title===title)?.holder&&inCapital({...o,inCapital:true}))).filter(Boolean);
     const general=generals.sort((a,b)=>b.abilities.军-a.abilities.军)[0];
     const power=border.troops*border.readiness/100*(1+((general?.abilities.军 ?? 50)-50)/100)
-      *(war.personal?1+s.emperor.talents.武略/200:1)*(s.nation.grain>=6?1:0.7);
+      *(war.personal?1+s.emperor.talents.武略/200:1)*(s.nation.grain>=monthlyBudget(s).grain?1:0.7);
+    if(s.nation.grain<monthlyBudget(s).grain)s.facts.push({subject:war.id,key:'缺粮战力',value:'粮储不足一月军粮，当旬战力为七成',turn:s.turn});
     const enemy=war.enemyTroops*war.enemyReadiness/100;
     const victory=power*(1+(r.value-10.5)*0.04)>=enemy;
     war.round++;war.score=(war.score||0)+(victory?1:-1);
@@ -6364,6 +6474,8 @@ function issueEdict(state, action, die) {
   if (!rule) throw new Error("无法识别此旨意，请选择模板");
   const blocked=edictBlock(state,type,action.province);if(blocked)throw new Error(blocked);
   if(action.province&&!state.nation.provinces.some(p=>p.id===action.province))throw new Error("请选择有效州郡");
+  const armyTarget=action.armyTarget||'capital';
+  if(type==='征兵'&&!['capital',...state.nation.army.frontiers.map(b=>b.dir)].includes(armyTarget))throw new Error('请选择有效军队');
   if (type === "立储") {
     const s = clone(state),
       child = s.harem.children.find(
@@ -6442,6 +6554,7 @@ function issueEdict(state, action, die) {
         Object.entries(rule.effects).map(([k, v]) => [k, v * exec.rate]),
       ),
       province: action.province || null,
+      ...(type==='征兵'?{armyTarget}:{}),
       done: false,
     });
   if(exec.tier===3)s.facts.push({subject:exec.official,key:"截留侵吞",value:type+"截留侵吞 "+(rule.cost*0.7).toFixed(1)+" 万两（已含于发付钱粮，不重复扣款）",turn:s.turn});
@@ -6479,7 +6592,8 @@ function advanceProjects(state) {
         }
       }
       project.progress = 100;
-      s = applyPackage(s, project.effects, "政务竣结：" + project.edictType);
+      const effects=project.province&&Number.isFinite(project.effects.morale)?{...project.effects,morale:undefined,province:{id:project.province,morale:project.effects.morale}}:project.effects;
+      s = applyPackage(s, effects, "政务竣结：" + project.edictType);
       if (project.province && project.edictType === "赈灾")
         s = applyPackage(
           s,
@@ -6492,12 +6606,14 @@ function advanceProjects(state) {
           },
           "地方赈济到位",
         );
-      if (project.edictType === "征兵")
-        s.nation.army.frontiers = s.nation.army.frontiers.map((f) => ({
+      if (project.edictType === "征兵"){
+        if(project.armyTarget==='capital')s.nation.army.capital.troops=Math.min(45000,s.nation.army.capital.troops+3000);
+        s.nation.army.frontiers = s.nation.army.frontiers.map((f) => project.armyTarget==='all-frontiers'||project.armyTarget===f.dir?({
           ...f,
           troops: Math.min(1000000, f.troops + 3000),
           readiness: clamp(f.readiness + 5),
-        }));
+        }):f);
+      }
     }
   }
   return s;
@@ -6606,6 +6722,16 @@ function ledgerHTML(entries) {
             {
               treasury: "国库",
               arrears: "欠饷与积欠",
+              privyArrears:'内帑积欠',
+              grainArrears:'缺粮积欠',
+              depressedMonths:'郁结月数',
+              powerModifier:'政局影响',
+              proxyTurn:'上次代批旬次',
+              banquetTurn:'上次赴宴旬次',
+              income:'互市季入',
+              start:'起始旬次',
+              until:'有效至旬',
+              untilQuarter:'税政期限（季）',
               privy: "内帑",
               grain: "粮储",
               morale: "民心",
@@ -7027,7 +7153,7 @@ function actionDialog(s, kind, preferred, onSchedule, onTalk) {
         .join("") +
       '</select><label for="province">主办州郡</label><select id="province">' +
       '<option value="">全国</option>' + opt(s.nation.provinces) +
-      '</select><div id="edict-amount-field"><label for="edict-amount">拨转金额（万两）</label><input id="edict-amount" type="number" min="1" max="100" value="10"></div><div id="edict-child-field"><label for="edict-child">储君人选</label><select id="edict-child"><option value="">请选择在世皇子</option>' +
+      '</select><div id="edict-army-field"><label for="edict-army">补充军队</label><select id="edict-army"><option value="capital">京营</option>'+s.nation.army.frontiers.map(b=>'<option value="'+esc(b.dir)+'">'+esc(b.dir)+'境边军</option>').join('')+'</select></div><div id="edict-amount-field"><label for="edict-amount">拨转金额（万两）</label><input id="edict-amount" type="number" min="1" max="100" value="10"></div><div id="edict-child-field"><label for="edict-child">储君人选</label><select id="edict-child"><option value="">请选择在世皇子</option>' +
       opt(s.harem.children.filter((c) => c.sex === "男" && c.health > 0)) +
       '</select></div><label for="edict-text">御旨（选填）</label><textarea id="edict-text" maxlength="500" placeholder="着有司依议施行。"></textarea><label class="check"><input id="force-edict" type="checkbox">遭封驳仍强推（可能引发党争）</label>';
   if (kind === "任命")
@@ -7179,6 +7305,7 @@ function actionDialog(s, kind, preferred, onSchedule, onTalk) {
     const show=(id,visible)=>$("#"+id)?.classList.toggle("hidden",!visible);
     show("edict-amount-field",["转内帑","转国库"].includes($("#edict-type")?.value));
     show("edict-child-field",$("#edict-type")?.value==="立储");
+    show('edict-army-field',$('#edict-type')?.value==='征兵');
     show("breach-field",kind==="外交"&&$("#operation")?.value==="宣战"&&["婚盟","朝贡"].includes(s.foreign.find(f=>f.id===$("#country")?.value)?.status));
     show("bride-field",$("#operation")?.value==="和亲");
     show("harem-amount-field",$("#operation")?.value==="赏赐");
@@ -7210,6 +7337,7 @@ function actionDialog(s, kind, preferred, onSchedule, onTalk) {
         Object.assign(a, {
           edictType: val("edict-type"),
           province: val("province"),
+          ...($('#edict-type').value==='征兵'?{armyTarget:val('edict-army')}:{}),
           amount: Number(val("edict-amount")),
           child: val("edict-child"),
           text: val("edict-text"),
@@ -7276,7 +7404,7 @@ function actionDialog(s, kind, preferred, onSchedule, onTalk) {
 return {actionDialog};
 },
 "src/ui/panels.js":function(__load){
-const { annualBudget, wasteQuote } = __load("src/core/finance.js");
+const { annualBudget, wasteQuote,grainBudget } = __load("src/core/finance.js");
 const { esc, openDialog } = __load("src/ui/common.js");
 const { num, ledgerHTML, chapterHTML, chapterTitle, ambitionsHTML } = __load("src/ui/render.js");
 function palacePanel(s, name) {
@@ -7293,7 +7421,7 @@ function palacePanel(s, name) {
     const colors = ["var(--gold)", "var(--up)", "var(--glyph)", "var(--text-muted)", "var(--text-soft)", "var(--down)"];
     const stops = s.court.factions.map((f, i) => {
       const a = angle;
-      angle += (f.power / total) * 360;
+      angle += total ? (f.power / total) * 360 : 0;
       return colors[i] + " " + a + "deg " + angle + "deg";
     });
     html =
@@ -7468,7 +7596,7 @@ function palacePanel(s, name) {
             "</small></div>",
         )
         .join("") +
-      '</div><h3>四境军情</h3><div class="grid">' +
+      '</div><h3>京营</h3><div class="card"><p>兵力 '+num(s.nation.army.capital.troops)+' · 军备 '+num(s.nation.army.capital.readiness)+'</p></div><h3>四境军情</h3><div class="grid">' +
       s.nation.army.frontiers
         .map(
           (f) =>
@@ -7503,7 +7631,7 @@ function palacePanel(s, name) {
             num(f.attitude) +
             "</p><small>" +
             esc(f.demand) +
-            '</small><p><button data-action="外交">遣使接见</button></p></div>',
+            '</small>'+(f.trade&&f.trade.income>0&&f.trade.until>=s.turn?'<p>互市每季 '+num(f.trade.income)+' 万两 · 余 '+(f.trade.until-s.turn)+' 旬'+(f.status==='交战'?'（交战停收）':'')+'</p>':'')+'<p><button data-action="外交">遣使接见</button></p></div>',
         )
         .join("") +
       '</div><h3 class="section-spacer">在途战役</h3>' +
@@ -7528,7 +7656,7 @@ function palacePanel(s, name) {
     const entries = [...s.volumes.flatMap((v) => v.chapters), ...s.history]
       .flatMap((h) => h.entries)
       .filter((e) =>
-        ["nation.treasury", "nation.privy", "nation.grain"].includes(e.path),
+        ["nation.treasury", "nation.privy", "nation.grain","nation.arrears","nation.privyArrears","nation.grainArrears"].includes(e.path),
       );
     html =
       '<div class="grid"><div class="card"><h3>国库</h3><p>' +
@@ -7537,10 +7665,10 @@ function palacePanel(s, name) {
       num(s.nation.privy) +
       ' 万两</p></div><div class="card"><h3>粮储</h3><p>' +
       num(s.nation.grain) +
-      ' 万石</p></div><div class="card"><h3>年度预算</h3><p>' +
+      ' 万石</p><p>三年用粮仓容 '+num(grainBudget(s).storageCapacity)+' 万石，超额陈粮每年霉变一成。</p></div><div class="card"><h3>年度预算</h3><p>' +
       num(annualBudget(s)) + ' 万两</p><p>俸禄、军饷合计一年的开支。余银超过两年预算，每月超额冗费为 ' +
       num(wasteQuote(s).rate * 100) + '%。</p></div><div class="card"><h3>欠饷与积欠</h3><p>' +
-      num(s.nation.arrears || 0) + ' 万两</p><p>国库不足，便记作欠款；进项先补旧欠。</p></div></div><h3 class="section-spacer">近月钱粮明细</h3>' +
+      num(s.nation.arrears || 0) + ' 万两</p><p>国库不足，便记作欠款；进项先补旧欠。</p></div><div class="card"><h3>内帑积欠</h3><p>'+num(s.nation.privyArrears||0)+' 万两</p><p>皇庄盐课每月入三万两，先补旧欠再付宫用。</p></div><div class="card"><h3>缺粮积欠</h3><p>'+num(s.nation.grainArrears||0)+' 万石</p></div></div><h3 class="section-spacer">近月钱粮明细</h3>' +
       ledgerHTML(entries.filter((e) => e.turn >= s.turn - 3).slice(-60)) +
       '<h3 class="section-spacer">在途政务</h3>' +
       fold(

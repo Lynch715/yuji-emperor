@@ -30,7 +30,7 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
         .join("") +
       '</select><label for="province">主办州郡</label><select id="province">' +
       '<option value="">全国</option>' + opt(s.nation.provinces) +
-      '</select><div id="edict-amount-field"><label for="edict-amount">拨转金额（万两）</label><input id="edict-amount" type="number" min="1" max="100" value="10"></div><div id="edict-child-field"><label for="edict-child">储君人选</label><select id="edict-child"><option value="">请选择在世皇子</option>' +
+      '</select><div id="edict-army-field"><label for="edict-army">补充军队</label><select id="edict-army"><option value="capital">京营</option>'+s.nation.army.frontiers.map(b=>'<option value="'+esc(b.dir)+'">'+esc(b.dir)+'境边军</option>').join('')+'</select></div><div id="edict-amount-field"><label for="edict-amount">拨转金额（万两）</label><input id="edict-amount" type="number" min="1" max="100" value="10"></div><div id="edict-child-field"><label for="edict-child">储君人选</label><select id="edict-child"><option value="">请选择在世皇子</option>' +
       opt(s.harem.children.filter((c) => c.sex === "男" && c.health > 0)) +
       '</select></div><label for="edict-text">御旨（选填）</label><textarea id="edict-text" maxlength="500" placeholder="着有司依议施行。"></textarea><label class="check"><input id="force-edict" type="checkbox">遭封驳仍强推（可能引发党争）</label>';
   if (kind === "任命")
@@ -182,6 +182,7 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
     const show=(id,visible)=>$("#"+id)?.classList.toggle("hidden",!visible);
     show("edict-amount-field",["转内帑","转国库"].includes($("#edict-type")?.value));
     show("edict-child-field",$("#edict-type")?.value==="立储");
+    show('edict-army-field',$('#edict-type')?.value==='征兵');
     show("breach-field",kind==="外交"&&$("#operation")?.value==="宣战"&&["婚盟","朝贡"].includes(s.foreign.find(f=>f.id===$("#country")?.value)?.status));
     show("bride-field",$("#operation")?.value==="和亲");
     show("harem-amount-field",$("#operation")?.value==="赏赐");
@@ -213,6 +214,7 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
         Object.assign(a, {
           edictType: val("edict-type"),
           province: val("province"),
+          ...($('#edict-type').value==='征兵'?{armyTarget:val('edict-army')}:{}),
           amount: Number(val("edict-amount")),
           child: val("edict-child"),
           text: val("edict-text"),

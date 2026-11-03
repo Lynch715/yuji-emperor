@@ -89,7 +89,6 @@
   "balance": {
     "exitCode": 1,
     "passed": false,
-    "mortalityOverrunAcceptedByUser": true,
     "thresholdsUnchanged": true,
     "random": [
       {
