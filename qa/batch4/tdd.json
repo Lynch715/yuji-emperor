@@ -1,0 +1,40 @@
+{
+  "note": "每条目首次失败均在改该条目代码之前运行，原始输出见本线程工具记录；此文件为摘要，不伪造原始日志。",
+  "cases": [
+    {
+      "item": "C2",
+      "test": "C2 audit3先急件一律准奏30年不超仓容1.2倍，连灾减产且超仓年霉变三成",
+      "initialFailure": "季粮/季军粮=26.00756756756757，超出1.2–1.5"
+    },
+    {
+      "item": "D1",
+      "test": "D1 三十种国势模板覆盖灾边亏欠贪举河盐宗言使，50年标题至少二十五种且无灾不请赈",
+      "initialFailure": "ENOENT: src/core/memorial-templates.js"
+    },
+    {
+      "item": "D2",
+      "test": "D2 试读随回合季节场景与结算组句，固定回合可重试且不编数字硬结果",
+      "initialFailure": "旧正文固定，不能通过场景/回合变化断言"
+    },
+    {
+      "item": "D3",
+      "test": "D3 每本独立准驳朱批按fromId落账，正则保留责成并识别不必嘉奖等否定",
+      "initialFailure": "对象决定抛“无此处置选项”；UI remarks 未定义；VERSION=6；分类无小枚举"
+    },
+    {
+      "item": "D4",
+      "test": "D4 同朝同档连续封卷谥号庙号不重复，跨朝独立且重封幂等",
+      "initialFailure": "连续两位同档谥号“平”重复"
+    },
+    {
+      "item": "D5",
+      "test": "D5 本纪五段由本朝台账生成，年度取最大事件补叙且没有循环段落",
+      "initialFailure": "段落数1≠5"
+    },
+    {
+      "item": "D1补",
+      "test": "D1 空仓核报粮缺，不请求翻晒搬运不存在的库存",
+      "initialFailure": "空仓仍出现grain-air，而非grain-shortage"
+    }
+  ]
+}

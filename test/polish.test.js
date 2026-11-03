@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
-import { createState, migrate } from "../src/core/state.js";
+import { createState, migrate,VERSION } from "../src/core/state.js";
 import { initialTurn, forecastTurn, commitTurn } from "../src/core/turn.js";
 import { selectAmbitions } from "../src/core/ambitions.js";
 import { STYLES } from "../src/llm/prompts.js";
@@ -45,7 +45,7 @@ test("old version-1 saves fill compatible optional fields, future saves stay pro
     文采: 0,
     魅力: 0,
   });
-  assert.throws(() => migrate({ ...s, v: 5 }));
+  assert.throws(() => migrate({ ...s, v: VERSION+1 }));
 });
 test("one hundred played turns keep history exportable, no duplicate receipts or blocked states", () => {
   let s = initial();

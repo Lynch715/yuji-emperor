@@ -1,3 +1,7 @@
+import { memorialDecision } from "./memorial-decisions.js";
+import { calendarEra, globalYear } from "./calendar.js";
+import { advanceRegency } from "./succession.js";
+import { regentPerson } from "./regency-info.js";
 import { settleArrears } from "./finance.js";
 import { turnFacts } from "./facts.js";
 import { privateAction } from "./private.js";
@@ -5,7 +9,7 @@ import { check } from "./rng.js";
 import { evaluateAmbitions } from "./ambitions.js";
 import { unlockAchievements, sealChronicle } from "./chronicles.js";
 import { auditChanges } from "./audit.js";
-import { clone, assertState, SLOTS, withDraft } from "./state.js";
+import { clone, assertState, SLOTS, withDraft, migrate, VERSION } from "./state.js";
 import { roll, fateLabel } from "./rng.js";
 import { applyPackage, growTalent } from "./effects.js";
 import {
@@ -37,16 +41,18 @@ import {
   foreignMonth,
   foreignYear,
   diplomacy,
+  diplomacyBlock,
   borderInvasions,
   advanceCampaigns,
   checkCollapse,
 } from "./foreign.js";
-import { issueEdict, advanceProjects } from "./edicts.js";
+import { issueEdict, advanceProjects, edictBlock } from "./edicts.js";
 import {
   seedMemorials,
   resolveMemorial,
   expireMemorials,
   eventsMonth,
+  pickMemorialist,
 } from "./events.js";
 export const ACTIONS = {
   上朝: { slots: ["朝"], energy: 2 },
@@ -76,6 +82,9 @@ export function scheduleCost(schedule) {
     );
 }
 export function validateSchedule(state, schedule) {
+  const talks = state.talks.filter((t) => t.turn === state.turn);
+  if (talks.some((t) => schedule.午?.kind !== "召见" || schedule.午.person !== t.person))
+    throw new Error("本旬面谈已落账，午槽须保留对应人物的召见");
   let full = false,
     count = 0;
   const seen = new Set();
@@ -83,13 +92,18 @@ export function validateSchedule(state, schedule) {
     const a = schedule[slot];
     if (!a) continue;
     count++;
+    if(state.regency && !["批折","召见","歇息"].includes(a.kind) && !(a.kind==="私下行事"&&a.operation==="经筵"))
+      throw new Error("摄政期间只能批折、召见、经筵或歇息");
     const rule = ACTIONS[a.kind];
     if (!rule || !rule.slots.includes(slot))
       throw new Error(a.kind + " 不能安排在" + slot + "槽");
+    if(a.kind==='外交'){const blocked=diplomacyBlock(state,a);if(blocked)throw new Error(blocked);}
+    if(a.kind==='下旨'){const blocked=edictBlock(state,a.edictType,a.province);if(blocked)throw new Error(blocked);}
     if (rule.full) full = true;
     for (const id of a.memorials || []) {
       if (seen.has(id)) throw new Error("同一奏报不能重复处置");
       seen.add(id);
+      memorialDecision(a,id);
     }
     if (a.kind === "上朝" && (a.memorials?.length || 0) > 3)
       throw new Error("上朝最多三个议题");
@@ -136,7 +150,7 @@ function forecastDraft(state, schedule) {
     s = applyPackage(
       s,
       { treasury: -Math.min(8, s.nation.treasury), mood: -2 },
-      "天命大凶：内库失窃",
+      "天命大凶：户部银库失窃",
     );
   for (const slot of SLOTS) {
     const action = schedule[slot];
@@ -168,9 +182,10 @@ function forecastDraft(state, schedule) {
         );
       }
       for (const id of ids) {
-        const option = action.decisions?.[id] || action.decision || "approve";
-        result = resolveMemorial(s, id, option, action.remark);
+        const decision = memorialDecision(action,id);
+        result = resolveMemorial(s, id, decision.option, decision.remark, "处置奏报", decision.remarkKind);
         s = result.state;
+        if(action.kind==='上朝'&&decision.option==='reject')s=applyPackage(s,{prestige:2},'当廷驳回');
         slotResults[slot].push(result.note);
       }
       if (action.stance === "当廷问责") {
@@ -292,19 +307,22 @@ function forecastDraft(state, schedule) {
         ((Math.floor(s.turn / 36) + 1) % 3 === 1 ? "；科举、选秀开科" : ""),
     );
   }
-  s.era = {
-    ...s.era,
-    year: 1 + Math.floor((s.turn - (s.reign?.accessionTurn || 0)) / 36),
-    month: 1 + Math.floor((s.turn % 36) / 3),
-    xun: s.turn % 3,
-  };
-  if (s.era.year % 3 === 1 && s.harem.selectionYear !== s.era.year)
+  s.era = calendarEra(s);
+  const wasRegent=!!s.regency;
+  s=advanceRegency(s);
+  if(wasRegent&&!s.regency)notes.push('年满十六，亲政大婚，册立新朝后妃');
+  if (globalYear(s.turn) % 3 === 1 && s.harem.selectionYear !== globalYear(s.turn))
     s = generateCandidates(s);
   s = checkCollapse(s);
   if (s.ending?.type === "驾崩") s.ending.succession = succession(s);
-  const proxy = proxyMemorial(s);
-  s = proxy.state;
-  if (proxy.note) notes.push(proxy.note);
+  if(s.regency){
+    const count=roll(s,1,2);s=count.state;
+    for(let i=0;i<count.value;i++){
+      const proxy=proxyMemorial(s,{minister:regentPerson(s),label:'摄政代批'});s=proxy.state;if(proxy.note)notes.push(proxy.note);
+    }
+  } else {
+    const proxy=proxyMemorial(s);s=proxy.state;if(proxy.note)notes.push(proxy.note);
+  }
 
   for (const child of s.harem.children.filter(
     (c) => !state.harem.children.some((old) => old.id === c.id),
@@ -324,6 +342,13 @@ function forecastDraft(state, schedule) {
   ))
     notes.push(o.name + " 寿终，原职出缺");
   s = seedMemorials(s);
+  // A month-end sender may leave office during the same year-end settlement.
+  // Before exposing new memorials, bind them to the final eligible incumbent.
+  for(const m of s.memorials.filter(m=>!state.memorials.some(old=>old.id===m.id))) {
+    const o=s.court.officials.find(o=>o.id===m.fromId);
+    if(!o||!o.alive||o.health<=0||o.jailed||o.retired||!s.court.posts.some(p=>p.holder===o.id&&p.id===o.post))
+      Object.assign(m,pickMemorialist(s,m.type,m.provinceId));
+  }
   s.emperor.energy = energyLimit(s);
   s = evaluateAmbitions(s);
   s = unlockAchievements(s);
@@ -378,7 +403,7 @@ function commitDraft(state, forecast, narrative = {}) {
     }) !== forecast.baseFingerprint
   )
     throw new Error("预演已过期，不能提交到此存档");
-  let s = clone(forecast.state);
+  let s = forecast.state.v < VERSION ? migrate(forecast.state) : clone(forecast.state);
   s.v = state.v;
   s.receipts.push(forecast.turnId);
   s.pending = null;

@@ -29,10 +29,21 @@ export function roster(state) {
       state.harem.consorts.map(
         (c) => c.id + "｜" + c.name + "｜" + c.rank + "｜" + c.family,
       ),
+      [state.emperor.name + "｜皇帝"],
+      state.harem.children.filter(c=>c.health>0&&c.id!==state.reign?.emperorId&&c.name!==state.emperor.name).map((c) =>
+        c.id + "｜" + c.name + "｜" + (c.id === state.harem.heir ? "储君" : c.sex === "男" ? "皇子" : "公主")),
+      [(state.dowager || "慈宁太后") + "｜太后"],
+      (state.harem.royalWomen || []).map((w) => w.id + "｜" + w.name + "｜宗室女"),
+      state.foreign.map((f) => f.id + "｜" + f.ruler + "｜" + f.name + "君主｜" + f.status),
     )
     .join("\n");
 }
 export function turnMessages(state, forecast) {
+  const before = state;
+  state = forecast.state;
+  const nationSummary = (s) => Object.fromEntries(
+    ["treasury", "privy", "grain", "morale", "governance"].map((k) => [k, s.nation[k]]));
+  const oldRoster = roster(before).split("\n"), newRoster = roster(state).split("\n");
   const context = {
     人物名册: roster(state),
     派系: state.court.factions,
@@ -55,6 +66,11 @@ export function turnMessages(state, forecast) {
     长期事实: state.facts.slice(-30),
     在途政务: state.projects.filter((p) => !p.done),
     宏愿: state.ambitions,
+    本旬前后变化: {
+      国势: { 之前: nationSummary(before), 之后: nationSummary(state) },
+      人物旧况: oldRoster.filter((line) => !newRoster.includes(line)),
+      人物新况: newRoster.filter((line) => !oldRoster.includes(line)),
+    },
   };
   return [
     { role: "system", content: worldRules(state) },
@@ -79,15 +95,21 @@ export function talkMessages(state, result, log) {
     state.court.officials.find((o) => o.id === result.person) ||
     state.harem.consorts.find((o) => o.id === result.person) ||
     state.foreign.find((o) => o.id === result.person);
+  const { secret, secretKnown, memory, life, ...card } = npc;
+  const known = secretKnown || (result.kind === "试探" && result.success);
   return [
     { role: "system", content: worldRules(state) },
     {
       role: "user",
-      content: `扮演 ${npc.name} 御前面谈。只写此人言行，成功才让步，失败不得让步，effects 不得超过职权。输出 {"reply":"","innerThought":"","mood":"","favor":0,"effects":null,"revealSecret":false,"endTalk":false,"summary":""}。\n【资料】${JSON.stringify(npc)}\n【此人能做到什么】拨款上限 ${result.cap} 万两，其他职权外请求必须回去议，妃嫔不能给钱兵。\n【引擎判定】${JSON.stringify(result)}\n【对话】${JSON.stringify(log.slice(-6))}`,
+      content: `扮演 ${npc.name} 御前面谈。只写此人言行，成功才让步，失败不得让步，effects 不得超过职权。未提供的秘密不得编造，未允时不得承诺拨款、调兵或落实请求。输出 {"reply":"","innerThought":"","mood":"","favor":0,"effects":null,"revealSecret":false,"endTalk":false,"summary":""}。\n【资料】${JSON.stringify(card)}${known ? "\n【已获准参考的秘密】" + secret : ""}\n【此人能做到什么】拨款上限 ${result.cap} 万两，其他职权外请求必须回去议，妃嫔不能给钱兵。\n【引擎判定】${JSON.stringify(result)}\n【对话】${JSON.stringify(log.slice(-6))}`,
     },
   ];
 }
-export function classifyMessages(text) {
+export function classifyMessages(text,mode='oral') {
+  if(mode==='remark')return [
+    {role:'system',content:'你是御笔朱批分类员。只输出 JSON {"kind":"嘉奖"}，kind 仅限嘉奖、申饬、附旨、无。识别否定词；责成核查属于附旨，不是申饬；不必嘉奖属于无。混合措辞按主要意图归类，不决定对象，不创造数值，不执行附旨。'},
+    {role:'user',content:String(text).slice(0,100)},
+  ];
   return [
     {
       role: "system",
@@ -98,11 +120,27 @@ export function classifyMessages(text) {
   ];
 }
 export function biographyMessages(state, record) {
+  const accession = state.reign?.accessionTurn || 0;
+  const years = new Map();
+  for (const h of [...state.volumes.flatMap((v) => v.chapters), ...state.history]
+    .filter((h) => Number.isFinite(h.turn) && h.turn >= accession && h.turn <= state.turn)
+    .sort((a, b) => a.turn - b.turn)) {
+    const year = 1 + Math.floor(Math.max(0, h.turn - 1) / 36);
+    if (!years.has(year)) years.set(year, []);
+    const text = [h.summary, ...(h.notes || [])].filter((x) => typeof x === "string" && x.trim()).join("；");
+    if (text) years.get(year).push(text);
+  }
+  const annual = [...years].slice(-80).map(([year, summaries]) => ({
+    year, summary: [...new Set(summaries)].join("；").slice(0, 320),
+  }));
+  // The sealed record already contains this reign's deltas, rather than the
+  // dynasty-wide cumulative stats. Do not send existing full biographies.
+  const { biography, commentary, ...sealed } = record;
   return [
     { role: "system", content: worldRules(state) },
     {
       role: "user",
-      content: `按引擎所定谥号与庙号写500–800字本纪与一段史臣曰。不得编造实录外的事，不得另定谥号。输出 {"biography":"","commentary":""}。\n【封卷】${JSON.stringify(record)}\n【实录】${JSON.stringify([...state.volumes.flatMap((v) => v.chapters), ...state.history].map((h) => ({ summary: h.summary, notes: h.notes })))}`,
+      content: `按引擎所定谥号与庙号写500–800字本纪与一段史臣曰。不得编造实录外的事，不得另定谥号。年度提要最多列本朝最近80个年度，较早政绩仅以引擎统计为据。输出 {"biography":"","commentary":""}。\n【封卷】${JSON.stringify(sealed)}\n【年度提要】${JSON.stringify(annual)}\n【引擎统计】${JSON.stringify({ accessionTurn: accession, reignTurns: record.reignTurns, stats: record.stats, children: record.children, score: record.score, 国势终值: { treasury: state.nation.treasury, privy: state.nation.privy, grain: state.nation.grain, morale: state.nation.morale, governance: state.nation.governance } })}`,
     },
   ];
 }

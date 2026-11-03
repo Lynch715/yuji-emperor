@@ -23,3 +23,13 @@ test('开篇保留玩法与接口入口，删除开发用语',()=>{
   assert.equal(chapterTitle("本旬大凶，诸事已据实落账"),"本旬大凶");assert.equal(chapterTitle("殿前问对"),"殿前问对");
   const html=introHTML();assert.match(html,/登基开局/);assert.match(html,/试读/);assert.doesNotMatch(html,/引擎|预演|大模型|JSON|样张/);
 });
+
+test('A2 构建页面头部无同步加载的外域样式表',()=>{
+  const head=readFileSync('index.html','utf8').match(/<head>([\s\S]*?)<\/head>/i)[1].replace(/<noscript>[\s\S]*?<\/noscript>/gi,'');
+  const links=head.match(/<link\b[^>]*>/gi)||[];
+  for(const link of links){
+    if(!/href=["'](?:https?:)?\/\//i.test(link)||!/rel=["']stylesheet["']/i.test(link))continue;
+    assert.match(link,/media=["'](?:print|not all)["']/i,'不得同步加载外域样式表：'+link);
+  }
+  assert.ok(!links.some(link=>/fonts\.googleapis\.com/.test(link)&&/rel=["']preconnect/.test(link)));
+});

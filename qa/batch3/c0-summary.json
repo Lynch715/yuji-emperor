@@ -1,0 +1,580 @@
+{
+  "date": "2026-11-02",
+  "branch": "codex/audit-batch2-engine",
+  "baseCommit": "38451ac236f549b134c2eca74d2cd32da71d2405",
+  "scope": [
+    "C0-1",
+    "C0-2",
+    "C0-3"
+  ],
+  "saveVersion": 5,
+  "newStateFields": [],
+  "gatePassed": false,
+  "batch3Complete": false,
+  "notStarted": [
+    "C1",
+    "C2",
+    "C3",
+    "C4",
+    "C5",
+    "C6",
+    "C7",
+    "C8",
+    "C9"
+  ],
+  "reason": "C0四个种子的亡国率均不在10%–35%，按用户停止条件不继续C1–C9；上批超标许可不适用",
+  "tests": {
+    "red": 6,
+    "targetPassed": 6,
+    "total": 193,
+    "passed": 192,
+    "failed": 1,
+    "skipped": 0,
+    "exitCode": 1,
+    "failure": {
+      "name": "200-year seeded random strategy stays bounded and includes endings",
+      "assertion": "collapseRate >= 10 && collapseRate <= 35",
+      "actual": 57.14
+    },
+    "names": [
+      "C0-1 中性通好边患月增0.8至1.0，正式婚盟和朝贡可下降且保持纯函数",
+      "C0-2 危机连续三个月才出京畿民变急报，同旬重复检查不计时不掷骰",
+      "C0-2 京畿急报逾期或危机持续六个月才亡国，已处置仍须恢复国势",
+      "C0-2 民心或国库恢复即中断连续危机，存取后继续计时且自由模式不亡国",
+      "C0-3 模拟减赋随机指定一州，批折最多六本且各资源可负担并留八万两",
+      "C0-1 balance保留入寇120至200次硬断言，模拟按真实边警线程计数"
+    ]
+  },
+  "simulation": {
+    "years": 200,
+    "turns": 7200,
+    "exitCode": 0
+  },
+  "balance": {
+    "exitCode": 1,
+    "passed": false,
+    "mortalityOverrunAccepted": false,
+    "targets": {
+      "invasionCount": [
+        120,
+        200
+      ],
+      "collapseRate": [
+        10,
+        35
+      ]
+    },
+    "rawPath": "qa/batch3/c0-balance.json",
+    "rawSha256": "5ad0dd83fea485d0cfbddd43b43279455f508e540b83bdc646dd36ea890d0f2b",
+    "random": [
+      {
+        "seed": "御极·两百年",
+        "turns": 7200,
+        "invasionCount": 159,
+        "collapses": 4,
+        "completedReigns": 7,
+        "collapseRate": 57.14,
+        "meanChildren": 6.86,
+        "maxTreasury": 1654.3122087306256,
+        "lateToEarlyPeakRatio": 0.6891629765900007,
+        "eventRange": [
+          45,
+          69
+        ],
+        "checks": {
+          "invasions": true,
+          "complete": true,
+          "treasuryPeak": true,
+          "latePeak": true,
+          "collapseRate": false,
+          "children": true,
+          "events": true,
+          "annualCash": true
+        }
+      },
+      {
+        "seed": "御极·长治",
+        "turns": 7200,
+        "invasionCount": 153,
+        "collapses": 5,
+        "completedReigns": 8,
+        "collapseRate": 62.5,
+        "meanChildren": 7.13,
+        "maxTreasury": 1782.2599901157682,
+        "lateToEarlyPeakRatio": 0.944926687074799,
+        "eventRange": [
+          48,
+          67
+        ],
+        "checks": {
+          "invasions": true,
+          "complete": true,
+          "treasuryPeak": true,
+          "latePeak": true,
+          "collapseRate": false,
+          "children": true,
+          "events": true,
+          "annualCash": true
+        }
+      },
+      {
+        "seed": "御极·边政",
+        "turns": 7200,
+        "invasionCount": 176,
+        "collapses": 0,
+        "completedReigns": 7,
+        "collapseRate": 0,
+        "meanChildren": 4.57,
+        "maxTreasury": 1450.532743051268,
+        "lateToEarlyPeakRatio": 0.9019361484009616,
+        "eventRange": [
+          43,
+          69
+        ],
+        "checks": {
+          "invasions": true,
+          "complete": true,
+          "treasuryPeak": true,
+          "latePeak": true,
+          "collapseRate": false,
+          "children": true,
+          "events": true,
+          "annualCash": true
+        }
+      },
+      {
+        "seed": "御极·宫闱",
+        "turns": 7200,
+        "invasionCount": 159,
+        "collapses": 4,
+        "completedReigns": 5,
+        "collapseRate": 80,
+        "meanChildren": 7.8,
+        "maxTreasury": 1155.994019180477,
+        "lateToEarlyPeakRatio": 1.0403237574231397,
+        "eventRange": [
+          39,
+          69
+        ],
+        "checks": {
+          "invasions": true,
+          "complete": true,
+          "treasuryPeak": true,
+          "latePeak": true,
+          "collapseRate": false,
+          "children": true,
+          "events": true,
+          "annualCash": true
+        }
+      }
+    ],
+    "collapseCauses": {
+      "京畿困局持续满六个月，民变攻入京师": 13
+    },
+    "rest": [
+      {
+        "seed": "御极·两百年",
+        "turns": 183,
+        "ending": "亡国",
+        "passed": true
+      },
+      {
+        "seed": "御极·长治",
+        "turns": 191,
+        "ending": "亡国",
+        "passed": true
+      },
+      {
+        "seed": "御极·边政",
+        "turns": 194,
+        "ending": "亡国",
+        "passed": true
+      },
+      {
+        "seed": "御极·宫闱",
+        "turns": 200,
+        "ending": "亡国",
+        "passed": true
+      }
+    ],
+    "lowMoralePassed": 106,
+    "lowMoraleTotal": 108,
+    "lowMoraleFailures": [
+      {
+        "seed": "御极·长治",
+        "years": 3,
+        "turns": 108,
+        "freedom": "free",
+        "initialGovernance": 100,
+        "initialProvincialMorale": 19,
+        "openingTreasury": 480,
+        "closingTreasury": 0,
+        "netChange": -480,
+        "income": 854.81,
+        "expense": 1334.81,
+        "arrears": 239.13,
+        "minMorale": 0,
+        "maxMorale": 20.25,
+        "passed": false
+      },
+      {
+        "seed": "御极·长治",
+        "years": 3,
+        "turns": 108,
+        "freedom": "free",
+        "initialGovernance": 100,
+        "initialProvincialMorale": 19,
+        "openingTreasury": 3000,
+        "closingTreasury": 97.45,
+        "netChange": -2902.55,
+        "income": 854.81,
+        "expense": 3757.36,
+        "arrears": 0,
+        "minMorale": 0,
+        "maxMorale": 20.25,
+        "passed": false
+      }
+    ]
+  },
+  "diagnostic": {
+    "seed": "御极·两百年",
+    "stoppedAtTurn": 1406,
+    "cause": "京畿困局持续满六个月，民变攻入京师",
+    "last18Turns": [
+      {
+        "turn": 1389,
+        "morale": 2.1199999999984556,
+        "treasury": 0,
+        "governance": 1.7599999999999998
+      },
+      {
+        "turn": 1390,
+        "morale": 1.3999999999984558,
+        "treasury": 0,
+        "governance": 0.35999999999999943
+      },
+      {
+        "turn": 1391,
+        "morale": 1.0199999999984557,
+        "treasury": 0,
+        "governance": 0
+      },
+      {
+        "turn": 1392,
+        "morale": 0,
+        "treasury": 0,
+        "governance": 1.7599999999999998
+      },
+      {
+        "turn": 1393,
+        "morale": 0,
+        "treasury": 0,
+        "governance": 0.35999999999999943
+      },
+      {
+        "turn": 1394,
+        "morale": 0,
+        "treasury": 0,
+        "governance": 0
+      },
+      {
+        "turn": 1395,
+        "morale": 0,
+        "treasury": 0,
+        "governance": 1.7599999999999998
+      },
+      {
+        "turn": 1396,
+        "morale": 0,
+        "treasury": 0,
+        "governance": 0.1999999999999993
+      },
+      {
+        "turn": 1397,
+        "morale": 0,
+        "treasury": 0,
+        "governance": 0
+      },
+      {
+        "turn": 1398,
+        "morale": 0,
+        "treasury": 0,
+        "governance": 1.7599999999999998
+      },
+      {
+        "turn": 1399,
+        "morale": 0,
+        "treasury": 0,
+        "governance": 0.5999999999999996
+      },
+      {
+        "turn": 1400,
+        "morale": 0,
+        "treasury": 0,
+        "governance": 0
+      },
+      {
+        "turn": 1401,
+        "morale": 0,
+        "treasury": 0,
+        "governance": 1.7599999999999998
+      },
+      {
+        "turn": 1402,
+        "morale": 5.079999999999999,
+        "treasury": 0,
+        "governance": 0.4399999999999995
+      },
+      {
+        "turn": 1403,
+        "morale": 3.85,
+        "treasury": 0,
+        "governance": 0
+      },
+      {
+        "turn": 1404,
+        "morale": 0.5600000000000005,
+        "treasury": 0,
+        "governance": 1.7599999999999998
+      },
+      {
+        "turn": 1405,
+        "morale": 0,
+        "treasury": 0,
+        "governance": 0.4399999999999995
+      },
+      {
+        "turn": 1406,
+        "morale": 0,
+        "treasury": 0,
+        "governance": 0
+      }
+    ],
+    "last18Sources": [
+      {
+        "source": "nation.treasury｜补付欠饷与积欠",
+        "delta": -64.86544736000002
+      },
+      {
+        "source": "nation.treasury｜月结：俸禄、军饷与宫用",
+        "delta": -21.145542091111672
+      },
+      {
+        "source": "nation.treasury｜天命大凶：户部银库失窃",
+        "delta": -8
+      },
+      {
+        "source": "nation.governance｜奏报积压超过十二本",
+        "delta": -7.299999999999997
+      },
+      {
+        "source": "nation.morale｜月结：俸禄、军饷与宫用",
+        "delta": -6.3299999999984555
+      },
+      {
+        "source": "nation.treasury｜处置奏报：六部请整饬案牍 / 准奏",
+        "delta": -2
+      },
+      {
+        "source": "nation.morale｜处置奏报：六部请整饬案牍 / 驳回",
+        "delta": -1.1999999999999995
+      },
+      {
+        "source": "nation.morale｜奏报逾期：直隶 请赈灾民",
+        "delta": -0.9200000000000004
+      },
+      {
+        "source": "nation.governance｜奏报逾期：六部请整饬案牍",
+        "delta": -0.6400000000000003
+      },
+      {
+        "source": "nation.morale｜处置奏报：湖广 请赈灾民 / 驳回",
+        "delta": -0.5999999999999999
+      },
+      {
+        "source": "nation.morale｜处置奏报：边营请补军粮 / 驳回",
+        "delta": -0.5999999999999996
+      },
+      {
+        "source": "nation.governance｜奏报逾期：边营请补军粮",
+        "delta": -0.5600000000000003
+      },
+      {
+        "source": "nation.morale｜奏报逾期：江南夏涝",
+        "delta": -0.40000000000000013
+      },
+      {
+        "source": "nation.governance｜奏报逾期：言官请开经筵",
+        "delta": -0.35999999999999965
+      },
+      {
+        "source": "nation.morale｜奏报逾期：直隶冬寒",
+        "delta": -0.27000000000000046
+      },
+      {
+        "source": "nation.governance｜奏报逾期：地方请奖循吏",
+        "delta": -0.24000000000000016
+      },
+      {
+        "source": "nation.governance｜奏报逾期：福建 请赈灾民",
+        "delta": -0.24000000000000016
+      },
+      {
+        "source": "nation.governance｜奏报逾期：直隶 请赈灾民",
+        "delta": -0.2400000000000001
+      },
+      {
+        "source": "nation.morale｜奏报逾期：福建 请赈灾民",
+        "delta": -0.23000000000000043
+      },
+      {
+        "source": "nation.morale｜奏报逾期：辽东 请赈灾民",
+        "delta": -0.22999999999999998
+      },
+      {
+        "source": "nation.governance｜奏报逾期：福建 钱粮月报",
+        "delta": -0.1600000000000001
+      },
+      {
+        "source": "nation.governance｜奏报逾期：直隶 钱粮月报",
+        "delta": -0.1600000000000001
+      },
+      {
+        "source": "nation.governance｜奏报逾期：辽东 请赈灾民",
+        "delta": -0.1600000000000001
+      },
+      {
+        "source": "nation.governance｜奏报逾期：湖广 钱粮月报",
+        "delta": -0.1600000000000001
+      },
+      {
+        "source": "nation.governance｜奏报逾期：四川 钱粮月报",
+        "delta": -0.1600000000000001
+      },
+      {
+        "source": "nation.morale｜奏报逾期：边营请补军粮",
+        "delta": -0.15000000000000013
+      },
+      {
+        "source": "nation.morale｜奏报逾期：言官请开经筵",
+        "delta": -0.12000000000000055
+      },
+      {
+        "source": "nation.morale｜奏报逾期：地方请奖循吏",
+        "delta": -0.09000000000000052
+      },
+      {
+        "source": "nation.morale｜奏报逾期：六部请整饬案牍",
+        "delta": -0.08999999999999986
+      },
+      {
+        "source": "nation.governance｜奏报逾期：江南夏涝",
+        "delta": -0.08000000000000007
+      },
+      {
+        "source": "nation.governance｜奏报逾期：湖广秋蝗",
+        "delta": -0.08000000000000007
+      },
+      {
+        "source": "nation.governance｜奏报逾期：江南 钱粮月报",
+        "delta": -0.08000000000000007
+      },
+      {
+        "source": "nation.governance｜奏报逾期：江南 请赈灾民",
+        "delta": -0.08000000000000007
+      },
+      {
+        "source": "nation.governance｜奏报逾期：福建秋蝗",
+        "delta": -0.08000000000000007
+      },
+      {
+        "source": "nation.governance｜奏报逾期：直隶冬寒",
+        "delta": -0.08000000000000007
+      },
+      {
+        "source": "nation.governance｜奏报逾期：陕西 钱粮月报",
+        "delta": -0.08000000000000002
+      },
+      {
+        "source": "nation.governance｜奏报逾期：山东 钱粮月报",
+        "delta": -0.07999999999999996
+      },
+      {
+        "source": "nation.morale｜奏报逾期：福建 钱粮月报",
+        "delta": -0.06000000000000022
+      },
+      {
+        "source": "nation.morale｜奏报逾期：陕西 钱粮月报",
+        "delta": -0.05999999999999983
+      },
+      {
+        "source": "nation.morale｜奏报逾期：直隶 钱粮月报",
+        "delta": -0.05999999999999961
+      },
+      {
+        "source": "nation.governance｜奏报逾期：山东 请赈灾民",
+        "delta": -0.039999999999999286
+      },
+      {
+        "source": "nation.morale｜奏报逾期：四川 钱粮月报",
+        "delta": -0.03000000000000025
+      },
+      {
+        "source": "nation.morale｜奏报逾期：湖广 钱粮月报",
+        "delta": -0.030000000000000027
+      },
+      {
+        "source": "nation.governance｜处置奏报：六部请整饬案牍 / 准奏",
+        "delta": 0.5
+      },
+      {
+        "source": "nation.morale｜处置奏报：京畿民变 / 开仓赈济",
+        "delta": 6
+      },
+      {
+        "source": "nation.governance｜月结：六部有司履职",
+        "delta": 10.559999999999999
+      },
+      {
+        "source": "nation.treasury｜季结：赋税实收 51% 与新粮入仓",
+        "delta": 64.86544736000002
+      }
+    ]
+  },
+  "build": {
+    "modules": 40,
+    "javascriptBytes": 902433
+  },
+  "browser": {
+    "surface": "Codex In-app Browser",
+    "origin": "http://localhost:4176",
+    "recoveredWithNewTab": true,
+    "viewport": {
+      "width": 360,
+      "height": 900
+    },
+    "fixture": "synthetic empty-slot import",
+    "choices": [
+      "开仓赈济",
+      "调兵弹压",
+      "下罪己诏"
+    ],
+    "chosen": "下罪己诏",
+    "morale": [
+      17,
+      21
+    ],
+    "prestige": [
+      58,
+      52
+    ],
+    "chapterAfterRefresh": 10,
+    "dieAfterRefresh": 6,
+    "scrollWidth": 360,
+    "checkedTargetsAtLeast44": true,
+    "consoleErrors": [],
+    "screenshot": "output/batch3/c0-capital-warning-360.png",
+    "physicalPhoneTested": false,
+    "paidApiTested": false
+  }
+}

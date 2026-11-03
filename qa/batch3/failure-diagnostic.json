@@ -1,0 +1,148 @@
+{
+  "peakDecade": 6,
+  "peakCount": 83,
+  "types": {
+    "天灾": 49,
+    "边警": 9,
+    "致仕": 11,
+    "宫闱": 12,
+    "民变": 2
+  },
+  "allTypes": {
+    "天灾": 840,
+    "宫闱": 120,
+    "边警": 164,
+    "致仕": 112,
+    "民变": 26,
+    "京畿民变": 2
+  },
+  "accountedEvents": 1264,
+  "reportedEvents": 1264,
+  "collapseTails": [
+    {
+      "elapsed": 2300,
+      "turn": 2300,
+      "cause": "京畿困局持续满六个月，民变攻入京师",
+      "morale": 7.098540569184777,
+      "treasury": 0,
+      "capital": 45000
+    },
+    {
+      "elapsed": 3812,
+      "turn": 1512,
+      "cause": "京畿困局持续满六个月，民变攻入京师",
+      "morale": 6.360536056516661,
+      "treasury": 0,
+      "capital": 42780
+    }
+  ],
+  "longzhiChildren": [
+    {
+      "id": "run-1so6d4n",
+      "turns": 1404,
+      "ending": "驾崩",
+      "cause": "寿终正寝",
+      "children": 8
+    },
+    {
+      "id": "run-1so6d4n:reign:2",
+      "turns": 792,
+      "ending": "驾崩",
+      "cause": "寿终正寝",
+      "children": 9
+    },
+    {
+      "id": "run-1so6d4n:reign:3",
+      "turns": 1980,
+      "ending": "驾崩",
+      "cause": "寿终正寝",
+      "children": 15
+    },
+    {
+      "id": "run-1so6d4n:reign:4",
+      "turns": 144,
+      "ending": "驾崩",
+      "cause": "寿终正寝",
+      "children": 4
+    },
+    {
+      "id": "run-1so6d4n:reign:5",
+      "turns": 1521,
+      "ending": "亡国",
+      "cause": "京畿困局持续满六个月，民变攻入京师",
+      "children": 13
+    }
+  ],
+  "restDelays": [
+    {
+      "seed": "御极·长治",
+      "firstCollapseTurn": 545,
+      "year15": {
+        "year": 15,
+        "openingTreasury": 289.72,
+        "income": 139.71,
+        "expense": 429.43,
+        "taxIncome": 139.71,
+        "wasteExpense": 0,
+        "resetAdjustment": 0,
+        "peakTreasury": 289.72,
+        "closingTreasury": 0,
+        "budgetAtYearEnd": 273.53,
+        "morale": 3.34,
+        "governance": 2,
+        "arrears": 143.77,
+        "turns": 36
+      }
+    },
+    {
+      "seed": "御极·宫闱",
+      "firstCollapseTurn": 577,
+      "year15": {
+        "year": 15,
+        "openingTreasury": 564.37,
+        "income": 224.9,
+        "expense": 539.28,
+        "taxIncome": 224.9,
+        "wasteExpense": 0,
+        "resetAdjustment": 0,
+        "peakTreasury": 564.37,
+        "closingTreasury": 250,
+        "budgetAtYearEnd": 292.12,
+        "morale": 12.32,
+        "governance": 1.97,
+        "arrears": 0,
+        "turns": 36
+      }
+    }
+  ],
+  "chaotic": [
+    {
+      "seed": "御极·两百年",
+      "invasions": 108,
+      "dynasties": 19,
+      "meanReignYears": 10.83,
+      "collapses": 18
+    },
+    {
+      "seed": "御极·长治",
+      "invasions": 121,
+      "dynasties": 18,
+      "meanReignYears": 11.71,
+      "collapses": 17
+    },
+    {
+      "seed": "御极·边政",
+      "invasions": 112,
+      "dynasties": 19,
+      "meanReignYears": 11.01,
+      "collapses": 18
+    },
+    {
+      "seed": "御极·宫闱",
+      "invasions": 112,
+      "dynasties": 18,
+      "meanReignYears": 11.09,
+      "collapses": 17
+    }
+  ]
+}

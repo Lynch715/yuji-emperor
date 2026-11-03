@@ -54,7 +54,7 @@ test("rank limits and triennial selection are enforced", () => {
   assert.throws(() => selectConsort(s, s.harem.candidates[0].id, "皇后"));
   s = selectConsort(s, s.harem.candidates[0].id, "贵人");
   assert.equal(s.harem.consorts.length, 4);
-  s.era.year = 2;
+  s.era.year = 2;s.turn=36;
   assert.throws(() => generateCandidates(s));
   assert.throws(() => selectConsort(s, s.harem.candidates[0].id));
 });

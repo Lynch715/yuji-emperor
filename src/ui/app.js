@@ -1,3 +1,4 @@
+import { classifyMemorialSchedule } from "../llm/remark-classifier.js";
 import { initAppIcon } from "./icon.js";
 import {
   $,
@@ -110,10 +111,6 @@ async function persist() {
     toast(e.message);
     return false;
   }
-}
-function budget() {
-  if (!state.turnBudget) state.turnBudget = createBudget();
-  return state.turnBudget;
 }
 function loadMetrics() {
   try {
@@ -365,23 +362,29 @@ async function advance(local = false) {
   let ac = new AbortController();
   try {
     if (!state.pending) {
-      const forecast = forecastTurn(state, state.schedule);
+      const schedule=state.settings.demo||local?state.schedule:await classifyMemorialSchedule(state.schedule,text=>callJSON(config,classifyMessages(text,'remark'),{
+        budget:createBudget(),signal:ac.signal,onMetric:markMetric,
+        validate:data=>{if(!['嘉奖','申饬','附旨','无'].includes(data.kind))throw new Error('朱批分类无效');return {kind:data.kind};},
+      }));
+      const forecast = forecastTurn({ ...state, turnBudget: null }, schedule);
       state = {
         ...state,
         pending: { forecast },
-        turnBudget: state.turnBudget || createBudget(),
+        turnBudget: { used: 0 },
       };
       if (!(await persist()))
         throw new Error("本旬尚未存妥，请先导出存档，再重试。");
     }
-    const f = state.pending.forecast,
-      requestBudget = budget();
+    const f = state.pending.forecast;
+    // v4 saves may contain an absolute planning-time deadline. Only the
+    // attempt count belongs to a pending turn; the request owns its clock.
+    state.turnBudget = { used: state.turnBudget?.used || 0 };
     render();
     let narrative;
     if (state.settings.demo || local) narrative = mockNarrative(f);
     else {
       narrative = await requestTurnNarrative(config, state, f, {
-        budget: budget(),
+        budget: state.turnBudget,
         signal: ac.signal,
         onMetric: markMetric,
         onPartial: (raw) => {
@@ -397,7 +400,7 @@ async function advance(local = false) {
       try {
         const record = state.chronicles.find((r) => r.id === reignId(state)),
           bio = await callJSON(config, biographyMessages(state, record), {
-            budget: requestBudget,
+            budget: createBudget(),
             onMetric: markMetric,
             validate: (d) => {
               if (typeof d.biography !== "string" || d.biography.length < 500)
@@ -476,9 +479,9 @@ function startTalk(person) {
             config,
             talkMessages(state, result, state.talks),
             {
-              budget: budget(),
+              budget: createBudget(),
               onMetric: markMetric,
-              validate: (d) => validateTalk(d, result),
+              validate: (d) => validateTalk(d, result, state),
             },
           );
         } catch (e) {
@@ -543,7 +546,7 @@ async function oral(text) {
     render();
     try {
       const r = await callJSON(config, classifyMessages(text), {
-        budget: budget(),
+        budget: createBudget(),
         onMetric: markMetric,
       });
       kind = r.kind === "闲谈" ? "私下行事" : r.kind;

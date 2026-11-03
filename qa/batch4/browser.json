@@ -1,0 +1,37 @@
+{
+  "origin": "http://localhost:4189",
+  "browser": "Codex In-app Browser",
+  "desktop": true,
+  "mobile": {
+    "width": 360,
+    "documentScrollWidth": 360,
+    "reviewControlMinWidth": 44,
+    "reviewControlMinHeight": 44
+  },
+  "perMemorial": {
+    "remarks": [
+      "勤勉可嘉",
+      "严加申饬",
+      "责成查明，不必嘉奖"
+    ],
+    "persistedAfterReload": true,
+    "ledgerFavorChanges": [
+      2,
+      -3
+    ]
+  },
+  "legacyPending": {
+    "fixture": "test/fixtures/v6-pending.json",
+    "originalEngineCommit": "01cb56860b6739f7b8d863f44716ea2fc9167992",
+    "beforeDie": 6,
+    "afterDie": 6,
+    "treasuryAfterCommit": 476,
+    "grainAfterCommit": 650,
+    "persistedAfterReload": true
+  },
+  "consoleErrors": [],
+  "screenshots": [
+    "output/batch4/per-memorial-360.jpg",
+    "output/batch4/v6-pending-committed-360.jpg"
+  ]
+}

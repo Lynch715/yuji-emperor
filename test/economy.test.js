@@ -5,6 +5,7 @@ import {nationQuarter,nationMonth} from '../src/core/nation.js';
 import {annualBudget,wasteQuote,quarterIndex} from '../src/core/finance.js';
 import {initialTurn,forecastTurn,commitTurn} from '../src/core/turn.js';
 import {eventsMonth,resolveMemorial} from '../src/core/events.js';
+import {lowMoraleFixture} from '../scripts/economy-scenarios.mjs';
 const initial = () => initialTurn(createState({seed:'经济闭环'}));
 test('州税严格按 30/15 民心分档，民变州本季无税，解围也不追补', () => {
   const base=initial(); base.turn=9; base.nation.governance=100;
@@ -61,8 +62,7 @@ test('v3迁移补民变停税字段，不改原档和已保存骰子', () => {
 });
 test('低民心连续三年，国库不得净增长（不同吏治与起始余额）', () => {
   for(const governance of [0,58,100])for(const treasury of [0,480,3000])for(const provincialMorale of [19,62,100]){
-    let s=initial();s.settings.freedom='free';s.nation.morale=19;s.nation.governance=governance;s.nation.treasury=treasury;
-    for(const p of s.nation.provinces)p.morale=provincialMorale;
+    let s=lowMoraleFixture(initial(),provincialMorale);s.settings.freedom='free';s.nation.governance=governance;s.nation.treasury=treasury;
     for(let i=0;i<108;i++){
       s.history=[];s.volumes=[];s.ledger=[];
       s=commitTurn(s,forecastTurn(s),{});
@@ -74,7 +74,7 @@ test('低民心连续三年，国库不得净增长（不同吏治与起始余�
 test('欠饷不会因国库见底消失，下一次税收先偿付，现金与债务各自落账', async () => {
   const {monthlyBudget}=await import('../src/core/finance.js');
   let s=initial();s.nation.treasury=0;s.nation.governance=0;s.nation.morale=60;
-  for(const p of s.nation.provinces)p.morale=0;
+  for(const p of s.nation.provinces){p.morale=60;p.tax=1;}
   const due=monthlyBudget(s).salaries+monthlyBudget(s).armyPay;
   for(let month=0;month<3;month++)s=nationMonth(s);
   assert.ok(Math.abs(s.nation.arrears-due*3)<1e-8);

@@ -1,3 +1,4 @@
+import { sceneNarrative } from "./mock-narrative.js";
 // Pure JSON repair. Never evaluate model text as JavaScript.
 export function parseJSONLoose(raw) {
   if (typeof raw !== "string" || raw.length > 1500000)
@@ -108,15 +109,8 @@ export function validateProbe(data) {
   return { ok: true, message: cleanText(data.message, 500) };
 }
 export function mockNarrative(forecast) {
-  const texts = {
-    朝: "晓钟传至殿前，百官依班肃立。御案上的折子已按轻重排定，朱笔落下，内侍随即传旨。",
-    午: "日影移过廊柱，值房仍有案牍往来。各衙门领旨回署，待办诸事仍须依期复奏。",
-    夜: "宫灯初上，殿外脚步渐稀。今日得失收入起居注，留待来旬再议。",
-  };
   return {
-    chapter: Object.fromEntries(
-      ["朝", "午", "夜"].map((slot) => [slot, texts[slot]]),
-    ),
+    chapter:sceneNarrative(forecast),
     summary: "本旬" + forecast.fate + "，诸事已据实落账",
     memorialTexts: forecast.newMemorials.map((m) => ({
       id: m.id,
@@ -514,15 +508,29 @@ export function validateWorld(data) {
       throw new Error("铸世人物或州郡资料不全");
   return data;
 }
-export function validateTalk(data, result) {
+export function validateTalk(data, result, state) {
   const reply = cleanText(data.reply, 1200);
   if (!reply) throw new Error("面谈回复为空");
-  if (result.denied || !result.success)
+  if (result.denied || !result.success) {
+    // Remove entire unsupported promise/number sentences so removing a word
+    // cannot turn a refusal into an apparent agreement.
+    const numeral='[0-9０-９零〇一二两三四五六七八九十百千万亿壹贰叁肆伍陆柒捌玖拾佰仟萬億]';
+    const measurement = new RegExp(numeral+'(?:'+numeral+'|[点.,，])*\\s*(?:万两|两|兵|人|石|名|位|岁|万人|万石|匹|艘|亩|户|成)');
+    const uncommitted = reply.split(/(?<=[。！？\n])/).filter((sentence) =>
+      !measurement.test(sentence) &&
+      !/遵旨|领旨|奉旨|遵命|领命|奉命|谨遵|应允|允诺|承诺|答应|照办|照准|允准|即刻|立即|马上|拨付|拨款|拨银|给付|交付|调兵|发兵|已拨|已调|已办|办妥|奉行|依旨|尽力|定当|必当|定会|必会|这就|便去/.test(sentence),
+    ).join("");
+    const checked = state ? validateTurn({ chapter: { 朝: "", 午: uncommitted, 夜: "" } }, {
+      state, die: result.die, fate: "面谈", newMemorials: [],
+      slotResults: { 朝: [], 午: [], 夜: [] }, entries: [], notes: [], facts: [],
+    }).chapter.午 : uncommitted.split(/(?<=[。！？\n])/).filter((sentence) =>
+      !ASSERTIONS.some(([, pattern]) => new RegExp(pattern.source).test(sentence))).join("");
     return {
-      reply: result.reply,
+      reply: checked.trim() || result.reply,
       innerThought: result.innerThought || "",
       effects: null,
     };
+  }
   const safe = /\d.*(?:两|兵)|怀孕|身亡|处死|封后|裸体|插入/.test(reply)
     ? result.reply
     : reply;

@@ -24,6 +24,7 @@ test("goals require all state conditions and pay each reward only once", () => {
   s.nation.governance = 90;
   s.nation.treasury = 1000;
   s.nation.morale = 80;
+  s.nation.provinces.forEach(p=>p.morale=80);
   s = evaluateAmbitions(s);
   assert.equal(
     s.ambitions.filter((a) => a.kind === "宏愿" && a.status === "达成").length,

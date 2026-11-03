@@ -1,3 +1,4 @@
+import { quarterIndex } from "./finance.js";
 import { clone } from "./state.js";
 import { applyPackage, clamp } from "./effects.js";
 import { addEvent } from "./events.js";
@@ -24,7 +25,7 @@ export const EDICTS = {
     months: 1,
     difficulty: 5,
     office: "户部尚书",
-    effects: { treasury: 40, morale: -6, virtue: -2 },
+    effects: { morale: -6, virtue: -2 },
   },
   修河: {
     cost: 60,
@@ -136,10 +137,26 @@ export function execution(state, type, die) {
     tier,
   };
 }
+export function edictBlock(state, type, province = null) {
+  const same=p=>p.edictType===type&&(type!=='赈灾'||!province||!p.province||p.province===province);
+  if(state.projects.some(p=>!p.done&&same(p)))return '同类旨意尚在途，请待竣结';
+  const keys=type==='赈灾'?[type+':all',...(province?[type+':'+province]:Object.keys(state.edictCooldowns||{}).filter(k=>k.startsWith(type+':')))]:[type];
+  if(keys.some(k=>(state.edictCooldowns?.[k]||0)>state.turn))return '同类旨意尚在六旬冷却期';
+  return '';
+}
+function finishInstant(s,type,province) {
+  s.edictCooldowns ??= {};
+  s.edictCooldowns[type==='赈灾'?type+':'+(province||'all'):type]=s.turn+6;
+  return s;
+}
 export function issueEdict(state, action, die) {
   const type = action.edictType || "禁令",
     rule = EDICTS[type];
   if (!rule) throw new Error("无法识别此旨意，请选择模板");
+  const blocked=edictBlock(state,type,action.province);if(blocked)throw new Error(blocked);
+  if(action.province&&!state.nation.provinces.some(p=>p.id===action.province))throw new Error("请选择有效州郡");
+  const armyTarget=action.armyTarget||'capital';
+  if(type==='征兵'&&!['capital',...state.nation.army.frontiers.map(b=>b.dir)].includes(armyTarget))throw new Error('请选择有效军队');
   if (type === "立储") {
     const s = clone(state),
       child = s.harem.children.find(
@@ -148,7 +165,7 @@ export function issueEdict(state, action, die) {
     if (!child) throw new Error("立储须选择在世皇子");
     s.harem.heir = child.id;
     return {
-      state: applyPackage(s, rule.effects, "册立储君"),
+      state: finishInstant(applyPackage(s, rule.effects, "册立储君"),type),
       note: "册立 " + child.name + " 为储君",
     };
   }
@@ -165,7 +182,7 @@ export function issueEdict(state, action, die) {
     if (amount <= 0 || amount > 100 || state.nation[from] < amount)
       throw new Error("拨转须为 1–100 万两，且余额足够");
     return {
-      state: applyPackage(state, { [from]: -amount, [to]: amount }, "两库拨转"),
+      state: finishInstant(applyPackage(state, { [from]: -amount, [to]: amount }, "两库拨转"),type),
       note: "拨转 " + amount + " 万两",
     };
   }
@@ -198,11 +215,11 @@ export function issueEdict(state, action, die) {
   let s = applyPackage(
     current,
     {
-      [account]: -rule.cost,
-      grain: -(rule.grain || 0),
+      [account]: exec.tier===4?0:-rule.cost,
+      grain: exec.tier===4?0:-(rule.grain || 0),
       prestige: exec.tier === 0 ? 2 : exec.tier === 4 ? -3 : 0,
     },
-    type + "：发付钱粮 / " + exec.label,
+    type + (exec.tier===4?"：内阁封还，钱粮未付 / ":"：发付钱粮 / ") + exec.label,
   );
   if (exec.rate > 0)
     s.projects.push({
@@ -218,13 +235,16 @@ export function issueEdict(state, action, die) {
         Object.entries(rule.effects).map(([k, v]) => [k, v * exec.rate]),
       ),
       province: action.province || null,
+      ...(type==='征兵'?{armyTarget}:{}),
       done: false,
     });
+  if(exec.tier===3)s.facts.push({subject:exec.official,key:"截留侵吞",value:type+"截留侵吞 "+(rule.cost*0.7).toFixed(1)+" 万两（已含于发付钱粮，不重复扣款）",turn:s.turn});
   s.stats.edicts++;
   return {
     state: s,
     note:
       type +
+      (exec.tier===4?"（内阁封还，钱粮退回）":exec.tier===3?"（截留侵吞 "+(rule.cost*0.7).toFixed(1)+" 万两）":"") +
       (forced ? "（强推复核）" : "") +
       " · " +
       exec.label +
@@ -245,8 +265,16 @@ export function advanceProjects(state) {
     );
     if (s.turn >= project.end) {
       project.done = true;
+      finishInstant(s,project.edictType,project.province);
+      if(["减赋","加税"].includes(project.edictType)) {
+        for(const p of s.nation.provinces.filter(p=>!project.province||project.province===p.id)) {
+          p.taxRelief=project.edictType==="减赋"?{factor:0.8,untilQuarter:quarterIndex(s.turn)+4}:null;
+          p.taxSurge=project.edictType==="加税"?{factor:1.2,untilQuarter:quarterIndex(s.turn)+4}:null;
+        }
+      }
       project.progress = 100;
-      s = applyPackage(s, project.effects, "政务竣结：" + project.edictType);
+      const effects=project.province&&Number.isFinite(project.effects.morale)?{...project.effects,morale:undefined,province:{id:project.province,morale:project.effects.morale}}:project.effects;
+      s = applyPackage(s, effects, "政务竣结：" + project.edictType);
       if (project.province && project.edictType === "赈灾")
         s = applyPackage(
           s,
@@ -259,12 +287,14 @@ export function advanceProjects(state) {
           },
           "地方赈济到位",
         );
-      if (project.edictType === "征兵")
-        s.nation.army.frontiers = s.nation.army.frontiers.map((f) => ({
+      if (project.edictType === "征兵"){
+        if(project.armyTarget==='capital')s.nation.army.capital.troops=Math.min(45000,s.nation.army.capital.troops+3000);
+        s.nation.army.frontiers = s.nation.army.frontiers.map((f) => project.armyTarget==='all-frontiers'||project.armyTarget===f.dir?({
           ...f,
           troops: Math.min(1000000, f.troops + 3000),
           readiness: clamp(f.readiness + 5),
-        }));
+        }):f);
+      }
     }
   }
   return s;
