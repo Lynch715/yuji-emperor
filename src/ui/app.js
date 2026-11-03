@@ -1,3 +1,4 @@
+import { classifyMemorialSchedule } from "../llm/remark-classifier.js";
 import { initAppIcon } from "./icon.js";
 import {
   $,
@@ -361,7 +362,11 @@ async function advance(local = false) {
   let ac = new AbortController();
   try {
     if (!state.pending) {
-      const forecast = forecastTurn({ ...state, turnBudget: null }, state.schedule);
+      const schedule=state.settings.demo||local?state.schedule:await classifyMemorialSchedule(state.schedule,text=>callJSON(config,classifyMessages(text,'remark'),{
+        budget:createBudget(),signal:ac.signal,onMetric:markMetric,
+        validate:data=>{if(!['嘉奖','申饬','附旨','无'].includes(data.kind))throw new Error('朱批分类无效');return {kind:data.kind};},
+      }));
+      const forecast = forecastTurn({ ...state, turnBudget: null }, schedule);
       state = {
         ...state,
         pending: { forecast },

@@ -1,3 +1,5 @@
+import { fallbackBiography } from "./biography.js";
+import { imperialTitles } from "./imperial-titles.js";
 import { clone, reignId } from "./state.js";
 import { clamp } from "./effects.js";
 import { succession } from "./harem.js";
@@ -101,16 +103,7 @@ export function sealChronicle(state) {
             : score >= 25
               ? "下"
               : "末",
-    posthumous =
-      s.ending.type === "亡国"
-        ? "哀"
-        : { 上: "文", 中上: "仁", 中: "平", 下: "厉", 末: "炀" }[tier],
-    templeName =
-      s.ending.type === "亡国"
-        ? "哀宗"
-        : { 上: "世宗", 中上: "仁宗", 中: "宪宗", 下: "厉宗", 末: "昏宗" }[
-            tier
-          ],
+    {posthumous,templeName}=imperialTitles(s,tier),
     succ =
       s.ending.type === "驾崩"
         ? s.ending.succession || succession(s)
@@ -138,23 +131,7 @@ export function sealChronicle(state) {
     biography: "",
     commentary: "",
   };
-  const years = ((s.turn - (s.reign?.accessionTurn || 0)) / 36).toFixed(1),
-    done = s.projects.filter((p) => p.done),
-    titles =
-      s.ambitions
-        .filter((a) => a.status === "达成")
-        .map((a) => a.title)
-        .join("、") || "尚无全部达成之宏愿心事";
-  let bio = `${s.dynasty}帝${s.emperor.name}，以${s.era.name}纪元。在位共${r.reignTurns}旬，折合${years}年。其初践祚，国库${(s.reign?.initialTreasury ?? 480).toFixed(1)}万两，六部承旧制而行。嗣后岁时递迁，所批奏报、所行诏令，皆有起居注可核，不以传闻增饰。至封卷时，国库实存${s.nation.treasury.toFixed(1)}万两，粮储${s.nation.grain.toFixed(1)}万石，内帑${s.nation.privy.toFixed(1)}万两。银粮各有所出入，政务因时推进，成败由当时吏治、朝局与天命相参而定。`;
-  bio += `帝累计处置奏报${ownStats.petitions}本，颁布常规政令${ownStats.edicts}道，已竣政务${done.length}项，任免${ownStats.appointments}次，设宴${ownStats.banquets}次。边事方面，实录所记获胜战役${ownStats.warsWon}场。后宫所出皇嗣共${reignChildren.length}人，储位${s.harem.heir ? "已有所定" : "尚未预定"}。宏愿与心事之达成者为：${titles}。凡此皆据引擎台账，未结之工程不冒称其成，未遂之愿不以言辞补足。`;
-  bio += `其朝终时，民心${s.nation.morale.toFixed(1)}，吏治${s.nation.governance.toFixed(1)}，皇威${s.emperor.prestige.toFixed(1)}，圣德${s.emperor.virtue.toFixed(1)}。四者各见施政之一端，不能以一端掩其余。${succ.text}。本朝终于${s.ending.type}，其由为${s.ending.cause}。史馆依实录与国势评定政绩${score}分，列${tier}档，定庙号${templeName}，谥${posthumous}。前后诏令、奏报与钱粮明细，悉存本朝起居注，后人可逐旬复核。`;
-  if (bio.length < 500)
-    bio +=
-      "论帝王一生，功过终须落在民生与制度之间。观其所行，当并察朝臣奉行之实；观其所愿，当辨已经成就与仍在酝酿者。史官据册书其始终，所能详者不使遗失，所未见者不妄增一事。";
-  while (bio.length < 500)
-    bio +=
-      "朝廷之事，不独系于御前一言。钱粮有册，官职有名，政务有期，故史官得据其迹而论之。未完成者记其在途，已结者载其得失；正文只叙经过，数目仍以台账为凭。此本纪保存本朝封卷之实，后续之事既未发生，亦不预为书写。";
-  r.biography = bio.slice(0, 800);
+  r.biography = fallbackBiography(s,r);
   r.commentary =
     score >= 60
       ? "治道在于持久，得失俱在实录。愿后之继者，守已成之业，省未竟之失。"

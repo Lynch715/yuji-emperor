@@ -3,8 +3,8 @@ import { initialTurn, forecastTurn, commitTurn } from "../src/core/turn.js";
 import { canVisit } from "../src/core/harem.js";
 import { succeedEmperor } from "../src/core/succession.js";
 import { reignId } from "../src/core/state.js";
-import { edictBlock } from "../src/core/edicts.js";
-import { annualBudget,grainBudget } from "../src/core/finance.js";
+import { edictBlock, EDICTS } from "../src/core/edicts.js";
+import { annualBudget,grainBudget,quarterlyGrain } from "../src/core/finance.js";
 import { random, seedNumber } from "../src/core/rng.js";
 export const SIMULATION_STRATEGIES=Object.freeze({rest:'无为',random:'乱批',diligent:'尽职',greedy:'贪心'});
 export function makeSimulationSchedule(s,pick,strategy="diligent") {
@@ -25,7 +25,7 @@ export function makeSimulationSchedule(s,pick,strategy="diligent") {
         const choices = (strategy==='greedy'?[approved]:m.options).filter(o => o&&Object.keys(available).every(k=>Math.max(0,-(o.effects?.[k]||0))<=available[k]));
         if(!choices.length)continue;
         const option = choices[strategy==='greedy'?0:pick(choices.length)];
-        decisions[m.id] = option.id;selected.push(m.id);
+        decisions[m.id] = {option:option.id,remark:''};selected.push(m.id);
         for(const k of Object.keys(available))available[k]-=Math.max(0,-(option.effects?.[k]||0));
       }
       schedule.朝 = {
@@ -36,7 +36,7 @@ export function makeSimulationSchedule(s,pick,strategy="diligent") {
     }
     if (action === 4 && s.nation.treasury > 80) {
       const types=["整饬吏治", "赈灾", "减赋"],start=pick(3);
-      const edictType=types.map((_,i)=>types[(start+i)%3]).find(type=>!edictBlock(s,type));
+      const edictType=types.map((_,i)=>types[(start+i)%3]).find(type=>!edictBlock(s,type)&&s.nation.treasury-8>=EDICTS[type].cost&&s.nation.grain>=(EDICTS[type].grain||0));
       if(!s.regency&&edictType)schedule.午={kind:'下旨',edictType,...(edictType==='减赋'?{province:s.nation.provinces[pick(s.nation.provinces.length)].id}:{})};
     }
     const partner = s.harem.consorts.find((c) => canVisit(s, c));
@@ -126,7 +126,7 @@ export function simulate(years = 200, seed = "御极·两百年", options = {}) 
     const grainPeak=Math.max(s.nation.grain,...f.entries.filter(e=>e.path==='nation.grain').flatMap(e=>[e.before,e.after]));
     maxGrain=Math.max(maxGrain,grainPeak);
     maxGrainCapacity=Math.max(maxGrainCapacity,grainBudget(s).storageCapacity);
-    maxAnnualGrainProduction=Math.max(maxAnnualGrainProduction,s.nation.provinces.reduce((n,p)=>n+p.pop*0.15*4,0));
+    maxAnnualGrainProduction=Math.max(maxAnnualGrainProduction,quarterlyGrain(s)*4);
     if(i<50*36)maxGrainFirst50=Math.max(maxGrainFirst50,grainPeak);
     if(i>=Math.max(0,years-50)*36)maxGrainLast50=Math.max(maxGrainLast50,grainPeak);
     const delta = s.stats.events - before;

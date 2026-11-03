@@ -105,7 +105,11 @@ export function talkMessages(state, result, log) {
     },
   ];
 }
-export function classifyMessages(text) {
+export function classifyMessages(text,mode='oral') {
+  if(mode==='remark')return [
+    {role:'system',content:'你是御笔朱批分类员。只输出 JSON {"kind":"嘉奖"}，kind 仅限嘉奖、申饬、附旨、无。识别否定词；责成核查属于附旨，不是申饬；不必嘉奖属于无。混合措辞按主要意图归类，不决定对象，不创造数值，不执行附旨。'},
+    {role:'user',content:String(text).slice(0,100)},
+  ];
   return [
     {
       role: "system",

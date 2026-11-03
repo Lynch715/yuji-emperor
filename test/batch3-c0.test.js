@@ -59,7 +59,7 @@ test('C0-3 模拟减赋随机指定一州，批折最多六本且各资源可负
  s.memorials=Array.from({length:8},(_,i)=>({id:'cost-'+i,options:[{id:'too-silver',effects:{treasury:-20}},{id:'too-grain',effects:{grain:-6}},{id:'too-privy',effects:{privy:-1}},{id:'cost',effects:{treasury:-6}},{id:'free',effects:{}}]}));
  let count=0;const batch=simulation.makeSimulationSchedule(s,n=>count++===0?2:0);assert.equal(batch.朝.kind,'批折');assert.ok(batch.朝.memorials.length<=6);
  const left={treasury:s.nation.treasury,grain:s.nation.grain,privy:s.nation.privy};
- for(const id of batch.朝.memorials){const m=s.memorials.find(m=>m.id===id),o=m.options.find(o=>o.id===batch.朝.decisions[id]);for(const k of Object.keys(left))left[k]-=Math.max(0,-(o.effects[k]||0));}
+ for(const id of batch.朝.memorials){const m=s.memorials.find(m=>m.id===id),o=m.options.find(o=>o.id===batch.朝.decisions[id].option);for(const k of Object.keys(left))left[k]-=Math.max(0,-(o.effects[k]||0));}
  assert.ok(left.treasury>=8);assert.ok(left.grain>=0&&left.privy>=0);
  s.memorials=[{id:'cannot-pay',options:[{id:'too-much',effects:{grain:-10}}]}];count=0;
  const skip=simulation.makeSimulationSchedule(s,n=>count++===0?2:0);assert.ok(!skip.朝||skip.朝.memorials.length===0);

@@ -1,3 +1,5 @@
+import { remarkCategory, REMARK_KINDS } from "./memorial-decisions.js";
+import { routineTemplate, routineOptions } from "./memorial-templates.js";
 import { clone } from "./state.js";
 import { roll } from "./rng.js";
 import { applyPackage } from "./effects.js";
@@ -56,39 +58,17 @@ export function seedMemorials(state) {
   for (let i = 0; i < r.value; i++) {
     const pool=i===2?s.nation.provinces.filter(p=>p.disaster>0):s.nation.provinces;
     const pick=roll(s,0,Math.max(0,(pool.length?pool:s.nation.provinces).length-1));s=pick.state;
-    const z=(pool.length?pool:s.nation.provinces)[pick.value], relief=i===2&&pool.length>0;
-    const type=relief?'请赈':i===0?'钱粮':i===3?'军粮':i===4?'言官':'政务';
-    const id = "routine-" + s.turn + "-" + i;
+    const z=(pool.length?pool:s.nation.provinces)[pick.value];
+    const template=routineTemplate(s,i,z,pick.value),relief=!!template.relief;
     s.memorials.push({
-      id,
-      title: [
-        z.name + " 钱粮月报",
-        "六部请整饬案牍",
-        relief ? z.name + " 请赈灾民" : z.name + " 请核实仓廪",
-        "边营请补军粮",
-        "言官请开经筵",
-        "地方请奖循吏",
-      ][i],
-      ...pickMemorialist(s,type,z.id),
+      id: "routine-" + s.turn + "-" + i,
+      templateId:template.id,
+      title:template.title,
+      ...pickMemorialist(s,template.type,z.id),
       provinceId:z.id,
-      type,
-      request: "请陛下裁处",
-      options: [
-        {
-          id: "approve",
-          label: "准奏",
-          effects:
-            relief
-              ? { treasury: -8, province:{id:z.id,morale:2,disaster:-5}, virtue: 1 }
-              : { treasury: -2, governance: 0.1 },
-        },
-        {
-          id: "reject",
-          label: "驳回",
-          effects: { prestige: 0.2,...(relief?{virtue:-2}:{}) },
-        },
-        { id: "hold", label: "留中", effects: {} },
-      ],
+      type:template.type,
+      request:template.request,
+      options:routineOptions(template,z),
       due: s.turn + 4,
       threadId: null,
       urgent: relief,
@@ -104,11 +84,13 @@ export function resolveMemorial(
   option = "approve",
   remark = "",
   sourcePrefix = "处置奏报",
+  remarkKind = null,
 ) {
   const m = state.memorials.find((m) => m.id === id);
   if (!m) throw new Error("奏报已处置或不存在");
+  const brushNote=remark?" · 朱批「"+String(remark).slice(0,100)+"」":"";
   if (option === "hold")
-    return { state: clone(state), note: m.title + " · 留中" };
+    return { state: applyMemorialRemark(state,m,remark,remarkKind), note: m.title + " · 留中" + brushNote };
   if (option === "discuss") {
     const s = clone(state),
       mem = s.memorials.find((x) => x.id === id);
@@ -118,27 +100,10 @@ export function resolveMemorial(
     mem.due += 3;
     const t = s.threads.find((t) => t.id === mem.threadId);
     if (t && t.stage !== "结束") t.stage = "搁置";
-    return { state: s, note: m.title + " · 发部再议" };
+    return { state: applyMemorialRemark(s,m,remark,remarkKind), note: m.title + " · 发部再议" + brushNote };
   }
   if (option === "remark") {
-    const o = state.court.officials.find((o) => o.id === m.fromId),
-      praise = /嘉奖|有功|可嘉|甚善|勤勉/.test(remark),
-      blame = /申饬|责|严查|敷衍/.test(remark),
-      s = o
-        ? applyPackage(
-            state,
-            { official: { id: o.id, favor: praise ? 2 : blame ? -3 : 0 } },
-            "朱批：" + String(remark).slice(0, 100),
-          )
-        : clone(state);
-    return {
-      state: s,
-      note:
-        m.title +
-        " · 朱批「" +
-        String(remark).slice(0, 100) +
-        "」（原请款仍待准驳）",
-    };
+    return {state:applyMemorialRemark(state,m,remark,remarkKind),note:m.title+' · 朱批「'+String(remark).slice(0,100)+'」（原请款仍待准驳）'};
   }
   const chosen =
     m.options.find((o) => o.id === option) ||
@@ -174,7 +139,14 @@ export function resolveMemorial(
       if (province) province.rebellion = false;
     }
   }
-  return { state: s, note: m.title + " · " + chosen.label };
+  return { state: applyMemorialRemark(s,m,remark,remarkKind), note: m.title + " · " + chosen.label + brushNote };
+}
+function applyMemorialRemark(state,memorial,remark,kind){
+  const text=String(remark||'').slice(0,100),category=REMARK_KINDS.includes(kind)?kind:remarkCategory(text);
+  const o=state.court.officials.find(o=>o.id===memorial.fromId&&o.alive&&o.health>0&&!o.jailed&&!o.retired&&state.court.posts.some(p=>p.holder===o.id&&p.id===o.post));
+  if(!text||!o)return clone(state);
+  const favor=category==='嘉奖'?2:category==='申饬'?-3:0;
+  return favor?applyPackage(state,{official:{id:o.id,favor}},'朱批：'+text):clone(state);
 }
 export function expireMemorials(state) {
   let s = clone(state);

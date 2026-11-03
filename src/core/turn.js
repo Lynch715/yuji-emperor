@@ -1,3 +1,4 @@
+import { memorialDecision } from "./memorial-decisions.js";
 import { calendarEra, globalYear } from "./calendar.js";
 import { advanceRegency } from "./succession.js";
 import { regentPerson } from "./regency-info.js";
@@ -102,6 +103,7 @@ export function validateSchedule(state, schedule) {
     for (const id of a.memorials || []) {
       if (seen.has(id)) throw new Error("同一奏报不能重复处置");
       seen.add(id);
+      memorialDecision(a,id);
     }
     if (a.kind === "上朝" && (a.memorials?.length || 0) > 3)
       throw new Error("上朝最多三个议题");
@@ -180,10 +182,10 @@ function forecastDraft(state, schedule) {
         );
       }
       for (const id of ids) {
-        const option = action.decisions?.[id] || action.decision || "approve";
-        result = resolveMemorial(s, id, option, action.remark);
+        const decision = memorialDecision(action,id);
+        result = resolveMemorial(s, id, decision.option, decision.remark, "处置奏报", decision.remarkKind);
         s = result.state;
-        if(action.kind==='上朝'&&option==='reject')s=applyPackage(s,{prestige:2},'当廷驳回');
+        if(action.kind==='上朝'&&decision.option==='reject')s=applyPackage(s,{prestige:2},'当廷驳回');
         slotResults[slot].push(result.note);
       }
       if (action.stance === "当廷问责") {

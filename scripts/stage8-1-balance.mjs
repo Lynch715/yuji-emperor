@@ -49,7 +49,7 @@ if(process.argv[1]===import.meta.filename){
  }
  for(const [strategy,reports]of Object.entries(result.strategies))for(const r of reports){
   const diligent=result.strategies.diligent.find(d=>d.seed===r.seed);
-  r.checks={...(strategy==='rest'?{}:{...economicChecks(r),grainBounded:r.maxGrain<=r.maxGrainCapacity+r.maxAnnualGrainProduction/0.1+650&&r.maxGrainLast50<=r.maxGrainFirst50*1.5}),...strategyChecks(r,diligent)};
+  r.checks={...(strategy==='rest'?{}:{...economicChecks(r),grainBounded:r.maxGrain<=r.maxGrainCapacity+r.maxAnnualGrainProduction/0.3+240&&r.maxGrainLast50<=r.maxGrainFirst50*1.5}),...strategyChecks(r,diligent)};
  }
  for(const seed of BALANCE_SEEDS){
   for(const governance of [0,58,100])for(const treasury of [0,480,3000])for(const provincialMorale of [19,62,100]) result.lowMorale.push(lowMoraleScenario(seed,treasury,governance,provincialMorale));

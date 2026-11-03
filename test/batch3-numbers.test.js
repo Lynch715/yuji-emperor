@@ -30,16 +30,16 @@ test('C1 民心按人口加权，普遍效果乘0.3且相关州效果不波及�
 test('C1 六部履职成为治理回归目标，圣德皇威心情按月回归，例行准奏只加0.1吏治且驳回不扣民心',()=>{
  let s=start();s.nation.governance=95;s.emperor.virtue=90;s.emperor.prestige=90;s.emperor.mood=90;s.emperor.tags=[];
  const month=court.courtMonth(s);assert.ok(month.nation.governance<95);s=emperorMonth(s);close(s.emperor.virtue,89.2);close(s.emperor.prestige,89.2);close(s.emperor.mood,88.25);
- s=start();s.memorials=[];s=seedMemorials(s);const m=s.memorials.find(m=>m.title==='六部请整饬案牍');assert.ok(m);assert.equal(m.options[0].effects.governance,0.1);assert.ok(!m.options[1].effects.morale);
+ s=start();s.memorials=[];s=seedMemorials(s);const m=s.memorials.find(m=>m.type==='政务');assert.ok(m);assert.equal(m.options[0].effects.governance,0.1);assert.ok(!m.options[1].effects.morale);
  const approved=resolveMemorial(s,m.id,'approve').state;close(approved.nation.morale,s.nation.morale);
 });
 
-test('C2 季度新粮按人口灾情，军粮和灾州月耗，三年仓容超额年霉变10%',()=>{
+test('C2 季度新粮按季军粮1.2倍及人口灾情，三年仓容超额年霉变30%',()=>{
  let s=start();s.nation.provinces.forEach((p,i)=>{p.pop=200;p.disaster=i===0?50:0;});s.nation.grain=0;
- const expected=s.nation.provinces.reduce((a,p)=>a+p.pop*0.15*(1-p.disaster/100),0);close(nationQuarter(s).nation.grain,expected);
+ const expected=finance.monthlyBudget(s).grain*3*1.2*s.nation.provinces.reduce((a,p)=>a+p.pop*(1-p.disaster/100),0)/s.nation.provinces.reduce((a,p)=>a+p.pop,0);close(nationQuarter(s).nation.grain,expected);
  assert.equal(typeof finance.grainBudget,'function');const b=finance.grainBudget(s);close(b.relief,2);close(b.storageCapacity,b.monthly*36);
  s.nation.grain=1000;const monthly=nationMonth(s);close(monthly.nation.grain,1000-b.monthly);
- s.nation.grain=b.storageCapacity+100;const yr=nationYear(s);close(yr.nation.grain,b.storageCapacity+90);assert.ok(yr.ledger.some(e=>e.source.includes('霉变')));
+ s.nation.grain=b.storageCapacity+100;const yr=nationYear(s);close(yr.nation.grain,b.storageCapacity+70);assert.ok(yr.ledger.some(e=>e.source.includes('霉变')));
 });
 
 test('C2 粮储不足一月军粮才使战力减三成，足粮战力不受影响',()=>{
@@ -62,13 +62,13 @@ test('C3 皇庄盐课每月收入三万两，节俭真实降低宫费三成',()=
  close(base.nation.privy-s.nation.privy,3-cost);close(frugal.nation.privy-base.nation.privy,cost*0.3);
 });
 
-test('C3 v6迁移补新字段且v1至v5旧预演逐字保留，提交不重掷不重算',()=>{
+test('C3 当前版迁移补新字段且v1至v5旧预演逐字保留，提交不重掷不重算',()=>{
  for(let v=1;v<=5;v++){
   let s=start();s.pending={forecast:forecastTurn(s,{朝:null,午:null,夜:null})};s.v=v;s.pending.forecast.state.v=v;
   delete s.nation.privyArrears;delete s.nation.grainArrears;delete s.emperor.depressedMonths;
   s.foreign.forEach(f=>delete f.trade);s.court.officials.forEach(o=>delete o.banquetTurn);
-  const old=hash(s),pending=hash(s.pending.forecast),n=migrate(s);assert.equal(VERSION,6);assert.equal(n.v,6);assert.equal(n.nation.privyArrears,0);assert.equal(n.nation.grainArrears,0);assert.equal(n.emperor.depressedMonths,0);assert.ok(n.foreign.every(f=>f.trade===null));assert.equal(hash(s),old);assert.equal(hash(n.pending.forecast),pending);
-  const c=commitTurn(n,n.pending.forecast,{});assert.equal(c.v,6);assert.equal(c.lastTurn.die,s.pending.forecast.die);assert.equal(c.nation.treasury,s.pending.forecast.state.nation.treasury);assert.equal(c.rng,s.pending.forecast.state.rng);assert.deepEqual(commitTurn(c,n.pending.forecast,{}),c);
+  const old=hash(s),pending=hash(s.pending.forecast),n=migrate(s);assert.equal(VERSION,7);assert.equal(n.v,VERSION);assert.equal(n.nation.privyArrears,0);assert.equal(n.nation.grainArrears,0);assert.equal(n.emperor.depressedMonths,0);assert.ok(n.foreign.every(f=>f.trade===null));assert.equal(hash(s),old);assert.equal(hash(n.pending.forecast),pending);
+  const c=commitTurn(n,n.pending.forecast,{});assert.equal(c.v,VERSION);assert.equal(c.lastTurn.die,s.pending.forecast.die);assert.equal(c.nation.treasury,s.pending.forecast.state.nation.treasury);assert.equal(c.rng,s.pending.forecast.state.rng);assert.deepEqual(commitTurn(c,n.pending.forecast,{}),c);
  }
  const bad=start();bad.nation.privyArrears=-1;assert.throws(()=>migrate(bad));
 });
@@ -144,7 +144,7 @@ test('C1 例行积压每月记一次治理成本，低治理影响各州民心�
 test('C1 有灾请赈的驳回损圣德，普通案牍驳回不扣民心圣德',()=>{
  let s=start();s.memorials=[];s.nation.provinces[0].disaster=50;s=seedMemorials(s);
  const relief=s.memorials.find(m=>m.type==='请赈');assert.ok(relief);assert.equal(relief.options.find(o=>o.id==='reject').effects.virtue,-2);
- const routine=s.memorials.find(m=>m.title==='六部请整饬案牍');assert.ok(!routine.options.find(o=>o.id==='reject').effects.virtue);
+ const routine=s.memorials.find(m=>m.type==='政务');assert.ok(!routine.options.find(o=>o.id==='reject').effects.virtue);
 });
 
 test('C6 真实急报逾期损皇威，普通案牍逾期不额外损皇威',()=>{
@@ -203,13 +203,13 @@ test('C5 地方在任官员也可构成权臣，由同派在京官员实际代�
  assert.equal(court.strongman(s),true);const n=court.proxyMemorial(s);assert.ok(n.note);assert.notEqual(n.officialId,o.id);assert.ok(court.inCapital(n.state.court.officials.find(o=>o.id===n.officialId)));
 });
 
-test('C3 真实v4和v5无新字段待续快照原样读入，提交只补v6字段而不改旧钱粮与骰子',()=>{
+test('C3 真实v4和v5无新字段待续快照原样读入，提交只补新版字段而不改旧钱粮与骰子',()=>{
  for(const version of [4,5]){
   const raw=JSON.parse(readFileSync(new URL('./fixtures/v'+version+'-pending.json',import.meta.url))),f=raw.pending.forecast;
   assert.equal(raw.v,version);assert.ok(!('privyArrears' in f.state.nation));const before=hash(raw),receipt=hash(f),n=migrate(raw);
   assert.equal(hash(raw),before);assert.equal(hash(n.pending.forecast),receipt);const next=commitTurn(n,n.pending.forecast,{});
   for(const field of ['treasury','privy','grain','morale','governance'])assert.equal(next.nation[field],f.state.nation[field]);
-  assert.equal(next.lastTurn.die,f.die);assert.equal(next.rng,f.state.rng);assert.equal(next.v,6);assert.equal(next.nation.privyArrears,0);assert.equal(next.nation.grainArrears,0);assert.equal(hash(n.pending.forecast),receipt);
+  assert.equal(next.lastTurn.die,f.die);assert.equal(next.rng,f.state.rng);assert.equal(next.v,VERSION);assert.equal(next.nation.privyArrears,0);assert.equal(next.nation.grainArrears,0);assert.equal(hash(n.pending.forecast),receipt);
  }
 });
 

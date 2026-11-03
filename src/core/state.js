@@ -1,8 +1,9 @@
+import { normalizeMemorialAction } from "./memorial-decisions.js";
 import { seedNumber, random, DRAFT } from "./rng.js";
 import { uniqueName } from "./names.js";
 import { chooseRegent } from "./regency-info.js";
 import {factionPowers} from './politics.js';
-export const VERSION = 6;
+export const VERSION = 7;
 export const TALENTS = ["政略", "权谋", "武略", "文采", "魅力"];
 export const SLOTS = ["朝", "午", "夜"];
 export const POST_NAMES = [
@@ -305,7 +306,7 @@ export function createState(options = {}) {
       privyArrears:0,
       grainArrears:0,
       privy: 90,
-      grain: 650,
+      grain: 240,
       morale: 62,
       governance: 58,
       provinces,
@@ -418,6 +419,7 @@ export function migrate(input) {
   )
     throw new Error("存档版本不受支持，已进入保护模式");
   const s = structuredClone(input);
+  if(s.schedule)for(const slot of ["朝","午","夜"])s.schedule[slot]=normalizeMemorialAction(s.schedule[slot]);
   for (const key of [
     "emperor",
     "nation",

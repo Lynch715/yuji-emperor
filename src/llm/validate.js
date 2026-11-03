@@ -1,3 +1,4 @@
+import { sceneNarrative } from "./mock-narrative.js";
 // Pure JSON repair. Never evaluate model text as JavaScript.
 export function parseJSONLoose(raw) {
   if (typeof raw !== "string" || raw.length > 1500000)
@@ -108,15 +109,8 @@ export function validateProbe(data) {
   return { ok: true, message: cleanText(data.message, 500) };
 }
 export function mockNarrative(forecast) {
-  const texts = {
-    朝: "晓钟传至殿前，百官依班肃立。御案上的折子已按轻重排定，朱笔落下，内侍随即传旨。",
-    午: "日影移过廊柱，值房仍有案牍往来。各衙门领旨回署，待办诸事仍须依期复奏。",
-    夜: "宫灯初上，殿外脚步渐稀。今日得失收入起居注，留待来旬再议。",
-  };
   return {
-    chapter: Object.fromEntries(
-      ["朝", "午", "夜"].map((slot) => [slot, texts[slot]]),
-    ),
+    chapter:sceneNarrative(forecast),
     summary: "本旬" + forecast.fate + "，诸事已据实落账",
     memorialTexts: forecast.newMemorials.map((m) => ({
       id: m.id,

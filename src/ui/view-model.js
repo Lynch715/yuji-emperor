@@ -1,3 +1,4 @@
+import { memorialDecision } from "../core/memorial-decisions.js";
 import { ACTIONS, scheduleCost } from "../core/turn.js";
 import { energyLimit } from "../core/emperor.js";
 import { annualBudget } from "../core/finance.js";
@@ -67,7 +68,7 @@ export function scheduleEstimate(s) {
     }
     for (const id of a.memorials || []) {
       const m=s.memorials.find(x=>x.id===id);if(!m)continue;
-      const decision=a.decisions?.[id]||a.decision||"approve";
+      const decision=memorialDecision(a,id).option;
       if (["hold","discuss","remark"].includes(decision)) continue;
       const o=m.options.find(o=>o.id===decision)||m.options[decision==="reject"?1:0];
       for(const k of Object.keys(totals)) totals[k]+=o?.effects?.[k]||0;

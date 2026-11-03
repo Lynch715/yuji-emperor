@@ -1,7 +1,7 @@
 import { clone } from "./state.js";
 import { clamp, applyPackage } from "./effects.js";
 import {
-  monthlyBudget, grainBudget, wasteQuote, provinceTaxFactor, settleArrears, quarterIndex,
+  monthlyBudget, grainBudget, quarterlyGrain, wasteQuote, provinceTaxFactor, settleArrears, quarterIndex,
 } from "./finance.js";
 export function nationMonth(state) {
   let s = settleArrears(applyPackage(state,{privy:3},'月结：皇庄与盐课收入'));
@@ -70,7 +70,7 @@ export function nationQuarter(state) {
       3;
   let s = applyPackage(
     state,
-    { treasury: income, grain: state.nation.provinces.reduce((n,p)=>n+p.pop*0.15*(1-p.disaster/100),0) },
+    { treasury: income, grain: quarterlyGrain(state) },
     "季结：赋税实收 " + Math.round(rate * 100) + "% 与新粮入仓",
   );
   s.stats.income += income;
@@ -86,8 +86,8 @@ export function nationQuarter(state) {
 }
 export function nationYear(state) {
   let s = clone(state);
-  const spoiled=Math.max(0,s.nation.grain-grainBudget(s).storageCapacity)*0.1;
-  if(spoiled)s=applyPackage(s,{grain:-spoiled},'年结：超仓陈粮霉变一成');
+  const spoiled=Math.max(0,s.nation.grain-grainBudget(s).storageCapacity)*0.3;
+  if(spoiled)s=applyPackage(s,{grain:-spoiled},'年结：超仓陈粮霉变三成');
   s.nation.provinces = s.nation.provinces.map((p) => ({
     ...p,
     pop: Math.round(p.pop * (p.morale > 40 ? 1.002 : 0.995)),

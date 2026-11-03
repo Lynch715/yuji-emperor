@@ -1,3 +1,4 @@
+import { normalizeMemorialAction } from "../src/core/memorial-decisions.js";
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -16,11 +17,12 @@ for(const old of legacy)test('夜御案同种子实走对照：'+old.case,()=>{
  assert.deepEqual(fresh,old);
  const s=stage9Fixture(),before=structuredClone(s),session=createMemorialSession(s,old.action.kind,old.slot);
  session.ids=[...old.action.memorials];session.stance=old.action.stance;session.target=old.action.target;session.remark=old.action.remark;
- for(const id of session.ids)session.choices[id]=old.action.decision;
+ for(const id of session.ids){session.choices[id]=old.action.decision;session.remarks[id]=old.action.remark;}
  const action=memorialAction(s,session);
- assert.deepEqual(action,old.action);
- // v5 intentionally changes names, calendar and settlement. Historical UI
- // action serialization stays exact; current forecasts remain deterministic.
+ const expected=normalizeMemorialAction(old.action);delete expected.decision;delete expected.remark;
+ assert.deepEqual(action,expected);
+ // v7 serializes per-memorial remarks; legacy actions normalize to identical
+ // decisions without changing the archived UI fixture.
  const forecast=forecastTurn(s,{...s.schedule,[old.slot]:action});
  assert.deepEqual(forecast,forecastTurn(s,{...s.schedule,[old.slot]:action}));
  assert.equal(forecast.state.v,VERSION);
@@ -30,7 +32,7 @@ test('逐本混合决定沿用既有 decisions 字段，未选完或超过三议
  const s=stage9Fixture(),model=createMemorialSession(s,'上朝','朝');
  assert.throws(()=>memorialAction(s,model),/逐本/);
  model.ids.forEach((id,i)=>model.choices[id]=['approve','hold','discuss'][i]);
- assert.deepEqual(memorialAction(s,model).decisions,model.choices);
+ assert.deepEqual(memorialAction(s,model).decisions,Object.fromEntries(Object.entries(model.choices).map(([id,option])=>[id,{option,remark:''}])));
  model.ids.push(s.memorials[3].id);model.choices[model.ids[3]]='reject';
  assert.throws(()=>memorialAction(s,model),/三个/);
 });

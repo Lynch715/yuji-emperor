@@ -1,0 +1,169 @@
+{
+  "branch": "codex/audit-batch2-engine",
+  "saveVersion": 7,
+  "baseline": "qa/batch3/after.json",
+  "tests": {
+    "tests": 247,
+    "pass": 247,
+    "fail": 0
+  },
+  "simulation": {
+    "turns": 7200,
+    "actualYears": 200
+  },
+  "rawBalancePassed": false,
+  "baselineFailures": [
+    {
+      "strategy": "rest",
+      "seed": "御极·长治",
+      "check": "collapseWithin15Years"
+    },
+    {
+      "strategy": "rest",
+      "seed": "御极·宫闱",
+      "check": "collapseWithin15Years"
+    },
+    {
+      "strategy": "random",
+      "seed": "御极·两百年",
+      "check": "invasions"
+    },
+    {
+      "strategy": "random",
+      "seed": "御极·边政",
+      "check": "invasions"
+    },
+    {
+      "strategy": "random",
+      "seed": "御极·宫闱",
+      "check": "invasions"
+    },
+    {
+      "strategy": "diligent",
+      "seed": "御极·长治",
+      "check": "children"
+    },
+    {
+      "strategy": "diligent",
+      "seed": "御极·边政",
+      "check": "events"
+    }
+  ],
+  "failures": [
+    {
+      "strategy": "rest",
+      "seed": "御极·长治",
+      "check": "collapseWithin15Years"
+    },
+    {
+      "strategy": "rest",
+      "seed": "御极·宫闱",
+      "check": "collapseWithin15Years"
+    },
+    {
+      "strategy": "random",
+      "seed": "御极·两百年",
+      "check": "invasions"
+    },
+    {
+      "strategy": "random",
+      "seed": "御极·长治",
+      "check": "invasions"
+    },
+    {
+      "strategy": "random",
+      "seed": "御极·边政",
+      "check": "invasions"
+    },
+    {
+      "strategy": "random",
+      "seed": "御极·宫闱",
+      "check": "invasions"
+    },
+    {
+      "strategy": "diligent",
+      "seed": "御极·边政",
+      "check": "events"
+    }
+  ],
+  "newFailures": [
+    {
+      "strategy": "random",
+      "seed": "御极·长治",
+      "check": "invasions"
+    }
+  ],
+  "baselineChecksNowPassing": [
+    {
+      "strategy": "diligent",
+      "seed": "御极·长治",
+      "check": "children"
+    }
+  ],
+  "noNewFailures": false,
+  "grain": {
+    "seed": "audit3",
+    "strategy": "先急件再到期、前三本可负担一律准奏",
+    "turns": 1080,
+    "maxRatio": {
+      "ratio": 1.0424929336472104,
+      "stock": 315.5910426404737,
+      "turn": 1080,
+      "capacity": 302.7272727272727
+    },
+    "absolutePeak": 315.5910426404737,
+    "finalGrain": 311.7319116665134,
+    "disaster24Months": {
+      "initial": 240,
+      "normal": 280.3636363636363,
+      "disaster": 0,
+      "grainArrears": 484.5381818181816
+    }
+  },
+  "diversity": {
+    "turns": 1800,
+    "catalog": 40,
+    "titles": 180,
+    "templates": 37,
+    "ids": [
+      "accounts",
+      "army-arms",
+      "army-grain",
+      "army-horses",
+      "army-post",
+      "army-roll",
+      "army-scout",
+      "censor",
+      "clan",
+      "classics",
+      "disaster-relief",
+      "documents",
+      "envoy",
+      "exam-rooms",
+      "exams",
+      "good-official",
+      "grain-air",
+      "grain-boat",
+      "grain-measure",
+      "grain-register",
+      "grain-road",
+      "grain-seal",
+      "greed",
+      "land-books",
+      "official-records",
+      "old-tax",
+      "prison-books",
+      "ritual",
+      "river-inspect",
+      "roads",
+      "rules",
+      "salt-books",
+      "schools",
+      "tax-audit",
+      "tax-receipts",
+      "tax-register",
+      "tribute-books"
+    ]
+  },
+  "scopedPassed": false
+}

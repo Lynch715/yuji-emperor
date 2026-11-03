@@ -14,7 +14,7 @@ test('C1 验收口径 四类策略按同一规则选件，尽职与贪心先急�
  assert.deepEqual(run('random').朝.memorials,['ordinary','urgent-late','urgent-first']);
  assert.deepEqual(run('diligent').朝.memorials,['urgent-first','urgent-late','ordinary']);
  assert.deepEqual(run('greedy').朝.memorials,['urgent-first','urgent-late','ordinary']);
- assert.ok(Object.values(run('greedy').朝.decisions).every(v=>v==='approve'));
+ assert.ok(Object.values(run('greedy').朝.decisions).every(v=>v.option==='approve'));
  assert.ok(Object.values(run('rest')).every(a=>a.kind==='歇息'));
  assert.equal(JSON.stringify(s),before);
  assert.throws(()=>sim.makeSimulationSchedule(s,()=>0,'seed-special'),/策略/);

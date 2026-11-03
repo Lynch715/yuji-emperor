@@ -1,5 +1,5 @@
 import { applyPackage } from "./effects.js";
-// All amounts are 万两. Budget is twelve months of current recurring treasury obligations.
+// Treasury uses 万两 and grain uses 万石. Budget covers twelve months of recurring treasury obligations.
 export function monthlyBudget(state) {
   const troops =
     state.nation.army.capital.troops +
@@ -14,6 +14,13 @@ export function annualBudget(state) {
 export function grainBudget(state){
   const military=monthlyBudget(state).grain,relief=state.nation.provinces.filter(p=>p.disaster>0).length*2;
   return {military,relief,monthly:military+relief,storageCapacity:(military+relief)*36};
+}
+// Grain is 万石; province population is 万人, not a grain yield. Scale
+// normal harvest to recurring military demand, then weight crop damage by people.
+export function quarterlyGrain(state){
+  const population=state.nation.provinces.reduce((n,p)=>n+p.pop,0);
+  const crop=population?state.nation.provinces.reduce((n,p)=>n+p.pop*(1-Math.max(0,Math.min(100,p.disaster))/100),0)/population:0;
+  return monthlyBudget(state).grain*3*1.2*crop;
 }
 export function wasteQuote(state) {
   const budget = annualBudget(state),

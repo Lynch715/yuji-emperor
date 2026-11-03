@@ -1,3 +1,4 @@
+import { memorialDecision } from "../core/memorial-decisions.js";
 import { onDialogExit } from "./request-scope.js";
 import { $, esc, openDialog, closeDialog, toast } from "./common.js";
 import { forecastTurn, validateSchedule } from "../core/turn.js";
@@ -16,9 +17,9 @@ export function createMemorialSession(s,kind,preferred='朝',startId=null,option
   let ids=old?.memorials?.filter(id=>available.some(m=>m.id===id))||available.slice(0,kind==='上朝'?3:6).map(m=>m.id);
   if(startId){if(!available.some(m=>m.id===startId))throw new Error('此折已拟批，请从原日程改批。');ids=[startId];}
   if(!ids.length)throw new Error('本旬奏报均已拟批，起驾后落账。');
-  const choices={};
-  if(old&&!startId)for(const id of ids)choices[id]=old.decisions?.[id]||old.decision||'approve';
-  return {kind,slot,originalSlot:old?slot:null,ids,index:0,choices,stance:old?.stance||'依旨施行',target:old?.target||s.court.officials[0]?.id||'',remark:old?.remark||''};
+  const choices={},remarks={};
+  for(const id of ids){const d=memorialDecision(old,id);remarks[id]=old?d.remark:'';if(old&&!startId)choices[id]=d.option;}
+  return {kind,slot,originalSlot:old?slot:null,ids,index:0,choices,remarks,stance:old?.stance||'依旨施行',target:old?.target||s.court.officials[0]?.id||'',remark:old?.remark||''};
 }
 function legacyChoice(m,value) {
   if(value==='opt0'&&m.options[0]?.id===value)return 'approve';
@@ -31,10 +32,8 @@ export function memorialAction(s,session) {
   if(session.ids.some(id=>!session.choices[id]))throw new Error('请逐本选择御批');
   if(new Set(session.ids).size!==session.ids.length)throw new Error('同一奏报不能重复处置');
   if(session.ids.some(id=>!s.memorials.some(m=>m.id===id)))throw new Error('奏报已处置或不存在');
-  const normalized=session.ids.map(id=>legacyChoice(s.memorials.find(m=>m.id===id),session.choices[id]));
-  const uniform=normalized.every(x=>x===normalized[0]);
-  const action={kind:session.kind,memorials:[...session.ids],decision:uniform?normalized[0]:'approve',stance:session.stance,target:session.target,remark:session.remark,label:session.ids.length+' 本奏报'};
-  if(!uniform)action.decisions=Object.fromEntries(session.ids.map(id=>[id,session.choices[id]]));
+  const decisions=Object.fromEntries(session.ids.map(id=>[id,{option:session.choices[id],remark:String(session.remarks?.[id]??session.remark??'').slice(0,100)}]));
+  const action={kind:session.kind,memorials:[...session.ids],decisions,stance:session.stance,target:session.target,label:session.ids.length+' 本奏报'};
   validateSchedule(s,{...s.schedule,[session.slot]:action});
   return action;
 }
@@ -42,7 +41,7 @@ export function scheduledMemorialDialog(s,id) {
   const m=s.memorials.find(m=>m.id===id),assigned=memorialAssignments(s).get(id);
   if(!m||!assigned)return;
   const label=memorialDecisionLabel(m,assigned.decision);
-  openDialog('已拟批 · 本旬待发','<article class="paper scheduled-memorial"><h3>'+esc(m.title)+'</h3><p class="decision-summary">'+esc(assigned.slot)+'间 · '+esc(label)+'</p><p>此折已收入本旬日程，起驾时一并落账，不再重复列入待批。</p>'+(assigned.action.remark?'<p class="saved-remark">朱批：'+esc(assigned.action.remark)+'</p>':'')+'<p class="muted">若要修改，请编辑原日程中的这次御批。</p></article><div class="dialog-actions"><button data-edit-review-slot="'+esc(assigned.slot)+'">编辑'+esc(assigned.slot)+'间拟批</button></div>','drawer');
+  openDialog('已拟批 · 本旬待发','<article class="paper scheduled-memorial"><h3>'+esc(m.title)+'</h3><p class="decision-summary">'+esc(assigned.slot)+'间 · '+esc(label)+'</p><p>此折已收入本旬日程，起驾时一并落账，不再重复列入待批。</p>'+(assigned.remark?'<p class="saved-remark">朱批：'+esc(assigned.remark)+'</p>':'')+'<p class="muted">若要修改，请编辑原日程中的这次御批。</p></article><div class="dialog-actions"><button data-edit-review-slot="'+esc(assigned.slot)+'">编辑'+esc(assigned.slot)+'间拟批</button></div>','drawer');
 }
 export function effectItems(effects,s,prefix='') {
   const names={treasury:'国库',privy:'内帑',grain:'粮储',morale:'民心',governance:'吏治',prestige:'皇威',virtue:'圣德',health:'健康',mood:'心情',favor:'好感',disaster:'灾情',stage:'阶段',result:'结果'};
@@ -92,7 +91,7 @@ function debateFor(s,session) {
 export function memorialHTML(s,session) {
   const m=s.memorials.find(m=>m.id===session.ids[session.index]);
   if(!m)return '<p class="review-error">奏报已不在当前队列，请关闭后重选。</p>';
-  const person=s.court.officials.find(o=>o.name===m.from),faction=s.court.factions.find(f=>f.id===person?.faction),post=s.court.posts.find(p=>p.holder===person?.id);
+  const person=s.court.officials.find(o=>o.id===m.fromId),faction=s.court.factions.find(f=>f.id===person?.faction),post=s.court.posts.find(p=>p.holder===person?.id);
   const region=s.nation.provinces.find(p=>p.id===s.threads.find(t=>t.id===m.threadId)?.provinceId||m.title.includes(p.name));
   const opts=memorialOptions(s,m),selected=session.choices[m.id],debate=debateFor(s,session),assigned=memorialAssignments(s);
   const pickerItems=s.memorials.map(item=>{const owner=assigned.get(item.id),blocked=owner&&owner.slot!==session.originalSlot;return '<button type="button" data-review-add="'+esc(item.id)+'" aria-pressed="'+session.ids.includes(item.id)+'" '+(blocked?'disabled':'')+'>'+ (session.ids.includes(item.id)?'✓ ':'＋ ')+esc(item.title)+(blocked?' · 已拟批（'+esc(owner.slot)+'间）':'')+'</button>';}).join('');
@@ -103,7 +102,7 @@ export function memorialHTML(s,session) {
     const tag=o.edictType&&EDICTS[o.edictType]?'执行度预估「'+execution(s,o.edictType,11).label+'」':chosen?'已选':i<4?'按 '+(i+1):'';
     return '<button type="button" class="review-option" role="radio" aria-checked="'+chosen+'" tabindex="'+(chosen||(!selected&&i===0)?0:-1)+'" data-review-option="'+esc(o.id)+'" '+(o.disabled?'disabled':'')+'><span class="option-title"><span>'+esc(o.label)+'</span><small class="'+(tag.startsWith('按 ')?'key-hint':'')+'">'+esc(tag)+'</small></span><span class="effects">'+(fx||'<span class="effect neutral">'+note+'</span>')+'</span></button>';
   }).join('');
-  return '<div class="memorial-queue"><div class="queue-tabs" role="group" aria-label="本次奏报队列">'+session.ids.map((id,i)=>'<button type="button" class="queue-tab '+(session.choices[id]?'done':'')+'" data-review-index="'+i+'" '+(i===session.index?'aria-current="step"':'')+'><span class="queue-number">'+(i+1)+'</span>'+esc(s.memorials.find(m=>m.id===id)?.title)+'</button>').join('')+'</div>'+(session.kind==='批折'?'<div class="segmented" role="group" aria-label="批折时辰">'+['朝','午'].map(sl=>'<button type="button" data-review-slot="'+sl+'" aria-pressed="'+(sl===session.slot)+'" '+((session.originalSlot&&sl!==session.originalSlot)||(s.schedule[sl]&&sl!==session.originalSlot)?'disabled':'')+'>'+sl+'</button>').join('')+'</div>':'')+'<details class="queue-picker"><summary>选折 '+session.ids.length+(session.kind==='上朝'?'/3':'')+'</summary><div class="queue-picker-list">'+pickerItems+'</div></details></div><div class="memorial-columns"><article class="paper memorial-paper"><div class="memorial-heading">'+(m.urgent?'<span class="stamp">急</span>':'')+'<h3 id="memorial-title" tabindex="-1">'+esc(m.title)+'</h3></div><div class="memorial-meta"><div class="memorial-author"><span>上奏　'+esc(post?.title||'')+' '+esc(m.from)+(faction?'（'+esc(faction.name)+'）':'')+'</span>'+(person?.alive?'<button type="button" class="accountability" data-review-account="'+person.id+'" aria-pressed="'+(session.stance==='当廷问责'&&session.target===person.id)+'">问责</button>':'')+'</div><div class="memorial-facts"><span>类型　'+esc(m.type)+'</span><span>期限　剩 '+Math.max(0,m.due-s.turn)+' 旬</span></div></div><p class="memorial-body">'+esc(m.text||'臣谨奏：'+m.title+'。'+(m.request||'伏乞陛下裁处。'))+'</p><div class="memorial-foot">'+(region?'<p class="memorial-region">'+esc(region.name)+' · 民心 '+number(region.morale)+' · 灾情 '+number(region.disaster)+' · 驻军 '+number(region.garrison)+'</p>':'')+'<div class="brush-control"><label for="review-remark" class="brush-label">御笔朱批（本次共用）</label><button type="button" class="brush-mode" data-review-option="remark" aria-pressed="'+(selected==='remark')+'">只作朱批</button></div><div class="brush-writing"><textarea id="review-remark" class="brush-input" maxlength="100" placeholder="写下嘉奖或申饬">'+esc(session.remark)+'</textarea></div><p class="shared-remark-note">只作朱批，可嘉奖申饬；原请款仍须准驳。</p></div></article><section class="review-panel" aria-label="御批"><div class="review-title"><h3>御批</h3><small>第 '+(session.index+1)+' / '+session.ids.length+' 本</small></div><div class="review-options" role="radiogroup" aria-label="处置选项">'+cards+'</div>'+(session.kind==='上朝'?'<div class="segmented" role="group" aria-label="朝堂立场">'+['依旨施行','廷议'].map(stance=>'<button type="button" data-review-stance="'+stance+'" aria-pressed="'+(session.stance===stance)+'">'+stance+'</button>').join('')+'</div>':'')+(session.stance==='当廷问责'?'<p class="review-help">已排当廷问责：'+esc(s.court.officials.find(o=>o.id===session.target)?.name)+'。起驾后当廷问话。</p>':'')+(debate.length?'<section class="debate" aria-label="廷议诸臣"><h4>廷议 · 议事诸臣</h4>'+debate.map(o=>{const v=o.opinions.find(v=>v.memorialId===m.id);return '<div class="debate-row"><span class="vote '+(v?.stance==='赞成'?'yes':v?.stance==='反对'?'no':'')+'">'+(v?.stance==='赞成'?'赞':v?.stance==='反对'?'否':'中')+'</span><span>'+esc(o.name)+'<small>'+esc(factionDemandReason(s,o,m))+'</small></span></div>';}).join('')+'</section>':'')+'<p class="review-help"><span class="keyboard-help">1–4 择批 · Enter 下一本 · Esc 暂退</span></p><p id="review-error" class="review-error" role="status" aria-live="polite"></p></section></div><footer class="review-footer"><button type="button" data-review-hold>留中不发</button><button type="button" id="review-next" class="primary" data-review-next>'+ (session.index===session.ids.length-1?'拟批完毕，入日程':'记下，下一本 ›')+'</button></footer>';
+  return '<div class="memorial-queue"><div class="queue-tabs" role="group" aria-label="本次奏报队列">'+session.ids.map((id,i)=>'<button type="button" class="queue-tab '+(session.choices[id]?'done':'')+'" data-review-index="'+i+'" '+(i===session.index?'aria-current="step"':'')+'><span class="queue-number">'+(i+1)+'</span>'+esc(s.memorials.find(m=>m.id===id)?.title)+'</button>').join('')+'</div>'+(session.kind==='批折'?'<div class="segmented" role="group" aria-label="批折时辰">'+['朝','午'].map(sl=>'<button type="button" data-review-slot="'+sl+'" aria-pressed="'+(sl===session.slot)+'" '+((session.originalSlot&&sl!==session.originalSlot)||(s.schedule[sl]&&sl!==session.originalSlot)?'disabled':'')+'>'+sl+'</button>').join('')+'</div>':'')+'<details class="queue-picker"><summary>选折 '+session.ids.length+(session.kind==='上朝'?'/3':'')+'</summary><div class="queue-picker-list">'+pickerItems+'</div></details></div><div class="memorial-columns"><article class="paper memorial-paper"><div class="memorial-heading">'+(m.urgent?'<span class="stamp">急</span>':'')+'<h3 id="memorial-title" tabindex="-1">'+esc(m.title)+'</h3></div><div class="memorial-meta"><div class="memorial-author"><span>上奏　'+esc(post?.title||'')+' '+esc(m.from)+(faction?'（'+esc(faction.name)+'）':'')+'</span>'+(person?.alive?'<button type="button" class="accountability" data-review-account="'+person.id+'" aria-pressed="'+(session.stance==='当廷问责'&&session.target===person.id)+'">问责</button>':'')+'</div><div class="memorial-facts"><span>类型　'+esc(m.type)+'</span><span>期限　剩 '+Math.max(0,m.due-s.turn)+' 旬</span></div></div><p class="memorial-body">'+esc(m.text||'臣谨奏：'+m.title+'。'+(m.request||'伏乞陛下裁处。'))+'</p><div class="memorial-foot">'+(region?'<p class="memorial-region">'+esc(region.name)+' · 民心 '+number(region.morale)+' · 灾情 '+number(region.disaster)+' · 驻军 '+number(region.garrison)+'</p>':'')+'<div class="brush-control"><label for="review-remark" class="brush-label">御笔朱批（本折）</label><button type="button" class="brush-mode" data-review-option="remark" aria-pressed="'+(selected==='remark')+'">只作朱批</button></div><div class="brush-writing"><textarea id="review-remark" class="brush-input" maxlength="100" placeholder="写下嘉奖或申饬">'+esc(session.remarks[m.id]||'')+'</textarea></div><p class="shared-remark-note">只作朱批，可嘉奖申饬；原请款仍须准驳。</p></div></article><section class="review-panel" aria-label="御批"><div class="review-title"><h3>御批</h3><small>第 '+(session.index+1)+' / '+session.ids.length+' 本</small></div><div class="review-options" role="radiogroup" aria-label="处置选项">'+cards+'</div>'+(session.kind==='上朝'?'<div class="segmented" role="group" aria-label="朝堂立场">'+['依旨施行','廷议'].map(stance=>'<button type="button" data-review-stance="'+stance+'" aria-pressed="'+(session.stance===stance)+'">'+stance+'</button>').join('')+'</div>':'')+(session.stance==='当廷问责'?'<p class="review-help">已排当廷问责：'+esc(s.court.officials.find(o=>o.id===session.target)?.name)+'。起驾后当廷问话。</p>':'')+(debate.length?'<section class="debate" aria-label="廷议诸臣"><h4>廷议 · 议事诸臣</h4>'+debate.map(o=>{const v=o.opinions.find(v=>v.memorialId===m.id);return '<div class="debate-row"><span class="vote '+(v?.stance==='赞成'?'yes':v?.stance==='反对'?'no':'')+'">'+(v?.stance==='赞成'?'赞':v?.stance==='反对'?'否':'中')+'</span><span>'+esc(o.name)+'<small>'+esc(factionDemandReason(s,o,m))+'</small></span></div>';}).join('')+'</section>':'')+'<p class="review-help"><span class="keyboard-help">1–4 择批 · Enter 下一本 · Esc 暂退</span></p><p id="review-error" class="review-error" role="status" aria-live="polite"></p></section></div><footer class="review-footer"><button type="button" data-review-hold>留中不发</button><button type="button" id="review-next" class="primary" data-review-next>'+ (session.index===session.ids.length-1?'拟批完毕，入日程':'记下，下一本 ›')+'</button></footer>';
 }
 export function memorialDialog(s,kind,preferred,onSchedule,startId=null,options={}) {
   if(!s.memorials.length){toast('奏报匣暂无奏报');return;}
@@ -153,8 +152,8 @@ export function memorialDialog(s,kind,preferred,onSchedule,startId=null,options=
     else if(b.dataset.reviewAdd){
       const id=b.dataset.reviewAdd,at=session.ids.indexOf(id),owner=memorialAssignments(s).get(id);
       if(owner&&owner.slot!==session.originalSlot){showError('此折已收入'+owner.slot+'间日程，不能重复拟批。');return;}
-      if(at>=0){if(session.ids.length===1){showError('至少保留一本奏报');return;}session.ids.splice(at,1);delete session.choices[id];}
-      else {if(kind==='上朝'&&session.ids.length===3){showError('上朝最多三个议题，请先移出一本');return;}session.ids.push(id);}
+      if(at>=0){if(session.ids.length===1){showError('至少保留一本奏报');return;}session.ids.splice(at,1);delete session.choices[id];delete session.remarks[id];}
+      else {if(kind==='上朝'&&session.ids.length===3){showError('上朝最多三个议题，请先移出一本');return;}session.ids.push(id);session.remarks[id]??='';}
       session.index=Math.min(session.index,session.ids.length-1);paint();d.querySelector('.queue-picker').open=true;
     }else if(b.hasAttribute('data-review-hold')){session.choices[session.ids[session.index]]='hold';next();}
     else if(b.hasAttribute('data-review-next'))next();
@@ -164,7 +163,7 @@ export function memorialDialog(s,kind,preferred,onSchedule,startId=null,options=
   mobile.addEventListener('change',resize);
   onDialogExit(d,root,()=>mobile.removeEventListener('change',resize));
   document.fonts?.ready.then(()=>{if(d.open&&root.isConnected)revealCurrent();});
-  root.oninput=e=>{if(e.target.id==='review-remark')session.remark=e.target.value;};
+  root.oninput=e=>{if(e.target.id==='review-remark')session.remarks[session.ids[session.index]]=e.target.value;};
   d.onkeydown=e=>{
     if(e.target.matches('input,textarea,select'))return;
     const all=[...root.querySelectorAll('.review-options [data-review-option]')],opts=all.filter(b=>!b.disabled);
