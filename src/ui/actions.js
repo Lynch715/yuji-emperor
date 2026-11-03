@@ -1,10 +1,13 @@
 import { $, esc, openDialog, toast, closeDialog } from "./common.js";
 import { ACTIONS, scheduleCost } from "../core/turn.js";
 import { EDICTS, execution } from "../core/edicts.js";
+import { inCapital } from "../core/court.js";
+import { edictBlock } from "../core/edicts.js";
 import { energyLimit } from "../core/emperor.js";
 import { memorialDialog } from "./memorials.js";
 export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
   if (kind === "上朝" || kind === "批折") return memorialDialog(s,kind,preferred,onSchedule,null,{newBatch:true});
+  if(s.regency&&!["批折","召见","私下行事","歇息"].includes(kind))throw new Error("摄政期间只能批折、召见、经筵或歇息");
   const rule = ACTIONS[kind];
   if (!rule) throw new Error("未识别的行动");
   const opt = (items, value = "id", label = "name") =>
@@ -26,8 +29,8 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
         .map((x) => "<option>" + x + "</option>")
         .join("") +
       '</select><label for="province">主办州郡</label><select id="province">' +
-      opt(s.nation.provinces) +
-      '</select><div id="edict-amount-field"><label for="edict-amount">拨转金额（万两）</label><input id="edict-amount" type="number" min="1" max="100" value="10"></div><div id="edict-child-field"><label for="edict-child">储君人选</label><select id="edict-child"><option value="">请选择在世皇子</option>' +
+      '<option value="">全国</option>' + opt(s.nation.provinces) +
+      '</select><div id="edict-army-field"><label for="edict-army">补充军队</label><select id="edict-army"><option value="capital">京营</option>'+s.nation.army.frontiers.map(b=>'<option value="'+esc(b.dir)+'">'+esc(b.dir)+'境边军</option>').join('')+'</select></div><div id="edict-amount-field"><label for="edict-amount">拨转金额（万两）</label><input id="edict-amount" type="number" min="1" max="100" value="10"></div><div id="edict-child-field"><label for="edict-child">储君人选</label><select id="edict-child"><option value="">请选择在世皇子</option>' +
       opt(s.harem.children.filter((c) => c.sex === "男" && c.health > 0)) +
       '</select></div><label for="edict-text">御旨（选填）</label><textarea id="edict-text" maxlength="500" placeholder="着有司依议施行。"></textarea><label class="check"><input id="force-edict" type="checkbox">遭封驳仍强推（可能引发党争）</label>';
   if (kind === "任命")
@@ -49,7 +52,7 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
         .join("") +
       '</select><label for="person">人选</label><select id="person">' +
       opt(s.court.officials.filter((o) => o.alive)) +
-      '</select><label for="operation">处分</label><select id="operation"><option value="appoint">任命 / 调任</option><option value="remove">罢免</option><option value="demote">贬谪</option><option value="retire">致仕</option><option value="jail">下狱</option></select>';
+      '</select><label for="operation">处分</label><select id="operation"><option value="appoint">任命 / 调任</option><option value="remove">罢免</option><option value="demote">贬谪</option><option value="retire">致仕</option><option value="jail">下狱</option></select><label class="check"><input id="pardon-person" type="checkbox">先赦免所选人，再予起用</label>';
   if (kind === "召见")
     fields =
       '<label for="person">在京人物</label><select id="person">' +
@@ -60,7 +63,7 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
   if (kind === "宴请")
     fields =
       '<label for="banquet-type">宴会类型</label><select id="banquet-type"><option>君臣宴</option><option>家宴</option><option>寿宴</option><option>接风宴</option><option>鸿门宴</option></select><label for="banquet-cost">开销档</label><select id="banquet-cost"><option value="俭">俭 · 2 万两</option><option value="常" selected>常 · 5 万两</option><option value="盛">盛 · 12 万两</option></select><fieldset><legend>宾客（2–6 人）</legend>' +
-      s.court.officials
+      s.court.officials.filter(inCapital)
         .slice(0, 12)
         .map(
           (o) =>
@@ -89,7 +92,7 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
           (c) => c.sex === "女" && s.turn - c.born >= 18 * 36 && !c.married,
         ),
       ]) +
-      "</select></div>";
+      '</select></div><label id="breach-field" class="check"><input id="confirm-breach" type="checkbox">确认撕毁盟约并宣战（皇威、圣德各减5）</label>';
   if (kind === "后宫")
     fields =
       '<label for="person">妃嫔</label><select id="person">' +
@@ -112,6 +115,7 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
       '<label for="operation">手段</label><select id="operation"><option>试探</option><option>离间</option><option>暗查</option><option>收买</option><option>闲谈</option></select><label for="person">目标人物</label><select id="person">' +
       opt(s.court.officials.filter((o) => o.alive && !o.jailed && !o.retired)) +
       '</select><p class="muted">难度由手段确定；收买消耗内帑 5 万两，暗查与试探成功可揭露秘密。</p>';
+  if(kind==='私下行事'&&s.regency)fields='<label for="operation">经筵</label><select id="operation"><option>经筵</option></select><p class="muted">摄政期间进讲经史，五才随年龄与教养成长。</p>';
   if (kind === "亲征")
     fields =
       '<label for="regent">留守大臣</label><select id="regent">' +
@@ -141,6 +145,7 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
     $('#action-slot').value=b.dataset.formSlot;
     document.querySelectorAll('[data-form-slot]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
   });
+  let breachTarget="";
   const estimate = () => {
     let text =
       "精力 " +
@@ -164,10 +169,21 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
         x.label +
         "」，仍须看本旬天命。";
     }
+    if(kind==='下旨'){const blocked=edictBlock(s,$('#edict-type').value,$('#province').value||null);if(blocked)text+='；'+blocked;}
+    if(kind==='外交'){
+      const country=s.foreign.find(f=>f.id===$('#country').value),operation=$('#operation');
+      for(const option of operation.options)option.disabled=country.status==='交战'&&!['接见','议和'].includes(option.value);
+      if(operation.selectedOptions[0]?.disabled)operation.value='接见';
+      const key=country.id+':'+operation.value;
+      if(key!==breachTarget){$('#confirm-breach').checked=false;breachTarget=key;}
+      text+='；'+country.frontier+'境 · '+country.status;
+    }
     $("#action-estimate").textContent = text;
     const show=(id,visible)=>$("#"+id)?.classList.toggle("hidden",!visible);
     show("edict-amount-field",["转内帑","转国库"].includes($("#edict-type")?.value));
     show("edict-child-field",$("#edict-type")?.value==="立储");
+    show('edict-army-field',$('#edict-type')?.value==='征兵');
+    show("breach-field",kind==="外交"&&$("#operation")?.value==="宣战"&&["婚盟","朝贡"].includes(s.foreign.find(f=>f.id===$("#country")?.value)?.status));
     show("bride-field",$("#operation")?.value==="和亲");
     show("harem-amount-field",$("#operation")?.value==="赏赐");
   };
@@ -198,6 +214,7 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
         Object.assign(a, {
           edictType: val("edict-type"),
           province: val("province"),
+          ...($('#edict-type').value==='征兵'?{armyTarget:val('edict-army')}:{}),
           amount: Number(val("edict-amount")),
           child: val("edict-child"),
           text: val("edict-text"),
@@ -209,6 +226,7 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
           person: val("person"),
           operation: val("operation"),
         });
+      if(kind==="任命"&&$("#pardon-person")?.checked)a.pardon=true;
       if (kind === "召见") {
         onTalk(val("person"));
         return;
@@ -226,6 +244,7 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
           envoy: val("envoy"),
           bride: val("bride"),
         });
+      if(kind==="外交"&&$("#confirm-breach")?.checked)a.confirmBreach=true;
       if (kind === "后宫")
         Object.assign(a, {
           person: val("person"),

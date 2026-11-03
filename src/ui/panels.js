@@ -1,4 +1,4 @@
-import { annualBudget, wasteQuote } from "../core/finance.js";
+import { annualBudget, wasteQuote,grainBudget } from "../core/finance.js";
 import { esc, openDialog } from "./common.js";
 import { num, ledgerHTML, chapterHTML, chapterTitle, ambitionsHTML } from "./render.js";
 export function palacePanel(s, name) {
@@ -15,7 +15,7 @@ export function palacePanel(s, name) {
     const colors = ["var(--gold)", "var(--up)", "var(--glyph)", "var(--text-muted)", "var(--text-soft)", "var(--down)"];
     const stops = s.court.factions.map((f, i) => {
       const a = angle;
-      angle += (f.power / total) * 360;
+      angle += total ? (f.power / total) * 360 : 0;
       return colors[i] + " " + a + "deg " + angle + "deg";
     });
     html =
@@ -190,7 +190,7 @@ export function palacePanel(s, name) {
             "</small></div>",
         )
         .join("") +
-      '</div><h3>四境军情</h3><div class="grid">' +
+      '</div><h3>京营</h3><div class="card"><p>兵力 '+num(s.nation.army.capital.troops)+' · 军备 '+num(s.nation.army.capital.readiness)+'</p></div><h3>四境军情</h3><div class="grid">' +
       s.nation.army.frontiers
         .map(
           (f) =>
@@ -225,7 +225,7 @@ export function palacePanel(s, name) {
             num(f.attitude) +
             "</p><small>" +
             esc(f.demand) +
-            '</small><p><button data-action="外交">遣使接见</button></p></div>',
+            '</small>'+(f.trade&&f.trade.income>0&&f.trade.until>=s.turn?'<p>互市每季 '+num(f.trade.income)+' 万两 · 余 '+(f.trade.until-s.turn)+' 旬'+(f.status==='交战'?'（交战停收）':'')+'</p>':'')+'<p><button data-action="外交">遣使接见</button></p></div>',
         )
         .join("") +
       '</div><h3 class="section-spacer">在途战役</h3>' +
@@ -250,7 +250,7 @@ export function palacePanel(s, name) {
     const entries = [...s.volumes.flatMap((v) => v.chapters), ...s.history]
       .flatMap((h) => h.entries)
       .filter((e) =>
-        ["nation.treasury", "nation.privy", "nation.grain"].includes(e.path),
+        ["nation.treasury", "nation.privy", "nation.grain","nation.arrears","nation.privyArrears","nation.grainArrears"].includes(e.path),
       );
     html =
       '<div class="grid"><div class="card"><h3>国库</h3><p>' +
@@ -259,10 +259,10 @@ export function palacePanel(s, name) {
       num(s.nation.privy) +
       ' 万两</p></div><div class="card"><h3>粮储</h3><p>' +
       num(s.nation.grain) +
-      ' 万石</p></div><div class="card"><h3>年度预算</h3><p>' +
+      ' 万石</p><p>三年用粮仓容 '+num(grainBudget(s).storageCapacity)+' 万石，超额陈粮每年霉变一成。</p></div><div class="card"><h3>年度预算</h3><p>' +
       num(annualBudget(s)) + ' 万两</p><p>俸禄、军饷合计一年的开支。余银超过两年预算，每月超额冗费为 ' +
       num(wasteQuote(s).rate * 100) + '%。</p></div><div class="card"><h3>欠饷与积欠</h3><p>' +
-      num(s.nation.arrears || 0) + ' 万两</p><p>国库不足，便记作欠款；进项先补旧欠。</p></div></div><h3 class="section-spacer">近月钱粮明细</h3>' +
+      num(s.nation.arrears || 0) + ' 万两</p><p>国库不足，便记作欠款；进项先补旧欠。</p></div><div class="card"><h3>内帑积欠</h3><p>'+num(s.nation.privyArrears||0)+' 万两</p><p>皇庄盐课每月入三万两，先补旧欠再付宫用。</p></div><div class="card"><h3>缺粮积欠</h3><p>'+num(s.nation.grainArrears||0)+' 万石</p></div></div><h3 class="section-spacer">近月钱粮明细</h3>' +
       ledgerHTML(entries.filter((e) => e.turn >= s.turn - 3).slice(-60)) +
       '<h3 class="section-spacer">在途政务</h3>' +
       fold(

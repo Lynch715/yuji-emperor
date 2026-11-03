@@ -1,5 +1,7 @@
 import { clone, reignId } from "./state.js";
 import { applyPackage, clamp } from "./effects.js";
+import { uniqueName, SURNAMES, GIVEN_NAMES, IMPERIAL_CHARS } from "./names.js";
+import { globalYear } from "./calendar.js";
 import { roll } from "./rng.js";
 import { addEvent } from "./events.js";
 export const RANKS = [
@@ -23,41 +25,28 @@ export function rankAvailable(s, rank, except = null) {
 }
 export function generateCandidates(state) {
   let s = clone(state);
-  if (s.era.year % 3 !== 1) throw new Error("本年不是选秀年");
-  if (s.harem.selectionYear === s.era.year) return s;
+  if (globalYear(s.turn) % 3 !== 1) throw new Error("本年不是选秀年");
+  if (s.regency || s.reign?.married === false) return s;
+  const year=globalYear(s.turn);
+  if (s.harem.selectionYear === year) return s;
   const r = roll(s, 6, 10);
   s = r.state;
-  s.harem.selectionYear = s.era.year;
-  s.harem.candidates = Array.from({ length: r.value }, (_, i) => ({
-    id: reignId(s) + "-candidate-" + s.era.year + "-" + i,
-    name:
-      ["顾", "谢", "方", "崔", "温", "郑", "宋", "柳", "韩", "许"][i] +
-      [
-        "静姝",
-        "疏影",
-        "明漪",
-        "书宁",
-        "婉清",
-        "知微",
-        "云岫",
-        "晚晴",
-        "映棠",
-        "清圆",
-      ][i],
-    age: 20 + (i % 5),
-    family: "仕宦之家",
-    faction: "f" + (i % 6),
-    appearance: 60 + i * 3,
-    personality: ["沉静", "直率", "敏慧"][i % 3],
-    ambition: 25 + i * 4,
-    scheming: 20 + i * 5,
-    health: 85,
-  }));
+  s.harem.selectionYear = year;
+  s.harem.candidates = [];
+  for(let i=0;i<r.value;i++) {
+    const named=uniqueName(s);s=named.state;
+    const draw=(a,b)=>{const r=roll(s,a,b);s=r.state;return r.value;};
+    const faction=draw(0,s.court.factions.length-1);
+    s.harem.candidates.push({id:reignId(s)+'-candidate-'+year+'-'+i,name:named.name,
+      age:draw(18,25),family:['仕宦之家','书香门第','勋贵世家','地方望族'][draw(0,3)],faction:s.court.factions[faction].id,
+      appearance:draw(45,95),personality:['沉静','直率','敏慧','温和','谨慎'][draw(0,4)],ambition:draw(15,70),scheming:draw(15,75),health:85});
+  }
   return s;
 }
 export function selectConsort(state, id, rank = "贵人") {
-  if (state.era.year % 3 !== 1 || state.harem.selectionYear !== state.era.year)
+  if (globalYear(state.turn) % 3 !== 1 || state.harem.selectionYear !== globalYear(state.turn))
     throw new Error("本年不是选秀年");
+  if(state.regency || state.reign?.married===false)throw new Error("须亲政大婚后方可选妃");
   let s = clone(state);
   const c = s.harem.candidates.find((c) => c.id === id);
   if (!c) throw new Error("此秀女已离开殿选");
@@ -90,6 +79,7 @@ export function canVisit(state, c) {
     !c.preg &&
     c.age >= 18 &&
     c.age < 50 &&
+    !state.regency && state.reign?.married !== false &&
     state.emperor.age >= 18 &&
     (c.recoveryUntil || 0) <= state.turn
   );
@@ -179,15 +169,11 @@ export function haremMonth(state) {
       const m = s.harem.consorts.find((c) => c.id === mother.id),
         index = s.harem.children.length + 1;
       const sex = r.value <= 51 ? "男" : "女";
+      const prefix=(s.imperialSurname || s.emperor.name[0])+(sex==='男'?'景':'昭');
+      const named=uniqueName(s,{names:IMPERIAL_CHARS.map(c=>prefix+c),prefix});s=named.state;
       s.harem.children.push({
         id: "child-" + s.runId + "-" + index,
-        name:
-          "萧" +
-          (sex === "男" ? "景" : "昭") +
-          ["宁", "和", "安", "明", "瑜", "璋", "珩", "琬", "棠", "瑾"][
-            index % 10
-          ] +
-          (index > 9 ? index : ""),
+        name:named.name,
         sex,
         mother: m.id,
         fatherId: m.preg.fatherId || s.runId,
@@ -209,13 +195,9 @@ export function haremMonth(state) {
   }
   const r = roll(s, 1, 100);
   s = r.state;
-  const schemer = s.harem.consorts
-    .filter((c) => !c.retired && !c.cold && c.ambition > 50)
-    .sort((a, b) => b.scheming - a.scheming)[0];
-  if (r.value < 8 && schemer && s.harem.consorts.length > 1) {
-    const target = s.harem.consorts.find(
-      (c) => !c.retired && c.id !== schemer.id && !c.cold,
-    );
+  if (r.value < 8) {
+    const plot=choosePalacePlot(s);s=plot.state;
+    const schemer=s.harem.consorts.find(c=>c.id===plot.schemerId),target=s.harem.consorts.find(c=>c.id===plot.targetId);
     if (target) {
       s = addEvent(
         s,
@@ -230,10 +212,12 @@ export function haremMonth(state) {
       );
       const t = s.harem.consorts.find((c) => c.id === target.id);
       t.mood = clamp(t.mood - 5);
-      if (t.preg && r.value === 1) {
-        t.preg = null;
-        t.health = clamp(t.health - 10);
-        s = applyPackage(s, { mood: -8 }, "宫闱事件：引擎判定小产");
+      if (t.preg) {
+        const loss=roll(s,1,10000);s=loss.state;
+        if(loss.value<=miscarriageChance(schemer,t)*10000){
+          const victim=s.harem.consorts.find(c=>c.id===target.id);victim.preg=null;victim.health=clamp(victim.health-10);
+          s = applyPackage(s, { mood: -8 }, "宫闱事件：引擎判定小产");
+        }
       }
     }
   }
@@ -247,6 +231,15 @@ export function haremMonth(state) {
     }
   }
   return s;
+}
+export function miscarriageChance(schemer,target){return clamp(0.04+(schemer.scheming-target.scheming)/2000,0.02,0.08);}
+export function choosePalacePlot(state){
+ let s=clone(state);const alive=s.harem.consorts.filter(c=>!c.retired&&!c.cold&&c.health>0),pool=alive.filter(c=>c.ambition>50);
+ if(alive.length<2||!pool.length)return {state:s,schemerId:null,targetId:null};
+ const weights=pool.map(c=>Math.max(1,Math.round(c.scheming))),draw=roll(s,1,weights.reduce((a,b)=>a+b,0));s=draw.state;
+ let point=draw.value,schemer=pool.at(-1);for(let i=0;i<pool.length;i++){point-=weights[i];if(point<=0){schemer=pool[i];break;}}
+ const rivals=alive.filter(c=>c.id!==schemer.id),worst=Math.min(...rivals.map(c=>schemer.relations[c.id]??50)),targets=rivals.filter(c=>(schemer.relations[c.id]??50)===worst),target=roll(s,0,targets.length-1);s=target.state;
+ return {state:s,schemerId:schemer.id,targetId:targets[target.value].id};
 }
 export function haremYear(state) {
   const s = clone(state);

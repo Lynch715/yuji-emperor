@@ -72,11 +72,13 @@ test('正文失败保留待续回合；读档后修正配置仍沿用相同天�
   const next=commitTurn(restored,restored.pending.forecast,result);
   assert.equal(next.turn,1);assert.equal(next.lastTurn.die,forecast.die);assert.deepEqual(next.history.at(-1).entries,forecast.entries);
 });
-test('正文无效的四次上限及过期预算不会提交或重掷',async()=>{
+test('正文无效的四次上限不提交或重掷，旧绝对时间不阻止下一次正文请求',async()=>{
   const {state,forecast}=fixture(),before=structuredClone(state),budget=createBudget();let calls=0;
   await assert.rejects(()=>requestTurnNarrative(config,state,forecast,{budget,sleep:async()=>{},fetcher:async()=>{calls++;return stream({chapter:{朝:'',午:'',夜:''}});}}));
   assert.equal(calls,4);assert.equal(budget.used,4);assert.deepEqual(state,before);
-  await assert.rejects(()=>requestTurnNarrative(config,state,forecast,{budget:{used:1,deadline:Date.now()-1},fetcher:async()=>assert.fail('不得发起过期请求')}),/预算/);
+  const restoredBudget={used:1,deadline:Date.now()-1};
+  await requestTurnNarrative(config,state,forecast,{budget:restoredBudget,fetcher:async()=>stream(prose)});
+  assert.deepEqual(restoredBudget,{used:2});
   assert.deepEqual(state,before);
 });
 test('非流式兼容回复也能保存为正文；没有密钥时不发请求',async()=>{

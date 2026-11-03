@@ -1,7 +1,9 @@
+import { memorialDecision } from "../core/memorial-decisions.js";
 import { ACTIONS, scheduleCost } from "../core/turn.js";
 import { energyLimit } from "../core/emperor.js";
 import { annualBudget } from "../core/finance.js";
 import { EDICTS, execution } from "../core/edicts.js";
+import { globalYear } from "../core/calendar.js";
 import { availableMemorials } from "./memorial-state.js";
 export const ACTION_GROUPS = [
   ["朝政", ["上朝", "批折", "下旨", "任命"]],
@@ -13,6 +15,7 @@ export const HALLS = ["朝堂", "后宫", "天下", "内库", "宗室", "史馆"
 export const GLYPHS = {上朝:"朝",批折:"批",下旨:"旨",任命:"任",召见:"见",宴请:"宴",外交:"使",私下行事:"密",后宫:"宫",选妃:"选",出巡:"行",亲征:"征",歇息:"憩"};
 export function actionAvailability(s, kind) {
   if (!s) return "待登基";
+  if(s.regency&&!["批折","召见","私下行事","歇息"].includes(kind))return "摄政期间不可安排";
   if (s.pending) return "本旬待续写";
   if (s.ending) return "本朝已封卷";
   if ((kind === "上朝" || kind === "批折") && !s.memorials.length) return "暂无奏报";
@@ -22,7 +25,7 @@ export function actionAvailability(s, kind) {
     if (kind === "批折" && s.schedule.朝 && s.schedule.午) return "朝午已排定";
   }
   if (kind === "亲征" && !s.campaigns.some(w=>!w.done)) return "无战事";
-  if (kind === "选妃" && (s.era.year % 3 !== 1 || !s.harem.candidates.length)) return "非选秀年";
+  if (kind === "选妃" && (globalYear(s.turn) % 3 !== 1 || !s.harem.candidates.length)) return "非选秀年";
   if (s.campaigns.some(w=>w.personal&&!w.done) && !["亲征","歇息"].includes(kind)) return "御驾在外";
   return "";
 }
@@ -65,7 +68,7 @@ export function scheduleEstimate(s) {
     }
     for (const id of a.memorials || []) {
       const m=s.memorials.find(x=>x.id===id);if(!m)continue;
-      const decision=a.decisions?.[id]||a.decision||"approve";
+      const decision=memorialDecision(a,id).option;
       if (["hold","discuss","remark"].includes(decision)) continue;
       const o=m.options.find(o=>o.id===decision)||m.options[decision==="reject"?1:0];
       for(const k of Object.keys(totals)) totals[k]+=o?.effects?.[k]||0;

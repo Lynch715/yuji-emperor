@@ -244,6 +244,7 @@ test("starting over archives the complete previous game before replacing a full 
     s = createSaveStore(a),
     old = { ...state, emperor: { name: "旧帝" } };
   await s.save(1, old);
+  const archived=new Map();a.primary.archive=async(k,v)=>archived.set(k,v);a.primary.archives=async()=>[...archived.values()];
   await s.archiveAndSave(1, { ...old, runId: "next" });
   assert.equal((await s.load(1)).state.runId, "next");
   const archives = await s.listArchives();

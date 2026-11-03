@@ -1,4 +1,4 @@
-import { callJSON } from "../llm/client.js";
+import { callJSON, createBudget } from "../llm/client.js";
 import { turnMessages } from "../llm/prompts.js";
 import { validateTurn } from "../llm/validate.js";
 
@@ -11,9 +11,28 @@ export function validateTurnNarrative(data, forecast) {
   return narrative;
 }
 
-export function requestTurnNarrative(config, state, forecast, options = {}) {
-  return callJSON({ ...config }, turnMessages(state, forecast), {
-    ...options,
-    validate: (data) => validateTurnNarrative(data, forecast),
-  });
+export async function requestTurnNarrative(config, state, forecast, options = {}) {
+  const saved = options.budget;
+  const budget = createBudget((options.now || Date.now)());
+  budget.used = saved?.used || 0;
+  const rememberAttempts = () => {
+    if (saved) {
+      saved.used = budget.used;
+      delete saved.started;
+      delete saved.deadline;
+    }
+  };
+  try {
+    return await callJSON({ ...config }, turnMessages(state, forecast), {
+      ...options,
+      budget,
+      onMetric: (metric) => {
+        rememberAttempts();
+        options.onMetric?.(metric);
+      },
+      validate: (data) => validateTurnNarrative(data, forecast),
+    });
+  } finally {
+    rememberAttempts();
+  }
 }

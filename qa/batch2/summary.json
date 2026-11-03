@@ -1,0 +1,286 @@
+{
+  "date": "2026-11-02",
+  "baseCommit": "1d00265098512762a8304acd3f98c8142d89b5c4",
+  "scope": [
+    "B1",
+    "B2",
+    "B3",
+    "B4",
+    "B5",
+    "B6",
+    "B7",
+    "B8",
+    "B9",
+    "B10",
+    "B16",
+    "B17",
+    "B11补",
+    "B13补"
+  ],
+  "saveVersion": 5,
+  "tests": {
+    "before": 163,
+    "after": 187,
+    "failed": 0,
+    "skipped": 0,
+    "added": 24,
+    "initialRedTests": 18
+  },
+  "migration": {
+    "versions": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "sameVersionPendingTested": true,
+    "rawPendingForecastPreserved": true,
+    "rngPreserved": true,
+    "idempotentCommit": true,
+    "readOnlyProtection": true,
+    "v4FixtureSha256": "3e05f4bb4fdec136ac4c57c4556667c96ab4a06eca055750d1eef0057a8b0bf4"
+  },
+  "disasters": {
+    "years": 50,
+    "counts": {
+      "直隶": 16,
+      "河南": 16,
+      "江南": 21,
+      "湖广": 18,
+      "山东": 13,
+      "山西": 14,
+      "陕西": 11,
+      "四川": 28,
+      "福建": 18,
+      "广东": 23,
+      "云南": 13,
+      "辽东": 10
+    },
+    "sameProvinceSameQuarterRepeated": false,
+    "reliefOnlyInDisasterProvince": true
+  },
+  "memorialists": {
+    "years": 200,
+    "turns": 7200,
+    "checkedNewMemorials": 33558,
+    "passed": true
+  },
+  "war": {
+    "seedPrefix": "同等战役",
+    "samples": 400,
+    "wins": 179,
+    "rate": 44.75,
+    "target": [
+      40,
+      60
+    ],
+    "ownEffectiveTroops": 21000,
+    "enemyEffectiveTroops": 21000,
+    "generalSkill": 50,
+    "passed": true
+  },
+  "simulation": {
+    "years": 200,
+    "turns": 7200,
+    "exitCode": 0,
+    "collapseRate": 75,
+    "reportSha256": "a6111aad100ff1cf038b8188383e824db187bfe656664b2893e793f54a6d5b46"
+  },
+  "balance": {
+    "exitCode": 1,
+    "passed": false,
+    "thresholdsUnchanged": true,
+    "random": [
+      {
+        "seed": "御极·两百年",
+        "turns": 7200,
+        "dynasties": 7,
+        "deaths": 2,
+        "collapses": 6,
+        "completedReigns": 8,
+        "collapseRate": 75,
+        "meanChildren": 7.38,
+        "maxTreasury": 1482.7948599183671,
+        "treasuryPeakRatio": 0.7066282922541154,
+        "eventsRange": [
+          46,
+          77
+        ],
+        "checks": {
+          "complete": true,
+          "treasuryPeak": true,
+          "latePeak": true,
+          "collapseRate": false,
+          "children": true,
+          "events": true,
+          "annualCash": true
+        }
+      },
+      {
+        "seed": "御极·长治",
+        "turns": 7200,
+        "dynasties": 5,
+        "deaths": 3,
+        "collapses": 4,
+        "completedReigns": 7,
+        "collapseRate": 57.14,
+        "meanChildren": 6.86,
+        "maxTreasury": 1790.6523001824776,
+        "treasuryPeakRatio": 1.120932187100121,
+        "eventsRange": [
+          49,
+          72
+        ],
+        "checks": {
+          "complete": true,
+          "treasuryPeak": true,
+          "latePeak": true,
+          "collapseRate": false,
+          "children": true,
+          "events": true,
+          "annualCash": true
+        }
+      },
+      {
+        "seed": "御极·边政",
+        "turns": 7200,
+        "dynasties": 3,
+        "deaths": 3,
+        "collapses": 2,
+        "completedReigns": 5,
+        "collapseRate": 40,
+        "meanChildren": 5,
+        "maxTreasury": 1517.7456202718768,
+        "treasuryPeakRatio": 1.6150323253723913,
+        "eventsRange": [
+          54,
+          74
+        ],
+        "checks": {
+          "complete": true,
+          "treasuryPeak": true,
+          "latePeak": false,
+          "collapseRate": false,
+          "children": true,
+          "events": true,
+          "annualCash": true
+        }
+      },
+      {
+        "seed": "御极·宫闱",
+        "turns": 7200,
+        "dynasties": 7,
+        "deaths": 3,
+        "collapses": 6,
+        "completedReigns": 9,
+        "collapseRate": 66.67,
+        "meanChildren": 4.33,
+        "maxTreasury": 1678.603576495162,
+        "treasuryPeakRatio": 1.5814723711058198,
+        "eventsRange": [
+          49,
+          71
+        ],
+        "checks": {
+          "complete": true,
+          "treasuryPeak": true,
+          "latePeak": false,
+          "collapseRate": false,
+          "children": true,
+          "events": true,
+          "annualCash": true
+        }
+      }
+    ],
+    "rest": [
+      {
+        "seed": "御极·两百年",
+        "turns": 161,
+        "passed": true
+      },
+      {
+        "seed": "御极·长治",
+        "turns": 180,
+        "passed": true
+      },
+      {
+        "seed": "御极·边政",
+        "turns": 176,
+        "passed": true
+      },
+      {
+        "seed": "御极·宫闱",
+        "turns": 176,
+        "passed": true
+      }
+    ],
+    "lowMoralePassed": 106,
+    "lowMoraleTotal": 108,
+    "lowMoraleFailures": [
+      {
+        "seed": "御极·长治",
+        "years": 3,
+        "turns": 108,
+        "freedom": "free",
+        "initialGovernance": 100,
+        "initialProvincialMorale": 19,
+        "openingTreasury": 480,
+        "closingTreasury": 0,
+        "netChange": -480,
+        "income": 854.81,
+        "expense": 1334.81,
+        "arrears": 239.13,
+        "minMorale": 0,
+        "maxMorale": 20.25,
+        "passed": false
+      },
+      {
+        "seed": "御极·长治",
+        "years": 3,
+        "turns": 108,
+        "freedom": "free",
+        "initialGovernance": 100,
+        "initialProvincialMorale": 19,
+        "openingTreasury": 3000,
+        "closingTreasury": 89.45,
+        "netChange": -2910.55,
+        "income": 854.81,
+        "expense": 3765.36,
+        "arrears": 0,
+        "minMorale": 0,
+        "maxMorale": 20.25,
+        "passed": false
+      }
+    ]
+  },
+  "browser": {
+    "type": "Codex In-app Browser",
+    "url": "http://127.0.0.1:4175",
+    "widths": [
+      360,
+      1280
+    ],
+    "horizontalOverflow": false,
+    "visibleSmallEffectiveControls": [],
+    "consoleErrors": [],
+    "v4PendingImportSubmitRefreshDie": 16,
+    "regencyRestrictedActions": true,
+    "newYearEraChange": true,
+    "warAllowedOperations": [
+      "接见",
+      "议和"
+    ],
+    "allianceBreachConfirmation": true
+  },
+  "build": {
+    "modules": 40,
+    "inlineScriptBytes": 900018
+  },
+  "realProviderCalls": false,
+  "physicalMobileDeviceTested": false,
+  "artifactRetention": {
+    "tracked": "summary.json only",
+    "rawOutputs": "local-only; files kept on disk, removed from Git tracking",
+    "files": []
+  }
+}

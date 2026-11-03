@@ -1,0 +1,305 @@
+{
+  "base": "d7e971c",
+  "test": {
+    "passed": 261,
+    "failed": 0,
+    "skipped": 0
+  },
+  "simulate": {
+    "years": 200,
+    "turns": 7200,
+    "exitCode": 0
+  },
+  "balance": {
+    "exitCode": 1,
+    "identical": true,
+    "newFailures": [],
+    "baseline": 7,
+    "after": 7,
+    "failures": [
+      {
+        "strategy": "rest",
+        "seed": "御极·长治",
+        "check": "collapseWithin15Years"
+      },
+      {
+        "strategy": "rest",
+        "seed": "御极·宫闱",
+        "check": "collapseWithin15Years"
+      },
+      {
+        "strategy": "random",
+        "seed": "御极·两百年",
+        "check": "invasions"
+      },
+      {
+        "strategy": "random",
+        "seed": "御极·长治",
+        "check": "invasions"
+      },
+      {
+        "strategy": "random",
+        "seed": "御极·边政",
+        "check": "invasions"
+      },
+      {
+        "strategy": "random",
+        "seed": "御极·宫闱",
+        "check": "invasions"
+      },
+      {
+        "strategy": "diligent",
+        "seed": "御极·边政",
+        "check": "events"
+      }
+    ]
+  },
+  "storage": {
+    "turns": 7200,
+    "roundTrips": 1000,
+    "paragraphCharacters": 300,
+    "maxMain": 1147283,
+    "maxBackup": 704444,
+    "pendingMain": 1802914,
+    "pendingBackup": 737431,
+    "volumes": 398,
+    "talks": 35,
+    "exportBytes": 84048441
+  },
+  "build": {
+    "bytes": 394723,
+    "sha256": "42aa9cd1db2846c8547bdbbb24f659479b89a407a931ca83d53452641e201ba1",
+    "iconModuleBytes": 33524
+  },
+  "formatHashesIdentical": true,
+  "artifactRetention": {
+    "tracked": "summary.json only",
+    "rawOutputs": "local-only; files kept on disk, removed from Git tracking",
+    "files": [
+      {
+        "path": "qa/batch5/balance-after.json",
+        "bytes": 1636983,
+        "sha256": "5864a68104cd3f37bac0198b9e26dca24f784ce2405223288ce5adab534c728b"
+      },
+      {
+        "path": "qa/batch5/balance-before.json",
+        "bytes": 1636983,
+        "sha256": "5864a68104cd3f37bac0198b9e26dca24f784ce2405223288ce5adab534c728b"
+      },
+      {
+        "path": "qa/batch5/balance-comparison.json",
+        "bytes": 817,
+        "sha256": "89d82a2c788b988f63725470f6483a638cefe8626fe7bf7ae6166f5b1f72856d"
+      },
+      {
+        "path": "qa/batch5/balance.log",
+        "bytes": 20364,
+        "sha256": "6d5e6b9307f3843926bab357e25a4287e47df9d2c5cd599d2c67b60a046826c9"
+      },
+      {
+        "path": "qa/batch5/browser-idb.json",
+        "bytes": 207,
+        "sha256": "74caa5189cb95d6ebed0f7ffa973d6fb47efd19128f3f9c7b6df3d34006ba438"
+      },
+      {
+        "path": "qa/batch5/browser-pending.json",
+        "bytes": 192,
+        "sha256": "4adc3761bf03c3b037a13f247e4e78eca30766ef5bcc667803875caaae9f7439"
+      },
+      {
+        "path": "qa/batch5/browser-ui.json",
+        "bytes": 381,
+        "sha256": "2ab9dbe88702f48b368ee74524d6379edb2246c9f78cd253700cc2341a72b5ba"
+      },
+      {
+        "path": "qa/batch5/e1-directory-red.log",
+        "bytes": 897,
+        "sha256": "068055004363215711d3174069b9c6070b5d9bcc590c137508c447611566d1c8"
+      },
+      {
+        "path": "qa/batch5/e1-import-red.log",
+        "bytes": 890,
+        "sha256": "c147f0e634ce88b843a28180e70ae0d985cd6830857fb8e79fcab41dd4ac03a0"
+      },
+      {
+        "path": "qa/batch5/e1-legacy-red.log",
+        "bytes": 1167,
+        "sha256": "f44cdcf6a9674fb96806d7817a51ef0aa902084a14b52be6a6ea3d0c1b409f28"
+      },
+      {
+        "path": "qa/batch5/e1-pending-red.log",
+        "bytes": 960,
+        "sha256": "ffbaef52f3c3e1156e17b480014dab6fc301d1584221217049fe0c2e97292787"
+      },
+      {
+        "path": "qa/batch5/e1-red.log",
+        "bytes": 2363,
+        "sha256": "9c4ba6c227bf56973227d68b533daac4866c211650f8ba77bb49633fe1298787"
+      },
+      {
+        "path": "qa/batch5/e1-scan-red.log",
+        "bytes": 1554,
+        "sha256": "a4f77035f33fa9895a706fba6e41d1753663632f5f75d75bcec6052d63bb5962"
+      },
+      {
+        "path": "qa/batch5/e2-merged-red.log",
+        "bytes": 1012,
+        "sha256": "7b2ce853af84e9de0631999d8c68e769cb15a5ad7f18d6cbdf1f8983778d812d"
+      },
+      {
+        "path": "qa/batch5/e2-red.log",
+        "bytes": 1090,
+        "sha256": "b5de5ef0f5be0110ca4af0266cc9f4e917f53569940a8b72982bd246ffd90009"
+      },
+      {
+        "path": "qa/batch5/e3-red.log",
+        "bytes": 942,
+        "sha256": "7b40a4e3565475843ec8687959662c1f1baad419494663bfd239b51145fcb672"
+      },
+      {
+        "path": "qa/batch5/e4-red.log",
+        "bytes": 1093,
+        "sha256": "9d48f46c0414ba096fd3fb043275ed541bf5389d59e9bed8b5bcb20bad98223b"
+      },
+      {
+        "path": "qa/batch5/format-after.json",
+        "bytes": 569,
+        "sha256": "983a1512ec67e1af70ef72a75b1020b3adf1f46442677cb752eacfd8bf3790b7"
+      },
+      {
+        "path": "qa/batch5/format-before.json",
+        "bytes": 569,
+        "sha256": "983a1512ec67e1af70ef72a75b1020b3adf1f46442677cb752eacfd8bf3790b7"
+      },
+      {
+        "path": "qa/batch5/simulate.log",
+        "bytes": 78676,
+        "sha256": "fcd54f9995cd3c7b438fe7992a7ae9f45aebc7b3ccccbcf77ac667de96a3f817"
+      },
+      {
+        "path": "qa/batch5/storage-before-delta.json",
+        "bytes": 230,
+        "sha256": "0ef28b76637166c7111219115bbd6ac00e8c98cca6f5278bcbc53b91f69e960c"
+      },
+      {
+        "path": "qa/batch5/storage-harness.html",
+        "bytes": 4138,
+        "sha256": "0b13ffc4eba94794a08232c46285f873ab5d8bfb3b57299259ee81c24551af4e"
+      },
+      {
+        "path": "qa/batch5/storage.json",
+        "bytes": 229,
+        "sha256": "aa762fe81f10bf29404a890927d2d2e26ffb958ed7bd21b0b4fc86d816af3897"
+      },
+      {
+        "path": "qa/batch5/storage.log",
+        "bytes": 1191,
+        "sha256": "186491c1b0fc703c98b26c09fac54aada47b51c3c26b2f5db321fc8c449133bb"
+      },
+      {
+        "path": "qa/batch5/tests.log",
+        "bytes": 78153,
+        "sha256": "0cf74a4cb72ab9067d23a700158344d3847a18e481c463cafedc22f679494970"
+      }
+    ]
+  },
+  "formatForecastHashes": {
+    "court3": "9b9580efd22cbe0d710c95d6e233577c42ce09288e3fb273f4d021cf53eccbe1",
+    "batch6": "73545640241fde516005164fa5f7343f2d14129cc5aaf3ac58badd5a6c610304",
+    "discuss": "da7ec5738068b07de4ad34a8d577d57c8429d1c9bcab47011fe1c56810cccf26",
+    "hold": "bf92627603fe40ff42f7980dda26914e4b8836fc8c99e4f8a5d59fbe745a8de9",
+    "accountability": "fc1f285771b36d437f1bab8ef3bdeea8b643b34905232ef19b6a2ce47d1c93f9",
+    "remark": "c763b085ef3d2d736994e43640fa57b6faa34f56ccd88fa1a834da92f595c630",
+    "debate": "2fef58554eb907375767d55cb6a4e4328d9a4c75e65c4deaafa2ee90bead0efe"
+  },
+  "storageBeforeDelta": {
+    "turns": 7200,
+    "roundTrips": 1000,
+    "paragraphCharacters": 300,
+    "maxMain": 1147283,
+    "maxBackup": 704444,
+    "pendingMain": 1802914,
+    "pendingBackup": 1360499,
+    "volumes": 398,
+    "talks": 35,
+    "exportBytes": 84048441
+  },
+  "browser": {
+    "idb": {
+      "passed": true,
+      "databaseVersion": 3,
+      "saveVersion": 8,
+      "turns": 40,
+      "recentChapters": 22,
+      "archivedChapters": 18,
+      "mainBytes": 431698,
+      "recoveryBytes": 53241,
+      "conflictProtected": true
+    },
+    "pending": {
+      "passed": true,
+      "originalDie": 10,
+      "recoveredDie": 10,
+      "treasury": 854.5693343406404,
+      "recoveryWarnings": [
+        "已恢复核心进度；历史正文请从导出备份找回"
+      ]
+    },
+    "ui": {
+      "browser": "Codex In-app Browser",
+      "url": "http://127.0.0.1:4190/",
+      "width": 360,
+      "scrollWidth": 360,
+      "visibleButtonMinimumHeight": 44,
+      "visibleButtonMinimumWidth": 44,
+      "turn": 1,
+      "die": 15,
+      "treasury": 478,
+      "governance": 58.1,
+      "prestige": 60.2,
+      "reloadPreservedCommit": true,
+      "consoleErrors": [],
+      "screenshot": "output/batch5/mobile-committed.jpg"
+    }
+  },
+  "artifactCleanup": {
+    "date": "2026-11-03",
+    "removedTrackedFiles": 37,
+    "removedTrackedBytes": 8989212,
+    "localFilesSha256Verified": true,
+    "trackedSummaries": 4,
+    "tests": {
+      "passed": 261,
+      "failed": 0,
+      "skipped": 0,
+      "exitCode": 0
+    },
+    "simulate": {
+      "years": 200,
+      "turns": 7200,
+      "exitCode": 0
+    },
+    "cleanCheckoutE3": {
+      "rawFilesPresent": 0,
+      "passed": true
+    },
+    "runtimeIndexUnchanged": true,
+    "logs": {
+      "tests": {
+        "path": "qa/batch5/cleanup-tests.log",
+        "storage": "local-only",
+        "sha256": "23db8477baba2cc60f4cfba8501ef537d39e3c15ae2604f2d52ca686ad4f641a"
+      },
+      "simulate": {
+        "path": "qa/batch5/cleanup-simulate.log",
+        "storage": "local-only",
+        "sha256": "fcd54f9995cd3c7b438fe7992a7ae9f45aebc7b3ccccbcf77ac667de96a3f817"
+      },
+      "clean-checkout-e3": {
+        "path": "qa/batch5/cleanup-clean-checkout-e3.log",
+        "storage": "local-only",
+        "sha256": "b1cbe6066f6684ac9bdd0c2dea509b79ac7fb48a5635c67f6974da786f2bd8de"
+      }
+    }
+  }
+}

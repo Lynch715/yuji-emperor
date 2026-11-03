@@ -1,3 +1,4 @@
+import { memorialDecision } from "../core/memorial-decisions.js";
 // The engine settles petitions at the end of a turn. Queue state is derived
 // from the existing schedule, so saves need no second set of approval records.
 export function memorialAssignments(s) {
@@ -5,7 +6,7 @@ export function memorialAssignments(s) {
   for (const [slot, action] of Object.entries(s?.schedule || {})) {
     if (!action || !['上朝', '批折'].includes(action.kind)) continue;
     for (const id of action.memorials || [])
-      assigned.set(id, {slot, action, decision:action.decisions?.[id] || action.decision || 'approve'});
+      assigned.set(id, {slot, action, ...memorialDecision(action,id),decision:memorialDecision(action,id).option});
   }
   return assigned;
 }
@@ -18,6 +19,7 @@ export function memorialCounts(s) {
   return {pending, queued:(s?.memorials.length || 0) - pending, total:s?.memorials.length || 0};
 }
 export function memorialDecisionLabel(m, decision) {
+  decision=decision?.option||decision;
   if (decision === 'hold') return '留中候旨';
   if (decision === 'discuss') return '发部再议';
   if (decision === 'remark') return '只作朱批';

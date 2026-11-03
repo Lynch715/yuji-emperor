@@ -1,9 +1,15 @@
 import { clone } from "./state.js";
-import { roll, check } from "./rng.js";
-import { applyPackage } from "./effects.js";
-export function privateAction(state, action) {
+import { check } from "./rng.js";
+import { applyPackage, growTalent } from "./effects.js";
+export function privateAction(state, action, die = 11) {
   let s = clone(state);
-  const operation = action.operation || "闲谈",
+  const operation = action.operation || "闲谈";
+  if(operation==='经筵') {
+    const child=s.harem.children.find(c=>c.id===s.reign?.emperorId);
+    if(child)child.education=Math.min(100,(child.education||0)+0.2);
+    return {state:growTalent(s,'文采',0.2),note:'经筵进讲，习读经史'};
+  }
+  const
     spec = {
       试探: ["权谋", "一般"],
       离间: ["权谋", "困难"],
@@ -18,11 +24,9 @@ export function privateAction(state, action) {
   if (!target) throw new Error("请选择可接触的官员");
   if (operation === "收买" && s.nation.privy < 5)
     throw new Error("内帑不足以收买");
-  const r = roll(s);
-  s = r.state;
   const verdict = check(
     s.emperor.talents[spec[0]],
-    r.value,
+    die,
     spec[1],
     target.abilities.才,
     s.emperor.mood < 20 ? -10 : 0,
