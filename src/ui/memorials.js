@@ -1,3 +1,4 @@
+import { postTitle } from "../core/scenarios.js";
 import { memorialDecision } from "../core/memorial-decisions.js";
 import { onDialogExit } from "./request-scope.js";
 import { $, esc, openDialog, closeDialog, toast } from "./common.js";
@@ -395,7 +396,7 @@ export function memorialHTML(s, session) {
     '<h3 id="memorial-title" tabindex="-1">' +
     esc(m.title) +
     '</h3></div><div class="memorial-meta"><div class="memorial-author"><span>上奏　' +
-    esc(post?.title || "") +
+    esc(postTitle(s, post)) +
     " " +
     esc(m.from) +
     (faction ? "（" + esc(faction.name) + "）" : "") +

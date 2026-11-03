@@ -2407,3 +2407,16 @@ button.primary:not(:disabled):active {
   padding: var(--s2);
   flex: none;
 }
+.scenario-pick {
+  margin-bottom: var(--s5);
+}
+.scenario-card {
+  margin-top: var(--s3);
+  padding: var(--s4);
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-button);
+  font-size: var(--font-note);
+}
+.scenario-card p {
+  margin: var(--s2) var(--s0);
+}

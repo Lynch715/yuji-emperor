@@ -204,13 +204,13 @@
     ]
   },
   "formatForecastHashes": {
-    "court3": "3ab60a05b091ea1c3bf017760376de3d3a747950ff5a9a33e582b1f13b41df79",
-    "batch6": "27a3551e04c79855ca8fc486e1a02893c68b96e8e2241f0a524bef2849aaf44d",
-    "discuss": "c6be2c82ff8ef61a646bbd501080aa700b3de408bcb18972ca0ad3b45417ddc6",
-    "hold": "ab30d7fe0ba7aa0423cf3eb68df90bf4b77eaf94284f7bc0de38b92608cc5233",
-    "accountability": "411f4829bf3ee6e259cdfc2b2cf40b093a27bfacf5568ea710652e25f1d0a5c1",
-    "remark": "34a50d03566c690a91bf82170411fc559dfa09f240edfe4b6eced1e2d34547a2",
-    "debate": "2c59d8f6372c5b96eb23f43a09c4850dea3f93af097c0b3a29e7005b30948cab"
+    "court3": "fb025d7f019914783f3b61ed55913f9eda7d3080761b8550ff4afe7075ffef4f",
+    "batch6": "c49d31b7821bc5aa56ec3820d7cc3d1e96c12d4b24e08a69cb0ce4574ee18fd9",
+    "discuss": "3422e282bf0aea96ba2850be101a42c4cad099de0b1e7a084c97936611ff46c1",
+    "hold": "3ff92a16e6c5cb9be551b1bcdc9e604bdf09850b84a678716db4a12b466eae07",
+    "accountability": "12aa920e0048ffdb30e28e71e442ca368a94608de89eb1ab1de3f7f9153eccdd",
+    "remark": "a559fa4bd2986196a040d648db5f0450adb2fe749a6b756f55ca4421768fce4b",
+    "debate": "f81ef71f1942e81c53949f9314c200b650ed678eb6c3c89c62f98e886571436d"
   },
   "storageBeforeDelta": {
     "turns": 7200,
@@ -311,5 +311,5 @@
     "remark": "c763b085ef3d2d736994e43640fa57b6faa34f56ccd88fa1a834da92f595c630",
     "debate": "2fef58554eb907375767d55cb6a4e4328d9a4c75e65c4deaafa2ee90bead0efe"
   },
-  "formatForecastHashesNote": "第二轮审计 F4 升存档 v9（settings 增 length/pov）。去掉这两项并把 v 记回 8 后，七条路径哈希与 V8 记录逐一相同。"
+  "formatForecastHashesNote": "第二轮审计 F4 升 v9（settings 增 length/pov），F5 升 v10（增 scenario/postNames/governorTitle/childNaming/weddingNames，自拟王朝均为 null）。去掉这些字段并把 v 记回 8 后，七条路径哈希与 formatForecastHashesV8 逐一相同。"
 }

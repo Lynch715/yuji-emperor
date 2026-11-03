@@ -29,7 +29,7 @@ test('F4 文风、篇幅、视角进入系统提示且只影响系统提示',()=
   assert.equal(m[1].content,m2[1].content,'换笔法不应改变 user 消息');
 });
 test('F4 存档 v9：旧档补默认篇幅与视角，非法值回落默认',()=>{
-  assert.equal(VERSION,9);
+  assert.ok(VERSION>=9);
   const s=createState({seed:'f4-mig'});s.v=8;delete s.settings.length;delete s.settings.pov;
   const m=migrate(s);assert.equal(m.settings.length,'standard');assert.equal(m.settings.pov,'third');
   const odd=initialTurn(createState({seed:'f4-odd'}));odd.settings.length='x';odd.settings.pov='y';

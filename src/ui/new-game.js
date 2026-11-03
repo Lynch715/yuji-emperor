@@ -2,6 +2,7 @@ import { createState } from "../core/state.js";
 import { initialTurn } from "../core/turn.js";
 import { selectAmbitions } from "../core/ambitions.js";
 import { applyWorld } from "../core/world.js";
+import { applyScenario, scenarioById } from "../core/scenarios.js";
 import { callJSON } from "../llm/client.js";
 import { worldMessages } from "../llm/prompts.js";
 import { validateWorld } from "../llm/validate.js";
@@ -24,7 +25,9 @@ export function createGameSeed(cryptoAPI = globalThis.crypto, now = Date.now) {
 }
 
 export async function createOpening(options, goals, config, requestOptions = {}) {
-  const name = options.name?.trim(), era = options.era?.trim();
+  const sc = options.scenario ? scenarioById(options.scenario) : null;
+  if (options.scenario && !sc) throw new Error("未知剧本，请重新选择");
+  const name = sc ? sc.emperor[0] : options.name?.trim(), era = sc ? sc.era : options.era?.trim();
   if (!name) throw new Error("请填写皇帝名");
   if (!era) throw new Error("请填写年号");
   if (!options.demo && !config.key?.trim())
@@ -32,7 +35,9 @@ export async function createOpening(options, goals, config, requestOptions = {})
   const { onStage = () => {}, ...request } = requestOptions;
   onStage(options.demo ? "正在准备登基与六部奏报……" : "正在拟定朝局与人物，请稍候……");
   let draft = createState({ ...options, name, era, seed: options.seed ?? createGameSeed() });
-  if (!options.demo) {
+  // 历史剧本自带人物与官制，不再请模型铸世。
+  if (sc) draft = applyScenario(draft, sc.id);
+  else if (!options.demo) {
     const world = await callJSON(config, worldMessages(draft), {
       ...request,
       validate: validateWorld,
