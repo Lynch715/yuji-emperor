@@ -179,7 +179,12 @@ export function chineseNumber(text) {
 function numericEvidence(f) {
   const sets = { money: new Set(), people: new Set(), age: new Set() },
     add = (kind, v) => {
-      if (Number.isFinite(v)) sets[kind].add(Math.abs(v));
+      if (!Number.isFinite(v)) return;
+      v = Math.abs(v);
+      sets[kind].add(v);
+      // 提示词里的钱粮取整到 0.1 万，人数取整；模型据此写出的数字同样有据。
+      if (kind === "money") { sets.money.add(Math.round(v / 1000) * 1000); sets.money.add(Math.round(v / 10000) * 10000); }
+      else sets[kind].add(Math.round(v));
     };
   const walk = (v) => {
     if (!v || typeof v !== "object") return;
@@ -246,6 +251,16 @@ function hypothetical(prefix) {
     prefix.slice(-18),
   );
 }
+// 追忆与背景：明确指向过去或常态的句子不是本旬断言。
+const RETROSPECT = /先帝|先皇|当年|那年|昔年|昔日|往昔|旧日|往年|早年|生前|已故|追忆|忆起|想起|曾经|自[^。！？]{0,12}以来/;
+const HABITUAL = /屡屡|屡次|时常|常有|时有|频频|每每|素来|向来|历年|连年/;
+export function retrospective(sentence, kind) {
+  if (RETROSPECT.test(sentence)) return true;
+  return kind === "war" && HABITUAL.test(sentence);
+}
+// “一两句”“三两步”中的“两”是约数，不是银两。
+const LOOSE_MEASURE = /^[句声步眼行旁侧下回趟遍口天日个分笔字语言]/;
+const MONEY_CONTEXT = /银|库|帑|款|饷|税|赏|拨|贿|俸|赋|钱粮|万两/;
 export function validateTurn(data, forecast) {
   if (
     !data?.chapter ||
@@ -299,6 +314,8 @@ export function validateTurn(data, forecast) {
             ),
           ),
         ].filter((m) => {
+          if (m[2] === "两" && (LOOSE_MEASURE.test(sentence.slice(m.index + m[0].length)) || !MONEY_CONTEXT.test(sentence)))
+            return false;
           // Generic "两位/一人/三名" describe a scene, not a population assertion.
           if (
             ["人", "名", "位"].includes(m[2]) &&
@@ -312,10 +329,11 @@ export function validateTurn(data, forecast) {
             value = chineseNumber(m[1]) * (m[2].startsWith("万") ? 10000 : 1);
           return ![...numbers[kind]].some((n) => Math.abs(n - value) < 0.01);
         });
-        for (const m of sentence.matchAll(
-          new RegExp("(?:年方|年仅|年届)(" + NUMERAL + ")", "g"),
-        ))
-          if (!numbers.age.has(chineseNumber(m[1]))) invalidNumbers.push(m);
+        if (!RETROSPECT.test(sentence))
+          for (const m of sentence.matchAll(
+            new RegExp("(?:年方|年仅|年届)(" + NUMERAL + ")", "g"),
+          ))
+            if (!numbers.age.has(chineseNumber(m[1]))) invalidNumbers.push(m);
         if (invalidNumbers.length) {
           fixNotes.push(
             (slot || "附文") + "中无结算或状态依据的金额/人数/年龄已删除",
@@ -326,7 +344,7 @@ export function validateTurn(data, forecast) {
           for (const claim of sentence.matchAll(
             new RegExp(pattern.source, "g"),
           )) {
-            if (hypothetical(sentence.slice(0, claim.index))) continue;
+            if (hypothetical(sentence.slice(0, claim.index)) || retrospective(sentence, kind)) continue;
             const compatible = (f) => {
               if (kind === "war") {
                 const required = /败北|兵败|战败/.test(claim[0])
@@ -428,22 +446,32 @@ export function validateTurn(data, forecast) {
       })
       .join("");
   };
-  for (const slot of ["朝", "午", "夜"])
-    chapter[slot] = scrutinize(cleanText(data.chapter[slot], 3500), slot);
+  const emptied = [];
+  for (const slot of ["朝", "午", "夜"]) {
+    const original = cleanText(data.chapter[slot], 3500);
+    chapter[slot] = scrutinize(original, slot);
+    if (original.trim() && !chapter[slot].trim()) emptied.push(slot);
+  }
+  // 只有部分段落被删空时才补足；整章都没有可保留文字时仍交由重试处理。
+  if (emptied.length && Object.values(chapter).some((t) => t.trim()))
+    for (const slot of emptied) {
+      chapter[slot] = fallback.chapter[slot];
+      fixNotes.push(slot + "段经核对后无可保留文字，以平实叙述补足");
+    }
   const whole = Object.values(chapter).join("\n"),
     reactions = [];
+  let reactionTotal = 0;
   for (const r of Array.isArray(data.reactions)
     ? data.reactions.slice(0, 10)
     : []) {
     const npc = s.court.officials.find((o) => o.name === r.name && o.alive);
-    if (npc && Number.isFinite(Number(r.favorDelta)))
-      reactions.push({
-        id: npc.id,
-        name: npc.name,
-        favorDelta: Math.max(-5, Math.min(5, Number(r.favorDelta))),
-        note: cleanText(r.note, 100),
-      });
-    else fixNotes.push("未知人物反应未采用。");
+    if (!npc || !Number.isFinite(Number(r.favorDelta))) { fixNotes.push("未知人物反应未采用。"); continue; }
+    if (reactions.some((x) => x.id === npc.id) || !whole.includes(npc.name)) continue;
+    let delta = Math.max(-5, Math.min(5, Math.round(Number(r.favorDelta))));
+    delta = Math.sign(delta) * Math.min(Math.abs(delta), 10 - reactionTotal);
+    if (!delta) continue;
+    reactionTotal += Math.abs(delta);
+    reactions.push({ id: npc.id, name: npc.name, favorDelta: delta, note: cleanText(r.note, 100) });
   }
   const evidence = (
     Array.isArray(data.ambitionEvidence) ? data.ambitionEvidence : []
