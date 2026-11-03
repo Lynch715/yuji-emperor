@@ -54,3 +54,9 @@ B1 时段、B8 摄政、B10 侍寝年龄与孕期 / 产后条件不变；怀孕�
 - 模型接口使用模拟 JSON 请求验证先解析再叙事，未调用真实付费 API；未使用实体手机。
 
 文件分工：配置及裁决在 `src/core/freedom.js` 与原各玩法模块；动作在 `src/core/intents.js`；解析在 `src/llm/intents.js` 与 `src/ui/intent-request.js`；一致性检查在 `src/llm/validate.js` / `quantities.js`；界面说明同步于 app、actions、memorials、panels、view-model、render。新增测试为 `test/freedom-assertions.test.js`、`test/player-intents.test.js`、`test/freedom-modes.test.js`。
+
+## 发布核验记录
+
+三步提交 `98ea720` → `af92643` → `8c2ec3b` 已推送 main。GitHub 工作流 41670365207 的测试、构建及上传均成功，但 Pages 长时间停在 `updating_pages`，600秒超时后取消；复用原制品重试直接返回 `Deployment cancelled`。本记录单独提交后重新触发完整发布，三步实现提交保留原顺序。
+
+待核对的单文件为493,048字节，SHA-256 为 `5e907e443ea5e3c2ef3d97d46d4856c1f9d4fc69b888d3e8be1b3325cc416616`；发布记录不改变运行代码。
