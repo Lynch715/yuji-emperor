@@ -1,3 +1,4 @@
+import { freedomRules, selectionYear } from "../core/freedom.js";
 import { memorialDecision } from "../core/memorial-decisions.js";
 import { ACTIONS, scheduleCost, validateSchedule } from "../core/turn.js";
 import { energyLimit } from "../core/emperor.js";
@@ -14,6 +15,7 @@ export const ACTION_GROUPS = [
 ];
 export const HALLS = ["朝堂", "后宫", "天下", "内库", "宗室", "史馆"];
 export const GLYPHS = {上朝:"朝",批折:"批",下旨:"旨",任命:"任",召见:"见",宴请:"宴",外交:"使",私下行事:"密",后宫:"宫",选妃:"选",出巡:"行",亲征:"征",歇息:"憩"};
+export function selectionDescription(s){const period=freedomRules(s).selectionPeriod;return period?'每'+period+'年选秀一次，非选秀年无法留牌。':'可随时选秀，位分名额不限。';}
 export function actionAvailability(s, kind) {
   if (!s) return "待登基";
   if(s.regency&&!["批折","召见","私下行事","歇息"].includes(kind))return "摄政期间不可安排";
@@ -26,15 +28,15 @@ export function actionAvailability(s, kind) {
     if (kind === "批折" && s.schedule.朝 && s.schedule.午) return "朝午已排定";
   }
   if (kind === "亲征" && !s.campaigns.some(w=>!w.done)) return "无战事";
-  if (kind === "选妃" && (globalYear(s.turn) % 3 !== 1 || !s.harem.candidates.length)) return "非选秀年";
+  if (kind === "选妃" && (!selectionYear(s) || !s.harem.candidates.length)) return "非选秀年";
   if (s.campaigns.some(w=>w.personal&&!w.done) && !["亲征","歇息"].includes(kind)) return "御驾在外";
   return "";
 }
-export function actionMeta(kind) {
+export function actionMeta(kind, s = null) {
   const rule = ACTIONS[kind];
   if (!rule) return "";
   const time = rule.full ? "占满一旬" : rule.slots.length === 3 ? "任意" : rule.slots.join("/");
-  if (kind === "上朝") return time + " · 精力 " + rule.energy + " · 三本内，可廷议问责";
+  if (kind === "上朝") return time + " · 精力 " + rule.energy + " · " + (freedomRules(s).courtLimit===Infinity?"本数不限":freedomRules(s).courtLimit+"本内") + "，可廷议问责";
   if (kind === "批折") return time + " · 每3本1 · 独断，不经廷议";
   return time + " · " + (rule.full ? rule.energy+"点" : "精力 " + rule.energy);
 }

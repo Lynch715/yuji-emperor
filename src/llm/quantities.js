@@ -25,7 +25,7 @@ function nearbyOwners(text,index,owners){
 }
 export function quantityEvidence(f){
  const sets=Object.fromEntries(['money','grain','hu','area','ratio','households','horses','people','age'].map(k=>[k,new Set()]));
- const add=(kind,v)=>{if(!Number.isFinite(v))return;v=Math.abs(v);sets[kind].add(v);sets[kind].add(Math.round(v));if(kind==='money'){sets[kind].add(Math.round(v/1000)*1000);sets[kind].add(Math.round(v/10000)*10000);}};
+ const add=(kind,v)=>{if(!Number.isFinite(v))return;v=Math.abs(v);sets[kind].add(v);sets[kind].add(Math.round(v));if(kind==='money'||kind==='grain'){sets[kind].add(Math.round(v/1000)*1000);sets[kind].add(Math.round(v/10000)*10000);}};
  const keys={treasury:['money',1e4],privy:['money',1e4],arrears:['money',1e4],cost:['money',1e4],grain:['grain',1e4],grainArrears:['grain',1e4],troops:['people',1],garrison:['people',1],enemyTroops:['people',1],pop:['people',1e4],age:['age',1],area:['area',1],landArea:['area',1],households:['households',1],horses:['horses',1],execRate:['ratio',100],rate:['ratio',100],factor:['ratio',100],progress:['ratio',1]};
  const walk=v=>{if(!v||typeof v!=='object')return;for(const [k,x]of Object.entries(v)){if(['history','volumes','pending','ledger'].includes(k))continue;if(keys[k])add(keys[k][0],x*keys[k][1]);if(typeof x==='object')walk(x);}};
  walk(f.state);
@@ -38,10 +38,11 @@ export function quantityEvidence(f){
  for(const o of s.court.officials){const p=s.court.posts.find(p=>p.holder===o.id);ageOwners.push(owner(o,[p?.title,p&&s.postNames?.[p.id]],'official.'+o.id+'.age'));}
  for(const c of s.harem.consorts)ageOwners.push(owner(c,[c.rank],'consort.'+c.id+'.age'));
  for(const c of s.harem.children)ageOwners.push(owner(c,[], 'child.'+c.id+'.age',Math.floor((s.turn-c.born)/36)));
- const armyOwners=[{aliases:['京营','禁军'],values:[s.nation.army.capital.troops,...(f.entries||[]).filter(e=>e.path==='nation.army.capital.troops').flatMap(e=>[e.before,e.after])]}];
- s.nation.army.frontiers.forEach((b,i)=>armyOwners.push({aliases:[b.dir+'境',b.dir+'边',b.dir+'军',b.name],values:[b.troops,...(f.entries||[]).filter(e=>e.path==='nation.army.frontiers.'+i+'.troops').flatMap(e=>[e.before,e.after])]}));
+ const armyOwners=[{id:'capital',aliases:['京营','禁军'],values:[s.nation.army.capital.troops,...(f.entries||[]).filter(e=>e.path==='nation.army.capital.troops').flatMap(e=>[e.before,e.after])]}];
+ s.nation.army.frontiers.forEach((b,i)=>armyOwners.push({id:b.dir,aliases:[b.dir+'境',b.dir+'边',b.dir+'军',b.name],values:[b.troops,...(f.entries||[]).filter(e=>e.path==='nation.army.frontiers.'+i+'.troops').flatMap(e=>[e.before,e.after])]}));
  for(const p of s.nation.provinces)armyOwners.push({aliases:[p.name],values:[p.garrison]});
  for(const w of s.campaigns||[]){const country=s.foreign.find(c=>c.id===w.country);armyOwners.push({aliases:[country?.name,w.title,...((s.campaigns||[]).filter(w=>!w.done).length===1?['敌军']:[])],values:[w.enemyTroops]});}
+ for(const owner of armyOwners){owner.deltas=(s.intentResults||[]).filter(r=>['success','partial'].includes(r.status)&&r.type==='allocate'&&r.actual.resource==='troops'&&r.actual.destination===owner.id).map(r=>r.actual.amount);}
  return {sets,ageOwners,armyOwners,add};
 }
 export function invalidQuantity(q,sentence,evidence){
@@ -50,6 +51,6 @@ export function invalidQuantity(q,sentence,evidence){
  // Historical ages are background; current object ages must match that object.
  if(q.kind==='age'&&/先帝|当年|昔年|那年|往年|早年|生前|追忆|曾经/.test(sentence))return false;
  const owners=q.kind==='age'?nearbyOwners(sentence,q.index,evidence.ageOwners):q.kind==='people'?nearbyOwners(sentence,q.index,evidence.armyOwners):null;
- const values=owners?(owners.length?owners.flatMap(o=>o.values):[]):[...evidence.sets[q.kind]];
+ const values=owners?(owners.length?owners.flatMap(o=>[...o.values,...(/征|调|增|补|损/.test(sentence)?o.deltas||[]:[])]):[]):[...evidence.sets[q.kind]];
  return !Number.isFinite(q.value)||!values.some(v=>Number.isFinite(v)&&Math.abs(Math.abs(v)-q.value)<0.01);
 }

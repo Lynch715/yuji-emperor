@@ -16,7 +16,7 @@ import {applyWorld} from '../src/core/world.js';
 import {roster} from '../src/llm/prompts.js';
 import {validateTalk} from '../src/llm/validate.js';
 import {pack,unpack,createSaveStore} from '../src/store/save.js';
-const initial=(seed='批次2')=>initialTurn(createState({seed,name:'朱厚照'}));
+const initial=(seed='批次2')=>initialTurn(createState({seed,name:'朱厚照',freedom:'real'}));
 const hash=v=>createHash('sha256').update(JSON.stringify(v)).digest('hex');
 const empty=()=>({朝:null,午:null,夜:null});
 const high=s=>{s.emperor.prestige=100;s.nation.governance=100;for(const o of s.court.officials){o.abilities.政=100;o.greed=0;}for(const f of s.court.factions)f.attitude=100;return s;};

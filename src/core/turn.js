@@ -1,3 +1,4 @@
+import { freedomRules, selectionYear, adjudicate } from "./freedom.js";
 import { resolveIntents } from "./intents.js";
 import { compactChapter } from "./archive.js";
 import { memorialDecision } from "./memorial-decisions.js";
@@ -108,8 +109,8 @@ export function validateSchedule(state, schedule) {
       memorialDecision(a,id);
     }
     if (["上朝","批折"].includes(a.kind)&&!Array.isArray(a.memorials))throw new Error("须显式选择奏报，或传入空列表");
-    if (a.kind === "上朝" && (a.memorials?.length || 0) > 3)
-      throw new Error("上朝最多三个议题");
+    if (a.kind === "上朝" && (a.memorials?.length || 0) > freedomRules(state).courtLimit)
+      throw new Error("上朝最多" + freedomRules(state).courtLimit + "个议题");
   }
   if (full && count > 1) throw new Error("出巡或亲征占满一旬，请清空其他时辰");
   if (
@@ -164,6 +165,10 @@ function forecastDraft(state, schedule, intents = []) {
       continue;
     }
     let result;
+    if(action.kind!=='下旨'){
+      const playerActions=intents.filter(a=>a.slot===slot);
+      if(playerActions.length){const resolved=resolveIntents(s,playerActions,{slot,source:'schedule'});s=resolved.state;slotResults[slot].push(...resolved.results.map(r=>r.summary));}
+    }
     if (action.kind === "上朝" || action.kind === "批折") {
       const ids = action.memorials;
       if (action.kind === "上朝" && action.stance === "廷议") {
@@ -188,7 +193,7 @@ function forecastDraft(state, schedule, intents = []) {
       }
       for (const id of ids) {
         const decision = memorialDecision(action,id);
-        result = resolveMemorial(s, id, decision.option, decision.remark, "处置奏报", decision.remarkKind);
+        result = resolveMemorial(s, id, decision.option, decision.remark, "处置奏报", intents.some(a=>a.inputId===slot+':remark:'+id&&a.type!=='other')?'无':decision.remarkKind);
         s = result.state;
         if(action.kind==='上朝'&&decision.option==='reject')s=applyPackage(s,{prestige:2},'当廷驳回');
         slotResults[slot].push(result.note);
@@ -196,7 +201,8 @@ function forecastDraft(state, schedule, intents = []) {
       if (action.stance === "当廷问责") {
         const target = s.court.officials.find((o) => o.id === action.target);
         if (!target) throw new Error("问责须选择在京官员");
-        const verdict = accountability(s, target, die);
+        const judged=adjudicate(s,accountability(s,target,die),target.id);s=judged.state;
+        const verdict = judged.verdict;
         s = applyPackage(
           s,
           {
@@ -315,14 +321,14 @@ function forecastDraft(state, schedule, intents = []) {
     s = foreignYear(s);
     notes.push(
       "年结：长岁、朝贡、年度评估" +
-        ((Math.floor(s.turn / 36) + 1) % 3 === 1 ? "；科举、选秀开科" : ""),
+        ((Math.floor(s.turn / 36) + 1) % 3 === 1 ? (selectionYear(s)?"；科举、选秀开科":"；科举开科") : selectionYear(s)?"；选秀开选":""),
     );
   }
   s.era = calendarEra(s);
   const wasRegent=!!s.regency;
   s=advanceRegency(s);
   if(wasRegent&&!s.regency)notes.push('年满十六，亲政大婚，册立新朝后妃');
-  if (globalYear(s.turn) % 3 === 1 && s.harem.selectionYear !== globalYear(s.turn))
+  if (selectionYear(s) && (s.harem.selectionYear !== globalYear(s.turn) || !s.harem.candidates.length))
     s = generateCandidates(s);
   s = checkCollapse(s);
   if (s.ending?.type === "驾崩") s.ending.succession = succession(s);

@@ -1,3 +1,4 @@
+import { freedomRules } from "../core/freedom.js";
 import { postTitle } from "../core/scenarios.js";
 import { memorialDecision } from "../core/memorial-decisions.js";
 import { onDialogExit } from "./request-scope.js";
@@ -41,7 +42,7 @@ export function createMemorialSession(
   const available = availableMemorials(s, old ? slot : null);
   let ids =
     old?.memorials?.filter((id) => available.some((m) => m.id === id)) ||
-    available.slice(0, kind === "上朝" ? 3 : 6).map((m) => m.id);
+    available.slice(0, kind === "上朝" ? freedomRules(s).courtLimit : 6).map((m) => m.id);
   if (startId) {
     if (!available.some((m) => m.id === startId))
       throw new Error("此折已拟批，请从原日程改批。");
@@ -87,8 +88,8 @@ function legacyChoice(m, value) {
 }
 export function memorialAction(s, session) {
   if (!session.ids.length) throw new Error("请至少选择一本奏报");
-  if (session.kind === "上朝" && session.ids.length > 3)
-    throw new Error("上朝最多三个议题");
+  if (session.kind === "上朝" && session.ids.length > freedomRules(s).courtLimit)
+    throw new Error("上朝最多"+(freedomRules(s).courtLimit===3?"三个":freedomRules(s).courtLimit+"个")+"议题");
   if (session.ids.some((id) => !session.choices[id]))
     throw new Error("请逐本选择御批");
   if (new Set(session.ids).size !== session.ids.length)
@@ -222,7 +223,7 @@ export function memorialOptions(s, m) {
     id: "discuss",
     label: "发部议",
     effects: {},
-    disabled: (m.referrals || 0) >= 2,
+    disabled: (m.referrals || 0) >= freedomRules(s).referrals,
   });
   options.push({ id: "remark", label: "朱批 · 原请款待准驳", effects: {} });
   return options;
@@ -310,8 +311,8 @@ export function memorialHTML(s, session) {
           ? "留中未结案，下旬仍会呈送"
           : o.id === "discuss"
             ? o.disabled
-              ? "已发部议两次，须裁处"
-              : "发部再议，期限 +3 旬 · 最多两次"
+              ? "已达再议次数，请裁处"
+              : "发部再议，期限 +3 旬 · "+(freedomRules(s).referrals===Infinity?"次数不限":"最多"+freedomRules(s).referrals+"次")
             : o.id === "remark"
               ? "识别嘉奖／申饬，原请款仍待准驳"
               : "无直接数值变化";
@@ -388,7 +389,7 @@ export function memorialHTML(s, session) {
       : "") +
     '<details class="queue-picker"><summary>选折 ' +
     session.ids.length +
-    (session.kind === "上朝" ? "/3" : "") +
+    (session.kind === "上朝" && Number.isFinite(freedomRules(s).courtLimit) ? "/"+freedomRules(s).courtLimit : "") +
     '</summary><div class="queue-picker-list">' +
     pickerItems +
     '</div></details></div><div class="memorial-columns"><article class="paper memorial-paper"><div class="memorial-heading">' +
@@ -636,8 +637,8 @@ export function memorialDialog(
         delete session.choices[id];
         delete session.remarks[id];
       } else {
-        if (kind === "上朝" && session.ids.length === 3) {
-          showError("上朝最多三个议题，请先移出一本");
+        if (kind === "上朝" && session.ids.length >= freedomRules(s).courtLimit) {
+          showError("上朝最多"+freedomRules(s).courtLimit+"个议题，请先移出一本");
           return;
         }
         session.ids.push(id);

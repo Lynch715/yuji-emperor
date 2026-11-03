@@ -6,6 +6,7 @@ import { inCapital } from "../core/court.js";
 import { edictBlock } from "../core/edicts.js";
 import { energyLimit } from "../core/emperor.js";
 import { memorialDialog } from "./memorials.js";
+import { selectionDescription } from "./view-model.js";
 export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
   if (kind === "上朝" || kind === "批折") return memorialDialog(s,kind,preferred,onSchedule,null,{newBatch:true});
   if(s.regency&&!["批折","召见","私下行事","歇息"].includes(kind))throw new Error("摄政期间只能批折、召见、经筵或歇息");
@@ -60,7 +61,7 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
       opt(s.court.officials.filter((o) => o.alive)) +
       opt(s.harem.consorts) +
       opt(s.foreign) +
-      '</select><p class="muted">召见占午间，耗精力1。拨款须看官职与交情。</p>';
+      '</select><p class="muted">召见占午间，耗精力1。'+(s.settings.freedom==='free'?'拨款以国库余银为限。':'拨款须看官职与交情。')+'</p>';
   if (kind === "宴请")
     fields =
       '<label for="banquet-type">宴会类型</label><select id="banquet-type"><option>君臣宴</option><option>家宴</option><option>寿宴</option><option>接风宴</option><option>鸿门宴</option></select><label for="banquet-cost">开销档</label><select id="banquet-cost"><option value="俭">俭 · 2 万两</option><option value="常" selected>常 · 5 万两</option><option value="盛">盛 · 12 万两</option></select><fieldset><legend>宾客（2–6 人）</legend>' +
@@ -107,7 +108,7 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
     fields =
       '<label for="person">本届秀女</label><select id="person">' +
       opt(s.harem.candidates) +
-      '</select><label for="rank">赐位</label><select id="rank"><option>贵人</option><option>常在</option><option>答应</option><option>嫔</option></select><p class="muted">选秀三年一次，非选秀年无法留牌。</p>';
+      '</select><label for="rank">赐位</label><select id="rank"><option>贵人</option><option>常在</option><option>答应</option><option>嫔</option></select><p class="muted">'+selectionDescription(s)+'</p>';
   if (kind === "出巡")
     fields =
       '<label for="destination">去向</label><select id="destination"><option>微服江南</option><option>游幸</option><option>狩猎</option><option>祭天</option></select><p class="warning">占满一旬，其他时段必须空白；出行期间奏报仍会积压。内帑支出 6 万两。</p>';

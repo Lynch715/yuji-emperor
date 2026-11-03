@@ -1,3 +1,5 @@
+import { FREEDOM_RULES, selectionYear } from "../core/freedom.js";
+import { globalYear } from "../core/calendar.js";
 import { requestScheduleIntents, requestPlayerIntents } from "./intent-request.js";
 import { resolveTalkIntents } from "../core/intents.js";
 import { postTitle, SCENARIOS, scenarioPreview } from "../core/scenarios.js";
@@ -43,7 +45,7 @@ import {
   ACTIONS,
   validateSchedule,
 } from "../core/turn.js";
-import { assignTutor } from "../core/harem.js";
+import { assignTutor, generateCandidates } from "../core/harem.js";
 import { requestCompletion, applyBiography } from "../core/chronicles.js";
 import { GOALS } from "../core/ambitions.js";
 import { talkAttempt } from "../core/court.js";
@@ -275,7 +277,7 @@ async function newGame() {
     "登基 · 定年号",
     '<form id="new-form"><div class="scenario-pick"><label for="scenario">开局</label><select id="scenario"><option value="">自拟王朝（架空）</option>' +
       SCENARIOS.map((sc) => '<option value="' + sc.id + '">' + esc(sc.title) + " · " + esc(sc.difficulty) + "</option>").join("") +
-      '</select><div id="scenario-card" class="scenario-card muted">自拟帝名与年号，开创自己的王朝。</div></div><div class="fields"><div><label for="emperor-name">皇帝名</label><input id="emperor-name" required maxlength="12" value="萧承熙"></div><div><label for="era-name">年号</label><input id="era-name" required maxlength="8" value="永宁"></div><div><label for="freedom">自由度</label><select id="freedom"><option value="mid">传奇</option><option value="free">随心所欲</option><option value="real">写实</option></select></div><div><label for="difficulty">难度</label><select id="difficulty"><option value="normal">常制</option><option value="easy">宽和</option><option value="hard">艰危</option></select></div><div><label for="prose-style">文笔</label><select id="prose-style">' +
+      '</select><div id="scenario-card" class="scenario-card muted">自拟帝名与年号，开创自己的王朝。</div></div><div class="fields"><div><label for="emperor-name">皇帝名</label><input id="emperor-name" required maxlength="12" value="萧承熙"></div><div><label for="era-name">年号</label><input id="era-name" required maxlength="8" value="永宁"></div><div><label for="freedom">自由度</label><select id="freedom"><option value="mid">一般</option><option value="free">随心所欲</option><option value="real">严格</option></select></div><div><label for="difficulty">难度</label><select id="difficulty"><option value="normal">常制</option><option value="easy">宽和</option><option value="hard">艰危</option></select></div><div><label for="prose-style">文笔</label><select id="prose-style">' +
       Object.entries(STYLES)
         .map(([k, v]) => '<option value="' + k + '">' + v.label + "</option>")
         .join("") +
@@ -543,7 +545,7 @@ function startTalk(person) {
       const result = attempt.result;
       await persist();
       let response = {
-        reply: result.intentResults?.length ? result.intentResults.map(r=>r.summary).join("；") : state.settings.prose === "modern" ? modernTalkFallback(result) : result.reply,
+        reply: result.intentResults?.some(r=>r.type!=='other') ? result.intentResults.map(r=>r.summary).join("；") : state.settings.prose === "modern" ? modernTalkFallback(result) : result.reply,
         innerThought: result.innerThought,
       };
       if (!state.settings.demo) {
@@ -713,21 +715,25 @@ async function command(name) {
         '<section class="narrative-settings" aria-label="故事文风"><h3>故事文风</h3><div class="fields"><div><label for="prose-style">文风</label><select id="prose-style">' +
           Object.entries(STYLES).map(([k, v]) => '<option value="' + k + '"' + (k === state.settings.prose ? " selected" : "") + ">" + esc(v.label) + "</option>").join("") +
           "</select></div>" + narrativeFields(state.settings) +
+          '<div><label for="freedom-mode">自由度</label><select id="freedom-mode">'+Object.entries(FREEDOM_RULES).map(([id,r])=>'<option value="'+id+'"'+(id===state.settings.freedom?' selected':'')+'>'+r.label+'</option>').join('')+'</select></div>' +
           '</div><p class="muted" id="prose-note">' + esc(proseNote()) + ' 用于之后的新故事。</p></section>',
       );
-      for (const id of ["prose-style", "prose-length", "prose-pov"])
+      for (const id of ["prose-style", "prose-length", "prose-pov", "freedom-mode"])
         $("#" + id).onchange = () => {
           if (readOnly || busy || state.pending) {
-            toast("请先过完本旬，再换文风");
+            toast("请先过完本旬，再换"+(id==='freedom-mode'?"自由度":"文风"));
+            $("#freedom-mode").value = state.settings.freedom;
             $("#prose-style").value = state.settings.prose;
             $("#prose-length").value = state.settings.length || "standard";
             $("#prose-pov").value = state.settings.pov || "third";
             return;
           }
-          state = { ...state, settings: { ...state.settings, prose: $("#prose-style").value, length: $("#prose-length").value, pov: $("#prose-pov").value } };
+          state = { ...state, settings: { ...state.settings, freedom: $("#freedom-mode").value, prose: $("#prose-style").value, length: $("#prose-length").value, pov: $("#prose-pov").value } };
+          if(id==='freedom-mode'&&selectionYear(state)&&(state.harem.selectionYear!==globalYear(state.turn)||!state.harem.candidates.length))state=generateCandidates(state);
           $("#prose-note").textContent = proseNote() + " 用于之后的新故事。";
           scheduleSave.schedule();
-          toast("文风已改为" + STYLES[state.settings.prose].label + " · " + LENGTHS[state.settings.length].label + " · " + POVS[state.settings.pov].label);
+          if(id==='freedom-mode')render();
+          toast(id==='freedom-mode' ? "自由度已改为" + FREEDOM_RULES[state.settings.freedom].label : "文风已改为" + STYLES[state.settings.prose].label + " · " + LENGTHS[state.settings.length].label + " · " + POVS[state.settings.pov].label);
         };
       $("#mode-toggle").onclick = () => {
         if (readOnly) {

@@ -1,3 +1,4 @@
+import { adjudicate } from "./freedom.js";
 import { clone } from "./state.js";
 import { check } from "./rng.js";
 import { applyPackage, growTalent } from "./effects.js";
@@ -24,13 +25,14 @@ export function privateAction(state, action, die = 11) {
   if (!target) throw new Error("请选择可接触的官员");
   if (operation === "收买" && s.nation.privy < 5)
     throw new Error("内帑不足以收买");
-  const verdict = check(
+  let verdict = check(
     s.emperor.talents[spec[0]],
     die,
     spec[1],
     target.abilities.才,
     s.emperor.mood < 20 ? -10 : 0,
   );
+  const outcome=adjudicate(s,verdict,target.id);s=outcome.state;verdict=outcome.verdict;
   if (operation === "收买")
     s = applyPackage(s, { privy: -5 }, "私下行事：收买成本");
   if (verdict.success) {

@@ -1,4 +1,5 @@
 import { postTitle } from "../core/scenarios.js";
+import { selectionDescription } from "./view-model.js";
 import { annualBudget, wasteQuote,grainBudget } from "../core/finance.js";
 import { esc, openDialog } from "./common.js";
 import { num, ledgerHTML, chapterHTML, chapterTitle, ambitionsHTML } from "./render.js";
@@ -151,7 +152,7 @@ export function palacePanel(s, name) {
         .join("") +
       '</div><h3 class="section-spacer">殿选秀女</h3><p class="muted">本届 ' +
       s.harem.candidates.length +
-      ' 位，三年一选。全部为成年候选人。</p><div class="grid">' +
+      ' 位。'+selectionDescription(s)+'全部为成年候选人。</p><div class="grid">' +
       s.harem.candidates
         .slice(0, 10)
         .map(

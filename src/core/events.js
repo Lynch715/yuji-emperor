@@ -1,3 +1,4 @@
+import { freedomRules } from "./freedom.js";
 import { remarkCategory, REMARK_KINDS } from "./memorial-decisions.js";
 import { routineTemplate, routineOptions } from "./memorial-templates.js";
 import { clone } from "./state.js";
@@ -94,8 +95,8 @@ export function resolveMemorial(
   if (option === "discuss") {
     const s = clone(state),
       mem = s.memorials.find((x) => x.id === id);
-    if ((mem.referrals || 0) >= 2)
-      throw new Error("此折已发部再议两次，请准驳裁处");
+    if ((mem.referrals || 0) >= freedomRules(s).referrals)
+      throw new Error("此折已发部再议"+freedomRules(s).referrals+"次，请准驳裁处");
     mem.referrals = (mem.referrals || 0) + 1;
     mem.due += 3;
     const t = s.threads.find((t) => t.id === mem.threadId);

@@ -1,3 +1,4 @@
+import { freedomRules, adjudicate } from "./freedom.js";
 import { clone } from "./state.js";
 import { applyPackage, clamp } from "./effects.js";
 import { roll, check } from "./rng.js";
@@ -25,7 +26,7 @@ export function diplomacyBlock(state, action) {
   if(!other)return '请选择外邦';
   if(other.status==='交战'&&!['议和','接见'].includes(operation))return '交战中只允许议和和接见';
   if(operation==='议和'&&other.status!=='交战')return '当前未交战';
-  if(operation==='互市'&&other.trade&&state.turn-other.trade.start<36)return '同一外邦一年内只能议互市一次';
+  if(operation==='互市'&&other.trade&&state.turn-other.trade.start<freedomRules(state).tradeCooldown)return '同一外邦一年内只能议互市一次';
   if(operation==='宣战'){
     if(!state.nation.army.frontiers.some(b=>b.dir===other.frontier))return '外邦未绑定有效边境';
     if(['婚盟','朝贡'].includes(other.status)&&!action.confirmBreach)return '宣战将撕毁盟约，请再次确认';
@@ -35,7 +36,7 @@ export function diplomacyBlock(state, action) {
 export function diplomacy(state, action, die) {
   const blocked=diplomacyBlock(state,action);if(blocked)throw new Error(blocked);
   let s = clone(state);
-  const other = s.foreign.find((f) => f.id === action.country);
+  let other = s.foreign.find((f) => f.id === action.country);
   if (!other) throw new Error("请选择外邦");
   const operation = action.operation || "接见";
   if(other.status==='交战'&&!['议和','接见'].includes(operation))throw new Error('交战中只允许议和和接见');
@@ -46,14 +47,15 @@ export function diplomacy(state, action, die) {
         (a, f) => a + (f.troops * f.readiness) / 100,
         0,
       ) / 2000;
-  const c = check(
+  let c = check(
     envoy?.abilities.才 || s.emperor.talents.魅力,
     die,
     "一般",
     0,
     (ownPower - other.power) * 0.2 + (other.attitude - 50) * 0.3,
   );
-  if(action.intent && s.settings.freedom==='free')c.success=true;
+  const outcome=adjudicate(s,['宣战','和亲'].includes(operation)?{...c,success:true}:c,envoy?.id);s=outcome.state;c=outcome.verdict;
+  other=s.foreign.find(f=>f.id===other.id);
   if (operation === "宣战") {
     const border=s.nation.army.frontiers.find(b=>b.dir===other.frontier);
     if(!border)throw new Error('外邦未绑定有效边境');
@@ -215,7 +217,7 @@ export function advanceCampaigns(state) {
 }
 export function checkCollapse(state) {
   const s = clone(state);
-  if (s.settings.freedom === "free" || s.ending?.type === "亡国") return s;
+  if (freedomRules(s).collapseImmune || s.ending?.type === "亡国") return s;
   const isCrisis = t => ["京畿危机", "京畿民变"].includes(t.type);
   const vulnerable = s.nation.morale < 18 && s.nation.treasury < 10;
   if (!vulnerable) {

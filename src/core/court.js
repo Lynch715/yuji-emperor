@@ -1,3 +1,4 @@
+import { freedomRules, adjudicate } from "./freedom.js";
 import { resolveMemorial,addEvent } from "./events.js";
 import { clone } from "./state.js";
 import { applyPackage, clamp } from "./effects.js";
@@ -119,7 +120,7 @@ export function courtYear(state) {
 export function officialDeathChance(age){return age>=80?0.15:age>=70?0.06:age>=60?0.02:0;}
 
 export function appoint(state, action) {
-  let s = clone(state);
+  let s = clone(state),concession=null;
   const post = s.court.posts.find((p) => p.id === action.post),
     person = s.court.officials.find((o) => o.id === action.person && o.alive);
   if (!post) throw new Error("请选择有效官职");
@@ -129,8 +130,8 @@ export function appoint(state, action) {
   if (
     !removing &&
     (!person ||
-      person.age < 25 ||
-      person.abilities.政 < (post.rank === 1 ? 40 : 25))
+      person.age < freedomRules(s).appointmentAge ||
+      person.abilities.政 < (post.rank === 1 ? freedomRules(s).firstRankTalent : freedomRules(s).otherTalent))
   )
     throw new Error("此人资历或能力不符任职要求");
   if (removing && !post.holder) throw new Error("此职空缺");
@@ -138,7 +139,8 @@ export function appoint(state, action) {
   if (strongman(s)) {
     const r = roll(s, 1, 20);
     s = r.state;
-    if (r.value < 8)
+    const outcome=adjudicate(s,{success:r.value>=8},person?.id);s=outcome.state;if(outcome.verdict.partial)concession={partial:true,cost:outcome.verdict.cost};
+    if (!outcome.verdict.success)
       return {
         state: applyPackage(s, { prestige: -1 }, "任命被权臣拦截"),
         note: "权臣封还任命，未能落实",
@@ -199,14 +201,15 @@ export function appoint(state, action) {
   return {
     state: s,
     note: removing ? "处分 " + old?.name : person.name + " 出任 " + post.title,
+    ...(concession||{}),
   };
 }
 export function talkAttempt(state, personId, line, structured = false) {
   if (
     state.talks.filter((t) => t.person === personId && t.turn === state.turn)
-      .length >= 3
+      .length >= freedomRules(state).talkRounds
   )
-    throw new Error("本旬面谈已三轮，请待下旬再议");
+    throw new Error("本旬面谈已达"+freedomRules(state).talkRounds+"轮，请待下旬再议");
   let s = clone(state);
   const person =
     s.court.officials.find((o) => o.id === personId && o.alive) ||
@@ -219,15 +222,10 @@ export function talkAttempt(state, personId, line, structured = false) {
     asking = !structured && /拨|钱|银|挪|给|赏|借/.test(line);
   const used = state.talks
     .filter((t) => t.person === personId && t.turn === state.turn)
-    .reduce((n, t) => n + (t.effects?.privy || 0), 0);
+    .reduce((n,t)=>n+(t.intentResults?.length?t.intentResults.filter(r=>r.type==='allocate'&&['success','partial'].includes(r.status)&&r.actual.source==='treasury').reduce((m,r)=>m+(r.actual.treasurySpent??r.actual.amount??0),0):(t.effects?.privy||0)),0);
   const cap =
-    isOfficial && post?.tags.includes("管钱")
-      ? Math.min(
-          Math.max(0, 20 - used),
-          Math.floor(s.nation.treasury * 0.03),
-          Math.floor((person.favor || 0) / 3),
-        )
-      : 0;
+    s.settings.freedom==='free'?s.nation.treasury:isOfficial && post?.tags.includes("管钱")
+      ? Math.min(Math.max(0,20*freedomRules(s).talkMultiplier-used),Math.floor(s.nation.treasury*0.03)*freedomRules(s).talkMultiplier,Math.floor((person.favor||0)/3)*freedomRules(s).talkMultiplier,s.nation.treasury):0;
   const r = roll(s);
   s = r.state;
   const kind = /威吓|问罪|斩|严惩/.test(line)
@@ -235,7 +233,7 @@ export function talkAttempt(state, personId, line, structured = false) {
     : /试探|秘密|暗查/.test(line)
       ? "试探"
       : "说服";
-  const verdict = check(
+  let verdict = check(
     s.emperor.talents[kind === "说服" ? "魅力" : "权谋"],
     r.value,
     "一般",
@@ -243,6 +241,7 @@ export function talkAttempt(state, personId, line, structured = false) {
     (s.emperor.mood < 20 ? -10 : 0) +
       (person.favor || person.attitude || 0) / 5,
   );
+  const outcome=structured?{state:s,verdict}:adjudicate(s,verdict,personId);s=outcome.state;verdict=outcome.verdict;
   const denied = asking && (requested > cap || cap === 0),
     effects =
       !denied && verdict.success && asking
@@ -270,6 +269,7 @@ export function talkAttempt(state, personId, line, structured = false) {
     denied,
     cap,
     effects,
+    ...(verdict.partial?{partial:true,cost:verdict.cost}:{}),
     reply: denied
       ? "臣无此职权，请容臣回去议。"
       : verdict.success
@@ -323,12 +323,13 @@ export function banquet(state, action) {
   ][r.value % 4];
   if (action.type === "鸿门宴") {
     const target = s.court.officials.find((o) => o.id === guests[0]);
-    const c = check(
+    let c = check(
       s.emperor.talents.权谋,
       r.value,
       "困难",
       target.abilities.才,
     );
+    const outcome=adjudicate(s,c,target?.id);s=outcome.state;c=outcome.verdict;
     s = applyPackage(
       s,
       {

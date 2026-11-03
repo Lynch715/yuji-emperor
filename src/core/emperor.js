@@ -1,3 +1,4 @@
+import { freedomRules } from "./freedom.js";
 import { clone } from "./state.js";
 import { applyPackage } from "./effects.js";
 import { roll } from "./rng.js";
@@ -14,7 +15,7 @@ export function settleEnergy(state, cost) {
   if (excess) {
     s = applyPackage(
       s,
-      { health: -2 * excess, mood: -3 * excess },
+      { health: -2 * excess * freedomRules(s).energyPenalty, mood: -3 * excess * freedomRules(s).energyPenalty },
       "勉力理政：透支 " + excess + " 点精力",
     );
     s.emperor.status.push("劳累");
@@ -27,7 +28,7 @@ export function emperorMonth(state) {
   let s = applyPackage(
     state,
     {
-      health: state.emperor.status.includes("劳累") ? -2 : 1,
+      health: state.emperor.status.includes("劳累") ? -2*freedomRules(state).energyPenalty : 1,
       mood: (55-state.emperor.mood)*0.05,
       virtue:(50-state.emperor.virtue)*0.02,
       prestige:(50-state.emperor.prestige)*0.02,

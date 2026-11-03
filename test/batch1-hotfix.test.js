@@ -16,7 +16,7 @@ import {validateTalk} from '../src/llm/validate.js';
 import {pack,unpack} from '../src/store/save.js';
 import {postTitle} from '../src/core/scenarios.js';
 
-const initial=()=>initialTurn(createState({seed:'批次1热修',demo:false}));
+const initial=()=>initialTurn(createState({seed:'批次1热修',demo:false,freedom:'real'}));
 const config={key:'fixture',base:'https://fixture.test',model:'fixture',provider:'custom'};
 const prose={chapter:{朝:'晓钟传到殿前。',午:'廊下风静。',夜:'御案灯影渐低。'},summary:'御前问对'};
 const response=data=>new Response(JSON.stringify({choices:[{message:{content:JSON.stringify(data)}}]}),{headers:{'Content-Type':'application/json'}});

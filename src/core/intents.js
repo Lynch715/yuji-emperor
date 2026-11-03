@@ -1,3 +1,4 @@
+import { adjudicate } from "./freedom.js";
 import { clone } from './state.js';
 import { applyPackage } from './effects.js';
 import { check, roll } from './rng.js';
@@ -40,8 +41,8 @@ function killPerson(s,id){
  const c=s.harem.consorts.find(c=>c.id===id);if(c){c.health=0;c.preg=null;c.retired=true;}
  const child=s.harem.children.find(c=>c.id===id);if(child){child.health=0;if(s.harem.heir===id)s.harem.heir=null;}
 }
-export function resolveIntents(state,actions,{slot='朝',source='decree'}={}){
- let s=clone(state);s.intentResults??=[];
+export function resolveIntents(state,actions,{slot='朝',source='decree',transferCap=Infinity}={}){
+ let s=clone(state);s.intentResults??=[];let transferLeft=transferCap;
  const results=[],facts=[];
  for(const a of actions){
   const id=s.runId+':'+s.turn+':'+source+':'+a.id;
@@ -49,12 +50,12 @@ export function resolveIntents(state,actions,{slot='朝',source='decree'}={}){
   const target=persons(s).find(o=>o.id===a.targetId),actor=target?.name;
   const factStart=facts.length;
   const r={id,turn:s.turn,slot:a.slot||slot,type:a.type,status:'failed',inputId:a.inputId,actual:{},clamped:false};
-  let success=s.settings.freedom==='free';
+  let success=false;
   if(a.type==='other'){r.status='narrative';r.summary='拟议：'+a.text;}
   else{
    const die=roll(s);s=die.state;r.die=die.value;
    const verdict=check(s.emperor.talents.权谋,die.value,'一般',target?.abilities?.权谋||target?.scheming||0);
-   success ||= verdict.success;r.baseSuccess=verdict.success;r.status=success?'success':'failed';
+   const judged=adjudicate(s,['appoint','dismiss','promote','imprison','war','decree'].includes(a.type)?{...verdict,success:true}:verdict,target?.id);s=judged.state;success=judged.verdict.success;r.baseSuccess=verdict.success;r.status=judged.verdict.partial?'partial':success?'success':'failed';if(judged.verdict.cost)r.cost=judged.verdict.cost;
    if(!success)r.summary='口谕未能落实';
    else try{
     if(s.regency)throw new Error('摄政期间不可下达此口谕');
@@ -62,19 +63,22 @@ export function resolveIntents(state,actions,{slot='朝',source='decree'}={}){
      if(!target||target.alive===false||target.health<=0){r.clamped=true;r.summary='此人已不在在世名册';}
      else{killPerson(s,target.id);r.actual={targetId:target.id,name:actor};r.summary=actor+'被赐死';facts.push({kind:'death',actors:[actor]});}
     }else if(['appoint','promote','dismiss','imprison'].includes(a.type)){
-     const current=s.court.posts.find(p=>p.holder===a.targetId),post=s.court.posts.find(p=>p.id===a.postId)||current;
+     const current=s.court.posts.find(p=>p.holder===a.targetId),post=s.court.posts.find(p=>p.id===a.postId)||(a.type==='promote'?s.court.posts.filter(p=>p.rank<(current?.rank||4)).sort((a,b)=>b.rank-a.rank)[0]:null)||current;
      if(!target?.abilities)throw new Error('此人不在官员名册');
      const operation=a.type==='dismiss'?'remove':a.type==='imprison'?'jail':'appoint';
+     if(!post&&operation==='jail'){s.court.officials.find(o=>o.id===target.id).jailed=true;r.actual={targetId:target.id};r.summary=actor+'被下狱';facts.push({kind:'appointment',actors:[actor],operation:'下狱'});r.facts=facts.slice(factStart);s.intentResults.push(r);results.push(r);continue;}
+     if(!post&&operation==='remove'){r.clamped=true;r.actual={targetId:target.id};r.summary=actor+'当前并无官职';r.facts=[];s.intentResults.push(r);results.push(r);continue;}
      if(!post)throw new Error('未找到可任免官职');
-     const result=appoint(s,{post:post.id,person:target.id,operation,pardon:false});s=result.state;r.summary=result.note;
+     const result=appoint(s,{post:post.id,person:target.id,operation,pardon:false});s=result.state;r.summary=result.note;if(result.check?.partial||result.partial||result.execution?.partial){r.status='partial';r.cost=result.check?.cost||result.cost||result.execution?.cost;}
      const done=operation==='appoint'?s.court.posts.find(p=>p.id===post.id)?.holder===target.id:!s.court.posts.find(p=>p.holder===target.id);
      if(!done)r.status='failed';
      else{r.actual={targetId:target.id,postId:post.id};facts.push({kind:'appointment',actors:[actor],operation:operation==='jail'?'下狱':operation==='remove'?'罢免':'任命',post:post.title});}
     }else if(a.type==='allocate'){
      const room=['treasury','privy','grain'].includes(a.destination)&&a.destination!==a.source?Math.max(0,1000000-s.nation[a.destination]):1000000;
      const origin=a.source==='capital'?s.nation.army.capital:s.nation.army.frontiers.find(b=>b.dir===a.source);
-     const cap=a.resource==='troops'?Math.min(Math.max(0,1000000-((a.destination==='capital'?s.nation.army.capital:s.nation.army.frontiers.find(b=>b.dir===a.destination))?.troops||0)),origin?origin.troops:Math.floor((s.nation[a.source]||0)*3000/EDICTS.征兵.cost)):Math.min(room,s.nation[a.source]||0);
-     const amount=Math.min(Math.max(0,a.amount||0),cap);r.clamped=amount!==a.amount;
+     const cap=a.source===a.destination?0:a.resource==='troops'?Math.min(Math.max(0,1000000-((a.destination==='capital'?s.nation.army.capital:s.nation.army.frontiers.find(b=>b.dir===a.destination))?.troops||0)),origin?origin.troops:Math.floor((s.nation[a.source]||0)*3000/EDICTS.征兵.cost),a.source==='treasury'?Math.floor(transferLeft*3000/EDICTS.征兵.cost):Infinity):Math.min(room,s.nation[a.source]||0);
+     const limited=Math.min(Math.max(0,a.amount||0),cap,a.source==='treasury'&&a.resource!=='troops'?transferLeft:Infinity),amount=a.resource==='troops'?Math.floor(limited):limited;
+     const treasurySpent=a.source==='treasury'?(a.resource==='troops'?amount*EDICTS.征兵.cost/3000:amount):0;transferLeft-=treasurySpent;r.clamped=amount!==a.amount;
      if(a.resource==='troops'){
       const army=a.destination==='capital'?s.nation.army.capital:s.nation.army.frontiers.find(b=>b.dir===a.destination);
       if(!army)throw new Error('未找到军队');if(origin)origin.troops-=Math.floor(amount);else s=applyPackage(s,{[a.source]:-Math.floor(amount)*EDICTS.征兵.cost/3000},'口谕征兵');
@@ -84,23 +88,24 @@ export function resolveIntents(state,actions,{slot='朝',source='decree'}={}){
       s=applyPackage(s,effects,'口谕调拨');
       if(EDICTS[a.destination]&&EDICTS[a.destination].months)s.projects.push({id:'intent-project-'+id,edictType:a.destination,start:s.turn,end:s.turn+EDICTS[a.destination].months*3,progress:0,execRate:1,cost:amount,office:EDICTS[a.destination].office,effects:{...EDICTS[a.destination].effects},province:null,done:false});
      }
-     r.actual={resource:a.resource,source:a.source,destination:a.destination,amount};
-     r.summary=(a.resource==='troops'?'征兵 '+Math.floor(amount)+' 人':(a.source==='grain'?'调粮 '+amount+' 万石':'拨银 '+amount+' 万两'))+(r.clamped?'（已按可用数量截断）':'');
+     r.actual={resource:a.resource,source:a.source,destination:a.destination,amount,treasurySpent};
+     r.summary=(a.resource==='troops'?(a.destination==='capital'?'京营':a.destination+'境')+'征兵 '+Math.floor(amount)+' 人':(a.source==='grain'?'调粮 '+amount+' 万石':'拨银 '+amount+' 万两'))+(r.clamped?'（已按可用数量截断）':'');
      facts.push({kind:'allocation',...r.actual});
     }else if(a.type==='favor'){
      const used=s.intentResults.filter(r=>r.turn===s.turn&&r.type==='favor'&&['success','partial'].includes(r.status)).reduce((n,r)=>n+Math.abs(r.actual.amount||0),0);
      const personal=s.intentResults.filter(r=>r.turn===s.turn&&r.type==='favor'&&r.actual.targetId===target.id&&['success','partial'].includes(r.status)).reduce((n,r)=>n+Math.abs(r.actual.amount||0),0);
-     const beforeFavor=target.favor||0;
+     const liveTarget=persons(s).find(o=>o.id===target.id);
+     const beforeFavor=liveTarget.favor||0;
      const amount=Math.sign(a.amount)*Math.min(Math.abs(a.amount),Math.max(0,10-used),Math.max(0,5-personal));r.clamped=amount!==a.amount;
-     if(target?.abilities)s=applyPackage(s,{official:{id:target.id,favor:amount}},'口谕赏罚');else if(target&&'favor' in target)target.favor=Math.max(0,Math.min(100,target.favor+amount));
+     if(target?.abilities)s=applyPackage(s,{official:{id:target.id,favor:amount}},'口谕赏罚');else if(liveTarget&&'favor' in liveTarget)liveTarget.favor=Math.max(0,Math.min(100,liveTarget.favor+amount));
      r.actual={targetId:target.id,amount:(persons(s).find(o=>o.id===target.id)?.favor||0)-beforeFavor};r.clamped=r.actual.amount!==a.requestedAmount;r.summary=actor+(amount>=0?'受到嘉奖':'受到申饬');
     }else if(a.type==='war'){
      const country=s.foreign.find(f=>f.id===a.countryId);if(!country)throw new Error('外邦不在名册');
      if(a.operation==='出兵'&&country.status==='交战'){r.summary='向'+country.name+'出兵';facts.push({kind:'war',actors:[country.name],outcome:'出兵'});}
-     else{const operation=a.operation==='出兵'?'宣战':a.operation;const result=diplomacy(s,{country:country.id,operation,confirmBreach:true,intent:true},die.value);s=result.state;r.summary=result.note;const done=operation==='议和'?s.foreign.find(f=>f.id===country.id).status!=='交战':true;if(!done)r.status='failed';else facts.push({kind:'war',actors:[country.name],outcome:operation});}
+     else{const operation=a.operation==='出兵'?'宣战':a.operation;const result=diplomacy(s,{country:country.id,operation,confirmBreach:true,intent:true},die.value);s=result.state;r.summary=result.note;if(result.check?.partial||result.partial||result.execution?.partial){r.status='partial';r.cost=result.check?.cost||result.cost||result.execution?.cost;}const done=operation==='议和'?s.foreign.find(f=>f.id===country.id).status!=='交战':true;if(!done)r.status='failed';else facts.push({kind:'war',actors:[country.name],outcome:operation});}
      r.actual={countryId:country.id,operation:a.operation};
     }else if(a.type==='decree'){
-     const result=issueEdict(s,{edictType:a.edictType,province:a.province,intent:true},die.value);s=result.state;r.summary=result.note;r.actual={edictType:a.edictType};
+     const result=issueEdict(s,{edictType:a.edictType,province:a.province,intent:true},die.value);s=result.state;r.summary=result.note;if(result.check?.partial||result.partial||result.execution?.partial){r.status='partial';r.cost=result.check?.cost||result.cost||result.execution?.cost;}r.actual={edictType:a.edictType};
      const label=result.note.match(/雷厉风行|照办|敷衍|阳奉阴违|封驳/)?.[0];if(label)facts.push({kind:'execution',slot:r.slot,topic:a.edictType,label});if(label==='封驳')r.status='failed';
     }
    }catch(error){r.status='failed';r.summary='口谕未能落实：'+error.message;}
@@ -111,7 +116,7 @@ export function resolveIntents(state,actions,{slot='朝',source='decree'}={}){
 }
 
 export function resolveTalkIntents(state,result,actions){
- const before=state.ledger.length,resolved=resolveIntents(state,actions,{slot:'午',source:result.id});
+ const before=state.ledger.length,resolved=resolveIntents(state,actions,{slot:'午',source:result.id,transferCap:result.cap});
  let s=resolved.state;
  const entries=auditChanges(state,s,s.ledger.slice(before),'御前口谕');
  s.ledger=[...s.ledger.slice(0,before),...entries];

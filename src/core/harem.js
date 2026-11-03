@@ -1,3 +1,4 @@
+import { freedomRules, selectionYear } from "./freedom.js";
 import { clone, reignId } from "./state.js";
 import { applyPackage, clamp } from "./effects.js";
 import { uniqueName, SURNAMES, GIVEN_NAMES, IMPERIAL_CHARS } from "./names.js";
@@ -20,15 +21,15 @@ export function rankAvailable(s, rank, except = null) {
     RANKS.includes(rank) &&
     s.harem.consorts.filter(
       (c) => c.rank === rank && c.id !== except && !c.cold && !c.retired,
-    ).length < (RANK_CAPS[rank] || Infinity)
+    ).length < (freedomRules(s).rankCaps?(RANK_CAPS[rank] || Infinity):Infinity)
   );
 }
 export function generateCandidates(state) {
   let s = clone(state);
-  if (globalYear(s.turn) % 3 !== 1) throw new Error("本年不是选秀年");
+  if (!selectionYear(s)) throw new Error("本年不是选秀年");
   if (s.regency || s.reign?.married === false) return s;
   const year=globalYear(s.turn);
-  if (s.harem.selectionYear === year) return s;
+  if (s.harem.selectionYear === year && (freedomRules(s).selectionPeriod || s.harem.candidates.length)) return s;
   const r = roll(s, 6, 10);
   s = r.state;
   s.harem.selectionYear = year;
@@ -37,14 +38,14 @@ export function generateCandidates(state) {
     const named=uniqueName(s);s=named.state;
     const draw=(a,b)=>{const r=roll(s,a,b);s=r.state;return r.value;};
     const faction=draw(0,s.court.factions.length-1);
-    s.harem.candidates.push({id:reignId(s)+'-candidate-'+year+'-'+i,name:named.name,
+    s.harem.candidates.push({id:reignId(s)+'-candidate-'+year+'-'+(freedomRules(s).selectionPeriod?'':s.turn+'-'+s.harem.consorts.length+'-')+i,name:named.name,
       age:draw(18,25),family:['仕宦之家','书香门第','勋贵世家','地方望族'][draw(0,3)],faction:s.court.factions[faction].id,
       appearance:draw(45,95),personality:['沉静','直率','敏慧','温和','谨慎'][draw(0,4)],ambition:draw(15,70),scheming:draw(15,75),health:85});
   }
   return s;
 }
 export function selectConsort(state, id, rank = "贵人") {
-  if (globalYear(state.turn) % 3 !== 1 || state.harem.selectionYear !== globalYear(state.turn))
+  if (!selectionYear(state) || state.harem.selectionYear !== globalYear(state.turn))
     throw new Error("本年不是选秀年");
   if(state.regency || state.reign?.married===false)throw new Error("须亲政大婚后方可选妃");
   let s = clone(state);
@@ -67,7 +68,7 @@ export function selectConsort(state, id, rank = "贵人") {
   });
   s.harem.candidates = s.harem.candidates.filter((c) => c.id !== id);
   s = applyPackage(s, { faction: { [c.faction]: 3 } }, "殿选赐位：" + c.name);
-  return s;
+  return !freedomRules(s).selectionPeriod&&!s.harem.candidates.length?generateCandidates(s):s;
 }
 export function canVisit(state, c) {
   return (

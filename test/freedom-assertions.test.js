@@ -13,3 +13,5 @@ for(const mode of ['free','mid','real']){
  test('第三步 A7 单位表 '+mode,()=>{const {s,f}=setup(mode);for(const line of ['户部调走九百九十九万石粮食。','仓中尚有九百九十九万斛。','赏田九百九十九万亩。','赐田九百九十九万顷。','征调九百九十九万匹。','新增九百九十九万户。','完成九十九成。','增至999%。'])assert.equal(text(s,f,line),'',line);assert.equal(text(s,f,'粮储'+f.state.nation.grain+'万石。'),'粮储'+f.state.nation.grain+'万石。');});
 }
 test('第三步 中文万亿和混写',()=>{for(const [raw,n] of [['一千万',10000000],['1亿2千万',120000000],['四亿三千万',430000000],['30.5万',305000],['二〇二六',2026],['1万零2',10002]])assert.equal(chineseNumber(raw),n,raw);});
+
+for(const mode of ['free','mid','real'])test('A1死亡绑定真正的对象 '+mode,()=>{const {s,f}=setup(mode),[a,b]=s.court.officials,line=a.name+'下令处死'+b.name+'。';f.facts=[{kind:'death',actors:[a.name]}];assert.equal(text(s,f,line),'');f.facts=[{kind:'death',actors:[b.name]}];assert.equal(text(s,f,line),line);});

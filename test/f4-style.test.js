@@ -65,5 +65,5 @@ test('F4 存档 v9：旧档补默认篇幅与视角，非法值回落默认',()=
 test('F4 开局与设置均可选择文风、篇幅、视角；中途修改不碰待续回合',()=>{
   const app=readFileSync('src/ui/app.js','utf8');
   assert.match(app,/narrativeFields\(\)/);assert.match(app,/故事文风/);
-  assert.match(app,/readOnly \|\| busy \|\| state\.pending\) \{\n\s*toast\("请先过完本旬，再换文风"\)/);
+  assert.match(app,/readOnly \|\| busy \|\| state\.pending\) \{\n\s*toast\("请先过完本旬，再换"/);
 });

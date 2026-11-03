@@ -40,13 +40,13 @@ export function actionButton(kind, s = null) {
     '" ' +
     (reason ? "disabled " : "") +
     'title="' +
-    esc(kind + " · " + (reason || actionMeta(kind))) +
+    esc(kind + " · " + (reason || actionMeta(kind, s))) +
     '"><span class="glyph" aria-hidden="true">' +
     GLYPHS[kind] +
     '</span><span class="action-copy"><strong>' +
     esc(label) +
     "</strong><small>" +
-    esc(reason || actionMeta(kind)) +
+    esc(reason || actionMeta(kind, s)) +
     "</small></span></button>"
   );
 }

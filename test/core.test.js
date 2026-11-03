@@ -43,7 +43,7 @@ test("effect whitelist clamps values and records every accepted scalar mutation"
   assert.equal(r.entries.length,s.nation.provinces.length+3);
   assertState(r.state);
 });
-test("energy, d20 thresholds, execution tiers and free freedom offset", () => {
+test("energy, d20 thresholds, strict execution tiers and free guaranteed execution", () => {
   const s = state();
   assert.equal(energyLimit(s), 9);
   assert.equal(fateModifier(20), 38);
@@ -59,7 +59,8 @@ test("energy, d20 thresholds, execution tiers and free freedom offset", () => {
   const low = execution(s, "赈灾", 1);
   assert.equal(low.label, "封驳");
   s.settings.freedom = "free";
-  assert.equal(execution(s, "赈灾", 1).score, low.score + 30);
+  assert.equal(execution(s, "赈灾", 1).score, low.score);
+  assert.equal(execution(s, "赈灾", 1).label,"照办");
 });
 test("month, quarter, year rollover and talent growth annual limits", () => {
   let s = state();

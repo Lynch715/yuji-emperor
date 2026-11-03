@@ -234,11 +234,18 @@ export function validateTurn(data, forecast) {
             new RegExp(pattern.source, "g"),
           )) {
             if (hypothetical(sentence.slice(0, claim.index)) || retrospective(sentence, kind)) continue;
+            let claimSubjects=subjects;
             if (kind === "death") {
               const fragment=sentence.slice(Math.max(0,claim.index-6),claim.index+claim[0].length+8);
               if (/(?:死去|死了|已死|被杀)[的了]*(?:念头|心|梦|希望)|(?:念头|梦想?|心|希望)[^，。]{0,3}(?:死去|死了|已死)/.test(fragment)) continue;
               // Death requires an explicit person/title in this sentence, never an inherited subject.
               if (!actors.length) continue;
+              const mentions=[...roster.map(o=>({alias:o.name,name:o.name})),...aliases].flatMap(a=>{
+                const at=sentence.lastIndexOf(a.alias,claim.index);return at>=0?[{name:a.name,at}]:[];
+              }).sort((a,b)=>b.at-a.at);
+              const suffix=sentence.slice(claim.index+claim[0].length);
+              const object=[...roster.map(o=>({alias:o.name,name:o.name})),...aliases].find(a=>suffix.startsWith(a.alias)||suffix.startsWith('了'+a.alias)||suffix.startsWith('的是'+a.alias));
+              claimSubjects=object?[object.name]:mentions.length?mentions.filter(m=>m.at===mentions[0].at).map(m=>m.name):actors;
             }
             const compatible = (f) => {
               if (kind === "war") {
@@ -278,8 +285,8 @@ export function validateTurn(data, forecast) {
               facts.some(
                 (f) =>
                   f.kind === kind &&
-                  (!subjects.length ||
-                    f.actors?.some((a) => subjects.includes(a))) &&
+                  (!claimSubjects.length ||
+                    f.actors?.some((a) => claimSubjects.includes(a))) &&
                   compatible(f),
               ) ||
               (!forecast.facts &&
@@ -425,7 +432,7 @@ export function validateWorld(data) {
 export function validateTalk(data, result, state) {
   const reply = cleanText(data.reply, 1200);
   if (!reply) throw new Error("面谈回复为空");
-  if(result.intentResults?.length){
+  if(result.success&&result.intentResults?.some(r=>r.type!=='other')){
     const f={state,die:result.die,newMemorials:[],slotResults:{朝:[],午:[],夜:[]},entries:result.intentEntries||[],notes:[],facts:result.intentFacts||[]};
     const checked=validateTurn({chapter:{朝:'',午:reply,夜:''}},f).chapter.午;
     return {reply:checked||result.intentResults.map(r=>r.summary).join('；'),innerThought:result.innerThought||'',effects:null};

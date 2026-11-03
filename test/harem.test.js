@@ -49,7 +49,7 @@ test("only an active night visit can conceive, birth after ten months and retry 
   assert.equal(found.stats.births, 1);
 });
 test("rank limits and triennial selection are enforced", () => {
-  let s = initial();
+  let s = initial();s.settings.freedom="real";
   assert.ok(s.harem.candidates.length >= 6 && s.harem.candidates.length <= 10);
   assert.throws(() => selectConsort(s, s.harem.candidates[0].id, "皇后"));
   s = selectConsort(s, s.harem.candidates[0].id, "贵人");

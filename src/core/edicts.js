@@ -1,3 +1,4 @@
+import { freedomRules, adjudicate } from "./freedom.js";
 import { quarterIndex } from "./finance.js";
 import { clone } from "./state.js";
 import { applyPackage, clamp } from "./effects.js";
@@ -119,14 +120,13 @@ export function execution(state, type, die) {
     ((faction?.attitude ?? 50) - 50) * 0.2 +
     (die - 10.5) -
     edict.difficulty +
-    (state.settings.freedom === "free" ? 30 : 0) +
     (state.settings.difficulty === "easy"
       ? 8
       : state.settings.difficulty === "hard"
         ? -8
         : 0);
-  const tier =
-    score >= 85 ? 0 : score >= 65 ? 1 : score >= 45 ? 2 : score >= 25 ? 3 : 4;
+  const baseTier=score>=85?0:score>=65?1:score>=45?2:score>=25?3:4;
+  const tier=freedomRules(state).k===1?Math.min(1,baseTier):baseTier;
   return {
     score: Math.round(score),
     label: ["雷厉风行", "照办", "敷衍", "阳奉阴违", "封驳"][tier],
@@ -137,15 +137,16 @@ export function execution(state, type, die) {
   };
 }
 export function edictBlock(state, type, province = null) {
+  if(!freedomRules(state).edictCooldown)return '';
   const same=p=>p.edictType===type&&(type!=='赈灾'||!province||!p.province||p.province===province);
   if(state.projects.some(p=>!p.done&&same(p)))return '同类旨意尚在途，请待竣结';
   const keys=type==='赈灾'?[type+':all',...(province?[type+':'+province]:Object.keys(state.edictCooldowns||{}).filter(k=>k.startsWith(type+':')))]:[type];
-  if(keys.some(k=>(state.edictCooldowns?.[k]||0)>state.turn))return '同类旨意尚在六旬冷却期';
+  if(keys.some(k=>(state.edictCooldowns?.[k]||0)>state.turn))return '同类旨意尚在'+freedomRules(state).edictCooldown+'旬冷却期';
   return '';
 }
 function finishInstant(s,type,province) {
   s.edictCooldowns ??= {};
-  s.edictCooldowns[type==='赈灾'?type+':'+(province||'all'):type]=s.turn+6;
+  s.edictCooldowns[type==='赈灾'?type+':'+(province||'all'):type]=s.turn+freedomRules(s).edictCooldown;
   return s;
 }
 export function issueEdict(state, action, die) {
@@ -187,13 +188,14 @@ export function issueEdict(state, action, die) {
   }
   const account = rule.private ? "privy" : "treasury";
   if (
-    state.nation[account] < rule.cost ||
-    state.nation.grain < (rule.grain || 0)
+    !action.intent && (state.nation[account] < rule.cost ||
+    state.nation.grain < (rule.grain || 0))
   )
     throw new Error("钱粮不足，无法下发此旨");
   let current = state,
-    exec = action.intent && state.settings.freedom==='free' ? {...execution(state,type,die),tier:1,label:"照办",rate:1,delay:1} : execution(state, type, die),
+    exec = action.intent && freedomRules(state).k===1 ? {...execution(state,type,die),tier:1,label:"照办",rate:1,delay:1} : execution(state, type, die),
     forced = false;
+  if(freedomRules(state).k&&exec.tier===4){const judged=adjudicate(current,{success:false});current=judged.state;if(judged.verdict.success)exec={...exec,tier:1,label:'照办',rate:1,delay:1,...(judged.verdict.partial?{partial:true,cost:judged.verdict.cost}:{})};}
   if (exec.tier === 4 && action.force) {
     const r = roll(current);
     current = r.state;
@@ -214,8 +216,8 @@ export function issueEdict(state, action, die) {
   let s = applyPackage(
     current,
     {
-      [account]: exec.tier===4?0:-rule.cost,
-      grain: exec.tier===4?0:-(rule.grain || 0),
+      [account]: exec.tier===4?0:-Math.min(rule.cost,current.nation[account]),
+      grain: exec.tier===4?0:-Math.min(rule.grain||0,current.nation.grain),
       prestige: exec.tier === 0 ? 2 : exec.tier === 4 ? -3 : 0,
     },
     type + (exec.tier===4?"：内阁封还，钱粮未付 / ":"：发付钱粮 / ") + exec.label,
@@ -228,7 +230,7 @@ export function issueEdict(state, action, die) {
       end: s.turn + Math.max(3, Math.ceil(rule.months * exec.delay) * 3),
       progress: 0,
       execRate: exec.rate,
-      cost: rule.cost,
+      cost: Math.min(rule.cost,current.nation[account]),
       office: rule.office,
       effects: Object.fromEntries(
         Object.entries(rule.effects).map(([k, v]) => [k, v * exec.rate]),
