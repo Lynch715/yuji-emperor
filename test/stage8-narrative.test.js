@@ -30,6 +30,11 @@ function fixture(label = "敷衍") {
     facts: [{ kind: "execution", slot: "朝", topic: "赈灾", label }],
   };
 }
+// F2：整段被删时以试读文案补足（其他段仍有正文时），判定以原句不复存在为准。
+const removed = (text, f) => {
+  const r = validate(text, f);
+  return !r.chapter.朝.includes(text) && (r.chapter.朝 === "" || r.fixNotes.some((n) => n.includes("补足")));
+};
 const validate = (text, f = fixture()) =>
   validateTurn(
     {
@@ -100,7 +105,7 @@ test("在状态中的兵数保留，数字类别不串用", () => {
     validate("京营有" + n + "人驻守。", f).chapter.朝,
     "京营有" + n + "人驻守。",
   );
-  assert.equal(validate("皇帝已满四百八十岁。", f).chapter.朝, "");
+  assert.ok(removed("皇帝已满四百八十岁。", f));
 });
 test("生死、孕事、任免、战果须匹配本旬人物与结果", () => {
   const f = fixture();
@@ -110,7 +115,7 @@ test("生死、孕事、任免、战果须匹配本旬人物与结果", () => {
     "皇帝忽然驾崩。",
     "朔庭一役大获全胜。",
   ])
-    assert.equal(validate(text, f).chapter.朝, "");
+    assert.ok(removed(text, f));
   f.facts.push(
     { kind: "pregnancy", actors: ["陆令仪"] },
     { kind: "appointment", actors: ["陆怀瑾"], operation: "任命" },
@@ -122,8 +127,8 @@ test("生死、孕事、任免、战果须匹配本旬人物与结果", () => {
     "朔庭一役大获全胜，捷书送到御前。",
   ])
     assert.equal(validate(text, f).chapter.朝, text);
-  assert.equal(validate("沈清蘅诊得喜脉。", f).chapter.朝, "");
-  assert.equal(validate("朔庭一役兵败。", f).chapter.朝, "");
+  assert.ok(removed("沈清蘅诊得喜脉。", f));
+  assert.ok(removed("朔庭一役兵败。", f));
 });
 test("死亡真实结算留存，非同人的死亡不通过", () => {
   const f = fixture();
@@ -132,7 +137,7 @@ test("死亡真实结算留存，非同人的死亡不通过", () => {
     validate("沈守正病故，朝中同僚闻讯肃立。", f).chapter.朝,
     "沈守正病故，朝中同僚闻讯肃立。",
   );
-  assert.equal(validate("陆怀瑾病故。", f).chapter.朝, "");
+  assert.ok(removed("陆怀瑾病故。", f));
 });
 test("历史结算单独保存，正文不拼结算字符串", () => {
   const s = initialTurn(createState({ seed: "单独记账" })),
@@ -160,5 +165,5 @@ for (const text of [
 });
 test("8.1 军伍户口语境仍核对人数，未知兵数不通过", () => {
   assert.equal(validate("十万名禁军已至宫门。殿外细雨渐密。").chapter.朝,"殿外细雨渐密。");
-  assert.equal(validate("征发三名兵丁充作亲卫。").chapter.朝,"");
+  assert.ok(removed("征发三名兵丁充作亲卫。"));
 });

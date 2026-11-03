@@ -6,6 +6,56 @@ export const STYLES = {
   classic: { label: "简古", rules: "文言浅白，叙述简练，不用生僻典故。" },
   warm: { label: "温润", rules: "从日常细节见人物，情绪含蓄，不用甜宠套话。" },
 };
+// 结算聚合：同一项合并，丢弃微小变动，取整并译成中文，供叙事参考。
+// 起居注仍展示完整账目；校验仍以完整结算为据。
+const NATION_LABELS = { treasury: ["国库", "万两", 0.1], privy: ["内帑", "万两", 0.1], grain: ["粮储", "万石", 0.1], grainArrears: ["粮欠", "万石", 0.1], treasuryArrears: ["国库积欠", "万两", 0.1], privyArrears: ["内帑积欠", "万两", 0.1], morale: ["民心", "", 0.5], governance: ["吏治", "", 0.5] };
+const EMPEROR_LABELS = { prestige: "皇威", virtue: "圣德", mood: "心情", health: "健康", energy: "精力" };
+const PERSON_LABELS = { favor: "好感", mood: "心情", health: "健康" };
+const FACTION_LABELS = { power: "势力", attitude: "态度" };
+const PROVINCE_LABELS = { morale: "民心", disaster: "灾情", pop: "人口" };
+function digestLabel(state, path) {
+  const p = path.split(".");
+  const find = (list, id) => (list || []).find((x) => x.id === id);
+  if (p[0] === "nation" && NATION_LABELS[p[1]] && p.length === 2) return NATION_LABELS[p[1]];
+  if (p[0] === "nation" && p[1] === "army" && p.at(-1) === "threat") return ["边患" + (Number(p[3]) + 1 || ""), "", 1];
+  if (p[0] === "emperor" && EMPEROR_LABELS[p[1]] && p.length === 2) return [EMPEROR_LABELS[p[1]], "", 0.5];
+  if (p[0] === "province" && PROVINCE_LABELS[p[2]]) {
+    const z = find(state.nation.provinces, p[1]);
+    return [(z?.name || "某州") + PROVINCE_LABELS[p[2]], p[2] === "pop" ? "万口" : "", 1];
+  }
+  if (p[0] === "faction" && FACTION_LABELS[p[2]]) return [(find(state.court.factions, p[1])?.name || "某派") + FACTION_LABELS[p[2]], "", 1];
+  if (p[0] === "official" && PERSON_LABELS[p[2]]) {
+    const o = find(state.court.officials, p[1]);
+    return o ? [o.name + PERSON_LABELS[p[2]], "", 1] : null;
+  }
+  if (p[0] === "consort" && PERSON_LABELS[p[2]]) {
+    const c = find(state.harem.consorts, p[1]);
+    return c ? [c.name + PERSON_LABELS[p[2]], "", 1] : null;
+  }
+  return null;
+}
+const round1 = (n) => Math.round(n * 10) / 10;
+export function settlementDigest(state, entries = []) {
+  const groups = new Map();
+  for (const e of entries) {
+    const label = digestLabel(state, e.path);
+    if (!label || !Number.isFinite(e.delta)) continue;
+    const g = groups.get(label[0]) || { label: label[0], unit: label[1], min: label[2], delta: 0, sources: new Map() };
+    g.delta += e.delta;
+    if (e.source) g.sources.set(e.source, (g.sources.get(e.source) || 0) + Math.abs(e.delta));
+    groups.set(label[0], g);
+  }
+  let minorProvinces = 0;
+  const out = [];
+  for (const g of groups.values()) {
+    if (Math.abs(g.delta) < g.min) { if (/民心$/.test(g.label) && g.label !== "民心") minorProvinces++; continue; }
+    const value = g.min < 1 ? round1(g.delta) : Math.round(g.delta);
+    const why = [...g.sources].sort((a, b) => b[1] - a[1]).slice(0, 2).map(([k]) => k).join("；");
+    out.push(g.label + (value > 0 ? " +" : " ") + value + g.unit + (why ? "（" + why + "）" : ""));
+  }
+  if (minorProvinces) out.push("另有" + minorProvinces + "州民心微动");
+  return out;
+}
 export function worldRules(state) {
   const style = STYLES[state.settings.prose] || STYLES.court;
   return `你是架空王朝「${state.dynasty}」的叙事引擎，制度近似明清。只输出一个 JSON 对象。\n铁律：引擎记账，模型叙事。所有钱粮、人物、派系、健康、受孕、生育、死亡、升迁、战争胜负、执行度由结算表决定，你不得追加或改写硬结果，不得另给数字。名册姓名一字不改，大臣称陛下、自称臣，妃嫔自称臣妾。人物各有利益。文风「${style.label}」：${style.rules} 白描，禁用嘴角勾起、眼中闪过一丝、现代词；对话用「」。亲密场面点到为止，禁止描写性行为或身体细节。${state.settings.freedom === "free" ? "随心所欲：宽容传奇，仍以引擎结果为准。" : state.settings.freedom === "real" ? "写实：成败有代价，人物不必讨好皇帝。" : "传奇：礼制内的戏剧性，不替玩家决定。"}`;
@@ -65,7 +115,10 @@ export function turnMessages(state, forecast) {
     前尘: (state.volumes||before.volumes||[]).slice(-3).map((v) => v.summary),
     长期事实: state.facts.slice(-30),
     在途政务: state.projects.filter((p) => !p.done),
-    宏愿: state.ambitions,
+    宏愿: state.ambitions.filter((a) => a.status !== "达成").map((a) => ({
+      id: a.id, title: a.title, progress: a.progress,
+      剧情目标: a.objectives.filter((o) => o.type === "story" && !o.done).map((o) => ({ objectiveId: o.id, keywords: o.keywords })),
+    })),
     本旬前后变化: {
       国势: { 之前: nationSummary(before), 之后: nationSummary(state) },
       人物旧况: oldRoster.filter((line) => !newRoster.includes(line)),
@@ -76,7 +129,7 @@ export function turnMessages(state, forecast) {
     { role: "system", content: worldRules(state) },
     {
       role: "user",
-      content: `把本旬写成「朝」「午」「夜」三段，每段120–300字，空槽可略写。必须表现结算表的执行度与成败。正文只写故事，不抄结算条目；起居注会另行展示结算。廷议按名单立场写。为新奏报写60–120字正文。风闻只写无关痛痒的市井传言。人物反应仅可建议好感-5到5。剧情条件证据必须逐字引用本章原句。\n输出：{"chapter":{"朝":"","午":"","夜":""},"summary":"30字内","memorialTexts":[{"id":"","text":""}],"reactions":[{"name":"名册全名","favorDelta":0,"mood":"","note":""}],"rumors":[],"ambitionEvidence":[],"factUpdates":[]}\n【状态】${JSON.stringify(context)}\n【玩家排程】${JSON.stringify(forecast.schedule)}\n【本旬结算表（不可更改）】${JSON.stringify({ die: forecast.die, fate: forecast.fate, slots: forecast.slotResults, entries: forecast.entries, notes: forecast.notes, facts: forecast.facts || [] })}\n【廷议名单】${JSON.stringify(forecast.debate || [])}\n【新奏报】${JSON.stringify(forecast.newMemorials.map((m) => ({ id: m.id, title: m.title, from: m.from })))}`,
+      content: `把本旬写成「朝」「午」「夜」三段，每段120–300字，空槽可略写。必须表现结算表的执行度与成败。正文只写故事，不抄结算条目；起居注会另行展示结算。廷议按名单立场写。为新奏报写60–120字正文。风闻只写无关痛痒的市井传言。死亡、怀孕、生产、小产、任免、战果、执行度只在结算表列出时才可写成本旬发生；其余只能作回忆或传闻，并用“曾”“昔”“当年”标明。不写结算表以外的金额、人数、年龄。人物反应仅限官员，须在本章出场，每人好感-5到5，合计绝对值不超过10。宏愿证据须逐字引用本章原句并含该目标全部关键词。长期事实只记本章写明、日后仍成立的事。\n输出：{"chapter":{"朝":"","午":"","夜":""},"summary":"30字内","memorialTexts":[{"id":"","text":""}],"reactions":[{"name":"官员全名","favorDelta":0,"mood":"","note":""}],"rumors":[],"ambitionEvidence":[{"id":"","objectiveId":"","evidence":""}],"factUpdates":[{"subject":"","key":"","value":"","reason":""}]}\n【状态】${JSON.stringify(context)}\n【玩家排程】${JSON.stringify(forecast.schedule)}\n【本旬结算表（不可更改）】${JSON.stringify({ die: forecast.die, fate: forecast.fate, slots: forecast.slotResults, 账目: settlementDigest(state, forecast.entries), notes: forecast.notes, facts: forecast.facts || [] })}\n【廷议名单】${JSON.stringify(forecast.debate || [])}\n【新奏报】${JSON.stringify(forecast.newMemorials.map((m) => ({ id: m.id, title: m.title, from: m.from })))}`,
     },
   ];
 }
@@ -86,7 +139,7 @@ export function worldMessages(state) {
     {
       role: "user",
       content:
-        '铸造王朝，只给文案，不给任何数值。输出 {"dynasty":"王朝名","era":"年号","backstory":"为何登基及继位局面","factions":[{"name":"","demand":""}],"officials":[{"name":"","personality":"","life":"","secret":""}],"consorts":[{"name":"","family":"","secret":""}],"foreign":[{"name":"","ruler":"","demand":""}],"provinces":[{"name":"","description":""}],"dowager":"太后名"}。依次生成六派系、25位官员、3位成年妃嫔、5外邦、12州。引擎赋值，不得更动玩家名与年号。',
+        '铸造王朝，只给文案，不给任何数值。输出 {"dynasty":"王朝名","backstory":"为何登基及继位局面","factions":[{"name":"","demand":""}],"officials":[{"name":"","personality":"","life":"","secret":""}],"consorts":[{"name":"","family":"","secret":""}],"foreign":[{"name":"","ruler":"","demand":""}],"provinces":[{"name":"","description":""}],"dowager":"太后名"}。依次生成六派系、25位官员、3位成年妃嫔、5外邦、12州。引擎赋值，不得更动玩家名与年号。',
     },
   ];
 }
@@ -101,7 +154,7 @@ export function talkMessages(state, result, log) {
     { role: "system", content: worldRules(state) },
     {
       role: "user",
-      content: `扮演 ${npc.name} 御前面谈。只写此人言行，成功才让步，失败不得让步，effects 不得超过职权。未提供的秘密不得编造，未允时不得承诺拨款、调兵或落实请求。输出 {"reply":"","innerThought":"","mood":"","favor":0,"effects":null,"revealSecret":false,"endTalk":false,"summary":""}。\n【资料】${JSON.stringify(card)}${known ? "\n【已获准参考的秘密】" + secret : ""}\n【此人能做到什么】拨款上限 ${result.cap} 万两，其他职权外请求必须回去议，妃嫔不能给钱兵。\n【引擎判定】${JSON.stringify(result)}\n【对话】${JSON.stringify(log.slice(-6))}`,
+      content: `扮演 ${npc.name} 御前面谈。只写此人言行，成功才让步，失败不得让步，effects 不得超过职权。未提供的秘密不得编造，未允时不得承诺拨款、调兵或落实请求。输出 {"reply":"","innerThought":"","mood":"","summary":""}。好感、让步与秘密是否揭露由引擎判定，照判定写即可。\n【资料】${JSON.stringify(card)}${known ? "\n【已获准参考的秘密】" + secret : ""}\n【此人能做到什么】拨款上限 ${result.cap} 万两，其他职权外请求必须回去议，妃嫔不能给钱兵。\n【引擎判定】${JSON.stringify(result)}\n【对话】${JSON.stringify(log.slice(-6))}`,
     },
   ];
 }
