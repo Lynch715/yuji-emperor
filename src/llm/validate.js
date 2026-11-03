@@ -108,10 +108,18 @@ export function validateProbe(data) {
     throw new Error("接口已响应，但 JSON 字段不符合要求");
   return { ok: true, message: cleanText(data.message, 500) };
 }
+// 试读伏笔：只取下旬确实还在的急报或在途政务，不作任何断言。
+export function mockHook(forecast) {
+  const s = forecast.state, urgent = s?.memorials?.find((m) => m.urgent);
+  if (urgent) return "下旬，「" + urgent.title + "」仍待御前裁处。";
+  const project = s?.projects?.find((p) => !p.done && p.end > s.turn);
+  return project ? "下旬，" + (project.name || project.type || "在途政务") + "尚未竣事。" : "";
+}
 export function mockNarrative(forecast) {
   return {
     chapter:sceneNarrative(forecast),
     summary: "本旬" + forecast.fate + "，诸事已据实落账",
+    hook: mockHook(forecast),
     memorialTexts: forecast.newMemorials.map((m) => ({
       id: m.id,
       text:
@@ -490,6 +498,7 @@ export function validateTurn(data, forecast) {
   return {
     chapter,
     summary: scrutinize(cleanText(data.summary, 100), null) || fallback.summary,
+    hook: scrutinize(cleanText(data.hook, 60), null),
     reactions,
     memorialTexts: (Array.isArray(data.memorialTexts) ? data.memorialTexts : [])
       .filter((m) => forecast.newMemorials.some((n) => n.id === m.id))

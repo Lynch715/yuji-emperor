@@ -241,6 +241,7 @@ export function chapterHTML(h, ambitions = []) {
           "<h3>" + slot + "</h3><p>" + esc(h.chapter[slot] || "略。") + "</p>",
       )
       .join("") +
+    (h.hook ? '<p class="chapter-hook">' + esc(h.hook) + "</p>" : "") +
     '</div><div class="chapter-tabs"><details class="ledger"><summary>起居注 ' +
     h.entries.length +
     ' 条</summary><div class="chapter-detail">' +
@@ -536,6 +537,9 @@ export function renderApp(
         "</div>" +
         (canRepeat && !scheduled && !locked
           ? '<button class="repeat-trigger" data-command="repeat">沿用上旬</button>'
+          : "") +
+        (!scheduled && !locked && s
+          ? '<button class="repeat-trigger" data-command="delegate">委政</button>'
           : "") +
         '<button class="oral-trigger" data-command="oral" ' +
         (locked ? "disabled" : "") +

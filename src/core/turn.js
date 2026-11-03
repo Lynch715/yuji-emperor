@@ -452,6 +452,7 @@ function commitDraft(state, forecast, narrative = {}) {
     era: clone(state.era),
     chapter: narrative.chapter || {},
     summary: String(narrative.summary || "本旬诸事已入起居注").slice(0, 100),
+    ...(typeof narrative.hook === "string" && narrative.hook.trim() ? { hook: narrative.hook.slice(0, 60) } : {}),
     entries: clone(s.ledger),
     settlement: {
       slotResults: clone(forecast.slotResults),
