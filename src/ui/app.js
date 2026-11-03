@@ -28,7 +28,7 @@ import {
 } from "./render.js";
 import { memorialDialog, scheduledMemorialDialog } from "./memorials.js";
 import { memorialAssignments } from "./memorial-state.js";
-import { actionAvailability, repeatSchedule } from "./view-model.js";
+import { actionAvailability, repeatSchedule, delegateSchedule, delegateStop } from "./view-model.js";
 import { actionDialog } from "./actions.js";
 import { palacePanel } from "./panels.js";
 import { createSaveStore, createIDB } from "../store/save.js";
@@ -722,6 +722,30 @@ async function command(name) {
   if (name === "new") return newGame();
   if (name === "saves") return showSaves();
   if (name === "advance") return advance();
+  if (name === "delegate") {
+    guard();
+    openDialog("委政内阁",
+      '<p class="muted">内阁依票拟批阅非急报，其余时辰歇息；正文按试读笔法简记，不请求叙事接口。遇亡故、孕产、战事、急报或封卷即停，交还御前。</p><div class="dialog-actions">' +
+        [3, 6, 12].map((n) => '<button type="button" data-delegate="' + n + '">' + n + " 旬</button>").join("") + "</div>", "drawer");
+    $("#modal").onclick = async (e) => {
+      const n = Number(e.target.closest("[data-delegate]")?.dataset.delegate);
+      if (!n) return;
+      closeDialog();
+      let done = 0, stop = "";
+      for (; done < n; done++) {
+        const plan = delegateSchedule(state);
+        if (!plan.schedule) { stop = plan.reason; break; }
+        state = { ...state, schedule: plan.schedule };
+        const before = state.turn;
+        await advance(true);
+        if (state.turn === before) { stop = "落账未完成"; break; }
+        stop = delegateStop(state);
+        if (stop) { done++; break; }
+      }
+      toast("委政 " + done + " 旬" + (stop ? "，" + stop + "，请御前裁处" : "，已交还御前"));
+    };
+    return;
+  }
   if (name === "repeat") {
     guard();
     const next = repeatSchedule(state, lastScheduleFor(state));

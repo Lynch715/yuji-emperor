@@ -5,6 +5,7 @@ import { annualBudget } from "../core/finance.js";
 import { EDICTS, execution } from "../core/edicts.js";
 import { globalYear } from "../core/calendar.js";
 import { availableMemorials } from "./memorial-state.js";
+import { cabinetDraft } from "../core/court.js";
 export const ACTION_GROUPS = [
   ["朝政", ["上朝", "批折", "下旨", "任命"]],
   ["人事", ["召见", "宴请", "外交", "私下行事"]],
@@ -97,4 +98,28 @@ export function repeatSchedule(s, last) {
     try { validateSchedule(s, trial); next[slot] = trial[slot]; } catch {}
   }
   return next;
+}
+
+// 委政内阁：内阁依票拟批最多六本非急报，其余时辰歇息。有急报、御驾在外或封卷时不可委政。
+export function delegateSchedule(s) {
+  if (!s || s.ending || s.pending) return { schedule: null, reason: "本旬尚未完结" };
+  if (s.memorials.some((m) => m.urgent)) return { schedule: null, reason: "有急报待亲裁" };
+  if (s.campaigns.some((w) => w.personal && !w.done)) return { schedule: null, reason: "御驾在外" };
+  const picks = s.memorials.map((m) => ({ m, d: cabinetDraft(s, m) })).filter((x) => x.d).slice(0, 6);
+  const schedule = { 朝: null, 午: null, 夜: { kind: "歇息" } };
+  if (picks.length)
+    schedule.朝 = { kind: "批折", memorials: picks.map((x) => x.m.id), stance: "依旨施行", target: s.court.officials[0]?.id || "",
+      decisions: Object.fromEntries(picks.map((x) => [x.m.id, { option: x.d.option, remark: "" }])), label: "内阁票拟 " + picks.length + " 本" };
+  try { validateSchedule(s, schedule); } catch (e) { return { schedule: null, reason: e.message }; }
+  return { schedule, reason: "" };
+}
+// 本旬落账后若出现生死、孕产、战事、急报或封卷，停止委政，交还御前。
+export const DELEGATE_STOPS = { death: "有人亡故", war: "边事有变", birth: "皇嗣诞生", pregnancy: "宫中有喜", miscarriage: "宫中小产" };
+export function delegateStop(s) {
+  if (!s) return "无卷";
+  if (s.ending) return "本朝封卷";
+  const last = s.history.at(-1), fact = (last?.settlement?.facts || []).find((f) => DELEGATE_STOPS[f.kind]);
+  if (fact) return DELEGATE_STOPS[fact.kind];
+  if (s.memorials.some((m) => m.urgent)) return "急报呈至";
+  return "";
 }

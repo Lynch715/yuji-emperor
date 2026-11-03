@@ -2420,3 +2420,8 @@ button.primary:not(:disabled):active {
 .scenario-card p {
   margin: var(--s2) var(--s0);
 }
+.chapter-hook {
+  margin-top: var(--s5);
+  color: var(--gold);
+  text-indent: 0;
+}
