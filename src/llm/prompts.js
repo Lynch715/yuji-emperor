@@ -1,3 +1,4 @@
+import { postTitle, scenarioById } from "../core/scenarios.js";
 // 文风：规则 + 范文。范文只示范笔法，人物与事件不得照搬；它们位于系统提示，
 // 整局不变，同时延长可缓存前缀。
 export const STYLES = {
@@ -81,7 +82,11 @@ export function settlementDigest(state, entries = []) {
 export function worldRules(state) {
   const style = STYLES[state.settings.prose] || STYLES.court,
     pov = POVS[state.settings.pov] || POVS.third;
-  return `你是架空王朝「${state.dynasty}」的叙事引擎，制度近似明清。只输出一个 JSON 对象。\n铁律：引擎记账，模型叙事。所有钱粮、人物、派系、健康、受孕、生育、死亡、升迁、战争胜负、执行度由结算表决定，你不得追加或改写硬结果，不得另给数字。名册姓名一字不改，大臣称陛下、自称臣，妃嫔自称臣妾。人物各有利益。文风「${style.label}」：${style.rules}${pov.rules}\n【文风范文（只学笔法，不照搬人物与事件）】${style.sample}\n白描，禁用嘴角勾起、眼中闪过一丝、现代词；对话用「」。亲密场面点到为止，禁止描写性行为或身体细节。${state.settings.freedom === "free" ? "随心所欲：宽容传奇，仍以引擎结果为准。" : state.settings.freedom === "real" ? "写实：成败有代价，人物不必讨好皇帝。" : "传奇：礼制内的戏剧性，不替玩家决定。"}`;
+  const sc = scenarioById(state.scenario);
+  const frame = sc
+    ? `你是「${state.dynasty}」朝的叙事引擎。本局以${sc.year}${sc.title.split(" · ")[0]}即位之初的史实开局，官职、地名用该朝称谓（见王朝设定）。史实只用于人物性格、关系与背景；本局自开局起已偏离史实，生死、成败、任免一律以引擎结算为准，不得按史书预言或补写结局，也不得写开局之后的史事。`
+    : `你是架空王朝「${state.dynasty}」的叙事引擎，制度近似明清。`;
+  return `${frame}只输出一个 JSON 对象。\n铁律：引擎记账，模型叙事。所有钱粮、人物、派系、健康、受孕、生育、死亡、升迁、战争胜负、执行度由结算表决定，你不得追加或改写硬结果，不得另给数字。名册姓名一字不改，大臣称陛下、自称臣，妃嫔自称臣妾。人物各有利益。文风「${style.label}」：${style.rules}${pov.rules}\n【文风范文（只学笔法，不照搬人物与事件）】${style.sample}\n白描，禁用嘴角勾起、眼中闪过一丝、现代词；对话用「」。亲密场面点到为止，禁止描写性行为或身体细节。${state.settings.freedom === "free" ? "随心所欲：宽容传奇，仍以引擎结果为准。" : state.settings.freedom === "real" ? "写实：成败有代价，人物不必讨好皇帝。" : "传奇：礼制内的戏剧性，不替玩家决定。"}`;
 }
 export function roster(state) {
   return state.court.officials
@@ -92,7 +97,7 @@ export function roster(state) {
         "｜" +
         o.name +
         "｜" +
-        (state.court.posts.find((p) => p.holder === o.id)?.title || "待任") +
+        (postTitle(state, state.court.posts.find((p) => p.holder === o.id)) || "待任") +
         "｜" +
         (state.court.factions.find((f) => f.id === o.faction)?.name || "无党") +
         "｜好感" +
@@ -105,7 +110,7 @@ export function roster(state) {
       [state.emperor.name + "｜皇帝"],
       state.harem.children.filter(c=>c.health>0&&c.id!==state.reign?.emperorId&&c.name!==state.emperor.name).map((c) =>
         c.id + "｜" + c.name + "｜" + (c.id === state.harem.heir ? "储君" : c.sex === "男" ? "皇子" : "公主")),
-      [(state.dowager || "慈宁太后") + "｜太后"],
+      state.scenario && !state.dowager ? [] : [(state.dowager || "慈宁太后") + "｜太后"],
       (state.harem.royalWomen || []).map((w) => w.id + "｜" + w.name + "｜宗室女"),
       state.foreign.map((f) => f.id + "｜" + f.ruler + "｜" + f.name + "君主｜" + f.status),
     )
@@ -130,7 +135,7 @@ const TASK_RULES = `【叙事守则】死亡、怀孕、生产、小产、任免
 面谈输出 {"reply":"","innerThought":"","mood":"","summary":""}`;
 // L1：静态资料，按 id 排序，不含好感、势力等数值。
 export function dynastyBible(state) {
-  const post = (id) => state.court.posts.find((p) => p.holder === id)?.title || "待任";
+  const post = (id) => postTitle(state, state.court.posts.find((p) => p.holder === id)) || "待任";
   const faction = (id) => state.court.factions.find((f) => f.id === id)?.name || "无党";
   const byId = (a, b) => String(a.id).localeCompare(String(b.id));
   return "【王朝设定】" + stable({
@@ -141,7 +146,7 @@ export function dynastyBible(state) {
     后宫: state.harem.consorts.slice().sort(byId).map((c) => [c.id, c.name, c.rank, c.family].join("｜")),
     皇嗣: state.harem.children.filter((c) => c.health > 0 && c.id !== state.reign?.emperorId && c.name !== state.emperor.name)
       .slice().sort(byId).map((c) => [c.id, c.name, c.id === state.harem.heir ? "储君" : c.sex === "男" ? "皇子" : "公主"].join("｜")),
-    太后: state.dowager || "慈宁太后",
+    太后: state.scenario && !state.dowager ? "无" : state.dowager || "慈宁太后",
     宗室女: (state.harem.royalWomen || []).map((w) => w.id + "｜" + w.name),
     外邦: state.foreign.map((f) => [f.id, f.name, f.ruler].join("｜")),
     州郡: state.nation.provinces.map((z) => z.name),
@@ -236,7 +241,7 @@ export function talkMessages(state, result, log = []) {
     state.foreign.find((o) => o.id === result.person);
   const { secret, secretKnown, memory, life, favor, attitude, mood, health, ...card } = npc;
   const known = secretKnown || (result.kind === "试探" && result.success);
-  const post = state.court.posts.find((p) => p.holder === npc.id)?.title;
+  const post = postTitle(state, state.court.posts.find((p) => p.holder === npc.id));
   const header = dynastyBible(state) + "\n【面谈对象】" + stable({ id: card.id, name: card.name, 职位: post || card.rank || card.status || "", personality: card.personality, family: card.family, faction: card.faction, ruler: card.ruler, demand: card.demand }) +
     "\n【此人能做到什么】妃嫔不能给钱兵；其他职权外请求必须回去议。\n";
   const prior = (Array.isArray(log) ? log : [])

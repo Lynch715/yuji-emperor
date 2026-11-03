@@ -169,7 +169,7 @@ export function haremMonth(state) {
       const m = s.harem.consorts.find((c) => c.id === mother.id),
         index = s.harem.children.length + 1;
       const sex = r.value <= 51 ? "男" : "女";
-      const prefix=(s.imperialSurname || s.emperor.name[0])+(sex==='男'?'景':'昭');
+      const prefix=s.childNaming?.[sex] ?? (s.imperialSurname || s.emperor.name[0])+(sex==='男'?'景':'昭');
       const named=uniqueName(s,{names:IMPERIAL_CHARS.map(c=>prefix+c),prefix});s=named.state;
       s.harem.children.push({
         id: "child-" + s.runId + "-" + index,

@@ -1,3 +1,4 @@
+import { postTitle, SCENARIOS, scenarioPreview } from "../core/scenarios.js";
 import { createDebouncedSave } from "../store/debounce.js";
 import { classifyMemorialSchedule } from "../llm/remark-classifier.js";
 import { initAppIcon } from "./icon.js";
@@ -255,7 +256,9 @@ async function newGame() {
   }
   openDialog(
     "登基 · 定年号",
-    '<form id="new-form"><div class="fields"><div><label for="emperor-name">皇帝名</label><input id="emperor-name" required maxlength="12" value="萧承熙"></div><div><label for="era-name">年号</label><input id="era-name" required maxlength="8" value="永宁"></div><div><label for="freedom">自由度</label><select id="freedom"><option value="mid">传奇</option><option value="free">随心所欲</option><option value="real">写实</option></select></div><div><label for="difficulty">难度</label><select id="difficulty"><option value="normal">常制</option><option value="easy">宽和</option><option value="hard">艰危</option></select></div><div><label for="prose-style">文笔</label><select id="prose-style">' +
+    '<form id="new-form"><div class="scenario-pick"><label for="scenario">开局</label><select id="scenario"><option value="">自拟王朝（架空）</option>' +
+      SCENARIOS.map((sc) => '<option value="' + sc.id + '">' + esc(sc.title) + " · " + esc(sc.difficulty) + "</option>").join("") +
+      '</select><div id="scenario-card" class="scenario-card muted">自拟帝名、年号，由叙事接口铸造人物与州郡。</div></div><div class="fields"><div><label for="emperor-name">皇帝名</label><input id="emperor-name" required maxlength="12" value="萧承熙"></div><div><label for="era-name">年号</label><input id="era-name" required maxlength="8" value="永宁"></div><div><label for="freedom">自由度</label><select id="freedom"><option value="mid">传奇</option><option value="free">随心所欲</option><option value="real">写实</option></select></div><div><label for="difficulty">难度</label><select id="difficulty"><option value="normal">常制</option><option value="easy">宽和</option><option value="hard">艰危</option></select></div><div><label for="prose-style">文笔</label><select id="prose-style">' +
       Object.entries(STYLES)
         .map(([k, v]) => '<option value="' + k + '">' + v.label + "</option>")
         .join("") +
@@ -302,6 +305,16 @@ async function newGame() {
     );
   const form = $("#new-form"), dialog = $("#modal"), result = $("#new-result");
   const scope = createDialogRequestScope(dialog, form);
+  $("#scenario").onchange = () => {
+    const sc = SCENARIOS.find((x) => x.id === $("#scenario").value), card = $("#scenario-card");
+    for (const id of ["emperor-name", "era-name"]) $("#" + id).disabled = !!sc;
+    if (!sc) { card.textContent = "自拟帝名、年号，由叙事接口铸造人物与州郡。"; return; }
+    const v = scenarioPreview(sc);
+    $("#emperor-name").value = v.emperor; $("#era-name").value = v.era;
+    $("#difficulty").value = { 宽和: "easy", 常制: "normal", 艰危: "hard" }[v.difficulty] || "normal";
+    card.innerHTML = "<strong>" + esc(v.dynasty + " · " + v.year + " · " + v.emperor + " " + v.age + " 岁") + "</strong><p>" + esc(v.blurb) +
+      "</p><small>朝中：" + esc(v.cast.join("、")) + "等</small>";
+  };
   const showResult = (text, error = false) => {
     result.classList.remove("hidden");
     result.setAttribute("role", error ? "alert" : "status");
@@ -317,7 +330,7 @@ async function newGame() {
     try {
       const value = (id) => form.querySelector("#" + id).value;
       const options = {
-        name: value("emperor-name").trim(), era: value("era-name").trim(),
+        name: value("emperor-name").trim(), era: value("era-name").trim(), scenario: value("scenario") || null,
         freedom: value("freedom"), difficulty: value("difficulty"),
         prose: value("prose-style"), length: value("prose-length"), pov: value("prose-pov"),
         demo: form.querySelector("#demo-mode").checked,
@@ -486,7 +499,7 @@ function startTalk(person) {
   const refreshTalkPaper=()=>{
     if(!$('#talk-form')||!$('#action-document'))return;
     const live=state.court.officials.find(o=>o.id===person)||state.harem.consorts.find(o=>o.id===person)||state.foreign.find(o=>o.id===person)||npc;
-    $('#action-document').innerHTML='<span class="portrait" aria-hidden="true">'+esc(live.name[0])+'</span><h3>'+esc(live.name)+'</h3><p>'+esc(state.court.posts.find(p=>p.holder===person)?.title||live.family||live.status||'御前候见')+'</p><p>'+esc(live.age?live.age+' 岁':'')+(live.favor!==undefined?' · 好感 '+live.favor:'')+'</p><p class="muted">垂询有度。拨款与让步须在此人职权之内，过分要求仍须回部再议。</p>';
+    $('#action-document').innerHTML='<span class="portrait" aria-hidden="true">'+esc(live.name[0])+'</span><h3>'+esc(live.name)+'</h3><p>'+esc(postTitle(state,state.court.posts.find(p=>p.holder===person))||live.family||live.status||'御前候见')+'</p><p>'+esc(live.age?live.age+' 岁':'')+(live.favor!==undefined?' · 好感 '+live.favor:'')+'</p><p class="muted">垂询有度。拨款与让步须在此人职权之内，过分要求仍须回部再议。</p>';
   };
   refreshTalkPaper();
   $("#talk-form").onsubmit = async (e) => {

@@ -6,6 +6,7 @@ import { reignId } from "../src/core/state.js";
 import { edictBlock, EDICTS } from "../src/core/edicts.js";
 import { annualBudget,grainBudget,quarterlyGrain } from "../src/core/finance.js";
 import { random, seedNumber } from "../src/core/rng.js";
+import { applyScenario } from "../src/core/scenarios.js";
 export const SIMULATION_STRATEGIES=Object.freeze({rest:'无为',random:'乱批',diligent:'尽职',greedy:'贪心'});
 export function makeSimulationSchedule(s,pick,strategy="diligent") {
     if(!Object.hasOwn(SIMULATION_STRATEGIES,strategy))throw new Error('未知模拟策略');
@@ -74,7 +75,7 @@ export function simulate(years = 200, seed = "御极·两百年", options = {}) 
   let sampleTurns=0,saturatedTurns=0,strongmanTurns=0,maxGrain=0,maxGrainFirst50=0,maxGrainLast50=0,maxGrainCapacity=0,maxAnnualGrainProduction=0,firstCollapseTurn=null;
   let strategy = seedNumber(seed),
     life = 0,
-    s = initialTurn(createState({ seed: seed + "-" + life })),
+    s = initialTurn(options.scenario ? applyScenario(createState({ seed: seed + "-" + life }), options.scenario) : createState({ seed: seed + "-" + life })),
     deaths = 0,
     collapse = 0,
     totalBirths = 0,
@@ -257,7 +258,7 @@ export function simulate(years = 200, seed = "御极·两百年", options = {}) 
 if (process.argv[1] === import.meta.filename) {
   console.log(
     JSON.stringify(
-      simulate(Number(process.argv[2]) || 200, process.argv[3]),
+      simulate(Number(process.argv[2]) || 200, process.argv[3], process.argv[4] ? { scenario: process.argv[4] } : {}),
       null,
       2,
     ),

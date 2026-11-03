@@ -2411,6 +2411,19 @@ background:var(--clear);
 padding:var(--s2);
 flex:none;
 }
+.scenario-pick{
+margin-bottom:var(--s5);
+}
+.scenario-card{
+margin-top:var(--s3);
+padding:var(--s4);
+border:var(--hairline) solid var(--line);
+border-radius:var(--radius-button);
+font-size:var(--font-note);
+}
+.scenario-card p{
+margin:var(--s2) var(--s0);
+}
     </style>
   </head>
   <body>
@@ -2423,6 +2436,7 @@ flex:none;
     >
     <script>
       (() => { "use strict"; const __modules = {"src/ui/app.js":function(__load){
+const { postTitle, SCENARIOS, scenarioPreview } = __load("src/core/scenarios.js");
 const { createDebouncedSave } = __load("src/store/debounce.js");
 const { classifyMemorialSchedule } = __load("src/llm/remark-classifier.js");
 const { initAppIcon } = __load("src/ui/icon.js");
@@ -2680,7 +2694,9 @@ return;
 }
 openDialog(
 "登基 · 定年号",
-'<form id="new-form"><div class="fields"><div><label for="emperor-name">皇帝名</label><input id="emperor-name" required maxlength="12" value="萧承熙"></div><div><label for="era-name">年号</label><input id="era-name" required maxlength="8" value="永宁"></div><div><label for="freedom">自由度</label><select id="freedom"><option value="mid">传奇</option><option value="free">随心所欲</option><option value="real">写实</option></select></div><div><label for="difficulty">难度</label><select id="difficulty"><option value="normal">常制</option><option value="easy">宽和</option><option value="hard">艰危</option></select></div><div><label for="prose-style">文笔</label><select id="prose-style">' +
+'<form id="new-form"><div class="scenario-pick"><label for="scenario">开局</label><select id="scenario"><option value="">自拟王朝（架空）</option>' +
+SCENARIOS.map((sc) => '<option value="' + sc.id + '">' + esc(sc.title) + " · " + esc(sc.difficulty) + "</option>").join("") +
+'</select><div id="scenario-card" class="scenario-card muted">自拟帝名、年号，由叙事接口铸造人物与州郡。</div></div><div class="fields"><div><label for="emperor-name">皇帝名</label><input id="emperor-name" required maxlength="12" value="萧承熙"></div><div><label for="era-name">年号</label><input id="era-name" required maxlength="8" value="永宁"></div><div><label for="freedom">自由度</label><select id="freedom"><option value="mid">传奇</option><option value="free">随心所欲</option><option value="real">写实</option></select></div><div><label for="difficulty">难度</label><select id="difficulty"><option value="normal">常制</option><option value="easy">宽和</option><option value="hard">艰危</option></select></div><div><label for="prose-style">文笔</label><select id="prose-style">' +
 Object.entries(STYLES)
 .map(([k, v]) => '<option value="' + k + '">' + v.label + "</option>")
 .join("") +
@@ -2727,6 +2743,16 @@ $("#demo-mode")
 );
 const form = $("#new-form"), dialog = $("#modal"), result = $("#new-result");
 const scope = createDialogRequestScope(dialog, form);
+$("#scenario").onchange = () => {
+const sc = SCENARIOS.find((x) => x.id === $("#scenario").value), card = $("#scenario-card");
+for (const id of ["emperor-name", "era-name"]) $("#" + id).disabled = !!sc;
+if (!sc) { card.textContent = "自拟帝名、年号，由叙事接口铸造人物与州郡。"; return; }
+const v = scenarioPreview(sc);
+$("#emperor-name").value = v.emperor; $("#era-name").value = v.era;
+$("#difficulty").value = { 宽和: "easy", 常制: "normal", 艰危: "hard" }[v.difficulty] || "normal";
+card.innerHTML = "<strong>" + esc(v.dynasty + " · " + v.year + " · " + v.emperor + " " + v.age + " 岁") + "</strong><p>" + esc(v.blurb) +
+"</p><small>朝中：" + esc(v.cast.join("、")) + "等</small>";
+};
 const showResult = (text, error = false) => {
 result.classList.remove("hidden");
 result.setAttribute("role", error ? "alert" : "status");
@@ -2742,7 +2768,7 @@ dialog.addEventListener("cancel", preventSaveExit);
 try {
 const value = (id) => form.querySelector("#" + id).value;
 const options = {
-name: value("emperor-name").trim(), era: value("era-name").trim(),
+name: value("emperor-name").trim(), era: value("era-name").trim(), scenario: value("scenario") || null,
 freedom: value("freedom"), difficulty: value("difficulty"),
 prose: value("prose-style"), length: value("prose-length"), pov: value("prose-pov"),
 demo: form.querySelector("#demo-mode").checked,
@@ -2911,7 +2937,7 @@ esc(t.reply) +
 const refreshTalkPaper=()=>{
 if(!$('#talk-form')||!$('#action-document'))return;
 const live=state.court.officials.find(o=>o.id===person)||state.harem.consorts.find(o=>o.id===person)||state.foreign.find(o=>o.id===person)||npc;
-$('#action-document').innerHTML='<span class="portrait" aria-hidden="true">'+esc(live.name[0])+'</span><h3>'+esc(live.name)+'</h3><p>'+esc(state.court.posts.find(p=>p.holder===person)?.title||live.family||live.status||'御前候见')+'</p><p>'+esc(live.age?live.age+' 岁':'')+(live.favor!==undefined?' · 好感 '+live.favor:'')+'</p><p class="muted">垂询有度。拨款与让步须在此人职权之内，过分要求仍须回部再议。</p>';
+$('#action-document').innerHTML='<span class="portrait" aria-hidden="true">'+esc(live.name[0])+'</span><h3>'+esc(live.name)+'</h3><p>'+esc(postTitle(state,state.court.posts.find(p=>p.holder===person))||live.family||live.status||'御前候见')+'</p><p>'+esc(live.age?live.age+' 岁':'')+(live.favor!==undefined?' · 好感 '+live.favor:'')+'</p><p class="muted">垂询有度。拨款与让步须在此人职权之内，过分要求仍须回部再议。</p>';
 };
 refreshTalkPaper();
 $("#talk-form").onsubmit = async (e) => {
@@ -3400,6 +3426,1189 @@ render();
 
 return {};
 },
+"src/core/scenarios.js":function(__load){
+// 历史剧本：只提供开局的人物、官制显示名与局势，一切数值变化仍由引擎结算。
+// 史实只决定开局；之后的生死成败按引擎推进，不按史实预演。
+const { clone } = __load("src/core/state.js");
+const { clamp } = __load("src/core/effects.js");
+const { factionPowers } = __load("src/core/politics.js");
+// 官职显示名：引擎内部仍按原职名（内阁首辅、户部尚书……）匹配规则，只换给人看的名字。
+// 下标与 POST_NAMES 0–28 对应；省级职官另由 governor 拼接。
+const POSTS = {
+han: "丞相 大农令 太尉 丞相司直 奉常 廷尉 将作少府 御史大夫 郎中令 中尉 中书谒者令 侍中 尚书令 大农丞 太尉长史 丞相长史 博士祭酒 廷尉正 少府 博士 太子太傅 廷尉监 太常丞 谒者 宗正 北地将军 陇西将军 南境校尉 东境将军",
+tang: "尚书左仆射 户部尚书 兵部尚书 吏部尚书 礼部尚书 刑部尚书 工部尚书 御史大夫 内侍监 左右卫大将军 中书令 侍中 尚书右仆射 户部侍郎 兵部侍郎 吏部侍郎 礼部侍郎 刑部侍郎 工部侍郎 弘文馆学士 太子太傅 大理寺卿 太常寺卿 谏议大夫 宗正卿 朔方道行军总管 凉州都督 岭南道总管 营州都督",
+song: "同中书门下平章事 三司使 枢密使 吏部尚书 礼部尚书 刑部尚书 工部尚书 御史中丞 入内内侍省都知 殿前都指挥使 参知政事 枢密副使 尚书左丞 盐铁副使 同知枢密院事 吏部侍郎 礼部侍郎 刑部侍郎 工部侍郎 翰林学士 太子太傅 大理寺卿 太常博士 知谏院 大宗正 河北路安抚使 陕西路经略安抚使 广南路安抚使 河东路安抚使",
+ming: "内阁首辅 户部尚书 兵部尚书 吏部尚书 礼部尚书 刑部尚书 工部尚书 左都御史 司礼监掌印 京营戎政 内阁次辅 内阁大学士 詹事府詹事 户部侍郎 兵部侍郎 吏部侍郎 礼部侍郎 刑部侍郎 总理河道 翰林学士 太子太傅 大理寺卿 太常寺卿 通政使 宗人令 宣大总兵 甘肃总兵 两广总兵 蓟辽总兵",
+qing: "首席大学士 户部尚书 兵部尚书 吏部尚书 礼部尚书 刑部尚书 工部尚书 左都御史 内务府总管 领侍卫内大臣 议政大臣 大学士 协办大学士 户部侍郎 兵部侍郎 吏部侍郎 礼部侍郎 刑部侍郎 工部侍郎 翰林院掌院学士 太子太傅 大理寺卿 钦天监监正 通政使 宗人府宗令 北路将军 西路将军 南路将军 东路将军",
+};
+// 官员：姓名｜职位下标｜派系下标｜年龄｜性格｜秘密｜能力（政军才德忠谋）｜野心
+// 后宫：姓名｜位分｜家世｜年龄｜派系下标｜宠眷｜秘密
+// 皇嗣：姓名｜性别｜年龄｜母（后宫下标，可空）｜资质
+// 外邦：国名｜君主｜关系｜态度｜边境｜诉求
+const SCENARIOS = [
+{
+id: "han-wudi", power: "0 0 15 0 0 0", title: "汉武帝 · 建元新政", difficulty: "常制", dynasty: "汉", era: "建元", year: "前140年",
+emperor: ["刘彻", 16, "70 72 80 85 82", "多疑"], posts: "han", governor: "刺史",
+provinces: "司隶 豫州 扬州 荆州 青州 并州 凉州 益州 会稽 长沙 冀州 幽州",
+factions: "儒生:纳谏清议 军功列侯:军功封赏 外戚:家族恩荫 近侍郎官:亲近信任 郡国守相:钱粮自主 诸侯王:宗藩安稳",
+nation: { treasury: 620, morale: 66, governance: 58, prestige: 48 }, threat: [55, 30, 25, 25],
+dowager: "窦太皇太后",
+blurb: "少年天子初立，欲兴儒术、立明堂；太皇太后崇黄老，东宫一句话便能让新政夭折。北边匈奴岁岁索要和亲。",
+officials: [
+"窦婴|0|2|50|好儒术，任侠自喜|与太皇太后同族，却力推儒术，夹在两宫之间。|70 60 70 70 75 55|55",
+"田蚡|2|2|40|善辩，贪财好名|暗中收受诸侯馈赠，与淮南王有书信往来。|55 35 70 30 45 75|85",
+"赵绾|7|0|45|儒生，锐意更化|上书请勿奏事东宫，已触怒太皇太后。|65 30 75 75 80 40|50",
+"王臧|8|0|50|鲁诗名家，帝之旧师|与赵绾共议立明堂，东宫耳目已在查访。|60 25 80 75 80 40|45",
+"董仲舒|19|0|39|治公羊春秋，三年不窥园|私撰灾异之书，言辞多有讥刺。|70 20 90 85 80 40|35",
+"汲黯|23|0|40|好直谏，不拘礼|素轻田蚡，曾当众斥之。|70 30 65 85 85 35|30",
+"韩安国|1|1|45|多大略，善为人谋|旧为梁王属吏，曾以重金求官。|75 65 70 55 65 70|60",
+"李广|25|1|44|善射，爱士卒，不善治军簿|屡战而功不得封侯，心有不平。|35 85 50 70 80 30|60",
+"程不识|26|1|45|治军严整，号令分明|与李广治军之道相左，常受同僚讥其苛细。|50 80 50 70 80 40|40",
+"庄助|11|3|30|辩博，帝之近臣|与淮南王门客有旧交。|60 40 80 55 70 60|55",
+],
+consorts: ["陈阿娇|皇后|馆陶长公主之女|18|2|55|多年无子，心事渐重。", "卫子夫|嫔|平阳公主府讴者|17|3|60|其弟卫青在平阳侯家为骑奴。"],
+foreign: ["匈奴|军臣单于|冷淡|30|北|和亲岁币", "乌孙|猎骄靡|通好|45|西|远交共击匈奴", "南越|赵佗|通好|50|南|自治如故", "闽越|驺郢|冷淡|35|东|吞并东瓯", "东瓯|驺望|通好|55|东|求内附避闽越"],
+facts: ["太皇太后|好恶|崇黄老，不喜儒生", "明堂|议立|赵绾、王臧议立明堂，事在未定"],
+},
+{
+id: "tang-taizong", power: "0 0 0 10 0 0", title: "唐太宗 · 渭水之盟", difficulty: "常制", dynasty: "唐", era: "贞观", year: "626年",
+emperor: ["李世民", 28, "82 85 92 72 85", "勤政"], posts: "tang", governor: "刺史",
+provinces: "京畿 河南道 江南道 山南道 河北道 河东道 关内道 剑南道 淮南道 岭南道 陇右道 幽州",
+factions: "谏官清议:纳谏清议 秦府将帅:军功封赏 长孙外戚:家族恩荫 秦府谋臣:亲近信任 关陇勋旧:钱粮自主 宗室诸王:宗藩安稳",
+nation: { treasury: 280, morale: 55, governance: 56, prestige: 55, virtue: 50 }, threat: [92, 50, 20, 30],
+dowager: "",
+blurb: "玄武门之变方过两月，东宫旧臣惶惶不安；突厥颉利可汗率十余万骑直抵渭水便桥之北，长安震动。",
+officials: [
+"房玄龄|10|3|47|善谋，处事周密|玄武门前夜曾力劝先发制人。|90 40 80 75 90 80|40",
+"杜如晦|2|3|41|临机善断|体弱多病，自知天年不永。|85 55 80 75 90 75|35",
+"长孙无忌|3|2|32|通悟，有筹略|玄武门之变首谋之一，深知许多不可言之事。|75 50 75 60 85 85|65",
+"魏征|23|0|46|犯颜直谏|曾劝隐太子早除秦王。|80 30 85 90 70 55|30",
+"王珪|11|0|56|恬淡守正|原为东宫属官，曾因杨文干事流放。|75 25 75 85 75 40|30",
+"萧瑀|0|4|52|刚直，好佛|与房玄龄、杜如晦素来不睦。|70 30 70 75 70 50|50",
+"封德彝|12|4|58|阴持两端|曾私下替隐太子说话，事未泄露。|75 30 75 30 40 80|60",
+"高士廉|4|2|51|涉猎文史，持重|长孙皇后之舅，与外戚往来最密。|70 30 75 70 80 50|40",
+"戴胄|21|0|53|明于法令，敢于执法|常为断狱与上意相争。|80 25 70 80 80 40|30",
+"尉迟敬德|9|1|41|勇猛，性直好讼功|玄武门之日亲手斩杀齐王元吉。|30 90 40 60 85 40|60",
+"李靖|25|1|55|沉毅有谋|曾在隋末欲告发高祖起兵。|60 95 75 75 80 70|35",
+"李勣|28|1|32|善用兵，处事谨慎|玄武门之变时袖手不言，两不相助。|60 88 65 65 75 75|50",
+"李孝恭|24|5|35|宽恕退让|宗室中战功最著，难免招人猜忌。|55 80 55 60 80 45|45",
+],
+consorts: ["长孙氏|皇后|河南长孙氏|25|2|85|体有气疾，常隐忍不言。", "杨氏|妃|隋炀帝之女|26|5|65|前朝公主身份使她处处谨慎。", "韦珪|妃|京兆韦氏|29|4|55|曾嫁李珉，再入秦府。"],
+children: ["李承乾|男|8|0|60", "李泰|男|7|0|75", "李恪|男|7|1|70"], heir: 0,
+foreign: ["东突厥|颉利可汗|冷淡|15|北|岁币与劫掠", "吐谷浑|伏允|冷淡|35|西|互市与边地", "高句丽|高建武|通好|45|东|保辽东旧界", "百济|扶余璋|通好|50|东|求援以抗新罗", "薛延陀|夷男|通好|50|北|脱离突厥"],
+facts: ["颉利可汗|兵临|突厥大军已至渭水便桥北", "太上皇李渊|居处|退居太安宫，不复问政"],
+},
+{
+id: "song-renzong", power: "0 0 25 0 0 0", title: "宋仁宗 · 太后垂帘", difficulty: "宽和", dynasty: "宋", era: "天圣", year: "1022年",
+emperor: ["赵祯", 12, "60 50 40 70 75", "仁厚"], aptitude: 75, posts: "song", governor: "转运使",
+provinces: "开封府 京西路 两浙路 荆湖路 京东路 河东路 陕西路 川峡路 福建路 广南路 江南路 河北路",
+factions: "台谏清议:纳谏清议 将门勋旧:军功封赏 刘氏外戚:家族恩荫 内侍近臣:亲近信任 三司计臣:钱粮自主 宗室:宗藩安稳",
+nation: { treasury: 900, morale: 66, governance: 60, prestige: 50 }, threat: [35, 40, 20, 25],
+dowager: "刘太后", regent: "dowager", wedding: ["郭氏", "曹氏", "张氏"],
+blurb: "真宗新丧，十二岁的天子即位，刘太后垂帘听政。权相丁谓与内侍雷允恭擅移先帝陵穴，王曾正等一个开口的机会。",
+officials: [
+"丁谓|0|2|56|机敏多智，善揣上意|与内侍雷允恭擅移先帝陵穴，事将败露。|80 30 85 20 30 90|90",
+"王曾|10|0|44|端厚持重|已暗中搜集丁谓擅移皇陵的证据。|85 30 80 85 85 70|40",
+"吕夷简|12|4|43|深沉有城府|知道陛下生母实为李宸妃，此事宫中无人敢言。|85 30 75 60 70 85|60",
+"晏殊|19|0|31|文章典丽，少年神童|曾在东宫侍读，深知天子性情。|70 20 90 75 80 50|35",
+"鲁宗道|7|0|56|刚正，人称鱼头参政|屡与太后亲族争执，已结怨刘氏。|75 20 70 90 85 40|25",
+"曹利用|2|1|50|恃功骄横|家人仗势横行乡里。|60 70 55 40 60 65|75",
+"钱惟演|14|2|45|附势善文|以妹嫁太后之兄刘美，结为姻亲。|60 30 85 40 50 70|70",
+"张士逊|3|0|58|和易宽厚|曾为天子东宫旧臣。|65 25 65 70 75 45|40",
+"雷允恭|8|3|40|骄纵专擅|擅移山陵，罪证已在王曾手中。|30 10 30 15 40 60|80",
+"范仲淹|22|0|33|先忧后乐，慷慨敢言|幼年随母改嫁，长大后方知身世。|80 60 80 90 85 45|35",
+],
+foreign: ["辽|耶律隆绪|通好|60|北|岁币如约", "西夏|李德明|通好|50|西|互市与封爵", "唃厮啰|唃厮啰|通好|60|西|联宋抗夏", "交趾|李公蕴|通好|55|南|册封", "高丽|王询|通好|60|东|通使求书"],
+facts: ["李宸妃|身世|宫中讳言天子生母，众人皆以太后为母", "真宗|山陵|陵穴移位一事尚未查明"],
+},
+{
+id: "ming-wanli", power: "0 0 0 10 25 0", title: "明神宗 · 江陵柄国", difficulty: "常制", dynasty: "明", era: "万历", year: "1572年",
+emperor: ["朱翊钧", 9, "55 55 35 65 55", "节俭"], aptitude: 72, posts: "ming", governor: "巡抚",
+provinces: "北直隶 河南 南直隶 湖广 山东 山西 陕西 四川 福建 广东 云南 辽东",
+factions: "清流言官:纳谏清议 勋贵边将:军功封赏 外戚李氏:家族恩荫 司礼监:亲近信任 考成实务:钱粮自主 宗藩:宗藩安稳",
+nation: { treasury: 380, morale: 58, governance: 52, prestige: 50 }, threat: [30, 20, 25, 45],
+dowager: "李太后", regent: "张居正", wedding: ["王喜姐", "王氏", "郑氏"],
+blurb: "隆庆帝崩，十岁太子即位。张居正联手冯保逐走高拱，独掌内阁；李太后严于管教，考成、清丈、一条鞭，都在等一道旨意。",
+officials: [
+"张居正|0|4|47|刚毅果决，综核名实|与冯保内外相结，逐高拱出京。|95 60 85 60 75 90|85",
+"冯保|8|3|40|知书善琴，贪而有才|矫遗诏与内阁同受顾命，自加顾命之名。|60 20 70 30 60 80|80",
+"吕调阳|10|0|56|谨厚，凡事唯首辅是听|私下以为考成法太急。|70 20 75 75 75 40|30",
+"张四维|15|0|46|工于心计|家族世代经营盐业，与晋商往来密切。|75 25 75 50 60 80|75",
+"申时行|19|0|37|温和圆融|状元出身，与言官、阁臣皆不愿结怨。|80 25 85 70 70 70|55",
+"王锡爵|16|0|38|刚直有守|曾在高拱、张居正之间两不依附。|75 25 80 80 75 60|50",
+"王国光|1|4|60|精于理财|正着手编订《万历会计录》。|85 25 75 70 75 55|40",
+"杨博|3|1|70|老成知兵|年事已高，屡请致仕。|80 75 70 75 80 60|20",
+"谭纶|2|1|52|知兵，能任事|与戚继光同在东南抗倭，交情深厚。|70 85 70 70 80 55|40",
+"潘季驯|18|4|51|精于治河，主束水攻沙|屡被言官弹劾治河耗费。|80 30 80 75 75 45|35",
+"戚继光|28|1|44|治军严明|以重礼结交张居正，求在蓟镇专权练兵。|50 95 70 70 85 55|50",
+"李成梁|25|1|46|骁勇，善养家丁|冒功邀赏、纵容家丁之事不在少数。|50 88 50 40 65 70|70",
+],
+foreign: ["蒙古|俺答汗|朝贡|60|北|互市与封贡", "建州女真|王杲|冷淡|30|东|抚赏与马市", "朝鲜|李昖|朝贡|70|东|册封与书籍", "安南|莫茂洽|朝贡|50|南|册封", "日本|织田信长|冷淡|35|东|勘合贸易"],
+facts: ["高拱|去职|被逐出京，回籍闲住", "张居正|新政|拟行考成法，以六科稽查六部"],
+},
+{
+id: "ming-chongzhen", power: "-10 0 0 10 0 0", title: "明思宗 · 天启七年", difficulty: "艰危", dynasty: "明", era: "崇祯", year: "1627年",
+emperor: ["朱由检", 17, "65 60 45 65 50", "多疑"], posts: "ming", governor: "巡抚",
+provinces: "北直隶 河南 南直隶 湖广 山东 山西 陕西 四川 福建 广东 云南 辽东",
+factions: "东林清流:纳谏清议 勋戚边将:军功封赏 外戚:家族恩荫 阉党:亲近信任 督抚:钱粮自主 宗藩:宗藩安稳",
+nation: { treasury: 120, morale: 36, governance: 30, prestige: 42, grain: 140 }, threat: [60, 45, 20, 85],
+dowager: "懿安皇后",
+blurb: "天启帝崩，信王入继大统。魏忠贤的生祠遍布天下，阉党把持内外；陕西大旱，辽东后金虎视，国库几乎见底。",
+officials: [
+"魏忠贤|8|3|59|目不识丁而权倾朝野|生祠遍天下，各地督抚多有馈遗。|40 30 30 10 20 85|95",
+"崔呈秀|2|3|50|依附魏珰，人称五虎之首|贪墨军饷，账目可查。|50 40 55 15 25 75|85",
+"黄立极|0|3|62|庸懦依违|曾为魏忠贤生祠撰写颂词。|55 20 60 30 40 55|45",
+"温体仁|16|4|54|外示温谨，内实阴狠|欲借攻讦东林以邀圣眷。|75 20 75 35 50 90|85",
+"周延儒|15|0|34|机敏善揣|状元出身，与东林若即若离。|70 25 85 45 50 80|80",
+"毕自严|1|4|58|精于钱谷|深知太仓银库已入不敷出。|85 30 75 75 80 50|35",
+"王永光|3|3|66|圆滑持禄|曾附阉党，如今正四处撇清。|60 20 60 40 45 65|50",
+"袁崇焕|28|4|43|慷慨负胆略|曾私遣使与后金议和。|65 85 75 60 70 60|70",
+"洪承畴|26|4|34|沉毅多谋|在陕西督粮，眼见饥民渐成流寇。|75 85 75 55 60 75|60",
+"卢象升|25|1|27|文武兼资，忠勇|治大名府，练兵颇有成效。|70 85 70 85 95 50|40",
+],
+consorts: ["周氏|皇后|苏州周氏|16|0|80|出身寒微，家中曾以卖卜为生。", "田氏|妃|扬州田氏|18|2|70|多才艺，其父田弘遇骄横。", "袁氏|嫔|宛平袁氏|17|1|55|性情温顺，少与人争。"],
+foreign: ["察哈尔|林丹汗|冷淡|30|北|抚赏", "后金|皇太极|冷淡|5|东|入关劫掠", "朝鲜|李倧|朝贡|55|东|乞援抗金", "日本|德川家光|冷淡|30|东|闭关自守"],
+facts: ["陕西|灾情|连年大旱，饥民聚众", "魏忠贤|权势|东厂与锦衣卫皆在其手"],
+},
+{
+id: "qing-kangxi", power: "0 30 0 0 0 0", title: "清圣祖 · 四辅臣", difficulty: "常制", dynasty: "清", era: "康熙", year: "1661年",
+emperor: ["玄烨", 7, "50 50 50 60 55", "勤政"], aptitude: 88, surname: "爱新觉罗", children: [], posts: "qing", governor: "巡抚",
+provinces: "直隶 河南 江南 湖广 山东 山西 陕西 四川 福建 广东 云南 奉天",
+childNaming: { 男: "胤", 女: "和" },
+factions: "汉臣清议:纳谏清议 两黄旗勋旧:军功封赏 赫舍里外戚:家族恩荫 正白旗旧部:亲近信任 督抚:钱粮自主 宗室王公:宗藩安稳",
+nation: { treasury: 500, morale: 52, governance: 50, prestige: 45 }, threat: [35, 30, 40, 55],
+dowager: "孝庄太皇太后", regent: "索尼", wedding: ["赫舍里氏", "钮祜禄氏", "纳喇氏"],
+blurb: "顺治帝崩于天花，八岁的玄烨即位。索尼、苏克萨哈、遏必隆、鳌拜四人辅政，鳌拜日渐跋扈；南方三藩坐大，台湾郑氏尚在。",
+officials: [
+"索尼|0|2|61|老成，持重|年老多病，暗中为孙女谋后位。|80 50 70 70 80 80|50",
+"苏克萨哈|10|3|50|刚愎，与鳌拜积怨|曾首告多尔衮，两黄旗视之为仇。|65 70 55 55 70 60|60",
+"遏必隆|11|1|50|依违两可|女儿正待选入宫。|55 60 50 55 60 50|40",
+"鳌拜|9|1|51|骁勇善战，专横跋扈|已在暗中撤换两白旗圈地的官员。|60 90 50 35 35 75|95",
+"索额图|15|2|25|骄纵，好揽权|索尼之子，自视为天子外家。|65 40 65 40 70 75|75",
+"明珠|8|3|26|通敏，善揣上意|结交满汉士人，门下已有不少人。|75 40 75 45 65 85|80",
+"熊赐履|19|0|26|理学名儒|对辅臣专断多有腹诽。|75 20 85 85 85 40|35",
+"魏裔介|7|0|45|敢言，持论平正|屡上疏请减圈地之害。|75 20 75 80 80 45|35",
+"汤若望|22|0|69|精于历算|杨光先已在罗织历法之狱。|70 10 90 75 75 30|10",
+"杰书|24|5|16|宽厚，少年袭爵|康亲王府与诸王旧怨未解。|50 60 50 65 75 45|40",
+],
+foreign: ["沙俄|阿列克谢|冷淡|30|北|侵占黑龙江", "准噶尔|僧格|通好|45|西|贸易与西藏", "平西藩|吴三桂|通好|50|南|钱粮自主", "台湾郑氏|郑成功|冷淡|10|东|奉明正朔", "朝鲜|李棩|朝贡|60|东|册封"],
+facts: ["四辅臣|共政|先帝遗诏四大臣辅政", "圈地|旧事|两黄旗与两白旗为圈地积怨"],
+},
+{
+id: "qing-yongzheng", power: "0 0 10 0 0 15", title: "清世宗 · 九子夺嫡之后", difficulty: "常制", dynasty: "清", era: "雍正", year: "1722年",
+emperor: ["胤禛", 44, "88 85 55 70 50", "勤政"], surname: "爱新觉罗", posts: "qing", governor: "巡抚",
+provinces: "直隶 河南 江南 湖广 山东 山西 陕西 四川 福建 广东 云南 奉天",
+childNaming: { 男: "弘", 女: "和" },
+factions: "汉臣清流:纳谏清议 西北军功:军功封赏 佟佳外戚:家族恩荫 藩邸旧人:亲近信任 督抚:钱粮自主 八爷党:宗藩安稳",
+nation: { treasury: 800, morale: 55, governance: 38, prestige: 50 }, threat: [30, 70, 25, 20],
+dowager: "仁寿皇太后",
+blurb: "康熙帝崩于畅春园，四阿哥继位。八爷党党羽遍布六部，十四阿哥手握西北大军；国库虽有八百万两，亏空与积欠却查不胜查。",
+officials: [
+"允禩|0|5|41|宽仁得士心|党羽遍布六部，暗中仍有人称其八贤王。|80 50 80 60 40 85|90",
+"允祥|10|3|36|忠勤明练|曾被先帝圈禁多年，旧伤未愈。|85 70 75 80 95 60|20",
+"马齐|11|0|70|老成谨慎|先帝时曾因附议允禩被斥。|70 30 70 65 70 55|30",
+"隆科多|9|2|55|居功自傲|传位诏书一事，只有他最清楚。|65 60 55 40 55 80|85",
+"张廷玉|4|0|50|谨慎周密，过目不忘|从不留片纸私稿。|90 20 90 80 85 70|40",
+"年羹尧|26|1|43|才气凌厉，恃功而骄|与九阿哥门人有旧交。|70 92 75 40 60 75|85",
+"鄂尔泰|15|3|42|有识断，敢任事|久在内务府，四十余仍是员外郎。|85 70 75 70 85 60|50",
+"田文镜|13|3|60|苛察，勇于任事|监生出身，被科甲同僚视为异类。|85 30 55 65 85 50|50",
+"李卫|23|3|35|不学而有吏才|捐纳出身，常遭言官讥讽。|80 45 45 65 90 60|55",
+"允禟|24|5|39|富而好结纳|暗中经营商号，与西洋传教士往来。|55 30 70 40 30 80|75",
+"允禵|25|5|34|大将军王，素有人望|以为大位本该属于自己。|60 85 70 55 30 70|90",
+"岳钟琪|27|1|36|善用兵，持重|岳飞之后，在川陕军中声望日隆。|60 88 65 70 80 55|40",
+],
+consorts: ["乌拉那拉氏|皇后|乌拉那拉氏|41|0|60|嫡子早殇，膝下无子。", "年氏|妃|年羹尧之妹|25|1|85|兄长权势日重，她夜里常难安睡。", "钮祜禄氏|嫔|钮祜禄氏|30|3|55|处事极为低调，一心教子。", "李氏|嫔|知府李文烨之女|45|4|40|长子早年夭折，所余之子性情孤僻。"],
+children: ["弘时|男|18|3|50", "弘历|男|11|2|85", "福惠|男|1|1|60"],
+foreign: ["沙俄|彼得一世|冷淡|35|北|划界与通商", "准噶尔|策妄阿拉布坦|冷淡|20|西|西藏与哈密", "青海和硕特|罗卜藏丹津|通好|40|西|总管青海", "安南|黎维祹|朝贡|55|南|册封", "朝鲜|李昀|朝贡|60|东|册封"],
+facts: ["康熙|传位|遗诏传位四阿哥，朝野多有私议", "户部|亏空|各省钱粮亏空积年未清"],
+},
+];
+function scenarioById(id) {
+return SCENARIOS.find((x) => x.id === id) || null;
+}
+// 开局局势预览（开局界面使用）。
+function scenarioPreview(sc) {
+return {
+id: sc.id, title: sc.title, difficulty: sc.difficulty, year: sc.year, blurb: sc.blurb,
+emperor: sc.emperor[0], age: sc.emperor[1], era: sc.era, dynasty: sc.dynasty,
+cast: sc.officials.slice(0, 6).map((x) => x.split("|")[0]),
+};
+}
+function postTitle(state, post) {
+if (!post) return "";
+if (post.provinceId && state.governorTitle)
+return (state.nation.provinces.find((z) => z.id === post.provinceId)?.name || "") + state.governorTitle;
+return state.postNames?.[post.id] || post.title;
+}
+const split = (x) => x.split("|");
+const nums = (x) => x.trim().split(/\s+/).map(Number);
+function applyScenario(state, id) {
+const sc = scenarioById(id);
+if (!sc) throw new Error("未知剧本");
+let s = clone(state);
+s.scenario = sc.id;
+s.dynasty = sc.dynasty;
+s.imperialSurname = sc.surname || sc.emperor[0][0];
+s.childNaming = sc.childNaming || null;
+s.backstory = sc.blurb;
+s.era.name = s.reign.eraName = sc.era;
+// 官制与州郡
+const titles = POSTS[sc.posts].split(" ");
+s.postNames = Object.fromEntries(titles.map((t, i) => ["p" + i, t]));
+s.governorTitle = sc.governor;
+sc.provinces.split(" ").forEach((name, i) => { if (s.nation.provinces[i]) s.nation.provinces[i].name = name; });
+const mods = nums(sc.power || "0 0 0 0 0 0");
+sc.factions.split(" ").forEach((x, i) => { const [name, demand] = x.split(":"); Object.assign(s.court.factions[i], { name, demand, powerModifier: mods[i] }); });
+// 天子
+const [name, age, talents, tag] = sc.emperor;
+const t = nums(talents);
+s.emperor.name = name;
+s.emperor.age = age;
+s.emperor.lifespan = Math.max(s.emperor.lifespan, age + 25);
+s.emperor.talents = Object.fromEntries(Object.keys(s.emperor.talents).map((k, i) => [k, t[i]]));
+s.emperor.tags = [tag];
+for (const k of ["prestige", "virtue"]) if (sc.nation[k] !== undefined) s.emperor[k] = sc.nation[k];
+for (const k of ["treasury", "morale", "governance", "grain"]) if (sc.nation[k] !== undefined) s.nation[k] = sc.nation[k];
+s.reign.initialTreasury = s.stats.initialTreasury = s.nation.treasury;
+for (const z of s.nation.provinces) z.morale = clamp(s.nation.morale + (z.morale - 62));
+s.nation.army.frontiers.forEach((f, i) => { f.threat = sc.threat[i]; });
+// 官员：剧本人物按指定职位就任，其余原有官员依次补齐空缺
+const cast = sc.officials.map(split), taken = new Set(cast.map((c) => "p" + c[1]));
+const free = s.court.posts.filter((p) => !p.provinceId && !taken.has(p.id) && Number(p.id.slice(1)) < 25).map((p) => p.id);
+for (const p of s.court.posts) if (!p.provinceId) p.holder = null;
+s.court.officials.forEach((o, i) => {
+const c = cast[i];
+if (c) {
+const [n, post, faction, oage, personality, secret, abil, ambition] = c, a = nums(abil);
+Object.assign(o, { name: n, post: "p" + post, faction: "f" + faction, age: Number(oage), personality, secret, ambition: Number(ambition),
+abilities: { 政: a[0], 军: a[1], 才: a[2], 德: a[3], 忠: a[4], 权谋: a[5] } });
+o.life = [personality];
+} else {
+// 补缺的无名官员不抢剧本人物的戏：野心与权谋压低。
+o.post = free.shift() || null;
+o.ambition = Math.min(o.ambition, 35);
+o.abilities.权谋 = Math.min(o.abilities.权谋, 60);
+}
+if (o.post) s.court.posts.find((p) => p.id === o.post).holder = o.id;
+});
+// 后宫与皇嗣
+const child = age < 16;
+s.harem.consorts = (sc.consorts || []).map(split).map(([n, rank, family, cage, faction, favor, secret], i) => ({
+...s.harem.consorts[Math.min(i, s.harem.consorts.length - 1)], id: "c" + i, name: n, rank, family, age: Number(cage),
+faction: "f" + faction, favor: Number(favor), secret, preg: null, relations: {},
+}));
+s.harem.children = (sc.children || []).map(split).map(([n, sex, cage, mother, aptitude], i) => ({
+id: "child-" + s.runId + "-s" + i, name: n, sex, mother: mother === "" ? null : "c" + mother, fatherId: s.runId,
+legit: s.harem.consorts[Number(mother)]?.rank === "皇后", born: -Number(cage) * 36, aptitude: Number(aptitude), health: 85,
+tutor: null, education: Math.min(60, Number(cage) * 4), faction: s.harem.consorts[Number(mother)]?.faction || "f0", party: false,
+}));
+s.harem.heir = sc.heir !== undefined ? s.harem.children[sc.heir]?.id || null : null;
+s.harem.royalWomen = [];
+s.dowager = sc.dowager || null;
+s.weddingNames = sc.wedding || null;
+if (child) {
+// 幼帝以皇嗣身份记年龄，亲政时由 advanceRegency 撤摄政、行大婚。
+const id = "emperor-" + s.runId;
+s.harem.children.push({ id, name, sex: "男", mother: null, fatherId: "prior", legit: true, born: -age * 36,
+aptitude: sc.aptitude || 60, health: 85, tutor: null, education: age * 3, faction: "f0", party: false });
+s.reign.emperorId = id;
+s.reign.married = false;
+const regent = sc.regent === "dowager" ? "dowager" : s.court.officials.find((o) => o.name === sc.regent)?.id;
+s.regency = { regentId: regent || "dowager", until: (16 - age) * 36 };
+} else s.reign.married = s.harem.consorts.length > 0;
+// 外邦
+s.foreign = sc.foreign.map(split).map(([n, ruler, status, attitude, dir, demand], i) => ({
+...s.foreign[Math.min(i, s.foreign.length - 1)], id: "w" + i, name: n, ruler, status, attitude: Number(attitude), frontier: dir, demand, trade: null,
+}));
+s.court.factions = factionPowers(s);
+s.facts = (sc.facts || []).map((x) => { const [subject, key, value] = split(x); return { subject, key, value, turn: 0 }; });
+return s;
+}
+
+return {SCENARIOS,scenarioById,scenarioPreview,postTitle,applyScenario};
+},
+"src/core/state.js":function(__load){
+const { normalizeMemorialAction } = __load("src/core/memorial-decisions.js");
+const { seedNumber, random, DRAFT } = __load("src/core/rng.js");
+const { uniqueName } = __load("src/core/names.js");
+const { chooseRegent } = __load("src/core/regency-info.js");
+const {factionPowers} = __load("src/core/politics.js");
+const VERSION = 10;
+const TALENTS = ["政略", "权谋", "武略", "文采", "魅力"];
+const SLOTS = ["朝", "午", "夜"];
+const POST_NAMES = [
+"内阁首辅",
+"户部尚书",
+"兵部尚书",
+"吏部尚书",
+"礼部尚书",
+"刑部尚书",
+"工部尚书",
+"左都御史",
+"司礼监掌印",
+"京营统领",
+"中书令",
+"门下侍中",
+"尚书令",
+"户部侍郎",
+"兵部侍郎",
+"吏部侍郎",
+"礼部侍郎",
+"刑部侍郎",
+"工部侍郎",
+"翰林学士",
+"太子太傅",
+"大理寺卿",
+"太常寺卿",
+"通政使",
+"宗人令",
+"北境总兵",
+"西境总兵",
+"南境总兵",
+"东境总兵",
+"直隶巡抚",
+"河南巡抚",
+"江南巡抚",
+"湖广巡抚",
+"山东巡抚",
+"山西巡抚",
+"陕西巡抚",
+"四川巡抚",
+"福建巡抚",
+"广东巡抚",
+"云南巡抚",
+"辽东巡抚",
+];
+let draftDepth = 0;
+function withDraft(operation) {
+draftDepth++;
+try {
+const result = operation();
+if (result?.state) delete result.state[DRAFT];
+if (result?.emperor) delete result[DRAFT];
+return result;
+} finally {
+draftDepth--;
+}
+}
+function clone(state) {
+if (draftDepth && state?.[DRAFT]) return state;
+if (!state?.emperor || !Array.isArray(state.history))
+return structuredClone(state);
+// Sealed chapters are immutable. Share their contents while copying their containers.
+const {
+history,
+volumes,
+ledger,
+chronicles,
+pending,
+court,
+threads,
+projects,
+receipts,
+...active
+} = state;
+const copied = {
+...structuredClone(active),
+court: {
+...court,
+factions: structuredClone(court.factions),
+posts: structuredClone(court.posts),
+officials: court.officials.map((o) => (o.alive ? structuredClone(o) : o)),
+},
+threads: threads.map((t) => (t.stage === "结束" ? t : structuredClone(t))),
+projects: projects.map((p) => (p.done ? p : structuredClone(p))),
+receipts: [...(receipts || [])],
+history: [...(history || [])],
+volumes: [...(volumes || [])],
+ledger: [...(ledger || [])],
+chronicles: [...(chronicles || [])],
+pending,
+};
+if (draftDepth) copied[DRAFT] = true;
+return copied;
+}
+function createState(options = {}) {
+let rng = seedNumber(options.seed ?? "yuji"),
+n = (a, b) => {
+const r = random(rng);
+rng = r.rng;
+return a + Math.floor(r.value * (b - a + 1));
+};
+const factions = ["清流", "勋贵", "外戚", "宦官", "督抚", "宗室"].map(
+(name, i) => ({
+id: "f" + i,
+name,
+power: n(25, 55),
+powerModifier:0,
+attitude: n(42, 68),
+demand: [
+"纳谏清议",
+"军功封赏",
+"家族恩荫",
+"亲近信任",
+"钱粮自主",
+"宗藩安稳",
+][i],
+}),
+);
+const surnames = [
+"沈",
+"陆",
+"顾",
+"谢",
+"裴",
+"程",
+"韩",
+"许",
+"杜",
+"魏",
+"方",
+"梁",
+"宋",
+"张",
+"崔",
+"温",
+"袁",
+"郑",
+"李",
+"王",
+"赵",
+"刘",
+"苏",
+"柳",
+"陈",
+];
+const names = [
+"守正",
+"怀瑾",
+"文渊",
+"景行",
+"廷玉",
+"知远",
+"伯庸",
+"慎微",
+"长衡",
+"允中",
+"世宁",
+"明川",
+"思齐",
+"清和",
+"敬修",
+"望舒",
+"承安",
+"秉诚",
+"问渠",
+"砚秋",
+"信之",
+"元礼",
+"惟新",
+"济川",
+"云章",
+];
+const officials = surnames.map((surname, i) => ({
+id: "o" + i,
+name: surname + names[i],
+gender: "男",
+age: n(32, 62),
+post: "p" + i,
+faction: "f" + (i % 6),
+abilities: {
+政: n(40, 85),
+军: n(35, 85),
+才: n(40, 85),
+德: n(40, 90),
+忠: n(35, 85),
+权谋: n(40, 85),
+},
+ambition: n(20, 75),
+greed: n(5, 55),
+favor: 50,
+health: 85,
+alive: true,
+inCapital: true,
+secret: "曾为故交隐瞒田产，尚无人知。",
+secretKnown: false,
+memory: [],
+life: [],
+banquetTurn:-1000000,
+}));
+const posts = POST_NAMES.map((title, i) => ({
+id: "p" + i,
+title,
+provinceId: i >= 29 ? "z" + (i - 29) : null,
+rank: i < 13 ? 1 : i < 29 ? 2 : 3,
+office: title.slice(0, 2),
+tags: [
+/户|工/.test(title)
+? "管钱"
+: /兵|京|境/.test(title)
+? "管兵"
+: /吏/.test(title)
+? "管人"
+: /御史/.test(title)
+? "言官"
+: "政务",
+],
+holder: i < 25 ? "o" + i : null,
+}));
+const provinceNames = [
+"直隶",
+"河南",
+"江南",
+"湖广",
+"山东",
+"山西",
+"陕西",
+"四川",
+"福建",
+"广东",
+"云南",
+"辽东",
+];
+const provinces = provinceNames.map((name, i) => ({
+id: "z" + i,
+name,
+pop: n(180, 480),
+tax: n(7, 13),
+morale: 62,
+disaster: 0,
+rebellion: false,
+rebellionQuarter: -1,
+garrison: n(8000, 18000),
+governor: null,
+taxRelief: null,
+taxSurge: null,
+}));
+const emperor = {
+name: String(options.name || "萧承熙").slice(0, 12),
+age: 24,
+lifespan: n(55, 80),
+health: 85,
+energy: 9,
+mood: 70,
+depressedMonths:0,
+prestige: 58,
+virtue: 60,
+talents: Object.fromEntries(TALENTS.map((t) => [t, n(42, 75)])),
+tags: [["勤政", "仁厚", "节俭", "多疑"][n(0, 3)]],
+status: [],
+growth: Object.fromEntries(TALENTS.map((t) => [t, 0])),
+};
+let state = {
+v: VERSION,
+runId:
+options.runId || "run-" + seedNumber(options.seed ?? "yuji").toString(36),
+rng,
+turn: 0,
+day: 0,
+dynasty: "大晟",
+// v10 历史剧本：剧本编号、官制显示名、地方长官称谓、皇嗣取名、亲政大婚人选。
+scenario: null,
+postNames: null,
+governorTitle: null,
+childNaming: null,
+weddingNames: null,
+imperialSurname: emperor.name[0],
+regency: null,
+edictCooldowns: {},
+era: {
+name: String(options.era || "永宁").slice(0, 8),
+year: 1,
+month: 1,
+xun: 0,
+startTurn: 0,
+},
+settings: {
+freedom: options.freedom || "mid",
+difficulty: options.difficulty || "normal",
+prose: options.prose || "court",
+length: options.length || "standard",
+pov: options.pov || "third",
+demo: options.demo !== false,
+},
+emperor,
+reign: {
+number: 1,
+accessionTurn: 0,
+emperorId: "founder",
+initialTreasury: 480,
+initialStats: {},
+married: true,
+eraName: String(options.era || "永宁").slice(0, 8),
+eraStartTurn: 0,
+},
+nation: {
+treasury: 480,
+arrears: 0,
+privyArrears:0,
+grainArrears:0,
+privy: 90,
+grain: 240,
+morale: 62,
+governance: 58,
+provinces,
+army: {
+capital: { troops: 45000, readiness: 65 },
+frontiers: ["北", "西", "南", "东"].map((dir) => ({
+dir,
+troops: 35000,
+readiness: 60,
+threat: n(15, 40),
+})),
+},
+},
+court: { factions, posts, officials,proxyTurn:-1000000 },
+harem: {
+consorts: ["陆令仪", "沈清蘅", "裴映雪"].map((name, i) => ({
+id: "c" + i,
+name,
+age: 23 + i,
+rank: ["皇后", "妃", "嫔"][i],
+family: ["书香陆氏", "清流沈氏", "勋门裴氏"][i],
+faction: "f" + i,
+favor: 65 - i * 10,
+mood: 70,
+ambition: n(20, 65),
+scheming: n(20, 70),
+health: 85,
+preg: null,
+relations: {},
+secret: "家书中藏着旧事。",
+confined: false,
+cold: false,
+retired: false,
+reignId:
+options.runId ||
+"run-" + seedNumber(options.seed ?? "yuji").toString(36),
+recoveryUntil: 0,
+})),
+children: [],
+heir: null,
+candidates: [],
+selectionYear: 0,
+royalWomen: [{id:"royal-1",name:emperor.name[0]+"静宜",age:22,health:90,married:null}],
+},
+foreign: ["朔庭", "西陵", "南越", "东澜", "云岚"].map((name, i) => ({
+id: "w" + i,
+name,
+ruler: ["阿史那承", "拓跋珩", "黎明远", "崔景平", "木嘉措"][i],
+power: n(40, 90),
+attitude: n(25, 65),
+status: i === 0 ? "冷淡" : "通好",
+demand: "安定边贸",
+tribute: 5,
+authorization: 15,
+frontier: ["北", "西", "南", "东"][i % 4],
+trade:null,
+})),
+ambitions: [],
+memorials: [],
+threads: [],
+projects: [],
+schedule: { 朝: null, 午: null, 夜: null },
+history: [],
+volumes: [],
+volumeIndex: [],
+ledger: [],
+facts: [],
+knowledge: [],
+rels: [],
+stats: {
+events: 0,
+births: 0,
+warsWon: 0,
+visits: 0,
+edicts: 0,
+banquets: 0,
+appointments: 0,
+petitions: 0,
+initialTreasury: 480,
+expense: 0,
+income: 0,
+},
+achievements: [],
+receipts: [],
+interimEntries: [],
+turnBudget: null,
+pending: null,
+lastTurn: null,
+ending: null,
+chronicles: [],
+talks: [],
+campaigns: [],
+retaliations: [],
+revision: 0,
+};
+for (const group of [state.court.officials, state.harem.consorts, state.harem.royalWomen])
+for (const item of group) if (item.name === state.emperor.name) {
+const r=uniqueName(state,{excludeId:item.id});state=r.state;item.name=r.name;
+}
+state.court.factions=factionPowers(state);
+return state;
+}
+function migrate(input) {
+if (
+!input ||
+typeof input !== "object" ||
+Array.isArray(input) ||
+!Number.isInteger(input.v) ||
+input.v < 1 ||
+input.v > VERSION
+)
+throw new Error("存档版本不受支持，已进入保护模式");
+const s = structuredClone(input);
+if(s.schedule)for(const slot of ["朝","午","夜"]){
+const action=s.schedule[slot];
+if(s.v<8&&action&&["上朝","批折"].includes(action.kind)&&action.memorials===undefined)action.memorials=(s.memorials||[]).slice(0,3).map(m=>m.id);
+s.schedule[slot]=normalizeMemorialAction(action);
+}
+for (const key of [
+"emperor",
+"nation",
+"court",
+"harem",
+"era",
+"settings",
+"stats",
+])
+if (!s[key] || typeof s[key] !== "object")
+throw new Error("存档缺少 " + key);
+for (const key of [
+"history",
+"volumes",
+"ledger",
+"facts",
+"knowledge",
+"rels",
+"achievements",
+"receipts",
+"chronicles",
+"talks",
+"campaigns",
+"retaliations",
+"ambitions",
+"memorials",
+"threads",
+"projects",
+])
+if (s[key] === undefined) s[key] = [];
+if(s.pending?.forecast?.state){
+const saved=s.pending.forecast.state;
+if(!Number.isInteger(saved.v)||saved.v<1||saved.v>VERSION)throw new Error('预演存档版本无效');
+assertState(saved);
+}
+// Saved forecasts are immutable receipts. Upgrade their resulting state only
+// on commit; never rerun an old schedule, roll, settlement or calendar.
+s.v = VERSION;
+s.volumeIndex ??= [];
+// v9：叙事篇幅与视角。
+s.settings.length ??= "standard";
+s.settings.pov ??= "third";
+// v10：历史剧本字段，自拟王朝均为空。
+for (const key of ["scenario", "postNames", "governorTitle", "childNaming", "weddingNames"]) s[key] ??= null;
+s.nation.arrears ??= 0;
+s.nation.privyArrears ??= 0;
+s.nation.grainArrears ??= 0;
+s.emperor.depressedMonths ??= 0;
+s.court.proxyTurn ??= -1000000;
+for(const f of s.foreign)f.trade ??= null;
+for(const f of s.court.factions)f.powerModifier ??= 0;
+for(const o of s.court.officials)o.banquetTurn ??= -1000000;
+for(const p of s.projects)if(p.edictType==='征兵')p.armyTarget ??= 'all-frontiers';
+for (const p of s.nation.provinces) {
+p.rebellion ??= false;
+p.rebellionQuarter ??= -1;
+}
+s.reign ??= {
+number: 1,
+accessionTurn: 0,
+emperorId: "founder",
+initialTreasury: s.stats.initialTreasury || 480,
+};
+s.reign.initialStats ??= {};
+for (const o of s.court.officials) {
+o.abilities.权谋 ??= Math.round((o.abilities.政 + o.ambition) / 2);
+o.inCapital ??= !/巡抚|总兵/.test(
+s.court.posts.find((p) => p.id === o.post)?.title || "@@",
+);
+}
+for (const c of s.harem.consorts) {
+c.reignId ??= s.runId;
+c.retired ??= false;
+c.recoveryUntil ??= 0;
+if (c.preg) c.preg.fatherId ??= s.runId;
+}
+for (const c of s.harem.children) c.fatherId ??= s.runId;
+s.interimEntries ??= [];
+s.turnBudget ??= null;
+s.revision ??= s.turn;
+s.schedule ??= { 朝: null, 午: null, 夜: null };
+s.pending ??= null;
+s.lastTurn ??= null;
+s.ending ??= null;
+s.emperor.growth ??= Object.fromEntries(TALENTS.map((t) => [t, 0]));
+s.harem.candidates ??= [];
+s.harem.selectionYear ??= 0;
+s.imperialSurname ??= s.chronicles.find(r=>r.dynastyId===s.runId&&r.emperor)?.emperor?.[0] || s.emperor.name?.[0] || "萧";
+s.era.startTurn ??= Math.max(0, Math.floor((s.turn-(Math.max(1,s.era.year)-1)*36)/36)*36);
+s.reign.eraName ??= s.era.name;
+s.reign.eraStartTurn ??= s.era.startTurn;
+s.reign.married ??= s.emperor.age >= 16 && s.harem.consorts.some(c=>!c.retired);
+const child=s.harem.children.find(c=>c.id===s.reign.emperorId);
+s.regency ??= s.emperor.age < 16 ? {regentId:chooseRegent(s).id,until:Number.isFinite(child?.born)?child.born+16*36:s.turn+Math.ceil((16-s.emperor.age)*36)} : null;
+if(s.emperor.age<16)s.reign.married=false;
+if (s.regency && !s.reign.married) for (const c of s.harem.consorts) c.retired=true;
+for (const p of s.nation.provinces) {p.taxRelief ??= null;p.taxSurge ??= null;}
+for (const [i,p] of s.court.posts.entries()) p.provinceId ??= i>=29 ? s.nation.provinces[i-29]?.id || null : null;
+for (const [i,p] of s.nation.provinces.entries()) {
+let post=s.court.posts.find(x=>x.provinceId===p.id);
+if(!post) {post={id:'p'+(29+i),title:p.name+'巡抚',rank:3,office:'地方',tags:['政务'],holder:null,provinceId:p.id};s.court.posts.push(post);}
+post.title=p.name+'巡抚';
+p.governor=post.holder || null;
+}
+for(const [i,f] of s.foreign.entries()) f.frontier ??= s.nation.army.frontiers[i%s.nation.army.frontiers.length].dir;
+for(const m of s.memorials){
+m.provinceId ??= s.nation.provinces.find(p=>m.title?.includes(p.name))?.id || null;
+if(m.fromId===undefined){
+const candidates=s.court.officials.filter(o=>o.name===m.from&&o.alive&&o.health>0&&!o.jailed&&!o.retired&&s.court.posts.some(p=>p.id===o.post&&p.holder===o.id)&&(o.inCapital!==false||s.court.posts.some(p=>p.holder===o.id&&p.provinceId===m.provinceId)));
+m.fromId=candidates.length===1?candidates[0].id:null;
+if(!m.fromId)m.from='通政司';
+}
+}
+s.edictCooldowns ??= {};
+for(const p of s.projects.filter(p=>p.done)) {
+const key=p.edictType==='赈灾'?'赈灾:'+(p.province||'all'):p.edictType;
+s.edictCooldowns[key] ??= p.end+6;
+}
+for(const a of s.ambitions) if(s.receipts.includes('goal:'+a.id)&&!s.receipts.includes('goal:'+reignId(s)+':'+a.id)) s.receipts.push('goal:'+reignId(s)+':'+a.id);
+assertState(s);
+return s;
+}
+function assertState(s) {
+if (
+!Number.isSafeInteger(s.turn) ||
+s.turn < 0 ||
+!Number.isSafeInteger(s.rng) ||
+typeof s.runId !== "string" ||
+!s.runId
+)
+throw new Error("存档回合资料无效");
+const range = (v, a, b) => {
+if (typeof v !== "number" || !Number.isFinite(v) || v < a || v > b)
+throw new Error("数值不在有效范围");
+};
+for (const field of ["health", "mood", "prestige", "virtue"])
+range(s.emperor[field], 0, 100);
+for (const t of TALENTS) range(s.emperor.talents?.[t], 0, 100);
+for (const f of ["morale", "governance"]) range(s.nation[f], 0, 100);
+for (const f of ["treasury", "privy", "grain"])
+range(s.nation[f], 0, 1000000);
+for (const a of [
+s.court.factions,
+s.court.posts,
+s.court.officials,
+s.harem.consorts,
+s.harem.children,
+s.nation.provinces,
+s.nation.army.frontiers,
+s.foreign,
+])
+if (!Array.isArray(a)) throw new Error("名册结构无效");
+for (const x of s.court.factions)
+for (const f of ["power", "attitude"]) range(x[f], 0, 100);
+for (const x of s.nation.army.frontiers) {
+range(x.threat, 0, 100);
+range(x.troops, 0, 1000000);
+range(x.readiness, 0, 100);
+}
+for (const x of s.nation.provinces) {
+range(x.morale, 0, 100);
+range(x.disaster, 0, 100);
+}
+for (const x of s.harem.consorts) {
+range(x.health, 0, 100);
+range(x.favor, 0, 100);
+}
+if(s.v>=5){
+if(typeof s.imperialSurname!=='string'||!s.imperialSurname.trim())throw new Error('皇姓资料无效');
+if(!Number.isSafeInteger(s.era.startTurn)||s.era.startTurn<0)throw new Error('纪年起点无效');
+if(s.regency&&(!s.regency.regentId||!Number.isSafeInteger(s.regency.until)||s.regency.until<0))throw new Error('摄政资料无效');
+for(const f of s.foreign)if(!s.nation.army.frontiers.some(b=>b.dir===f.frontier))throw new Error('外邦边境资料无效');
+for(const p of s.nation.provinces)for(const k of ['taxRelief','taxSurge'])if(p[k]!==null&&(!p[k]||!Number.isFinite(p[k].factor)||p[k].factor<=0||!Number.isSafeInteger(p[k].untilQuarter)||p[k].untilQuarter<0))throw new Error('州税政策资料无效');
+for(const p of s.court.posts)if(p.provinceId&&!s.nation.provinces.some(z=>z.id===p.provinceId))throw new Error('地方官职资料无效');
+}
+if(s.v>=6){
+if(!Number.isSafeInteger(s.court.proxyTurn))throw new Error('权臣代批时序无效');
+for(const f of ['arrears','privyArrears','grainArrears'])range(s.nation[f],0,Number.MAX_SAFE_INTEGER);
+if(!Number.isSafeInteger(s.emperor.depressedMonths)||s.emperor.depressedMonths<0)throw new Error('郁结时长无效');
+for(const f of s.court.factions)range(f.powerModifier,-30,30);
+for(const o of s.court.officials)if(!Number.isSafeInteger(o.banquetTurn))throw new Error('宴请时序无效');
+for(const f of s.foreign)if(f.trade!==null&&(!f.trade||!Number.isSafeInteger(f.trade.start)||!Number.isSafeInteger(f.trade.until)||f.trade.start<0||f.trade.until!==f.trade.start+36||!Number.isFinite(f.trade.income)||f.trade.income<0||f.trade.income>6))throw new Error('互市条款无效');
+for(const p of s.projects)if(p.edictType==='征兵'&&!['capital','all-frontiers',...s.nation.army.frontiers.map(b=>b.dir)].includes(p.armyTarget))throw new Error('征兵目标无效');
+}
+if(s.v>=8){
+if(!Array.isArray(s.volumeIndex))throw new Error('分卷目录损坏');
+for(const ref of s.volumeIndex)if(!ref||typeof ref.key!=='string'||!Number.isSafeInteger(ref.from)||!Number.isSafeInteger(ref.to)||ref.from<0||ref.to<ref.from||typeof ref.checksum!=='string'||!/^[0-9a-f]{8}$/.test(ref.checksum))throw new Error('分卷目录损坏');
+}
+const walk = (x) => {
+if (typeof x === "number" && !Number.isFinite(x))
+throw new Error("存档含 NaN/Infinity");
+if (x && typeof x === "object") for (const v of Object.values(x)) walk(v);
+};
+walk(s);
+return true;
+}
+function reignId(s) {
+return (s.reign?.number || 1) === 1
+? s.runId
+: s.runId + ":reign:" + s.reign.number;
+}
+
+return {VERSION,TALENTS,SLOTS,POST_NAMES,withDraft,clone,createState,migrate,assertState,reignId};
+},
+"src/core/memorial-decisions.js":function(__load){
+const REMARK_KINDS=['嘉奖','申饬','附旨','无'];
+function memorialDecision(action,id){
+const value=action?.decisions?.[id];
+if(value!==undefined&&typeof value!=='string'){
+if(!value||typeof value!=='object'||Array.isArray(value)||typeof value.option!=='string'||(value.remark!==undefined&&typeof value.remark!=='string')||(value.remarkKind!==undefined&&!REMARK_KINDS.includes(value.remarkKind)))throw new Error('逐本朱批决定格式无效');
+}
+const object=value&&typeof value==='object'&&!Array.isArray(value)?value:null;
+const option=typeof value==='string'?value:typeof object?.option==='string'?object.option:action?.decision||'approve';
+const remark=typeof object?.remark==='string'?object.remark:typeof action?.remark==='string'?action.remark:'';
+return {option,remark:remark.slice(0,100),...(REMARK_KINDS.includes(object?.remarkKind)?{remarkKind:object.remarkKind}:{})};
+}
+function normalizeMemorialAction(action){
+if(!action||!['上朝','批折'].includes(action.kind))return action;
+return {...action,decisions:Object.fromEntries((action.memorials||[]).map(id=>[id,memorialDecision(action,id)]))};
+}
+function remarkCategory(text){
+// Scope negation to the clause. “责成” is a task assignment, never blame.
+const affirmative=String(text).split(/[，,。；;！？!?]/).filter(t=>!/(?:不必|无需|无须|不要|不得|不可|不宜|不应|勿|毋|莫|并非|未予)/.test(t)).join('，');
+if(/申饬|斥责|责罚|严查|敷衍|懈怠/.test(affirmative))return '申饬';
+if(/嘉奖|有功|可嘉|甚善|勤勉/.test(affirmative))return '嘉奖';
+if(/责成|着令|令其|另拟|附旨|交.*核/.test(affirmative))return '附旨';
+return '无';
+}
+
+return {REMARK_KINDS,memorialDecision,normalizeMemorialAction,remarkCategory};
+},
+"src/core/rng.js":function(__load){
+const DRAFT = Symbol("internal-forecast-draft");
+function seedNumber(seed) {
+let n = 2166136261;
+for (const c of String(seed)) n = Math.imul(n ^ c.charCodeAt(0), 16777619);
+return n >>> 0 || 1;
+}
+function random(rng) {
+let x = rng >>> 0 || 1;
+x ^= x << 13;
+x ^= x >>> 17;
+x ^= x << 5;
+return { rng: x >>> 0, value: (x >>> 0) / 4294967296 };
+}
+function roll(state, low = 1, high = 20) {
+const r = random(state.rng);
+return {
+state: { ...state, rng: r.rng },
+value: low + Math.floor(r.value * (high - low + 1)),
+};
+}
+function fateModifier(die) {
+return (die - 10.5) * 4;
+}
+function fateLabel(die) {
+return die <= 3
+? "大凶"
+: die <= 8
+? "不顺"
+: die <= 14
+? "平常"
+: die <= 18
+? "顺遂"
+: "大吉";
+}
+function check(
+talent,
+die,
+level = "一般",
+opposition = 0,
+modifier = 0,
+) {
+const difficulty = { 容易: 40, 一般: 55, 困难: 70, 极难: 85 }[level];
+if (!difficulty) throw new Error("未知判定难度");
+const score = talent + modifier + fateModifier(die) - opposition / 2;
+return { score, difficulty, success: score >= difficulty };
+}
+
+return {DRAFT,seedNumber,random,roll,fateModifier,fateLabel,check};
+},
+"src/core/names.js":function(__load){
+const { roll } = __load("src/core/rng.js");
+const SURNAMES = [...'沈陆顾谢裴程韩许杜魏方梁宋张崔温袁郑李王赵刘苏柳陈林孟周徐邵潘傅高马罗吕余钱陶江叶秦唐白姚夏何卢季'];
+const GIVEN_NAMES = ['守礼','明哲','慎行','静姝','疏影','明漪','书宁','婉清','知微','云岫','晚晴','映棠','清圆','静宜','清容','素宁','怀瑾','景行','知远','慎微','清和','望舒','承安','惟新','济川','云章','若兰','思齐','元礼','长衡','廷玉','秉诚','砚秋','青岚','书仪','令仪','清蘅','映雪','雅颂','怀仁','修文','允恭','思宁','含章','若水','清晏','嘉言','明远','昭华','如玉','安澜','素心','沐晴','云舒','瑞宁','清韵','兰舟','文昕','景初','承泽'];
+const IMPERIAL_CHARS = [...'宁和安明瑜璋珩琬棠瑾瑞嘉懿昭晟昱煜熙晏清澄涵泽渊源润浩瀚泓澜淳沅洵浚溥濂洛汀湘沐潇温翊翼翎翰翕翡翘翮彰彤彬彦衍衡衷辰宸宇宥宏宽宣定宜寅容寰宪宗旭昂昀昕昊昶晖晋曦曜暄暘朔朗桓桐柏松楷榕楠榆槐枫棣棣桢楫榛榭棨荣芝芷若葳蕤菀菁萱萦蓉莲蔚蘅蘭璞琛琦瑶瑗璇璟璘璨璧琮琰珺珂琪瑛瑄琚瑀璐璜璠璋'];
+function personNames(state, excludeId = null) {
+// Historical names are also reserved: this exceeds the living-name minimum
+// and keeps names in old chronicles unambiguous.
+const groups = [state.court.officials, state.harem.consorts, state.harem.children,
+state.harem.royalWomen || [], state.harem.candidates || []];
+const names = groups.flat().filter(p => !excludeId || p.id !== excludeId).map(p => p.name);
+names.push(...(state.chronicles || []).map(r=>r.emperor),state.emperor.name, ...(state.foreign || []).filter(f=>f.id!==excludeId).map(f => f.ruler));
+if (typeof state.dowager === 'string') names.push(state.dowager);
+return new Set(names.filter(Boolean));
+}
+function uniqueName(state, pool = {}) {
+const spec = Array.isArray(pool) ? {names: pool} : pool;
+const used = personNames(state, spec.excludeId);
+const candidates = spec.names || (spec.surnames || SURNAMES).flatMap(surname =>
+(spec.givenNames || GIVEN_NAMES).map(given => surname + given));
+let free = [...new Set(candidates)].filter(name => name && !used.has(name));
+if (!free.length && !spec.prefix)
+free = SURNAMES.flatMap(surname => GIVEN_NAMES.map(given => surname + given))
+.filter(name => !used.has(name));
+if (!free.length) {
+const prefixes = spec.prefix ? [spec.prefix] : (spec.surnames || SURNAMES);
+free = prefixes.flatMap(prefix => IMPERIAL_CHARS.flatMap(a => IMPERIAL_CHARS.map(b => prefix+a+b)))
+.filter(name => !used.has(name));
+}
+if (!free.length) throw new Error('姓名池已满，请扩充姓名池');
+const r = roll(state, 0, free.length - 1);
+return {state: r.state, name: free[r.value]};
+}
+
+return {SURNAMES,GIVEN_NAMES,IMPERIAL_CHARS,personNames,uniqueName};
+},
+"src/core/regency-info.js":function(__load){
+// No state mutation or randomness: migration can use the same selection rule.
+function chooseRegent(s) {
+const mother = s.harem.consorts.find(c => c.id === s.harem.children.find(c => c.id === s.reign?.emperorId)?.mother);
+const candidates = [{id:'dowager',name:s.dowager || mother?.name || '慈宁太后',power:mother?.scheming ?? 65,faction:mother?.faction || 'f0'}];
+for (const title of ['内阁首辅','宗人令']) {
+const id=s.court.posts.find(p=>p.title===title)?.holder;
+const o=s.court.officials.find(o=>o.id===id&&o.alive&&o.health>0&&!o.jailed&&!o.retired);
+if(o)candidates.push({id:o.id,name:o.name,power:o.abilities.权谋 ?? 50,faction:o.faction});
+}
+return candidates.sort((a,b)=>b.power-a.power)[0];
+}
+function regentPerson(s) {
+if(s.regency?.regentId==='dowager')return {id:'dowager',name:s.dowager || '慈宁太后',faction:'f0'};
+return s.court.officials.find(o=>o.id===s.regency?.regentId&&o.alive&&!o.jailed&&!o.retired) || chooseRegent(s);
+}
+
+return {chooseRegent,regentPerson};
+},
+"src/core/politics.js":function(__load){
+// Derive office influence without changing the input state. Event influence is
+// kept separately so removing an official cannot erase an unrelated event.
+function factionPowers(s){
+return s.court.factions.map(f=>{
+const offices=s.court.posts.reduce((sum,p)=>{
+const o=s.court.officials.find(o=>o.id===p.holder&&o.post===p.id&&o.alive&&o.health>0&&!o.retired&&!o.jailed&&o.faction===f.id);
+return sum+(o?Math.max(1,5-p.rank)*(o.abilities.政+o.abilities.权谋)/2:0);
+},0);
+return {...f,power:Math.min(100,Math.max(0,offices/20+(f.powerModifier||0)))};
+});
+}
+
+return {factionPowers};
+},
+"src/core/effects.js":function(__load){
+const { clone } = __load("src/core/state.js");
+function clamp(n, low = 0, high = 100) {
+return Math.min(high, Math.max(low, Number.isFinite(n) ? n : 0));
+}
+function populationMorale(state) {
+const pop=state.nation.provinces.reduce((n,p)=>n+p.pop,0);
+return pop?state.nation.provinces.reduce((n,p)=>n+p.pop*p.morale,0)/pop:0;
+}
+function diminishing(value,delta){return delta>0?delta*(value>=90?0.25:value>=80?0.5:1):delta;}
+function applyEffects(state, effects = {}, source = "引擎结算") {
+const s = clone(state),
+entries = [];
+const set = (obj, key, delta, path, max = 100, min = 0) => {
+if (typeof delta !== "number" || !Number.isFinite(delta)) return;
+const old = obj[key];
+obj[key] = clamp(old + delta, min, max);
+if (obj[key] !== old)
+entries.push({
+path,
+before: old,
+after: obj[key],
+delta: Math.round((obj[key] - old) * 100) / 100,
+source,
+});
+};
+for (const [f,debt] of [['treasury','arrears'],['privy','privyArrears'],['grain','grainArrears']]) {
+const delta=effects[f];
+if(Number.isFinite(delta)&&delta<0&&-delta>s.nation[f]){
+s.nation[debt]??=0;
+set(s.nation,debt,-delta-s.nation[f],'nation.'+debt,Number.MAX_SAFE_INTEGER);
+}
+set(s.nation,f,delta,'nation.'+f,1000000);
+}
+for(const f of ['arrears','privyArrears','grainArrears'])if(Number.isFinite(effects[f])){s.nation[f]??=0;set(s.nation,f,effects[f],'nation.'+f,Number.MAX_SAFE_INTEGER);}
+if(Number.isFinite(effects.morale))for(const p of s.nation.provinces)
+set(p,'morale',diminishing(p.morale,effects.morale)*0.3,'province.'+p.id+'.morale');
+set(s.nation,'governance',diminishing(s.nation.governance,effects.governance),'nation.governance');
+for (const f of ["health", "mood", "prestige", "virtue"])
+set(s.emperor, f, ['prestige','virtue'].includes(f)?diminishing(s.emperor[f],effects[f]):effects[f], "emperor." + f);
+if(s.emperor.mood>=20)s.emperor.depressedMonths=0;
+if (effects.province) {
+const p = s.nation.provinces.find((p) => p.id === effects.province.id);
+if (p)
+for (const f of ["morale", "disaster"])
+set(p, f, f==='morale'?diminishing(p[f],effects.province[f]):effects.province[f], "province." + p.id + "." + f);
+}
+set(s.nation,'morale',populationMorale(s)-s.nation.morale,'nation.morale');
+if (effects.faction)
+for (const [id, n] of Object.entries(effects.faction)) {
+const f = s.court.factions.find((f) => f.id === id);
+if (f) {set(f, "attitude", n, "faction." + id + ".attitude");f.powerModifier??=0;set(f,'powerModifier',n*0.25,'faction.'+id+'.powerModifier',30,-30);set(f,'power',n*0.25,'faction.'+id+'.power');}
+}
+if (effects.official) {
+const o = s.court.officials.find(
+(o) => o.id === effects.official.id && o.alive,
+);
+if (o)
+set(o, "favor", effects.official.favor, "official." + o.id + ".favor");
+}
+if (effects.thread) {
+const t = s.threads.find((t) => t.id === effects.thread.id);
+if (t && t.stage !== "结束") {
+t.stage = effects.thread.stage;
+t.result = String(effects.thread.result || "");
+t.updated = s.turn;
+}
+}
+s.ledger.push(...entries.map((e) => ({ ...e, turn: s.turn })));
+return { state: s, entries };
+}
+function applyPackage(state, effects, source) {
+return applyEffects(state, effects, source).state;
+}
+function growTalent(state, talent, amount = 1) {
+const s = clone(state),
+left = 3 - (s.emperor.growth[talent] || 0);
+if (left > 0) {
+const inc = Math.min(left, amount, 100 - s.emperor.talents[talent]);
+s.emperor.talents[talent] += inc;
+s.emperor.growth[talent] = (s.emperor.growth[talent] || 0) + inc;
+s.ledger.push({
+turn: s.turn,
+path: "emperor.talents." + talent,
+delta: inc,
+before: s.emperor.talents[talent] - inc,
+after: s.emperor.talents[talent],
+source: "经世历练（每年每才最多 +3）",
+});
+}
+return s;
+}
+
+return {clamp,populationMorale,diminishing,applyEffects,applyPackage,growTalent};
+},
 "src/store/debounce.js":function(__load){
 function createDebouncedSave(run,{schedule=setTimeout,cancel=clearTimeout}={}){
 let timer=null;
@@ -3431,33 +4640,6 @@ return next;
 }
 
 return {classifyMemorialSchedule};
-},
-"src/core/memorial-decisions.js":function(__load){
-const REMARK_KINDS=['嘉奖','申饬','附旨','无'];
-function memorialDecision(action,id){
-const value=action?.decisions?.[id];
-if(value!==undefined&&typeof value!=='string'){
-if(!value||typeof value!=='object'||Array.isArray(value)||typeof value.option!=='string'||(value.remark!==undefined&&typeof value.remark!=='string')||(value.remarkKind!==undefined&&!REMARK_KINDS.includes(value.remarkKind)))throw new Error('逐本朱批决定格式无效');
-}
-const object=value&&typeof value==='object'&&!Array.isArray(value)?value:null;
-const option=typeof value==='string'?value:typeof object?.option==='string'?object.option:action?.decision||'approve';
-const remark=typeof object?.remark==='string'?object.remark:typeof action?.remark==='string'?action.remark:'';
-return {option,remark:remark.slice(0,100),...(REMARK_KINDS.includes(object?.remarkKind)?{remarkKind:object.remarkKind}:{})};
-}
-function normalizeMemorialAction(action){
-if(!action||!['上朝','批折'].includes(action.kind))return action;
-return {...action,decisions:Object.fromEntries((action.memorials||[]).map(id=>[id,memorialDecision(action,id)]))};
-}
-function remarkCategory(text){
-// Scope negation to the clause. “责成” is a task assignment, never blame.
-const affirmative=String(text).split(/[，,。；;！？!?]/).filter(t=>!/(?:不必|无需|无须|不要|不得|不可|不宜|不应|勿|毋|莫|并非|未予)/.test(t)).join('，');
-if(/申饬|斥责|责罚|严查|敷衍|懈怠/.test(affirmative))return '申饬';
-if(/嘉奖|有功|可嘉|甚善|勤勉/.test(affirmative))return '嘉奖';
-if(/责成|着令|令其|另拟|附旨|交.*核/.test(affirmative))return '附旨';
-return '无';
-}
-
-return {REMARK_KINDS,memorialDecision,normalizeMemorialAction,remarkCategory};
 },
 "src/ui/icon.js":function(__load){
 const APP_ICONS = {"32":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAkFBMVEX3y3DvuWLprljkqFffnVDAiEjIgEKqgEPAej7DbDahcziWZi61WCyzRCOfTySAViixORymNxuoMhijIxGbLxaaHQ98KRMgFxIfFxIfFhIfFhEeFhIeFhEdFhGcFQoeFREdFRGeDwebCgWNDwePCgWZBQKOBAKFAwKFAABPCAcWEA8VDw8VDg4TDQ4SDA0RCwyeLUoYAAACKElEQVR42q2T25KjIBCGAVk8QQTFaAyj8UxpNO//dtOYZDK1N3uzLQJFf/V30wC6/cPQ/wKKS1WZCrrKjcaYqix+A+ax39flfl9X+Jd1WZZ1f5gPYJbEPyzyXxZFfnI3b6B4JFRKqXWq01SpVKUwEV6yFy+g2nwxtl0v6kkNU9t2Q9e2lvuPH+Duy7buckRrz8uGuq3rru2E/yh/AV07MYRzilTWjuOYptMHaABQ4xigP7VA1EMh4wzjVH5CXEBhYDTkHaWYSYEcxuUvhRVyUFagMK8RrzPMLEO59Pd3Ds0SpW1Xg3jKMEEBAQBnMnqFaJ4KY4i4wB5mKj2AWkSfEEucWomwyrIMiywnbAZARvvlvc3F15owHHIqCMHcAwXaA1D9KEQplx3mGT4R3uceldTrZbyXzVsh0vOUE54RAISmLMB0lvF2aW4NAAZy0N0AgCYB8XhPgp6erAM+SeoBgIARL+xt7bEp72cVf07zCKE9fmK5HYbaC6dxAGArfgoV5/OUEW6Hqe/HmgZz3886Wd/bNC4EVOo0990wDD0NrQPi7V2oyz1Wdhzn2Vo7TtYKbWEq4kdhXqe5npnI0uOuSamkUlorxc5r8WWel/a6nuMkieNn9xyT8/K6tI3bx7qv27bt0JxtzlbnbwAwV6hXVVyKsoBWgsErKsvKHcQBNPCOQMXcDq2/DADnd8DBmevtC77GocZ8mWcOsA7+5nq9uXAH3ByduYLjG0XhZePKL1XsAAAAAElFTkSuQmCC","180":"data:image/png;base64,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","192":"data:image/png;base64,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"};
@@ -4884,56 +6066,6 @@ return [slot,pick(SEASONS[season])+pick(SCENES[kind]||SCENES.日常)+(sensitive?
 
 return {sceneNarrative};
 },
-"src/core/rng.js":function(__load){
-const DRAFT = Symbol("internal-forecast-draft");
-function seedNumber(seed) {
-let n = 2166136261;
-for (const c of String(seed)) n = Math.imul(n ^ c.charCodeAt(0), 16777619);
-return n >>> 0 || 1;
-}
-function random(rng) {
-let x = rng >>> 0 || 1;
-x ^= x << 13;
-x ^= x >>> 17;
-x ^= x << 5;
-return { rng: x >>> 0, value: (x >>> 0) / 4294967296 };
-}
-function roll(state, low = 1, high = 20) {
-const r = random(state.rng);
-return {
-state: { ...state, rng: r.rng },
-value: low + Math.floor(r.value * (high - low + 1)),
-};
-}
-function fateModifier(die) {
-return (die - 10.5) * 4;
-}
-function fateLabel(die) {
-return die <= 3
-? "大凶"
-: die <= 8
-? "不顺"
-: die <= 14
-? "平常"
-: die <= 18
-? "顺遂"
-: "大吉";
-}
-function check(
-talent,
-die,
-level = "一般",
-opposition = 0,
-modifier = 0,
-) {
-const difficulty = { 容易: 40, 一般: 55, 困难: 70, 极难: 85 }[level];
-if (!difficulty) throw new Error("未知判定难度");
-const score = talent + modifier + fateModifier(die) - opposition / 2;
-return { score, difficulty, success: score >= difficulty };
-}
-
-return {DRAFT,seedNumber,random,roll,fateModifier,fateLabel,check};
-},
 "src/ui/turn-request.js":function(__load){
 const { callJSON, createBudget } = __load("src/llm/client.js");
 const { turnMessages } = __load("src/llm/prompts.js");
@@ -4975,6 +6107,7 @@ rememberAttempts();
 return {validateTurnNarrative,requestTurnNarrative};
 },
 "src/llm/prompts.js":function(__load){
+const { postTitle, scenarioById } = __load("src/core/scenarios.js");
 // 文风：规则 + 范文。范文只示范笔法，人物与事件不得照搬；它们位于系统提示，
 // 整局不变，同时延长可缓存前缀。
 const STYLES = {
@@ -5058,7 +6191,11 @@ function settlementDigest(state, entries = []) {
 function worldRules(state) {
   const style = STYLES[state.settings.prose] || STYLES.court,
     pov = POVS[state.settings.pov] || POVS.third;
-  return `你是架空王朝「${state.dynasty}」的叙事引擎，制度近似明清。只输出一个 JSON 对象。\n铁律：引擎记账，模型叙事。所有钱粮、人物、派系、健康、受孕、生育、死亡、升迁、战争胜负、执行度由结算表决定，你不得追加或改写硬结果，不得另给数字。名册姓名一字不改，大臣称陛下、自称臣，妃嫔自称臣妾。人物各有利益。文风「${style.label}」：${style.rules}${pov.rules}\n【文风范文（只学笔法，不照搬人物与事件）】${style.sample}\n白描，禁用嘴角勾起、眼中闪过一丝、现代词；对话用「」。亲密场面点到为止，禁止描写性行为或身体细节。${state.settings.freedom === "free" ? "随心所欲：宽容传奇，仍以引擎结果为准。" : state.settings.freedom === "real" ? "写实：成败有代价，人物不必讨好皇帝。" : "传奇：礼制内的戏剧性，不替玩家决定。"}`;
+  const sc = scenarioById(state.scenario);
+  const frame = sc
+    ? `你是「${state.dynasty}」朝的叙事引擎。本局以${sc.year}${sc.title.split(" · ")[0]}即位之初的史实开局，官职、地名用该朝称谓（见王朝设定）。史实只用于人物性格、关系与背景；本局自开局起已偏离史实，生死、成败、任免一律以引擎结算为准，不得按史书预言或补写结局，也不得写开局之后的史事。`
+    : `你是架空王朝「${state.dynasty}」的叙事引擎，制度近似明清。`;
+  return `${frame}只输出一个 JSON 对象。\n铁律：引擎记账，模型叙事。所有钱粮、人物、派系、健康、受孕、生育、死亡、升迁、战争胜负、执行度由结算表决定，你不得追加或改写硬结果，不得另给数字。名册姓名一字不改，大臣称陛下、自称臣，妃嫔自称臣妾。人物各有利益。文风「${style.label}」：${style.rules}${pov.rules}\n【文风范文（只学笔法，不照搬人物与事件）】${style.sample}\n白描，禁用嘴角勾起、眼中闪过一丝、现代词；对话用「」。亲密场面点到为止，禁止描写性行为或身体细节。${state.settings.freedom === "free" ? "随心所欲：宽容传奇，仍以引擎结果为准。" : state.settings.freedom === "real" ? "写实：成败有代价，人物不必讨好皇帝。" : "传奇：礼制内的戏剧性，不替玩家决定。"}`;
 }
 function roster(state) {
   return state.court.officials
@@ -5069,7 +6206,7 @@ function roster(state) {
         "｜" +
         o.name +
         "｜" +
-        (state.court.posts.find((p) => p.holder === o.id)?.title || "待任") +
+        (postTitle(state, state.court.posts.find((p) => p.holder === o.id)) || "待任") +
         "｜" +
         (state.court.factions.find((f) => f.id === o.faction)?.name || "无党") +
         "｜好感" +
@@ -5082,7 +6219,7 @@ function roster(state) {
       [state.emperor.name + "｜皇帝"],
       state.harem.children.filter(c=>c.health>0&&c.id!==state.reign?.emperorId&&c.name!==state.emperor.name).map((c) =>
         c.id + "｜" + c.name + "｜" + (c.id === state.harem.heir ? "储君" : c.sex === "男" ? "皇子" : "公主")),
-      [(state.dowager || "慈宁太后") + "｜太后"],
+      state.scenario && !state.dowager ? [] : [(state.dowager || "慈宁太后") + "｜太后"],
       (state.harem.royalWomen || []).map((w) => w.id + "｜" + w.name + "｜宗室女"),
       state.foreign.map((f) => f.id + "｜" + f.ruler + "｜" + f.name + "君主｜" + f.status),
     )
@@ -5107,7 +6244,7 @@ const TASK_RULES = `【叙事守则】死亡、怀孕、生产、小产、任免
 面谈输出 {"reply":"","innerThought":"","mood":"","summary":""}`;
 // L1：静态资料，按 id 排序，不含好感、势力等数值。
 function dynastyBible(state) {
-  const post = (id) => state.court.posts.find((p) => p.holder === id)?.title || "待任";
+  const post = (id) => postTitle(state, state.court.posts.find((p) => p.holder === id)) || "待任";
   const faction = (id) => state.court.factions.find((f) => f.id === id)?.name || "无党";
   const byId = (a, b) => String(a.id).localeCompare(String(b.id));
   return "【王朝设定】" + stable({
@@ -5118,7 +6255,7 @@ function dynastyBible(state) {
     后宫: state.harem.consorts.slice().sort(byId).map((c) => [c.id, c.name, c.rank, c.family].join("｜")),
     皇嗣: state.harem.children.filter((c) => c.health > 0 && c.id !== state.reign?.emperorId && c.name !== state.emperor.name)
       .slice().sort(byId).map((c) => [c.id, c.name, c.id === state.harem.heir ? "储君" : c.sex === "男" ? "皇子" : "公主"].join("｜")),
-    太后: state.dowager || "慈宁太后",
+    太后: state.scenario && !state.dowager ? "无" : state.dowager || "慈宁太后",
     宗室女: (state.harem.royalWomen || []).map((w) => w.id + "｜" + w.name),
     外邦: state.foreign.map((f) => [f.id, f.name, f.ruler].join("｜")),
     州郡: state.nation.provinces.map((z) => z.name),
@@ -5213,7 +6350,7 @@ function talkMessages(state, result, log = []) {
     state.foreign.find((o) => o.id === result.person);
   const { secret, secretKnown, memory, life, favor, attitude, mood, health, ...card } = npc;
   const known = secretKnown || (result.kind === "试探" && result.success);
-  const post = state.court.posts.find((p) => p.holder === npc.id)?.title;
+  const post = postTitle(state, state.court.posts.find((p) => p.holder === npc.id));
   const header = dynastyBible(state) + "\n【面谈对象】" + stable({ id: card.id, name: card.name, 职位: post || card.rank || card.status || "", personality: card.personality, family: card.family, faction: card.faction, ruler: card.ruler, demand: card.demand }) +
     "\n【此人能做到什么】妃嫔不能给钱兵；其他职权外请求必须回去议。\n";
   const prior = (Array.isArray(log) ? log : [])
@@ -5280,6 +6417,7 @@ const { createState } = __load("src/core/state.js");
 const { initialTurn } = __load("src/core/turn.js");
 const { selectAmbitions } = __load("src/core/ambitions.js");
 const { applyWorld } = __load("src/core/world.js");
+const { applyScenario, scenarioById } = __load("src/core/scenarios.js");
 const { callJSON } = __load("src/llm/client.js");
 const { worldMessages } = __load("src/llm/prompts.js");
 const { validateWorld } = __load("src/llm/validate.js");
@@ -5300,7 +6438,9 @@ return "opening-" + [...words].map((n) => n.toString(16).padStart(8, "0")).join(
 return "opening-" + now().toString(36) + "-" + (++seedSequence).toString(36);
 }
 async function createOpening(options, goals, config, requestOptions = {}) {
-const name = options.name?.trim(), era = options.era?.trim();
+const sc = options.scenario ? scenarioById(options.scenario) : null;
+if (options.scenario && !sc) throw new Error("未知剧本，请重新选择");
+const name = sc ? sc.emperor[0] : options.name?.trim(), era = sc ? sc.era : options.era?.trim();
 if (!name) throw new Error("请填写皇帝名");
 if (!era) throw new Error("请填写年号");
 if (!options.demo && !config.key?.trim())
@@ -5308,7 +6448,9 @@ throw new Error("请先填写接口密钥，或选择试读。");
 const { onStage = () => {}, ...request } = requestOptions;
 onStage(options.demo ? "正在准备登基与六部奏报……" : "正在拟定朝局与人物，请稍候……");
 let draft = createState({ ...options, name, era, seed: options.seed ?? createGameSeed() });
-if (!options.demo) {
+// 历史剧本自带人物与官制，不再请模型铸世。
+if (sc) draft = applyScenario(draft, sc.id);
+else if (!options.demo) {
 const world = await callJSON(config, worldMessages(draft), {
 ...request,
 validate: validateWorld,
@@ -5325,708 +6467,6 @@ return message || "开局未完成，请重试。";
 }
 
 return {createGameSeed,createOpening,openingErrorMessage};
-},
-"src/core/state.js":function(__load){
-const { normalizeMemorialAction } = __load("src/core/memorial-decisions.js");
-const { seedNumber, random, DRAFT } = __load("src/core/rng.js");
-const { uniqueName } = __load("src/core/names.js");
-const { chooseRegent } = __load("src/core/regency-info.js");
-const {factionPowers} = __load("src/core/politics.js");
-const VERSION = 9;
-const TALENTS = ["政略", "权谋", "武略", "文采", "魅力"];
-const SLOTS = ["朝", "午", "夜"];
-const POST_NAMES = [
-"内阁首辅",
-"户部尚书",
-"兵部尚书",
-"吏部尚书",
-"礼部尚书",
-"刑部尚书",
-"工部尚书",
-"左都御史",
-"司礼监掌印",
-"京营统领",
-"中书令",
-"门下侍中",
-"尚书令",
-"户部侍郎",
-"兵部侍郎",
-"吏部侍郎",
-"礼部侍郎",
-"刑部侍郎",
-"工部侍郎",
-"翰林学士",
-"太子太傅",
-"大理寺卿",
-"太常寺卿",
-"通政使",
-"宗人令",
-"北境总兵",
-"西境总兵",
-"南境总兵",
-"东境总兵",
-"直隶巡抚",
-"河南巡抚",
-"江南巡抚",
-"湖广巡抚",
-"山东巡抚",
-"山西巡抚",
-"陕西巡抚",
-"四川巡抚",
-"福建巡抚",
-"广东巡抚",
-"云南巡抚",
-"辽东巡抚",
-];
-let draftDepth = 0;
-function withDraft(operation) {
-draftDepth++;
-try {
-const result = operation();
-if (result?.state) delete result.state[DRAFT];
-if (result?.emperor) delete result[DRAFT];
-return result;
-} finally {
-draftDepth--;
-}
-}
-function clone(state) {
-if (draftDepth && state?.[DRAFT]) return state;
-if (!state?.emperor || !Array.isArray(state.history))
-return structuredClone(state);
-// Sealed chapters are immutable. Share their contents while copying their containers.
-const {
-history,
-volumes,
-ledger,
-chronicles,
-pending,
-court,
-threads,
-projects,
-receipts,
-...active
-} = state;
-const copied = {
-...structuredClone(active),
-court: {
-...court,
-factions: structuredClone(court.factions),
-posts: structuredClone(court.posts),
-officials: court.officials.map((o) => (o.alive ? structuredClone(o) : o)),
-},
-threads: threads.map((t) => (t.stage === "结束" ? t : structuredClone(t))),
-projects: projects.map((p) => (p.done ? p : structuredClone(p))),
-receipts: [...(receipts || [])],
-history: [...(history || [])],
-volumes: [...(volumes || [])],
-ledger: [...(ledger || [])],
-chronicles: [...(chronicles || [])],
-pending,
-};
-if (draftDepth) copied[DRAFT] = true;
-return copied;
-}
-function createState(options = {}) {
-let rng = seedNumber(options.seed ?? "yuji"),
-n = (a, b) => {
-const r = random(rng);
-rng = r.rng;
-return a + Math.floor(r.value * (b - a + 1));
-};
-const factions = ["清流", "勋贵", "外戚", "宦官", "督抚", "宗室"].map(
-(name, i) => ({
-id: "f" + i,
-name,
-power: n(25, 55),
-powerModifier:0,
-attitude: n(42, 68),
-demand: [
-"纳谏清议",
-"军功封赏",
-"家族恩荫",
-"亲近信任",
-"钱粮自主",
-"宗藩安稳",
-][i],
-}),
-);
-const surnames = [
-"沈",
-"陆",
-"顾",
-"谢",
-"裴",
-"程",
-"韩",
-"许",
-"杜",
-"魏",
-"方",
-"梁",
-"宋",
-"张",
-"崔",
-"温",
-"袁",
-"郑",
-"李",
-"王",
-"赵",
-"刘",
-"苏",
-"柳",
-"陈",
-];
-const names = [
-"守正",
-"怀瑾",
-"文渊",
-"景行",
-"廷玉",
-"知远",
-"伯庸",
-"慎微",
-"长衡",
-"允中",
-"世宁",
-"明川",
-"思齐",
-"清和",
-"敬修",
-"望舒",
-"承安",
-"秉诚",
-"问渠",
-"砚秋",
-"信之",
-"元礼",
-"惟新",
-"济川",
-"云章",
-];
-const officials = surnames.map((surname, i) => ({
-id: "o" + i,
-name: surname + names[i],
-gender: "男",
-age: n(32, 62),
-post: "p" + i,
-faction: "f" + (i % 6),
-abilities: {
-政: n(40, 85),
-军: n(35, 85),
-才: n(40, 85),
-德: n(40, 90),
-忠: n(35, 85),
-权谋: n(40, 85),
-},
-ambition: n(20, 75),
-greed: n(5, 55),
-favor: 50,
-health: 85,
-alive: true,
-inCapital: true,
-secret: "曾为故交隐瞒田产，尚无人知。",
-secretKnown: false,
-memory: [],
-life: [],
-banquetTurn:-1000000,
-}));
-const posts = POST_NAMES.map((title, i) => ({
-id: "p" + i,
-title,
-provinceId: i >= 29 ? "z" + (i - 29) : null,
-rank: i < 13 ? 1 : i < 29 ? 2 : 3,
-office: title.slice(0, 2),
-tags: [
-/户|工/.test(title)
-? "管钱"
-: /兵|京|境/.test(title)
-? "管兵"
-: /吏/.test(title)
-? "管人"
-: /御史/.test(title)
-? "言官"
-: "政务",
-],
-holder: i < 25 ? "o" + i : null,
-}));
-const provinceNames = [
-"直隶",
-"河南",
-"江南",
-"湖广",
-"山东",
-"山西",
-"陕西",
-"四川",
-"福建",
-"广东",
-"云南",
-"辽东",
-];
-const provinces = provinceNames.map((name, i) => ({
-id: "z" + i,
-name,
-pop: n(180, 480),
-tax: n(7, 13),
-morale: 62,
-disaster: 0,
-rebellion: false,
-rebellionQuarter: -1,
-garrison: n(8000, 18000),
-governor: null,
-taxRelief: null,
-taxSurge: null,
-}));
-const emperor = {
-name: String(options.name || "萧承熙").slice(0, 12),
-age: 24,
-lifespan: n(55, 80),
-health: 85,
-energy: 9,
-mood: 70,
-depressedMonths:0,
-prestige: 58,
-virtue: 60,
-talents: Object.fromEntries(TALENTS.map((t) => [t, n(42, 75)])),
-tags: [["勤政", "仁厚", "节俭", "多疑"][n(0, 3)]],
-status: [],
-growth: Object.fromEntries(TALENTS.map((t) => [t, 0])),
-};
-let state = {
-v: VERSION,
-runId:
-options.runId || "run-" + seedNumber(options.seed ?? "yuji").toString(36),
-rng,
-turn: 0,
-day: 0,
-dynasty: "大晟",
-imperialSurname: emperor.name[0],
-regency: null,
-edictCooldowns: {},
-era: {
-name: String(options.era || "永宁").slice(0, 8),
-year: 1,
-month: 1,
-xun: 0,
-startTurn: 0,
-},
-settings: {
-freedom: options.freedom || "mid",
-difficulty: options.difficulty || "normal",
-prose: options.prose || "court",
-length: options.length || "standard",
-pov: options.pov || "third",
-demo: options.demo !== false,
-},
-emperor,
-reign: {
-number: 1,
-accessionTurn: 0,
-emperorId: "founder",
-initialTreasury: 480,
-initialStats: {},
-married: true,
-eraName: String(options.era || "永宁").slice(0, 8),
-eraStartTurn: 0,
-},
-nation: {
-treasury: 480,
-arrears: 0,
-privyArrears:0,
-grainArrears:0,
-privy: 90,
-grain: 240,
-morale: 62,
-governance: 58,
-provinces,
-army: {
-capital: { troops: 45000, readiness: 65 },
-frontiers: ["北", "西", "南", "东"].map((dir) => ({
-dir,
-troops: 35000,
-readiness: 60,
-threat: n(15, 40),
-})),
-},
-},
-court: { factions, posts, officials,proxyTurn:-1000000 },
-harem: {
-consorts: ["陆令仪", "沈清蘅", "裴映雪"].map((name, i) => ({
-id: "c" + i,
-name,
-age: 23 + i,
-rank: ["皇后", "妃", "嫔"][i],
-family: ["书香陆氏", "清流沈氏", "勋门裴氏"][i],
-faction: "f" + i,
-favor: 65 - i * 10,
-mood: 70,
-ambition: n(20, 65),
-scheming: n(20, 70),
-health: 85,
-preg: null,
-relations: {},
-secret: "家书中藏着旧事。",
-confined: false,
-cold: false,
-retired: false,
-reignId:
-options.runId ||
-"run-" + seedNumber(options.seed ?? "yuji").toString(36),
-recoveryUntil: 0,
-})),
-children: [],
-heir: null,
-candidates: [],
-selectionYear: 0,
-royalWomen: [{id:"royal-1",name:emperor.name[0]+"静宜",age:22,health:90,married:null}],
-},
-foreign: ["朔庭", "西陵", "南越", "东澜", "云岚"].map((name, i) => ({
-id: "w" + i,
-name,
-ruler: ["阿史那承", "拓跋珩", "黎明远", "崔景平", "木嘉措"][i],
-power: n(40, 90),
-attitude: n(25, 65),
-status: i === 0 ? "冷淡" : "通好",
-demand: "安定边贸",
-tribute: 5,
-authorization: 15,
-frontier: ["北", "西", "南", "东"][i % 4],
-trade:null,
-})),
-ambitions: [],
-memorials: [],
-threads: [],
-projects: [],
-schedule: { 朝: null, 午: null, 夜: null },
-history: [],
-volumes: [],
-volumeIndex: [],
-ledger: [],
-facts: [],
-knowledge: [],
-rels: [],
-stats: {
-events: 0,
-births: 0,
-warsWon: 0,
-visits: 0,
-edicts: 0,
-banquets: 0,
-appointments: 0,
-petitions: 0,
-initialTreasury: 480,
-expense: 0,
-income: 0,
-},
-achievements: [],
-receipts: [],
-interimEntries: [],
-turnBudget: null,
-pending: null,
-lastTurn: null,
-ending: null,
-chronicles: [],
-talks: [],
-campaigns: [],
-retaliations: [],
-revision: 0,
-};
-for (const group of [state.court.officials, state.harem.consorts, state.harem.royalWomen])
-for (const item of group) if (item.name === state.emperor.name) {
-const r=uniqueName(state,{excludeId:item.id});state=r.state;item.name=r.name;
-}
-state.court.factions=factionPowers(state);
-return state;
-}
-function migrate(input) {
-if (
-!input ||
-typeof input !== "object" ||
-Array.isArray(input) ||
-!Number.isInteger(input.v) ||
-input.v < 1 ||
-input.v > VERSION
-)
-throw new Error("存档版本不受支持，已进入保护模式");
-const s = structuredClone(input);
-if(s.schedule)for(const slot of ["朝","午","夜"]){
-const action=s.schedule[slot];
-if(s.v<8&&action&&["上朝","批折"].includes(action.kind)&&action.memorials===undefined)action.memorials=(s.memorials||[]).slice(0,3).map(m=>m.id);
-s.schedule[slot]=normalizeMemorialAction(action);
-}
-for (const key of [
-"emperor",
-"nation",
-"court",
-"harem",
-"era",
-"settings",
-"stats",
-])
-if (!s[key] || typeof s[key] !== "object")
-throw new Error("存档缺少 " + key);
-for (const key of [
-"history",
-"volumes",
-"ledger",
-"facts",
-"knowledge",
-"rels",
-"achievements",
-"receipts",
-"chronicles",
-"talks",
-"campaigns",
-"retaliations",
-"ambitions",
-"memorials",
-"threads",
-"projects",
-])
-if (s[key] === undefined) s[key] = [];
-if(s.pending?.forecast?.state){
-const saved=s.pending.forecast.state;
-if(!Number.isInteger(saved.v)||saved.v<1||saved.v>VERSION)throw new Error('预演存档版本无效');
-assertState(saved);
-}
-// Saved forecasts are immutable receipts. Upgrade their resulting state only
-// on commit; never rerun an old schedule, roll, settlement or calendar.
-s.v = VERSION;
-s.volumeIndex ??= [];
-// v9：叙事篇幅与视角。
-s.settings.length ??= "standard";
-s.settings.pov ??= "third";
-s.nation.arrears ??= 0;
-s.nation.privyArrears ??= 0;
-s.nation.grainArrears ??= 0;
-s.emperor.depressedMonths ??= 0;
-s.court.proxyTurn ??= -1000000;
-for(const f of s.foreign)f.trade ??= null;
-for(const f of s.court.factions)f.powerModifier ??= 0;
-for(const o of s.court.officials)o.banquetTurn ??= -1000000;
-for(const p of s.projects)if(p.edictType==='征兵')p.armyTarget ??= 'all-frontiers';
-for (const p of s.nation.provinces) {
-p.rebellion ??= false;
-p.rebellionQuarter ??= -1;
-}
-s.reign ??= {
-number: 1,
-accessionTurn: 0,
-emperorId: "founder",
-initialTreasury: s.stats.initialTreasury || 480,
-};
-s.reign.initialStats ??= {};
-for (const o of s.court.officials) {
-o.abilities.权谋 ??= Math.round((o.abilities.政 + o.ambition) / 2);
-o.inCapital ??= !/巡抚|总兵/.test(
-s.court.posts.find((p) => p.id === o.post)?.title || "@@",
-);
-}
-for (const c of s.harem.consorts) {
-c.reignId ??= s.runId;
-c.retired ??= false;
-c.recoveryUntil ??= 0;
-if (c.preg) c.preg.fatherId ??= s.runId;
-}
-for (const c of s.harem.children) c.fatherId ??= s.runId;
-s.interimEntries ??= [];
-s.turnBudget ??= null;
-s.revision ??= s.turn;
-s.schedule ??= { 朝: null, 午: null, 夜: null };
-s.pending ??= null;
-s.lastTurn ??= null;
-s.ending ??= null;
-s.emperor.growth ??= Object.fromEntries(TALENTS.map((t) => [t, 0]));
-s.harem.candidates ??= [];
-s.harem.selectionYear ??= 0;
-s.imperialSurname ??= s.chronicles.find(r=>r.dynastyId===s.runId&&r.emperor)?.emperor?.[0] || s.emperor.name?.[0] || "萧";
-s.era.startTurn ??= Math.max(0, Math.floor((s.turn-(Math.max(1,s.era.year)-1)*36)/36)*36);
-s.reign.eraName ??= s.era.name;
-s.reign.eraStartTurn ??= s.era.startTurn;
-s.reign.married ??= s.emperor.age >= 16 && s.harem.consorts.some(c=>!c.retired);
-const child=s.harem.children.find(c=>c.id===s.reign.emperorId);
-s.regency ??= s.emperor.age < 16 ? {regentId:chooseRegent(s).id,until:Number.isFinite(child?.born)?child.born+16*36:s.turn+Math.ceil((16-s.emperor.age)*36)} : null;
-if(s.emperor.age<16)s.reign.married=false;
-if (s.regency && !s.reign.married) for (const c of s.harem.consorts) c.retired=true;
-for (const p of s.nation.provinces) {p.taxRelief ??= null;p.taxSurge ??= null;}
-for (const [i,p] of s.court.posts.entries()) p.provinceId ??= i>=29 ? s.nation.provinces[i-29]?.id || null : null;
-for (const [i,p] of s.nation.provinces.entries()) {
-let post=s.court.posts.find(x=>x.provinceId===p.id);
-if(!post) {post={id:'p'+(29+i),title:p.name+'巡抚',rank:3,office:'地方',tags:['政务'],holder:null,provinceId:p.id};s.court.posts.push(post);}
-post.title=p.name+'巡抚';
-p.governor=post.holder || null;
-}
-for(const [i,f] of s.foreign.entries()) f.frontier ??= s.nation.army.frontiers[i%s.nation.army.frontiers.length].dir;
-for(const m of s.memorials){
-m.provinceId ??= s.nation.provinces.find(p=>m.title?.includes(p.name))?.id || null;
-if(m.fromId===undefined){
-const candidates=s.court.officials.filter(o=>o.name===m.from&&o.alive&&o.health>0&&!o.jailed&&!o.retired&&s.court.posts.some(p=>p.id===o.post&&p.holder===o.id)&&(o.inCapital!==false||s.court.posts.some(p=>p.holder===o.id&&p.provinceId===m.provinceId)));
-m.fromId=candidates.length===1?candidates[0].id:null;
-if(!m.fromId)m.from='通政司';
-}
-}
-s.edictCooldowns ??= {};
-for(const p of s.projects.filter(p=>p.done)) {
-const key=p.edictType==='赈灾'?'赈灾:'+(p.province||'all'):p.edictType;
-s.edictCooldowns[key] ??= p.end+6;
-}
-for(const a of s.ambitions) if(s.receipts.includes('goal:'+a.id)&&!s.receipts.includes('goal:'+reignId(s)+':'+a.id)) s.receipts.push('goal:'+reignId(s)+':'+a.id);
-assertState(s);
-return s;
-}
-function assertState(s) {
-if (
-!Number.isSafeInteger(s.turn) ||
-s.turn < 0 ||
-!Number.isSafeInteger(s.rng) ||
-typeof s.runId !== "string" ||
-!s.runId
-)
-throw new Error("存档回合资料无效");
-const range = (v, a, b) => {
-if (typeof v !== "number" || !Number.isFinite(v) || v < a || v > b)
-throw new Error("数值不在有效范围");
-};
-for (const field of ["health", "mood", "prestige", "virtue"])
-range(s.emperor[field], 0, 100);
-for (const t of TALENTS) range(s.emperor.talents?.[t], 0, 100);
-for (const f of ["morale", "governance"]) range(s.nation[f], 0, 100);
-for (const f of ["treasury", "privy", "grain"])
-range(s.nation[f], 0, 1000000);
-for (const a of [
-s.court.factions,
-s.court.posts,
-s.court.officials,
-s.harem.consorts,
-s.harem.children,
-s.nation.provinces,
-s.nation.army.frontiers,
-s.foreign,
-])
-if (!Array.isArray(a)) throw new Error("名册结构无效");
-for (const x of s.court.factions)
-for (const f of ["power", "attitude"]) range(x[f], 0, 100);
-for (const x of s.nation.army.frontiers) {
-range(x.threat, 0, 100);
-range(x.troops, 0, 1000000);
-range(x.readiness, 0, 100);
-}
-for (const x of s.nation.provinces) {
-range(x.morale, 0, 100);
-range(x.disaster, 0, 100);
-}
-for (const x of s.harem.consorts) {
-range(x.health, 0, 100);
-range(x.favor, 0, 100);
-}
-if(s.v>=5){
-if(typeof s.imperialSurname!=='string'||!s.imperialSurname.trim())throw new Error('皇姓资料无效');
-if(!Number.isSafeInteger(s.era.startTurn)||s.era.startTurn<0)throw new Error('纪年起点无效');
-if(s.regency&&(!s.regency.regentId||!Number.isSafeInteger(s.regency.until)||s.regency.until<0))throw new Error('摄政资料无效');
-for(const f of s.foreign)if(!s.nation.army.frontiers.some(b=>b.dir===f.frontier))throw new Error('外邦边境资料无效');
-for(const p of s.nation.provinces)for(const k of ['taxRelief','taxSurge'])if(p[k]!==null&&(!p[k]||!Number.isFinite(p[k].factor)||p[k].factor<=0||!Number.isSafeInteger(p[k].untilQuarter)||p[k].untilQuarter<0))throw new Error('州税政策资料无效');
-for(const p of s.court.posts)if(p.provinceId&&!s.nation.provinces.some(z=>z.id===p.provinceId))throw new Error('地方官职资料无效');
-}
-if(s.v>=6){
-if(!Number.isSafeInteger(s.court.proxyTurn))throw new Error('权臣代批时序无效');
-for(const f of ['arrears','privyArrears','grainArrears'])range(s.nation[f],0,Number.MAX_SAFE_INTEGER);
-if(!Number.isSafeInteger(s.emperor.depressedMonths)||s.emperor.depressedMonths<0)throw new Error('郁结时长无效');
-for(const f of s.court.factions)range(f.powerModifier,-30,30);
-for(const o of s.court.officials)if(!Number.isSafeInteger(o.banquetTurn))throw new Error('宴请时序无效');
-for(const f of s.foreign)if(f.trade!==null&&(!f.trade||!Number.isSafeInteger(f.trade.start)||!Number.isSafeInteger(f.trade.until)||f.trade.start<0||f.trade.until!==f.trade.start+36||!Number.isFinite(f.trade.income)||f.trade.income<0||f.trade.income>6))throw new Error('互市条款无效');
-for(const p of s.projects)if(p.edictType==='征兵'&&!['capital','all-frontiers',...s.nation.army.frontiers.map(b=>b.dir)].includes(p.armyTarget))throw new Error('征兵目标无效');
-}
-if(s.v>=8){
-if(!Array.isArray(s.volumeIndex))throw new Error('分卷目录损坏');
-for(const ref of s.volumeIndex)if(!ref||typeof ref.key!=='string'||!Number.isSafeInteger(ref.from)||!Number.isSafeInteger(ref.to)||ref.from<0||ref.to<ref.from||typeof ref.checksum!=='string'||!/^[0-9a-f]{8}$/.test(ref.checksum))throw new Error('分卷目录损坏');
-}
-const walk = (x) => {
-if (typeof x === "number" && !Number.isFinite(x))
-throw new Error("存档含 NaN/Infinity");
-if (x && typeof x === "object") for (const v of Object.values(x)) walk(v);
-};
-walk(s);
-return true;
-}
-function reignId(s) {
-return (s.reign?.number || 1) === 1
-? s.runId
-: s.runId + ":reign:" + s.reign.number;
-}
-
-return {VERSION,TALENTS,SLOTS,POST_NAMES,withDraft,clone,createState,migrate,assertState,reignId};
-},
-"src/core/names.js":function(__load){
-const { roll } = __load("src/core/rng.js");
-const SURNAMES = [...'沈陆顾谢裴程韩许杜魏方梁宋张崔温袁郑李王赵刘苏柳陈林孟周徐邵潘傅高马罗吕余钱陶江叶秦唐白姚夏何卢季'];
-const GIVEN_NAMES = ['守礼','明哲','慎行','静姝','疏影','明漪','书宁','婉清','知微','云岫','晚晴','映棠','清圆','静宜','清容','素宁','怀瑾','景行','知远','慎微','清和','望舒','承安','惟新','济川','云章','若兰','思齐','元礼','长衡','廷玉','秉诚','砚秋','青岚','书仪','令仪','清蘅','映雪','雅颂','怀仁','修文','允恭','思宁','含章','若水','清晏','嘉言','明远','昭华','如玉','安澜','素心','沐晴','云舒','瑞宁','清韵','兰舟','文昕','景初','承泽'];
-const IMPERIAL_CHARS = [...'宁和安明瑜璋珩琬棠瑾瑞嘉懿昭晟昱煜熙晏清澄涵泽渊源润浩瀚泓澜淳沅洵浚溥濂洛汀湘沐潇温翊翼翎翰翕翡翘翮彰彤彬彦衍衡衷辰宸宇宥宏宽宣定宜寅容寰宪宗旭昂昀昕昊昶晖晋曦曜暄暘朔朗桓桐柏松楷榕楠榆槐枫棣棣桢楫榛榭棨荣芝芷若葳蕤菀菁萱萦蓉莲蔚蘅蘭璞琛琦瑶瑗璇璟璘璨璧琮琰珺珂琪瑛瑄琚瑀璐璜璠璋'];
-function personNames(state, excludeId = null) {
-// Historical names are also reserved: this exceeds the living-name minimum
-// and keeps names in old chronicles unambiguous.
-const groups = [state.court.officials, state.harem.consorts, state.harem.children,
-state.harem.royalWomen || [], state.harem.candidates || []];
-const names = groups.flat().filter(p => !excludeId || p.id !== excludeId).map(p => p.name);
-names.push(...(state.chronicles || []).map(r=>r.emperor),state.emperor.name, ...(state.foreign || []).filter(f=>f.id!==excludeId).map(f => f.ruler));
-if (typeof state.dowager === 'string') names.push(state.dowager);
-return new Set(names.filter(Boolean));
-}
-function uniqueName(state, pool = {}) {
-const spec = Array.isArray(pool) ? {names: pool} : pool;
-const used = personNames(state, spec.excludeId);
-const candidates = spec.names || (spec.surnames || SURNAMES).flatMap(surname =>
-(spec.givenNames || GIVEN_NAMES).map(given => surname + given));
-let free = [...new Set(candidates)].filter(name => name && !used.has(name));
-if (!free.length && !spec.prefix)
-free = SURNAMES.flatMap(surname => GIVEN_NAMES.map(given => surname + given))
-.filter(name => !used.has(name));
-if (!free.length) {
-const prefixes = spec.prefix ? [spec.prefix] : (spec.surnames || SURNAMES);
-free = prefixes.flatMap(prefix => IMPERIAL_CHARS.flatMap(a => IMPERIAL_CHARS.map(b => prefix+a+b)))
-.filter(name => !used.has(name));
-}
-if (!free.length) throw new Error('姓名池已满，请扩充姓名池');
-const r = roll(state, 0, free.length - 1);
-return {state: r.state, name: free[r.value]};
-}
-
-return {SURNAMES,GIVEN_NAMES,IMPERIAL_CHARS,personNames,uniqueName};
-},
-"src/core/regency-info.js":function(__load){
-// No state mutation or randomness: migration can use the same selection rule.
-function chooseRegent(s) {
-const mother = s.harem.consorts.find(c => c.id === s.harem.children.find(c => c.id === s.reign?.emperorId)?.mother);
-const candidates = [{id:'dowager',name:s.dowager || mother?.name || '慈宁太后',power:mother?.scheming ?? 65,faction:mother?.faction || 'f0'}];
-for (const title of ['内阁首辅','宗人令']) {
-const id=s.court.posts.find(p=>p.title===title)?.holder;
-const o=s.court.officials.find(o=>o.id===id&&o.alive&&o.health>0&&!o.jailed&&!o.retired);
-if(o)candidates.push({id:o.id,name:o.name,power:o.abilities.权谋 ?? 50,faction:o.faction});
-}
-return candidates.sort((a,b)=>b.power-a.power)[0];
-}
-function regentPerson(s) {
-if(s.regency?.regentId==='dowager')return {id:'dowager',name:s.dowager || '慈宁太后',faction:'f0'};
-return s.court.officials.find(o=>o.id===s.regency?.regentId&&o.alive&&!o.jailed&&!o.retired) || chooseRegent(s);
-}
-
-return {chooseRegent,regentPerson};
-},
-"src/core/politics.js":function(__load){
-// Derive office influence without changing the input state. Event influence is
-// kept separately so removing an official cannot erase an unrelated event.
-function factionPowers(s){
-return s.court.factions.map(f=>{
-const offices=s.court.posts.reduce((sum,p)=>{
-const o=s.court.officials.find(o=>o.id===p.holder&&o.post===p.id&&o.alive&&o.health>0&&!o.retired&&!o.jailed&&o.faction===f.id);
-return sum+(o?Math.max(1,5-p.rank)*(o.abilities.政+o.abilities.权谋)/2:0);
-},0);
-return {...f,power:Math.min(100,Math.max(0,offices/20+(f.powerModifier||0)))};
-});
-}
-
-return {factionPowers};
 },
 "src/core/turn.js":function(__load){
 const { compactChapter } = __load("src/core/archive.js");
@@ -6562,10 +7002,12 @@ if(s.emperor.age<16 || s.reign.married)return s;
 s.reign.married=true;
 const owner=reignId(s);
 for(let i=0;i<3;i++){
-const named=uniqueName(s);s=named.state;
+// 历史剧本预设的大婚人选优先；重名或用尽时照常取名。
+const preset=s.weddingNames?.[i];
+const named=uniqueName(s,preset?{names:[preset]}:{});s=named.state;
 const draw=(a,b)=>{const r=roll(s,a,b);s=r.state;return r.value;};
 s.harem.consorts.push({id:owner+'-c'+i,name:named.name,age:Math.max(18,Math.min(s.emperor.age,24))+i,
-rank:['皇后','妃','嫔'][i],family:'新朝内廷',faction:'f'+i,favor:60-i*8,mood:70,
+rank:['皇后','妃','嫔'][i],family:preset&&named.name===preset?preset.replace(/氏$/,'')+'氏':'新朝内廷',faction:'f'+i,favor:60-i*8,mood:70,
 ambition:draw(20,60),scheming:draw(20,65),health:85,preg:null,relations:{},secret:'家族旧事有待查明。',
 confined:false,cold:false,retired:false,reignId:owner,recoveryUntil:0});
 }
@@ -6795,7 +7237,7 @@ s = r.state;
 const m = s.harem.consorts.find((c) => c.id === mother.id),
 index = s.harem.children.length + 1;
 const sex = r.value <= 51 ? "男" : "女";
-const prefix=(s.imperialSurname || s.emperor.name[0])+(sex==='男'?'景':'昭');
+const prefix=s.childNaming?.[sex] ?? (s.imperialSurname || s.emperor.name[0])+(sex==='男'?'景':'昭');
 const named=uniqueName(s,{names:IMPERIAL_CHARS.map(c=>prefix+c),prefix});s=named.state;
 s.harem.children.push({
 id: "child-" + s.runId + "-" + index,
@@ -6934,101 +7376,6 @@ return s;
 }
 
 return {RANKS,RANK_CAPS,rankAvailable,generateCandidates,selectConsort,canVisit,haremAction,haremMonth,miscarriageChance,choosePalacePlot,haremYear,succession,assignTutor};
-},
-"src/core/effects.js":function(__load){
-const { clone } = __load("src/core/state.js");
-function clamp(n, low = 0, high = 100) {
-return Math.min(high, Math.max(low, Number.isFinite(n) ? n : 0));
-}
-function populationMorale(state) {
-const pop=state.nation.provinces.reduce((n,p)=>n+p.pop,0);
-return pop?state.nation.provinces.reduce((n,p)=>n+p.pop*p.morale,0)/pop:0;
-}
-function diminishing(value,delta){return delta>0?delta*(value>=90?0.25:value>=80?0.5:1):delta;}
-function applyEffects(state, effects = {}, source = "引擎结算") {
-const s = clone(state),
-entries = [];
-const set = (obj, key, delta, path, max = 100, min = 0) => {
-if (typeof delta !== "number" || !Number.isFinite(delta)) return;
-const old = obj[key];
-obj[key] = clamp(old + delta, min, max);
-if (obj[key] !== old)
-entries.push({
-path,
-before: old,
-after: obj[key],
-delta: Math.round((obj[key] - old) * 100) / 100,
-source,
-});
-};
-for (const [f,debt] of [['treasury','arrears'],['privy','privyArrears'],['grain','grainArrears']]) {
-const delta=effects[f];
-if(Number.isFinite(delta)&&delta<0&&-delta>s.nation[f]){
-s.nation[debt]??=0;
-set(s.nation,debt,-delta-s.nation[f],'nation.'+debt,Number.MAX_SAFE_INTEGER);
-}
-set(s.nation,f,delta,'nation.'+f,1000000);
-}
-for(const f of ['arrears','privyArrears','grainArrears'])if(Number.isFinite(effects[f])){s.nation[f]??=0;set(s.nation,f,effects[f],'nation.'+f,Number.MAX_SAFE_INTEGER);}
-if(Number.isFinite(effects.morale))for(const p of s.nation.provinces)
-set(p,'morale',diminishing(p.morale,effects.morale)*0.3,'province.'+p.id+'.morale');
-set(s.nation,'governance',diminishing(s.nation.governance,effects.governance),'nation.governance');
-for (const f of ["health", "mood", "prestige", "virtue"])
-set(s.emperor, f, ['prestige','virtue'].includes(f)?diminishing(s.emperor[f],effects[f]):effects[f], "emperor." + f);
-if(s.emperor.mood>=20)s.emperor.depressedMonths=0;
-if (effects.province) {
-const p = s.nation.provinces.find((p) => p.id === effects.province.id);
-if (p)
-for (const f of ["morale", "disaster"])
-set(p, f, f==='morale'?diminishing(p[f],effects.province[f]):effects.province[f], "province." + p.id + "." + f);
-}
-set(s.nation,'morale',populationMorale(s)-s.nation.morale,'nation.morale');
-if (effects.faction)
-for (const [id, n] of Object.entries(effects.faction)) {
-const f = s.court.factions.find((f) => f.id === id);
-if (f) {set(f, "attitude", n, "faction." + id + ".attitude");f.powerModifier??=0;set(f,'powerModifier',n*0.25,'faction.'+id+'.powerModifier',30,-30);set(f,'power',n*0.25,'faction.'+id+'.power');}
-}
-if (effects.official) {
-const o = s.court.officials.find(
-(o) => o.id === effects.official.id && o.alive,
-);
-if (o)
-set(o, "favor", effects.official.favor, "official." + o.id + ".favor");
-}
-if (effects.thread) {
-const t = s.threads.find((t) => t.id === effects.thread.id);
-if (t && t.stage !== "结束") {
-t.stage = effects.thread.stage;
-t.result = String(effects.thread.result || "");
-t.updated = s.turn;
-}
-}
-s.ledger.push(...entries.map((e) => ({ ...e, turn: s.turn })));
-return { state: s, entries };
-}
-function applyPackage(state, effects, source) {
-return applyEffects(state, effects, source).state;
-}
-function growTalent(state, talent, amount = 1) {
-const s = clone(state),
-left = 3 - (s.emperor.growth[talent] || 0);
-if (left > 0) {
-const inc = Math.min(left, amount, 100 - s.emperor.talents[talent]);
-s.emperor.talents[talent] += inc;
-s.emperor.growth[talent] = (s.emperor.growth[talent] || 0) + inc;
-s.ledger.push({
-turn: s.turn,
-path: "emperor.talents." + talent,
-delta: inc,
-before: s.emperor.talents[talent] - inc,
-after: s.emperor.talents[talent],
-source: "经世历练（每年每才最多 +3）",
-});
-}
-return s;
-}
-
-return {clamp,populationMorale,diminishing,applyEffects,applyPackage,growTalent};
 },
 "src/core/events.js":function(__load){
 const { remarkCategory, REMARK_KINDS } = __load("src/core/memorial-decisions.js");
@@ -10260,6 +10607,7 @@ return next;
 return {ACTION_GROUPS,HALLS,GLYPHS,actionAvailability,actionMeta,energyView,metricGroups,scheduleEstimate,REPEATABLE,repeatSchedule};
 },
 "src/ui/memorials.js":function(__load){
+const { postTitle } = __load("src/core/scenarios.js");
 const { memorialDecision } = __load("src/core/memorial-decisions.js");
 const { onDialogExit } = __load("src/ui/request-scope.js");
 const { $, esc, openDialog, closeDialog, toast } = __load("src/ui/common.js");
@@ -10657,7 +11005,7 @@ pickerItems +
 '<h3 id="memorial-title" tabindex="-1">' +
 esc(m.title) +
 '</h3></div><div class="memorial-meta"><div class="memorial-author"><span>上奏　' +
-esc(post?.title || "") +
+esc(postTitle(s, post)) +
 " " +
 esc(m.from) +
 (faction ? "（" + esc(faction.name) + "）" : "") +
@@ -10965,6 +11313,7 @@ paint("#memorial-title");
 return {createMemorialSession,applyCabinetDrafts,memorialAction,scheduledMemorialDialog,effectItems,effectLabel,factionDemandReason,memorialOptions,memorialHTML,memorialDialog};
 },
 "src/ui/actions.js":function(__load){
+const { postTitle } = __load("src/core/scenarios.js");
 const { $, esc, openDialog, toast, closeDialog } = __load("src/ui/common.js");
 const { ACTIONS, scheduleCost } = __load("src/core/turn.js");
 const { EDICTS, execution } = __load("src/core/edicts.js");
@@ -11009,7 +11358,7 @@ s.court.posts
 '<option value="' +
 p.id +
 '">' +
-esc(p.title) +
+esc(postTitle(s, p)) +
 " · " +
 esc(
 s.court.officials.find((o) => o.id === p.holder)?.name || "空缺",
@@ -11158,7 +11507,7 @@ estimate();
 const paper=()=>{
 const person=s.court.officials.find(o=>o.id===$('#person')?.value)||s.harem.consorts.find(o=>o.id===$('#person')?.value)||s.foreign.find(o=>o.id===$('#country')?.value)||s.harem.candidates.find(o=>o.id===$('#person')?.value);
 let html='<div class="eyebrow">'+kind+' · 待定</div><h3>'+esc(person?.name||$('#edict-type')?.value||kind)+'</h3>';
-if(person)html+='<p>'+esc(person.family||person.personality||s.court.posts.find(p=>p.holder===person.id)?.title||person.status||'御前候命')+'</p><p>'+esc(person.age?person.age+' 岁':'')+(person.favor!==undefined?' · 好感 '+person.favor:'')+'</p>';
+if(person)html+='<p>'+esc(person.family||person.personality||postTitle(s,s.court.posts.find(p=>p.holder===person.id))||person.status||'御前候命')+'</p><p>'+esc(person.age?person.age+' 岁':'')+(person.favor!==undefined?' · 好感 '+person.favor:'')+'</p>';
 if(kind==='下旨'){
 const r=EDICTS[$('#edict-type').value];
 html+='<p>主办　'+r.office+'</p><p>所需 '+r.cost+' 万两'+(r.grain?'、'+r.grain+' 万石':'')+'，预计 '+r.months+' 个月。</p><p>预计成算「'+execution(s,$('#edict-type').value,11).label+'」</p>';
@@ -11248,6 +11597,7 @@ toast(error.message);
 return {actionDialog};
 },
 "src/ui/panels.js":function(__load){
+const { postTitle } = __load("src/core/scenarios.js");
 const { annualBudget, wasteQuote,grainBudget } = __load("src/core/finance.js");
 const { esc, openDialog } = __load("src/ui/common.js");
 const { num, ledgerHTML, chapterHTML, chapterTitle, ambitionsHTML } = __load("src/ui/render.js");
@@ -11293,7 +11643,7 @@ fold(
 s.court.posts.map(
 (p) =>
 '<div class="card"><h3>' +
-esc(p.title) +
+esc(postTitle(s, p)) +
 '</h3><span class="' +
 (p.holder ? "" : "negative") +
 '">' +
