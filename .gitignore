@@ -36,3 +36,7 @@ index.html.*.tmp
 !qa/v17/
 qa/v17/*
 !qa/v17/summary.json
+
+!qa/v18/
+qa/v18/*
+!qa/v18/summary.json

@@ -1,0 +1,36 @@
+{
+  "turns": 7200,
+  "finalTreasury": 684,
+  "collapseRate": 20,
+  "invasionCount": 156,
+  "totalEvents": 1282,
+  "maxTreasury": 1146.6014822486734,
+  "saveVersion": 18,
+  "seed": "御极·两百年",
+  "years": 200,
+  "sceneProbability500": {
+    "free": {
+      "success": 500,
+      "partial": 0,
+      "failed": 0
+    },
+    "mid": {
+      "success": 301,
+      "partial": 103,
+      "failed": 96
+    },
+    "real": {
+      "success": 110,
+      "partial": 0,
+      "failed": 390
+    }
+  },
+  "browser": {
+    "mobileWidth": 360,
+    "desktopWidth": 1280,
+    "controlledApiFailure": 401,
+    "resumedDie": 19,
+    "successfulRetry": true
+  },
+  "note": "默认勤政策略与mock LLM；另测42旬126场自拟情节、42次续写及分卷。浏览器接口为本机受控服务，并非真实远程模型。"
+}

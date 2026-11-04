@@ -13,6 +13,7 @@ export function validateTurnNarrative(data, forecast) {
 }
 
 export async function requestTurnNarrative(config, state, forecast, options = {}) {
+  const validate=data=>{const n=validateTurnNarrative(data,forecast);if(options.sceneSlot&&(!n.chapter[options.sceneSlot]?.trim()||n.chapter[options.sceneSlot].length>2400))throw new Error('情节正文为空，请重试');return n;};
   const saved = options.budget;
   const tracker=saved||{};
   const budget = createBudget((options.now || Date.now)());
@@ -30,9 +31,9 @@ export async function requestTurnNarrative(config, state, forecast, options = {}
         options.onMetric?.(metric);
     }};
     while(budget.used<4){
-      const candidate=await callJSON({...config},turnMessages(state,forecast),{...requestOptions,validate:data=>{
+      const candidate=await callJSON({...config},options.messages||turnMessages(state,forecast),{...requestOptions,validate:data=>{
         const inspected=inspectNarrative(data,forecast);
-        if(!inspected.violations.length||tracker.rewriteAttempted)validateTurnNarrative(data,forecast);
+        if(!inspected.violations.length||tracker.rewriteAttempted)validate(data);
         return {data,...inspected};
       }});
       let data=candidate.data;
@@ -45,7 +46,7 @@ export async function requestTurnNarrative(config, state, forecast, options = {}
           data=applySentenceRewrites(data,candidate.violations,rewrites);
         }catch(error){if(options.signal?.aborted)throw error;}
       }
-      try{return validateTurnNarrative(data,forecast);}catch(error){
+      try{return validate(data);}catch(error){
         if(budget.used>=4||(options.now||Date.now)()>=budget.deadline)throw error;
       }
     }

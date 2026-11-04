@@ -1,3 +1,5 @@
+import {forecastScene,commitScene,latestScene,sceneInput,sceneOutcomeText,sceneBudget} from '../core/scenes.js';
+import {sceneMessages,mockSceneNarrative} from '../llm/scenes.js';
 import { talkPeople } from '../core/text.js';
 import { FREEDOM_RULES, selectionYear } from "../core/freedom.js";
 import { globalYear } from "../core/calendar.js";
@@ -23,7 +25,7 @@ import {
   download,
 } from "./common.js";
 import { loadSettings, openSettings } from "./settings.js";
-import { requestTurnNarrative } from "./turn-request.js";
+import { requestTurnNarrative, validateTurnNarrative } from "./turn-request.js";
 import { createGameSeed, createOpening, openingErrorMessage } from "./new-game.js";
 import { createDialogRequestScope } from "./request-scope.js";
 import {
@@ -117,7 +119,7 @@ function guard() {
   if (!state) throw new Error("请先登基开局");
   if (readOnly) throw new Error("存档处于只读保护模式");
   if (busy) throw new Error("本旬正在续写");
-  if (state.pending) throw new Error("请先续完本旬故事，或略过故事进入下旬。");
+  if (state.pending) throw new Error(state.pending.kind==='scene'?"请先续完这段情节，或简写后再安排。":"请先续完本旬故事，或略过故事进入下旬。");
   if (state.ending) throw new Error("本局已经封卷");
 }
 async function persist() {
@@ -465,6 +467,7 @@ function chooseAction(kind) {
 }
 async function advance(local = false) {
   if (!state || readOnly || busy || state.ending) return;
+  if(state.pending?.kind==='scene')return openScene(state.pending.forecast.sceneId,local,local);
   busy = true;
   let ac = new AbortController();
   try {
@@ -489,7 +492,7 @@ async function advance(local = false) {
     state.turnBudget = { used: state.turnBudget?.used || 0, ...(state.turnBudget?.rewriteAttempted?{rewriteAttempted:true}:{}) };
     render();
     let narrative;
-    if (state.settings.demo || local) narrative = mockNarrative(f);
+    if (state.settings.demo || local) {narrative = mockNarrative(f);if(f.scenes?.length)narrative=validateTurnNarrative(narrative,f);}
     else {
       narrative = await requestTurnNarrative(config, state, f, {
         budget: state.turnBudget,
@@ -527,6 +530,51 @@ async function advance(local = false) {
     busy = false;
     render();
   }
+}
+function openScene(id,local=false,auto=false){
+  if(readOnly||busy)throw new Error('此时无法续写，请稍后再试');
+  const r=latestScene(state,id);if(!r)throw new Error('这段情节已经过去，请另排新的情节');
+  if(state.pending&&(state.pending.kind!=='scene'||state.pending.forecast.sceneId!==id))throw new Error('请先续完正在进行的故事');
+  const h=state.history.at(-1),pending=state.pending?.forecast;
+  openDialog('自拟情节 · 接着写','<div id="scene-owner"><p class="muted">'+esc([r.slot+'间',r.people.map(p=>p.name).join('、')||'独处',r.place].filter(Boolean).join(' · '))+'</p><div class="scene-recap">'+
+    [h.chapter[r.slot],...r.steps.slice(-3).map(t=>t.prose)].map(p=>'<p>'+esc(p).replace(/\n+/g,'</p><p>')+'</p>').join('')+
+    '</div><p class="muted">'+esc(sceneOutcomeText(pending?.outcome||r.steps.at(-1)?.outcome||r.outcome))+'</p><form id="scene-form"><label for="scene-follow">接下来想发生什么（选填）</label><textarea id="scene-follow" maxlength="8000" rows="4" '+(pending?'readonly':'')+' placeholder="留空会接着描写；也可以写下新的想法。">'+esc(pending?.request||'')+'</textarea><p class="muted">继续描写不再占时段或耗精力。新的尝试按当前自由度判断，已经发生的事不会重办。</p><div class="dialog-actions"><button type="submit" class="primary">'+(pending?'重试续写':'接着写')+'</button></div><p id="scene-status" role="status"></p></form></div>','action-shell');
+  $('#modal').classList.add('scene-dialog');
+  if($('#action-document'))$('#action-document').innerHTML='<h3>'+esc(r.place||'自拟情节')+'</h3><p>'+esc(r.people.map(p=>p.name).join('、')||'独处')+'</p><p>'+esc(r.text)+'</p>';
+  const dialog=$('#modal'),owner=$('#scene-owner'),scope=createDialogRequestScope(dialog,owner),form=$('#scene-form');
+  form.onsubmit=async event=>{
+    event.preventDefault();if(busy)return;
+    const base=state,activeSlot=slot,request=scope.begin();busy=true;
+    const button=form.querySelector('button'),input=form.querySelector('textarea'),status=form.querySelector('#scene-status');
+    button.disabled=true;input.readOnly=true;status.textContent='故事正在继续……';
+    let forecast;
+    const current=()=>scope.current(request)&&slot===activeSlot&&state.runId===base.runId&&(!forecast||state.pending?.forecast.turnId===forecast.turnId);
+    try{
+      if(!state.pending){
+        await scheduleSave.flush();
+        const line=input.value.trim()||'接着写',intents=await requestPlayerIntents(config,state,[sceneInput(state,r,line)],{local,signal:request.signal,onMetric:markMetric});
+        if(!current())return;
+        forecast=forecastScene(state,id,line,intents);
+        state={...state,pending:{kind:'scene',forecast},turnBudget:sceneBudget(state)};
+        if(!(await persist()))throw new Error('这段情节尚未存妥，请先导出存档再重试');
+      }else forecast=state.pending.forecast;
+      if(!current())return;
+      const narrative=state.settings.demo||local?validateTurnNarrative(mockSceneNarrative(state,forecast),forecast):await requestTurnNarrative(config,state,forecast,{
+        messages:sceneMessages(state,forecast),sceneSlot:forecast.slot,budget:state.turnBudget,
+        signal:request.signal,onMetric:markMetric,onBeforeRewrite:async()=>{if(!current()||!(await persist()))throw new Error('这段情节尚未存妥');},
+      });
+      if(!current())return;
+      state=commitScene(state,forecast,narrative);await persist();closeDialog();
+    }catch(error){
+      if(scope.current(request)){status.textContent=gameText(error.message)+'，已保存的结果会保留。';toast(gameText(error.message));}
+      if(slot===activeSlot&&state.runId===base.runId&&state.pending?.kind==='scene')await persist();
+    }finally{
+      scope.finish(request);busy=false;
+      if(owner.isConnected){button.disabled=false;input.readOnly=!!state.pending;button.textContent=state.pending?'重试续写':'接着写';}
+      render();
+    }
+  };
+  if(auto)form.requestSubmit();
 }
 function startTalk(person) {
   guard();
@@ -701,7 +749,7 @@ function exportMarkdown() {
             chapterTitle(h.summary) +
             "\n\n" +
             ["朝", "午", "夜"]
-              .map((sl) => "### " + sl + "\n\n" + (h.chapter[sl] || "略"))
+              .map((sl) => "### " + sl + "\n\n" + (h.chapter[sl] || "略")+(h.scenes||[]).filter(r=>r.slot===sl).flatMap(r=>r.steps).map(t=>"\n\n接着写："+t.request+"\n\n"+t.prose).join(""))
               .join("\n\n") +
             "\n\n### 本旬变化\n\n" +
             h.entries
@@ -897,6 +945,7 @@ document.addEventListener("click", async (e) => {
       if (['上朝','批折'].includes(state.schedule[preferred]?.kind)) {
         memorialDialog(state,state.schedule[preferred].kind,preferred,(which,a)=>arrange(which,a));return;
       }
+      if(state.schedule[preferred]?.kind==='自拟情节'){chooseAction('自拟情节');return;}
       openDialog(
         preferred + " · 选择行动",
         '<div class="grid">' +
@@ -930,7 +979,8 @@ document.addEventListener("click", async (e) => {
       const sl=b.dataset.editReviewSlot,a=state.schedule[sl];
       if(!a||!['上朝','批折'].includes(a.kind))throw new Error('原拟批已撤下，请重新选择奏报。');
       memorialDialog(state,a.kind,sl,(which,next)=>arrange(which,next));
-    } else if (b.dataset.talk) startTalk(b.dataset.talk);
+    } else if (b.dataset.scene) openScene(b.dataset.scene);
+    else if (b.dataset.talk) startTalk(b.dataset.talk);
     else if (b.dataset.tutor) {
       guard();
       const child = b.dataset.tutor;

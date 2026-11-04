@@ -1,3 +1,4 @@
+import {mockSceneProse} from './scenes.js';
 import { NUMBER_SOURCE, parseNumber, quantityMatches, quantityEvidence, invalidQuantity } from "./quantities.js";
 import { sceneNarrative } from "./mock-narrative.js";
 import { memorialText } from "../core/memorial-templates.js";
@@ -119,6 +120,7 @@ export function mockHook(forecast) {
 }
 export function mockNarrative(forecast) {
   const chapter=sceneNarrative(forecast);
+  for(const r of forecast.scenes||[])chapter[r.slot]=mockSceneProse(r,(forecast.state.intentResults||[]).filter(x=>x.slot===r.slot));
   for(const r of forecast.state?.intentResults||[])if(chapter[r.slot]!==undefined)chapter[r.slot]+=' '+r.summary+'。';
   return {
     chapter,
@@ -206,6 +208,11 @@ export function validateTurn(data, forecast, options = {}) {
       .split(/(?<=[。！？\n])/)
       .map((original, index) => {
         let sentence = original;
+        const sceneFailed=(forecast.facts||[]).some(f=>f.kind==='scene_result'&&f.slot===slot&&f.status==='failed');
+        if(sceneFailed&&[...sentence.matchAll(/如愿以偿|终于说服|成功说服|心愿达成|愿望实现|尽数答应|全部答应|坦白一切|吐露全部心声/g)].some(m=>!/不|未|难|无法|岂能/.test(sentence.slice(Math.max(0,m.index-5),m.index+m[0].length+5)))){
+          if(path)options.onViolation?.({path,index,limit,sentence:original,reason:'本场未能如愿，不能写成愿望达成或对方完全答应'});
+          fixNotes.push('情节结果有出入的句子已收束');return '';
+        }
         const actors = roster
           .filter((o) => sentence.includes(o.name))
           .map((o) => o.name);

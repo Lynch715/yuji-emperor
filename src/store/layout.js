@@ -11,7 +11,10 @@ export function storedLayout(state){
 }
 export function recoveryState(state){
  const {main}=storedLayout(state);if(!Array.isArray(main.history))return main;
- const core={...main,history:[],recoveryOnly:true},f=core.pending?.forecast;
+ // A scene continuation needs its chapter, cast and previous steps to resume.
+ // Keep only that latest chapter; ordinary recovery copies remain text-free.
+ const last=main.history.at(-1);
+ const core={...main,history:last?.scenes?.length?[last]:[],recoveryOnly:true},f=core.pending?.forecast;
  if(f?.state){
   const base={...core,pending:null},delta=previewDelta(base,f.state);
   if(delta&&JSON.stringify(delta).length<JSON.stringify(f.state).length){const {state:preview,...forecast}=f;core.pending={...core.pending,forecast:{...forecast,statePatch:delta}};}

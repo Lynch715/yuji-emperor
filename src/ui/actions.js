@@ -1,3 +1,4 @@
+import {sceneActionFields,sceneActionLabel} from './scene-view.js';
 import { postTitle } from "../core/scenarios.js";
 import { $, esc, openDialog, toast, closeDialog } from "./common.js";
 import { ACTIONS, scheduleCost } from "../core/turn.js";
@@ -10,7 +11,7 @@ import { selectionDescription } from "./view-model.js";
 import { WAR_GOALS, treatyProtected } from '../core/campaign-rules.js';
 export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
   if (kind === "上朝" || kind === "批折") return memorialDialog(s,kind,preferred,onSchedule,null,{newBatch:true});
-  if(s.regency&&!["批折","召见","私下行事","歇息"].includes(kind))throw new Error("摄政期间只能批折、召见、经筵或歇息");
+  if(s.regency&&!["批折","召见","自拟情节","私下行事","歇息"].includes(kind))throw new Error("摄政期间只能批折、召见、经筵或歇息");
   const rule = ACTIONS[kind];
   if (!rule) throw new Error("未识别的行动");
   const opt = (items, value = "id", label = "name") =>
@@ -25,6 +26,7 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
       )
       .join("");
   let fields = "";
+  if(kind==='自拟情节')fields=sceneActionFields(s,s.schedule[preferred]?.kind===kind?s.schedule[preferred]:{});
   if (kind === "下旨")
     fields =
       '<label for="edict-type">旨意模板</label><select id="edict-type">' +
@@ -148,6 +150,7 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
       "</button></div></form>",
     "action-shell",
   );
+  if(kind==='自拟情节')$('#modal').classList.add('scene-dialog');
   document.querySelectorAll('[data-form-slot]').forEach(b=>b.onclick=()=>{
     $('#action-slot').value=b.dataset.formSlot;
     document.querySelectorAll('[data-form-slot]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
@@ -219,7 +222,7 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
       const r=EDICTS[$('#edict-type').value];
       html+='<p>主办　'+r.office+'</p><p>每次新办或追加督办需 '+r.cost+' 万两'+(r.grain?'、'+r.grain+' 万石':'')+'，预计 '+r.months+' 个月。</p><p>预计成算「'+execution(s,$('#edict-type').value,11).label+'」</p>';
     }
-    html+='<p class="muted action-preview-note">'+({召见:'候见之人已至殿外。',宴请:'择宾客，定酒席。',后宫:'宫中诸事，待陛下裁定。',任命:'官职与人选，均在此列。',外交:'先定来往之国，再议国书。',选妃:'大选有定期，平日也可举荐；候选人须年满十八。',出巡:'出行占满一旬，奏报仍会呈来。',亲征:'御驾亲征，须留一臣守京。',私下行事:'择一人，定所行之事。',下旨:'旨意发至有司，须待回奏。'}[kind]||'安排时辰后，放入本旬日程。')+'</p>';
+    html+='<p class="muted action-preview-note">'+({自拟情节:'写下想经历的事情，人物会有自己的回应。',召见:'候见之人已至殿外。',宴请:'择宾客，定酒席。',后宫:'宫中诸事，待陛下裁定。',任命:'官职与人选，均在此列。',外交:'先定来往之国，再议国书。',选妃:'大选有定期，平日也可举荐；候选人须年满十八。',出巡:'出行占满一旬，奏报仍会呈来。',亲征:'御驾亲征，须留一臣守京。',私下行事:'择一人，定所行之事。',下旨:'旨意发至有司，须待回奏。'}[kind]||'安排时辰后，放入本旬日程。')+'</p>';
     $('#action-document').innerHTML=html;
   };
   paper();
@@ -233,6 +236,7 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
             ...document.querySelectorAll('input[name="' + name + '"]:checked'),
           ].map((x) => x.value);
       const a = { kind };
+      if(kind==='自拟情节')Object.assign(a,{people:checked('scene-person'),place:val('scene-place').trim(),text:val('scene-text').trim(),label:'自拟情节'});
       if (kind === "下旨")
         Object.assign(a, {
           edictType: val("edict-type"),
@@ -297,6 +301,7 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
             ? s.court.officials.find((o) => o.id === a.person)?.name ||
               s.harem.consorts.find((c) => c.id === a.person)?.name
             : kind);
+      if(kind==='自拟情节')a.label=sceneActionLabel(s,a);
       onSchedule(val("action-slot"), a);
       closeDialog();
     } catch (error) {

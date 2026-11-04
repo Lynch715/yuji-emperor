@@ -1,3 +1,4 @@
+import { SCENE_RULES } from './scene-rules.js';
 import { TEXT_LIMITS } from '../core/text.js';
 import { postTitle, scenarioById } from "../core/scenarios.js";
 import { WAR_GOALS } from '../core/campaign-rules.js';
@@ -234,7 +235,7 @@ export function turnMessages(state, forecast) {
     { role: "system", content: systemPrompt(state) },
     {
       role: "user",
-      content: dynastyBible(state) + "\n" + historyBlock(state) + "\n" + situationBlock(state) +
+      content: (forecast.scenes?.length?SCENE_RULES+"\n【本旬自拟情节】"+stable(forecast.scenes)+"\n":"") + dynastyBible(state) + "\n" + historyBlock(state) + "\n" + situationBlock(state) +
         `\n【本旬状态】${stable(dynamic)}\n【玩家排程】${stable(forecast.schedule)}\n【本旬结算表（不可更改）】${stable({ die: forecast.die, fate: forecast.fate, slots: forecast.slotResults, 账目: settlementDigest(state, forecast.entries), notes: forecast.notes, facts: forecast.facts || [] })}\n【廷议名单】${stable(forecast.debate || [])}\n【新奏报】${stable(forecast.newMemorials.map((m) => ({ id: m.id, title: m.title, type:m.type, from: m.from, request:m.request, choices:m.options.map(o=>o.consequence?[o.label,o.consequence]:o.label) })))}\n每本奏折写160–260字，交代事情来由、眼前难处、各方顾虑与具体请求；各折围绕所列事务展开，不套用“事关地方生计”等空话，不靠重复寒暄凑字。方案效果仍是待选的取舍，不能把请办的事写成已经办成；不得补造人名或硬结果。按【正文任务】写本旬，输出正文 JSON。`,
     },
   ];

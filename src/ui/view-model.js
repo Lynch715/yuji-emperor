@@ -10,16 +10,16 @@ import { cabinetDraft } from "../core/court.js";
 import { WAR_GOALS } from '../core/campaign-rules.js';
 export const ACTION_GROUPS = [
   ["朝政", ["上朝", "批折", "下旨", "任命"]],
-  ["人事", ["召见", "宴请", "外交", "私下行事"]],
+  ["人事", ["自拟情节", "召见", "宴请", "外交", "私下行事"]],
   ["内廷", ["后宫", "选妃"]],
   ["出行", ["出巡", "亲征"]],
 ];
 export const HALLS = ["朝堂", "后宫", "天下", "内库", "宗室", "史馆"];
-export const GLYPHS = {上朝:"朝",批折:"批",下旨:"旨",任命:"任",召见:"见",宴请:"宴",外交:"使",私下行事:"密",后宫:"宫",选妃:"选",出巡:"行",亲征:"征",歇息:"憩"};
+export const GLYPHS = {自拟情节:"叙",上朝:"朝",批折:"批",下旨:"旨",任命:"任",召见:"见",宴请:"宴",外交:"使",私下行事:"密",后宫:"宫",选妃:"选",出巡:"行",亲征:"征",歇息:"憩"};
 export function selectionDescription(s){const period=freedomRules(s).selectionPeriod;return period?'每'+period+'年大选一次；平日可花内帑三万两举荐一人，已有候选人可随时留牌。':'可随时选秀，位分名额不限。';}
 export function actionAvailability(s, kind) {
   if (!s) return "待登基";
-  if(s.regency&&!["批折","召见","私下行事","歇息"].includes(kind))return "摄政期间不可安排";
+  if(s.regency&&!["批折","召见","自拟情节","私下行事","歇息"].includes(kind))return "摄政期间不可安排";
   if (s.pending) return "本旬待续写";
   if (s.ending) return "本朝已封卷";
   if ((kind === "上朝" || kind === "批折") && !s.memorials.length) return "暂无奏报";

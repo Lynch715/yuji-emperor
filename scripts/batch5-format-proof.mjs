@@ -10,6 +10,8 @@ for(const [name,c] of Object.entries(CASES)){
  for(const id of session.ids){session.choices[id]=c.decision;session.remarks[id]=c.remark||'';}
  const f=forecastTurn(s,{...s.schedule,[c.slot]:memorialAction(s,session)});
  // v17 deliberately changes hearing energy, referral deadlines and author snapshots.
+ // v18 only adds optional scenes. Normalize its version for the v17 legacy-path comparison.
+ f.state.v=17;
  // Keep the complete current forecast and retain historical hashes in summary.json.
  proof[name]=createHash('sha256').update(JSON.stringify(f)).digest('hex');
 }

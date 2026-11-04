@@ -1,3 +1,4 @@
+import {resolveScene,sceneBlock,sceneOutcomeText,rememberScene,SCENE_ENERGY} from './scenes.js';
 import { freedomRules, selectionYear, adjudicate } from "./freedom.js";
 import { resolveIntents } from "./intents.js";
 import { compactChapter } from "./archive.js";
@@ -63,6 +64,7 @@ import {
 export const ACTIONS = {
   上朝: { slots: ["朝"], energy: 2 },
   批折: { slots: ["朝", "午"], energy: 1 },
+  自拟情节: {slots:SLOTS,energy:SCENE_ENERGY},
   召见: { slots: ["午"], energy: 1 },
   宴请: { slots: ["夜"], energy: 2 },
   下旨: { slots: SLOTS, energy: 1 },
@@ -99,11 +101,12 @@ export function validateSchedule(state, schedule) {
     const a = schedule[slot];
     if (!a) continue;
     count++;
-    if(state.regency && !["批折","召见","歇息"].includes(a.kind) && !(a.kind==="私下行事"&&a.operation==="经筵"))
+    if(state.regency && !["批折","召见","自拟情节","歇息"].includes(a.kind) && !(a.kind==="私下行事"&&a.operation==="经筵"))
       throw new Error("摄政期间只能批折、召见、经筵或歇息");
     const rule = ACTIONS[a.kind];
     if (!rule || !rule.slots.includes(slot))
       throw new Error(a.kind + " 不能安排在" + slot + "槽");
+    if(a.kind==='自拟情节'){const blocked=sceneBlock(state,a);if(blocked)throw new Error(blocked);}
     if(a.kind==='外交'){const blocked=diplomacyBlock(state,a);if(blocked)throw new Error(blocked);}
     if(a.kind==='下旨'){const blocked=edictBlock(state,a.edictType,a.province);if(blocked)throw new Error(blocked);}
     if(a.kind==='召见'&&(talkPeople(a).length===0||talkPeople(a).some(id=>![...state.court.officials,...state.harem.consorts,...state.foreign].some(o=>o.id===id))))throw new Error('请选择名册中的召见人物');
@@ -146,7 +149,7 @@ function forecastDraft(state, schedule, intents = []) {
   validateSchedule(state, schedule);
   let s = clone(state);
   s.pending = null;
-  s.intentResults = (s.intentResults || []).filter(r => r.turn === state.turn);
+  s.intentResults = (s.intentResults || []).filter(r => r.turn === state.turn&&!r.sceneCommitted);
   s.ledger = [...(state.interimEntries || [])];
   const baseRevision = s.revision,
     turnId = s.runId + ":" + (s.turn + 1) + ":" + baseRevision;
@@ -157,7 +160,7 @@ function forecastDraft(state, schedule, intents = []) {
     slotResults = { 朝: [], 午: [], 夜: [] },
     cost = scheduleCost(schedule);
   let debate = [];
-  const canceledMemorials=[];
+  const canceledMemorials=[],scenes=[];
   s = settleEnergy(s, cost);
   if (die <= 3)
     s = applyPackage(
@@ -172,6 +175,11 @@ function forecastDraft(state, schedule, intents = []) {
       continue;
     }
     let result;
+    if(action.kind==='自拟情节'){
+      const r=resolveScene(s,action,intents.filter(a=>a.slot===slot),slot,'scene-'+turnId+'-'+slot);s=r.state;scenes.push({...r.record,id:turnId+':'+slot});
+      slotResults[slot].push('自拟情节 · '+sceneOutcomeText(r.record.outcome),...r.results.map(r=>r.summary));
+      continue;
+    }
     if(action.kind!=='下旨'){
       const playerActions=intents.filter(a=>a.slot===slot);
       if(playerActions.length){const resolved=resolveIntents(s,playerActions,{slot,source:'schedule'});s=resolved.state;slotResults[slot].push(...resolved.results.map(r=>r.summary));}
@@ -408,8 +416,9 @@ function forecastDraft(state, schedule, intents = []) {
     notes,
     slotResults,
     debate,
+    ...(scenes.length?{scenes}:{}),
     ...(canceledMemorials.length?{canceledMemorials}:{}),
-    facts: [...turnFacts(state, s, schedule, slotResults), ...s.intentResults.flatMap(r=>r.facts||[])],
+    facts: [...scenes.map(r=>({kind:'scene_result',slot:r.slot,status:r.outcome.status})),...turnFacts(state, s, schedule, slotResults), ...s.intentResults.flatMap(r=>r.facts||[])],
     newMemorials: s.memorials.filter(
       (m) => !state.memorials.some((old) => old.id === m.id),
     ),
@@ -424,6 +433,7 @@ export function commitTurn(state, forecast, narrative = {}) {
   return withDraft(() => commitDraft(state, forecast, narrative));
 }
 function commitDraft(state, forecast, narrative = {}) {
+  if(forecast.kind==='scene')throw new Error('情节续写须单独保存');
   if (state.receipts.includes(forecast.turnId)) return clone(state);
   if (
     state.runId !== forecast.runId ||
@@ -473,12 +483,15 @@ function commitDraft(state, forecast, narrative = {}) {
     )
       s.facts.push({ ...fact, turn: s.turn });
   }
+  for(const r of forecast.scenes||[])rememberScene(s,r,narrative.chapter?.[r.slot]);
   s.facts = s.facts.slice(-100);
   s.history.push({
     id: forecast.turnId,
     turn: s.turn,
     era: clone(state.era),
     memorialReviews: collectMemorialReviews(state, forecast),
+    ...(state.turnBudget?.rewriteAttempted?{rewriteAttempted:true}:{}),
+    ...(forecast.scenes?.length?{scenes:clone(forecast.scenes)}:{}),
     chapter: narrative.chapter || {},
     ...(s.intentResults.length ? {intentResults:clone(s.intentResults)} : {}),
     summary: String(narrative.summary || "本旬诸事已入起居注").slice(0, 100),

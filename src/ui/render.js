@@ -1,3 +1,4 @@
+import {sceneChapterHTML} from './scene-view.js';
 import { esc, gameText } from "./common.js";
 import {
   memorialAssignments,
@@ -226,7 +227,7 @@ export function chapterNotes(h) {
     "亲密场景已收束为含蓄叙述。|未知人物反应未采用。)$");
   return (h.notes || []).filter((n) => !diagnostic.test(n)).map(gameText);
 }
-export function chapterHTML(h, ambitions = []) {
+export function chapterHTML(h, ambitions = [], sceneActive = false) {
   return (
     '<div class="chapter-head"><span class="eyebrow">第 ' +
     h.turn +
@@ -246,7 +247,7 @@ export function chapterHTML(h, ambitions = []) {
     ["朝", "午", "夜"]
       .map(
         (slot) =>
-          "<h3>" + slot + "</h3><p>" + esc(h.chapter[slot] || "略。") + "</p>",
+          "<h3>" + slot + "</h3><p>" + esc(h.chapter[slot] || "略。") + "</p>" + sceneChapterHTML(h,slot,sceneActive),
       )
       .join("") +
     (h.hook ? '<p class="chapter-hook">' + esc(h.hook) + "</p>" : "") +
@@ -513,7 +514,7 @@ export function renderApp(
                       (k) =>
                         ACTIONS[k].slots.includes(slot) &&
                         (!s.regency ||
-                          ["批折", "召见", "私下行事", "歇息"].includes(k)),
+                          ["批折", "召见", "自拟情节", "私下行事", "歇息"].includes(k)),
                     )
                     .map((k) => (s.regency && k === "私下行事" ? "经筵" : k))
                     .slice(0, 4)
@@ -582,7 +583,7 @@ export function renderApp(
         (busy
           ? "正在续写…"
           : s.pending
-            ? "继续本旬故事"
+            ? (s.pending.kind==='scene'?"继续这段情节":"继续本旬故事")
             : scheduled
               ? "起驾"
               : "歇息") +
@@ -592,11 +593,11 @@ export function renderApp(
       ? '<p class="warning">此卷暂不可改写，旧卷已保留。请先导出备份。</p>'
       : "") +
     (s?.pending
-      ? '<div class="warning">故事还没写完 · 天命 ' +
+      ? '<div class="warning">'+(s.pending.kind==='scene'?'这段情节还没写完 · 天命 ':'故事还没写完 · 天命 ') +
         s.pending.forecast.die +
         '。重试不改变本旬结果。<button data-command="settle" ' +
         (busy ? "disabled" : "") +
-        ">略过故事，进入下旬</button></div>"
+        ">"+(s.pending.kind==='scene'?"先简写这段情节":"略过故事，进入下旬")+"</button></div>"
       : "") +
     (s?.ending
       ? '<div class="warning">' +
@@ -606,10 +607,10 @@ export function renderApp(
         '<button data-panel="史馆">查看本纪</button></div>'
       : "") +
     (s?.regency
-      ? '<p class="onboarding">幼帝摄政 · 年满十六岁亲政；现可批折、召见、经筵、歇息。</p>'
+      ? '<p class="onboarding">幼帝摄政 · 年满十六岁亲政；现可批折、召见、自拟情节、经筵、歇息。</p>'
       : "") +
     '<article class="scroll" id="scroll" tabindex="0" aria-label="本旬正文章节">' +
-    (last ? chapterHTML(last, s.ambitions) : opening) +
+    (last ? chapterHTML(last, s.ambitions,!locked&&!s.talks.some(t=>t.turn===s.turn)) : opening) +
     '<div id="stream" class="streaming" aria-live="polite"></div></article><div class="saved-status">' +
     esc(gameText(
       saveStatus ||

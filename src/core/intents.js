@@ -42,7 +42,7 @@ function killPerson(s,id){
  const c=s.harem.consorts.find(c=>c.id===id);if(c){c.health=0;c.preg=null;c.retired=true;}
  const child=s.harem.children.find(c=>c.id===id);if(child){child.health=0;if(s.harem.heir===id)s.harem.heir=null;}
 }
-export function resolveIntents(state,actions,{slot='朝',source='decree',transferCap=Infinity}={}){
+export function resolveIntents(state,actions,{slot='朝',source='decree',transferCap=Infinity,favorHistory=[]}={}){
  let s=clone(state);s.intentResults??=[];let transferLeft=transferCap;
  const results=[],facts=[];
  for(const a of actions){
@@ -93,8 +93,9 @@ export function resolveIntents(state,actions,{slot='朝',source='decree',transfe
      r.summary=(a.resource==='troops'?(a.destination==='capital'?'京营':a.destination+'境')+'征兵 '+Math.floor(amount)+' 人':(a.source==='grain'?'调粮 '+amount+' 万石':'拨银 '+amount+' 万两'))+(r.clamped?'（已按可用数量截断）':'');
      facts.push({kind:'allocation',...r.actual});
     }else if(a.type==='favor'){
-     const used=s.intentResults.filter(r=>r.turn===s.turn&&r.type==='favor'&&['success','partial'].includes(r.status)).reduce((n,r)=>n+Math.abs(r.actual.amount||0),0);
-     const personal=s.intentResults.filter(r=>r.turn===s.turn&&r.type==='favor'&&r.actual.targetId===target.id&&['success','partial'].includes(r.status)).reduce((n,r)=>n+Math.abs(r.actual.amount||0),0);
+     const budget=[...new Map([...s.intentResults.filter(r=>r.turn===s.turn),...favorHistory].map(r=>[r.id,r])).values()].filter(r=>r.type==='favor'&&['success','partial'].includes(r.status));
+     const used=budget.reduce((n,r)=>n+Math.abs(r.actual.amount||0),0);
+     const personal=budget.filter(r=>r.actual.targetId===target.id).reduce((n,r)=>n+Math.abs(r.actual.amount||0),0);
      const liveTarget=persons(s).find(o=>o.id===target.id);
      const beforeFavor=liveTarget.favor||0;
      const amount=Math.sign(a.amount)*Math.min(Math.abs(a.amount),Math.max(0,10-used),Math.max(0,5-personal));r.clamped=amount!==a.amount;
