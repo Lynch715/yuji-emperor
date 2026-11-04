@@ -343,7 +343,8 @@ export function palacePanel(s, name) {
   if (name === "史馆") {
     const chapters = [...s.volumes.flatMap((v) => v.chapters), ...s.history];
     html =
-      '<div class="row"><button data-command="export-md">导出起居注</button><button data-command="export-json">导出存档</button>' +
+      '<div class="row"><button data-command="memorial-archive">御批档案</button>' +
+      '<button data-command="export-md">导出起居注</button><button data-command="export-json">导出存档</button>' +
       (s.ambitions
         .filter((a) => a.kind === "宏愿")
         .every((a) => a.status === "达成") &&

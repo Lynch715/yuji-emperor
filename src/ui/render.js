@@ -315,6 +315,7 @@ export function memorialListHTML(s) {
     items.map((m) => memorialHTML({ ...m, currentTurn: s.turn }, s)).join("") +
     "</div>";
   return (
+    '<p><button data-command="memorial-archive">御批档案 ›</button></p>' +
     '<section class="memorial-group"><h3>待批 · ' +
     pending.length +
     " 本</h3>" +

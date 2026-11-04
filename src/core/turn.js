@@ -2,6 +2,7 @@ import { freedomRules, selectionYear, adjudicate } from "./freedom.js";
 import { resolveIntents } from "./intents.js";
 import { compactChapter } from "./archive.js";
 import { memorialDecision } from "./memorial-decisions.js";
+import { collectMemorialReviews } from "./memorial-records.js";
 import { calendarEra, globalYear } from "./calendar.js";
 import { advanceRegency } from "./succession.js";
 import { regentPerson } from "./regency-info.js";
@@ -466,6 +467,7 @@ function commitDraft(state, forecast, narrative = {}) {
     id: forecast.turnId,
     turn: s.turn,
     era: clone(state.era),
+    memorialReviews: collectMemorialReviews(state, forecast),
     chapter: narrative.chapter || {},
     ...(s.intentResults.length ? {intentResults:clone(s.intentResults)} : {}),
     summary: String(narrative.summary || "本旬诸事已入起居注").slice(0, 100),

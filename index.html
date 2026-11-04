@@ -1569,6 +1569,77 @@ line-height:1.6;
 color:var(--text-soft);
 margin-top:var(--s1);
 }
+.archive-entry{
+display:block;
+width:100%;
+text-align:left;
+margin-bottom:var(--s3);
+white-space:normal;
+overflow-wrap:anywhere;
+}
+.archive-entry strong,
+.archive-entry small,
+.archive-entry span{
+display:block;
+margin-bottom:var(--s2);
+}
+.archive-entry small{
+color:var(--text-muted);
+}
+.archive-remark-preview,
+.archive-brush{
+color:var(--cinnabar-ink);
+white-space:pre-wrap;
+overflow-wrap:anywhere;
+}
+.archive-remark-preview{
+color:var(--glyph);
+}
+.archive-written{
+display:flex;
+align-items:center;
+min-height:var(--target);
+gap:var(--s3);
+}
+.archive-written input{
+width:auto;
+}
+.archive-pagination{
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:var(--s3);
+}
+.archive-document{
+padding:var(--s5);
+overflow-wrap:anywhere;
+}
+.archive-document h3{
+font-size:var(--font-heading);
+line-height:var(--ui-line);
+}
+.archive-original{
+white-space:pre-wrap;
+font:var(--font-document) / 1.9 var(--serif);
+}
+.archive-verdict{
+border-top:var(--hairline) solid var(--paper-line);
+margin-top:var(--s5);
+padding-top:var(--s4);
+}
+.archive-brush{
+margin:var(--s4) var(--s0);
+font:var(--font-brush) / 1.6 var(--brush);
+}
+#archive-images figure{
+margin:var(--s5) var(--s0);
+}
+.archive-share-image{
+display:block;
+width:100%;
+height:auto;
+border-radius:var(--radius-card);
+}
 textarea.brush-input::placeholder{
 font:var(--font-small) / 1.5 var(--sans);
 color:var(--ink-muted);
@@ -2544,6 +2615,7 @@ actionsHTML, metricsHTML, chapterHTML, chapterTitle, chapterNotes, ledgerLabel,
 } = __load("src/ui/render.js");
 const { memorialDialog, scheduledMemorialDialog } = __load("src/ui/memorials.js");
 const { memorialAssignments } = __load("src/ui/memorial-state.js");
+const { openMemorialArchive } = __load("src/ui/memorial-archive.js");
 const { actionAvailability, repeatSchedule, delegateSchedule, delegateStop } = __load("src/ui/view-model.js");
 const { actionDialog } = __load("src/ui/actions.js");
 const { palacePanel } = __load("src/ui/panels.js");
@@ -3208,6 +3280,7 @@ c.commentary,
 );
 }
 async function command(name) {
+if (name === "memorial-archive") return openMemorialArchive(state);
 if (name === "settings") {
 const settings = openSettings(config, metrics, (c) => {
 config = c;
@@ -3740,11 +3813,12 @@ return {clamp,populationMorale,diminishing,applyEffects,applyPackage,growTalent}
 },
 "src/core/state.js":function(__load){
 const { normalizeMemorialAction } = __load("src/core/memorial-decisions.js");
+const { validateMemorialReviews } = __load("src/core/memorial-records.js");
 const { seedNumber, random, DRAFT } = __load("src/core/rng.js");
 const { uniqueName } = __load("src/core/names.js");
 const { chooseRegent } = __load("src/core/regency-info.js");
 const {factionPowers} = __load("src/core/politics.js");
-const VERSION = 13;
+const VERSION = 14;
 const TALENTS = ["政略", "权谋", "武略", "文采", "魅力"];
 const SLOTS = ["朝", "午", "夜"];
 const POST_NAMES = [
@@ -4219,6 +4293,8 @@ if(input.v>=12&&!Array.isArray(s.memorialVariety))throw new Error('奏折轮换�
 s.memorialVariety ??= s.memorials.filter(m=>m.templateId).slice(-72).map(m=>({id:m.templateId,type:m.type,turn:s.turn}));
 // v13 adds optional consequence/army/foreign packages on newly generated
 // options. Keep received petitions and saved forecasts exactly as they were.
+// v14 stores optional memorialReviews on committed chapters. Missing old
+// records are displayed from surviving notes; old chapters stay immutable.
 s.settings.freedom ??= "mid";
 s.v = VERSION;
 s.volumeIndex ??= [];
@@ -4378,6 +4454,7 @@ for(const r of s.intentResults)if(!r||typeof r.id!=='string'||!Number.isSafeInte
 if(s.v>=12&&(!Array.isArray(s.memorialVariety)||s.memorialVariety.length>72||s.memorialVariety.some(r=>!r||typeof r.id!=='string'||typeof r.type!=='string'||!Number.isSafeInteger(r.turn)||r.turn<0||r.turn>s.turn)))throw new Error('奏折轮换记录损坏');
 if(s.v>=12&&s.turnBudget?.rewriteAttempted!==undefined&&typeof s.turnBudget.rewriteAttempted!=='boolean')throw new Error('剧情改写标记损坏');
 if(s.v>=13&&s.memorials.some(m=>m.options?.some(o=>o.consequence!==undefined&&typeof o.consequence!=='string')))throw new Error('奏折后果说明损坏');
+if(s.v>=14)validateMemorialReviews([...(s.volumes||[]).flatMap(v=>v.chapters),...(s.history||[])]);
 const walk = (x) => {
 if (typeof x === "number" && !Number.isFinite(x))
 throw new Error("存档含 NaN/Infinity");
@@ -4420,6 +4497,91 @@ return '无';
 }
 
 return {REMARK_KINDS,memorialDecision,normalizeMemorialAction,remarkCategory};
+},
+"src/core/memorial-records.js":function(__load){
+const { memorialDecision } = __load("src/core/memorial-decisions.js");
+// Capture the original petition only on commit, including saved old forecasts.
+function collectMemorialReviews(state, forecast) {
+const records = [];
+for (const slot of ['朝', '午', '夜']) {
+const action = forecast.schedule?.[slot];
+if (!['上朝', '批折'].includes(action?.kind) || action.delegated || /^内阁票拟 \d+ 本$/.test(action.label || '')) continue;
+for (const id of action.memorials || []) {
+const m = state.memorials.find(m => m.id === id);
+if (!m) continue;
+const d = memorialDecision(action, id);
+const chosen = m.options.find(o => o.id === d.option) ||
+m.options.find(o => o.id === (d.option === 'reject' ? 'opt1' : 'opt0'));
+const labels = {hold:'留中', discuss:'发部再议', remark:'只作朱批'};
+records.push({
+id: forecast.turnId + ':' + slot + ':' + id,
+memorialId: id, turn: forecast.state.turn, slot,
+dynasty: state.dynasty, emperor: state.emperor.name,
+era: structuredClone(state.era), title: m.title,
+from: m.from || '通政司', type: m.type || '政务',
+text: typeof m.text === 'string' && m.text ? m.text : String(m.request || ''),
+decision: labels[d.option] || chosen?.label || d.option,
+consequence: labels[d.option] ? '' : chosen?.consequence || '',
+remark: d.remark,
+});
+}
+}
+return records;
+}
+function validateMemorialReviews(chapters) {
+const seen = new Set();
+for (const h of chapters) {
+if (h.memorialReviews === undefined) continue;
+if (!Array.isArray(h.memorialReviews)) throw new Error('御批档案损坏');
+for (const r of h.memorialReviews) {
+if (!r || ['id','memorialId','dynasty','emperor','title','from','type','text','decision','consequence','remark']
+.some(k => typeof r[k] !== 'string') || !r.id || seen.has(r.id) ||
+!Number.isSafeInteger(r.turn) || r.turn !== h.turn || !['朝','午','夜'].includes(r.slot) ||
+!r.era || typeof r.era.name !== 'string' || !Number.isSafeInteger(r.era.year) ||
+!Number.isSafeInteger(r.era.month) || r.era.month < 1 || r.era.month > 12 ||
+![0,1,2].includes(r.era.xun) || r.remark.length > 100) throw new Error('御批档案损坏');
+seen.add(r.id);
+}
+}
+}
+function legacyReviews(h) {
+const records = new Map();
+const add = (title, decision, remark = '', slot = '') => {
+const key = title + '\0' + decision, old = records.get(key);
+records.set(key, {...old, id: old?.id || h.id + ':旧录:' + records.size, memorialId: '', turn:h.turn,
+slot:slot || old?.slot || '', era:h.era, title, from:'', type:'旧折摘录',
+dynasty:'', emperor:'', text:'', decision, consequence:'', remark:remark || old?.remark || '', legacy:true});
+};
+for (const e of h.entries || []) {
+const match = /^处置奏报：(.+) \/ (.+)$/.exec(e.source || '');
+if (match) add(match[1], match[2]);
+}
+for (const [slot, notes] of Object.entries(h.settlement?.slotResults || {})) {
+for (const note of Array.isArray(notes) ? notes : []) {
+const match = /^(.+?) · (.+?) · 朱批「([\s\S]*)」$/.exec(note);
+if (match) add(match[1], match[2].split('：')[0], match[3].slice(0,100), slot);
+else {
+const brush = /^(.+?) · 朱批「([\s\S]*)」（原请款仍待准驳）$/.exec(note);
+if (brush) add(brush[1], '只作朱批', brush[2].slice(0,100), slot);
+}
+}
+}
+return [...records.values()];
+}
+function memorialArchive(state) {
+if (!state) return [];
+const chapters = [...state.volumes.flatMap(v => v.chapters), ...state.history], seen = new Set();
+return chapters.flatMap(h => h.memorialReviews === undefined ? legacyReviews(h) : h.memorialReviews)
+.filter(r => { if (seen.has(r.id)) return false; seen.add(r.id); return true; })
+.sort((a,b) => b.turn - a.turn || ['夜','午','朝'].indexOf(a.slot) - ['夜','午','朝'].indexOf(b.slot));
+}
+function memorialReviewDate(record) {
+const e = record.era;
+return e?.name && e.year && e.month ? e.name + e.year + '年' + e.month + '月' +
+(['上','中','下'][e.xun] || '') + '旬' : '第' + record.turn + '旬';
+}
+
+return {collectMemorialReviews,validateMemorialReviews,memorialArchive,memorialReviewDate};
 },
 "src/core/names.js":function(__load){
 const { roll } = __load("src/core/rng.js");
@@ -8910,6 +9072,7 @@ const { freedomRules, selectionYear, adjudicate } = __load("src/core/freedom.js"
 const { resolveIntents } = __load("src/core/intents.js");
 const { compactChapter } = __load("src/core/archive.js");
 const { memorialDecision } = __load("src/core/memorial-decisions.js");
+const { collectMemorialReviews } = __load("src/core/memorial-records.js");
 const { calendarEra, globalYear } = __load("src/core/calendar.js");
 const { advanceRegency } = __load("src/core/succession.js");
 const { regentPerson } = __load("src/core/regency-info.js");
@@ -9373,6 +9536,7 @@ s.history.push({
 id: forecast.turnId,
 turn: s.turn,
 era: clone(state.era),
+memorialReviews: collectMemorialReviews(state, forecast),
 chapter: narrative.chapter || {},
 ...(s.intentResults.length ? {intentResults:clone(s.intentResults)} : {}),
 summary: String(narrative.summary || "本旬诸事已入起居注").slice(0, 100),
@@ -11024,6 +11188,7 @@ const list = (items) =>
 items.map((m) => memorialHTML({ ...m, currentTurn: s.turn }, s)).join("") +
 "</div>";
 return (
+'<p><button data-command="memorial-archive">御批档案 ›</button></p>' +
 '<section class="memorial-group"><h3>待批 · ' +
 pending.length +
 " 本</h3>" +
@@ -11485,7 +11650,7 @@ if (s.campaigns.some((w) => w.personal && !w.done)) return { schedule: null, rea
 const picks = s.memorials.map((m) => ({ m, d: cabinetDraft(s, m) })).filter((x) => x.d).slice(0, 6);
 const schedule = { 朝: null, 午: null, 夜: { kind: "歇息" } };
 if (picks.length)
-schedule.朝 = { kind: "批折", memorials: picks.map((x) => x.m.id), stance: "依旨施行", target: s.court.officials[0]?.id || "",
+schedule.朝 = { kind: "批折", delegated:true, memorials: picks.map((x) => x.m.id), stance: "依旨施行", target: s.court.officials[0]?.id || "",
 decisions: Object.fromEntries(picks.map((x) => [x.m.id, { option: x.d.option, remark: "" }])), label: "内阁票拟 " + picks.length + " 本" };
 try { validateSchedule(s, schedule); } catch (e) { return { schedule: null, reason: e.message }; }
 return { schedule, reason: "" };
@@ -12232,6 +12397,179 @@ paint("#memorial-title");
 
 return {createMemorialSession,applyCabinetDrafts,memorialAction,scheduledMemorialDialog,effectItems,effectLabel,factionDemandReason,memorialOptions,memorialHTML,memorialDialog};
 },
+"src/ui/memorial-archive.js":function(__load){
+const { memorialArchive, memorialReviewDate } = __load("src/core/memorial-records.js");
+const { esc, openDialog, toast, download } = __load("src/ui/common.js");
+const { onDialogExit } = __load("src/ui/request-scope.js");
+const { createMemorialImages } = __load("src/ui/memorial-image.js");
+function filterMemorialArchive(records, query='', type='', written=false) {
+const word = query.trim().toLocaleLowerCase();
+return records.filter(r => (!type || r.type===type) && (!written || r.remark.trim()) &&
+(!word || [r.title,r.from,r.text,r.remark,r.decision,r.emperor].join('\n').toLocaleLowerCase().includes(word)));
+}
+function memorialArchiveListHTML(records, page=0) {
+if (!records.length) return '<p class="muted">没有找到相应奏折。批阅奏折并起驾后，就会收进这里。</p>';
+return records.slice(page*20,page*20+20).map(r =>
+'<button class="archive-entry" data-archive-record="'+esc(r.id)+'"><strong>'+esc(r.title)+'</strong><small>'+
+esc(memorialReviewDate(r)+' · '+(r.from||'旧折摘录'))+'</small><span>'+esc(r.decision)+'</span>'+
+(r.remark?'<p class="archive-remark-preview">'+esc(r.remark)+'</p>':'')+'</button>').join('');
+}
+function memorialArchiveDetailHTML(r) {
+return '<p><button data-archive-back>‹ 返回档案</button></p><article class="paper archive-document"><p class="muted">'+
+esc([r.dynasty,r.emperor,memorialReviewDate(r),r.slot&&r.slot+'间'].filter(Boolean).join(' · '))+'</p><h3>'+esc(r.title)+
+'</h3><p>'+esc([r.from&&'上奏 '+r.from,r.type].filter(Boolean).join(' · '))+'</p><div class="archive-original">'+
+esc(r.text||'旧卷未留存奏折全文，以下为起居注中留下的批阅记录。')+'</div><section class="archive-verdict"><h4>御批</h4><p>'+esc(r.decision)+
+'</p>'+(r.consequence?'<p>'+esc(r.consequence)+'</p>':'')+(r.remark?'<blockquote class="archive-brush">'+esc(r.remark)+
+'</blockquote>':'<p class="muted">未另写朱批。</p>')+'</section></article><div class="dialog-actions">'+
+'<button class="primary" data-archive-image>生成分享图</button></div><div id="archive-images" aria-live="polite"></div>';
+}
+function openMemorialArchive(state) {
+const records = memorialArchive(state);
+let query='', type='', written=false, page=0, selected=null, generation=0, urls=[];
+const clearImages = () => { generation++; for (const url of urls) URL.revokeObjectURL(url); urls=[]; };
+openDialog('御批档案','<div id="memorial-archive"></div>');
+const dialog = document.querySelector('#modal'), root = dialog.querySelector('#memorial-archive');
+const paintResults = () => {
+const result = filterMemorialArchive(records,query,type,written), pages = Math.max(1,Math.ceil(result.length/20));
+page=Math.max(0,Math.min(page,pages-1));
+root.querySelector('#archive-count').textContent='共 '+result.length+' 份批阅记录';
+root.querySelector('#archive-results').innerHTML=memorialArchiveListHTML(result,page)+
+'<div class="archive-pagination"><button data-archive-prev '+(page?'':'disabled')+'>上一页</button><span>'+ (page+1)+' / '+pages+
+'</span><button data-archive-next '+(page+1<pages?'':'disabled')+'>下一页</button></div>';
+};
+const paintList = () => {
+clearImages(); selected=null;
+root.innerHTML='<p class="muted">每次亲批，留一份底稿。留中和再议的朱批也收录于此。</p><label for="archive-search">搜索奏折</label>'+
+'<input id="archive-search" type="search" maxlength="100" placeholder="标题、上奏人、正文或朱批" value="'+esc(query)+'">'+
+'<label for="archive-type">奏折类型</label><select id="archive-type"><option value="">全部类型</option>'+
+[...new Set(records.map(r=>r.type))].sort().map(t=>'<option '+(t===type?'selected ':'')+'value="'+esc(t)+'">'+esc(t)+'</option>').join('')+
+'</select><label class="archive-written"><input type="checkbox" id="archive-written" '+(written?'checked':'')+'>只看写过朱批的奏折</label>'+
+'<p id="archive-count"></p><div id="archive-results"></div>';
+paintResults();
+};
+const detail = record => {clearImages();selected=record;root.innerHTML=memorialArchiveDetailHTML(record);dialog.scrollTop=0;};
+root.oninput = e => { if(e.target.id==='archive-search'){query=e.target.value;page=0;paintResults();} };
+root.onchange = e => {
+if(e.target.id==='archive-type')type=e.target.value;
+else if(e.target.id==='archive-written')written=e.target.checked;
+else return;
+page=0;paintResults();
+};
+root.onclick = async e => {
+const b=e.target.closest('button'); if(!b||b.disabled)return;
+if(b.hasAttribute('data-archive-back')){paintList();dialog.scrollTop=0;}
+else if(b.dataset.archiveRecord){const r=records.find(r=>r.id===b.dataset.archiveRecord);if(r)detail(r);}
+else if(b.hasAttribute('data-archive-prev')){page--;paintResults();}
+else if(b.hasAttribute('data-archive-next')){page++;paintResults();}
+else if(b.hasAttribute('data-archive-image')&&selected){
+const record=selected, token=++generation; b.disabled=true;b.textContent='正在生成图片…';
+try {
+const images=await createMemorialImages(record);
+if(token!==generation||!dialog.open||!root.isConnected)return;
+for(const url of urls)URL.revokeObjectURL(url);
+urls=images.map(x=>URL.createObjectURL(x.blob));
+const stem='御极-'+record.title.replace(/[\\/:*?"<>|\x00-\x1f]/g,'').slice(0,60)+'-第'+record.turn+'旬';
+const files=typeof File==='function'?images.map((x,i)=>new File([x.blob],stem+(images.length>1?'-'+(i+1):'')+'.png',{type:'image/png'})):[];
+const canShare=files.length&&typeof navigator.share==='function'&&navigator.canShare?.({files});
+const target=root.querySelector('#archive-images');
+target.innerHTML='<p class="muted">可保存图片后分享，也可长按图片保存。'+(images.length>1?'长奏折分成 '+images.length+' 张，全文均已保留。':'')+'</p>'+
+(canShare?'<button data-share-memorial>分享图片</button>':'')+
+images.map((x,i)=>'<figure><img class="archive-share-image" src="'+urls[i]+'" alt="'+esc(record.title)+' · 分享图'+(i+1)+'">'+
+'<figcaption><button data-save-memorial="'+i+'">保存图片'+(images.length>1?' '+(i+1):'')+'</button></figcaption></figure>').join('');
+target.onclick = async event => {
+const save=event.target.closest('[data-save-memorial]');
+if(save){const i=Number(save.dataset.saveMemorial);download(files[i]?.name||stem+'.png',images[i].blob,'image/png');}
+if(event.target.closest('[data-share-memorial]'))try{await navigator.share({files,title:record.title});}catch(err){if(err.name!=='AbortError')toast('未能打开分享，请先保存图片。');}
+};
+b.textContent='重新生成分享图';
+} catch(err) {if(token===generation&&root.isConnected){toast(err.message);b.textContent='重新生成分享图';}}
+finally {if(token===generation&&root.isConnected)b.disabled=false;}
+}
+};
+onDialogExit(dialog,root,clearImages);
+paintList();
+}
+
+return {filterMemorialArchive,memorialArchiveListHTML,memorialArchiveDetailHTML,openMemorialArchive};
+},
+"src/ui/memorial-image.js":function(__load){
+const { memorialReviewDate } = __load("src/core/memorial-records.js");
+function wrapMemorialText(text, width, measure) {
+return String(text).split('\n').flatMap(paragraph => {
+const lines = []; let line = '';
+for (const ch of Array.from(paragraph)) {
+if (line && measure(line + ch) > width) {
+const chars=Array.from(line); let tail='';
+const close=/^[，。；：！？、）》」』】…,.!?;:]/, open=/[（《「『【(]$/;
+if(close.test(ch)||open.test(line)) {
+do {tail=chars.pop()+tail;} while(chars.length>1&&(close.test(tail)||open.test(chars.join(''))));
+}
+if(!chars.length||measure(tail+ch)>width){lines.push(line);line=ch;}
+else {lines.push(chars.join(''));line=tail+ch;}
+} else line += ch;
+}
+return [...lines, line];
+});
+}
+// Layout is independent of canvas so full text, long titles and page breaks
+// can be checked without relying on a browser's image encoder.
+function memorialImageLayout(record, measure) {
+const pages = []; let runs = [], y = 222;
+const finish = () => { pages.push({runs, height:Math.max(1280, y + 150)}); runs = []; y = 222; };
+const add = (text, size, line, tone = 'ink', brush = false) => {
+for (const textLine of wrapMemorialText(text, 912, t => measure(t, size, brush))) {
+if (y + line > 7300) finish();
+runs.push({text:textLine, size, y, tone, brush}); y += line;
+}
+};
+add(record.title, 46, 70);
+add([record.dynasty,record.emperor].filter(Boolean).join(' · '), 28, 48, 'soft');
+add([record.from && '上奏 '+record.from, record.type].filter(Boolean).join(' · '), 28, 48, 'soft');
+y += 28;
+add(record.text || '旧卷未留存奏折全文。', 32, 54, record.text ? 'ink' : 'soft');
+y += 38;
+add('御批', 28, 52, 'red');
+add(record.decision, 38, 64, 'red');
+if (record.consequence) add(record.consequence, 28, 48, 'soft');
+if (record.remark) { y += 28; add(record.remark, 52, 82, 'red', true); }
+if (record.legacy) { y += 20; add('旧折摘录 · 据起居注留存', 26, 42, 'soft'); }
+finish();
+return pages;
+}
+async function createMemorialImages(record) {
+await document.fonts?.ready;
+const canvas = document.createElement('canvas'), ctx = canvas.getContext('2d');
+if (!ctx) throw new Error('此浏览器暂时无法生成图片，请换一个浏览器试试。');
+const font = (size, brush) => size + 'px ' + (brush ? '"Ma Shan Zheng","Kaiti SC",STKaiti,serif' : '"Noto Serif SC","Songti SC",SimSun,serif');
+const pages = memorialImageLayout(record, (text,size,brush) => { ctx.font = font(size,brush); return ctx.measureText(text).width; });
+const style = getComputedStyle(document.documentElement);
+const colors = {paper:style.getPropertyValue('--paper').trim(), ink:style.getPropertyValue('--ink').trim(),
+soft:style.getPropertyValue('--ink-muted').trim(), red:style.getPropertyValue('--cinnabar-ink').trim(),
+gold:style.getPropertyValue('--gold').trim()};
+const images = [];
+for (const [i,page] of pages.entries()) {
+canvas.width = 1080; canvas.height = page.height;
+ctx.fillStyle = colors.paper; ctx.fillRect(0,0,1080,page.height);
+ctx.strokeStyle = colors.gold; ctx.lineWidth = 2; ctx.strokeRect(40,40,1000,page.height-80);
+ctx.fillStyle = colors.red; ctx.font = font(30,false);
+ctx.fillText('御 极  ·  御 批 档 案' + (i ? '  ·  续' : ''),84,108);
+ctx.fillStyle = colors.soft; ctx.font = font(24,false);
+// Exact date is retained; long dynasty/emperor names wrap with the body.
+ctx.fillText(memorialReviewDate(record) + (record.slot ? ' · '+record.slot+'间' : ''),84,162);
+for (const r of page.runs) { ctx.fillStyle = colors[r.tone]; ctx.font = font(r.size,r.brush); ctx.fillText(r.text,84,r.y); }
+ctx.strokeStyle = colors.gold; ctx.beginPath(); ctx.moveTo(84,page.height-112); ctx.lineTo(996,page.height-112); ctx.stroke();
+ctx.fillStyle = colors.soft; ctx.font = font(24,false);
+ctx.fillText('御极 · 皇帝模拟器',84,page.height-70);
+ctx.textAlign = 'right'; ctx.fillText((pages.length>1?(i+1)+' / '+pages.length+' · ':'')+'亲批留档',996,page.height-70); ctx.textAlign = 'left';
+const blob = await new Promise(resolve => canvas.toBlob(resolve,'image/png'));
+if (!blob) throw new Error('图片没能生成，请重试。');
+images.push({blob, width:canvas.width, height:canvas.height});
+}
+return images;
+}
+
+return {wrapMemorialText,memorialImageLayout,createMemorialImages};
+},
 "src/ui/actions.js":function(__load){
 const { postTitle } = __load("src/core/scenarios.js");
 const { $, esc, openDialog, toast, closeDialog } = __load("src/ui/common.js");
@@ -12864,7 +13202,8 @@ w.age +
 if (name === "史馆") {
 const chapters = [...s.volumes.flatMap((v) => v.chapters), ...s.history];
 html =
-'<div class="row"><button data-command="export-md">导出起居注</button><button data-command="export-json">导出存档</button>' +
+'<div class="row"><button data-command="memorial-archive">御批档案</button>' +
+'<button data-command="export-md">导出起居注</button><button data-command="export-json">导出存档</button>' +
 (s.ambitions
 .filter((a) => a.kind === "宏愿")
 .every((a) => a.status === "达成") &&
@@ -13194,7 +13533,7 @@ if(chosen?.state.volumeIndex?.length){
 try{
 const volumes=[];
 for(const ref of chosen.state.volumeIndex){const v=await primary.getVolume?.(ref.key);if(!v||!Array.isArray(v.chapters)||v.from!==ref.from||v.to!==ref.to||ref.checksum&&hashText(JSON.stringify(v))!==ref.checksum)throw new Error('分卷缺失');volumes.push(v);writtenVolumes.set(ref.key,ref.checksum);}
-chosen.state={...chosen.state,volumes,volumeIndex:[]};
+chosen.state=validate({...chosen.state,volumes,volumeIndex:[]});
 }catch{locked.add(slot);problems.push('分卷缺失或不可用，请导出原始副本，不要覆盖旧档');}
 }
 if(chosen?.state.recoveryOnly)problems.push('已恢复核心进度；历史正文请从导出备份找回');

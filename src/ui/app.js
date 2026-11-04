@@ -34,6 +34,7 @@ import {
 } from "./render.js";
 import { memorialDialog, scheduledMemorialDialog } from "./memorials.js";
 import { memorialAssignments } from "./memorial-state.js";
+import { openMemorialArchive } from "./memorial-archive.js";
 import { actionAvailability, repeatSchedule, delegateSchedule, delegateStop } from "./view-model.js";
 import { actionDialog } from "./actions.js";
 import { palacePanel } from "./panels.js";
@@ -698,6 +699,7 @@ function exportMarkdown() {
   );
 }
 async function command(name) {
+  if (name === "memorial-archive") return openMemorialArchive(state);
   if (name === "settings") {
     const settings = openSettings(config, metrics, (c) => {
       config = c;

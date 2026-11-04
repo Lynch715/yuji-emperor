@@ -111,7 +111,7 @@ export function delegateSchedule(s) {
   const picks = s.memorials.map((m) => ({ m, d: cabinetDraft(s, m) })).filter((x) => x.d).slice(0, 6);
   const schedule = { 朝: null, 午: null, 夜: { kind: "歇息" } };
   if (picks.length)
-    schedule.朝 = { kind: "批折", memorials: picks.map((x) => x.m.id), stance: "依旨施行", target: s.court.officials[0]?.id || "",
+    schedule.朝 = { kind: "批折", delegated:true, memorials: picks.map((x) => x.m.id), stance: "依旨施行", target: s.court.officials[0]?.id || "",
       decisions: Object.fromEntries(picks.map((x) => [x.m.id, { option: x.d.option, remark: "" }])), label: "内阁票拟 " + picks.length + " 本" };
   try { validateSchedule(s, schedule); } catch (e) { return { schedule: null, reason: e.message }; }
   return { schedule, reason: "" };

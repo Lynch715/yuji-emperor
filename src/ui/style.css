@@ -1554,6 +1554,77 @@ textarea.brush-input {
   color: var(--text-soft);
   margin-top: var(--s1);
 }
+.archive-entry {
+  display: block;
+  width: 100%;
+  text-align: left;
+  margin-bottom: var(--s3);
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.archive-entry strong,
+.archive-entry small,
+.archive-entry span {
+  display: block;
+  margin-bottom: var(--s2);
+}
+.archive-entry small {
+  color: var(--text-muted);
+}
+.archive-remark-preview,
+.archive-brush {
+  color: var(--cinnabar-ink);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.archive-remark-preview {
+  color: var(--glyph);
+}
+.archive-written {
+  display: flex;
+  align-items: center;
+  min-height: var(--target);
+  gap: var(--s3);
+}
+.archive-written input {
+  width: auto;
+}
+.archive-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s3);
+}
+.archive-document {
+  padding: var(--s5);
+  overflow-wrap: anywhere;
+}
+.archive-document h3 {
+  font-size: var(--font-heading);
+  line-height: var(--ui-line);
+}
+.archive-original {
+  white-space: pre-wrap;
+  font: var(--font-document) / 1.9 var(--serif);
+}
+.archive-verdict {
+  border-top: var(--hairline) solid var(--paper-line);
+  margin-top: var(--s5);
+  padding-top: var(--s4);
+}
+.archive-brush {
+  margin: var(--s4) var(--s0);
+  font: var(--font-brush) / 1.6 var(--brush);
+}
+#archive-images figure {
+  margin: var(--s5) var(--s0);
+}
+.archive-share-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-card);
+}
 textarea.brush-input::placeholder {
   font: var(--font-small) / 1.5 var(--sans);
   color: var(--ink-muted);

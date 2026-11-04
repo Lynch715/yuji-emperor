@@ -229,7 +229,7 @@ export function createSaveStore({ primary, backup, validate = (x) => x }) {
       try{
         const volumes=[];
         for(const ref of chosen.state.volumeIndex){const v=await primary.getVolume?.(ref.key);if(!v||!Array.isArray(v.chapters)||v.from!==ref.from||v.to!==ref.to||ref.checksum&&hashText(JSON.stringify(v))!==ref.checksum)throw new Error('分卷缺失');volumes.push(v);writtenVolumes.set(ref.key,ref.checksum);}
-        chosen.state={...chosen.state,volumes,volumeIndex:[]};
+        chosen.state=validate({...chosen.state,volumes,volumeIndex:[]});
       }catch{locked.add(slot);problems.push('分卷缺失或不可用，请导出原始副本，不要覆盖旧档');}
     }
     if(chosen?.state.recoveryOnly)problems.push('已恢复核心进度；历史正文请从导出备份找回');
