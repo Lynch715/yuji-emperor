@@ -158,6 +158,7 @@ button {
   color: var(--text-soft);
   cursor: pointer;
   font-size: var(--font-ui);
+  overflow-wrap: anywhere;
 }
 @media (hover: hover) {
   button:hover {
@@ -180,6 +181,11 @@ button.primary {
   font-family: var(--serif);
   font-weight: 600;
   letter-spacing: var(--tracking);
+}
+button.primary:disabled {
+  background: var(--chip);
+  border-color: var(--line-strong);
+  color: var(--text-muted);
 }
 @media (hover: hover) {
   button.primary:hover {
@@ -315,7 +321,8 @@ small {
   min-height: var(--s0);
 }
 .topbar {
-  height: var(--top-height);
+  min-height: var(--top-height);
+  height: auto;
   flex: none;
   display: flex;
   align-items: center;
@@ -339,10 +346,9 @@ small {
   font-size: var(--font-document);
   color: var(--text-strong);
   font-weight: 600;
-  white-space: nowrap;
+  white-space: normal;
   max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow-wrap: anywhere;
 }
 .seal {
   width: var(--seal-size);
@@ -359,9 +365,8 @@ small {
 .date {
   font-size: var(--font-micro);
   color: var(--text-muted);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 .top-actions {
   display: flex;
@@ -413,7 +418,9 @@ small {
   display: flex;
   align-items: baseline;
   gap: var(--s1);
-  white-space: nowrap;
+  flex-wrap: wrap;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
 }
 .metric strong {
   font-family: var(--serif);
@@ -485,11 +492,12 @@ small {
   gap: var(--s2);
 }
 .action-card {
-  height: var(--action-height);
+  min-height: var(--action-height);
+  height: auto;
   display: flex;
   align-items: center;
   gap: var(--s2);
-  padding: var(--s0) var(--s3);
+  padding: var(--s3);
   background: var(--panel);
   border-color: var(--line);
   text-align: left;
@@ -511,6 +519,7 @@ small {
   flex-direction: column;
   min-width: var(--s0);
   gap: var(--s1);
+  overflow-wrap: anywhere;
 }
 .action-copy strong {
   font-size: var(--font-ui);
@@ -654,9 +663,13 @@ small {
   position: relative;
   min-width: var(--s0);
 }
+.slot-wrap > .slot {
+  height: 100%;
+}
 .slot {
   width: 100%;
-  height: var(--slot-height);
+  min-height: var(--slot-height);
+  height: auto;
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -666,7 +679,6 @@ small {
   background: var(--clear);
   border: var(--hairline) dashed var(--line-dashed);
   border-radius: var(--radius-card);
-  overflow: hidden;
 }
 .filled .slot {
   background: var(--panel-active);
@@ -685,7 +697,8 @@ small {
 .slot strong {
   font: 600 var(--font-value) / 1.5 var(--serif);
   color: var(--text-soft);
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 .filled .slot strong {
   color: var(--text-strong);
@@ -693,9 +706,8 @@ small {
 .slot small {
   font-size: var(--font-small);
   color: var(--text-muted);
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 .slot-clear {
   position: absolute;
@@ -1202,6 +1214,7 @@ dialog::backdrop {
   color: var(--ink-muted);
 }
 .card button,
+.province button,
 .paper button:not(.primary):not(.accountability) {
   background: var(--paper-chip);
   border-color: var(--paper-line);
@@ -1212,9 +1225,21 @@ dialog::backdrop {
 }
 .card dl {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: var(--s2);
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--s2) var(--s5);
   font-size: var(--font-small);
+  align-items: baseline;
+}
+.card dd {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.card > button {
+  margin: var(--s1) var(--s1) var(--s0) var(--s0);
+}
+.card .row > h3 {
+  min-width: var(--s0);
+  flex: 1;
 }
 dt {
   color: var(--ink-muted);
@@ -1239,14 +1264,119 @@ dd {
   border-radius: 50%;
   font: 600 var(--font-value) / 1 var(--serif);
   color: var(--ink-muted);
+  flex: none;
 }
 .map-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: var(--s5);
 }
 .province.disaster {
   border-color: var(--cinnabar-ink);
+}
+.province {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s5);
+}
+.province h3,
+.province p {
+  margin: var(--s0);
+}
+.province-readings {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s3) var(--s5);
+  margin: var(--s0);
+  font-size: var(--font-small);
+}
+.province-readings dt {
+  font-size: var(--font-note);
+}
+.province-readings dd {
+  font-variant-numeric: tabular-nums;
+  font-size: var(--font-base);
+}
+.province-industries {
+  border-top: var(--hairline) solid var(--paper-line);
+  padding-top: var(--s3);
+  font-size: var(--font-small);
+}
+.province-industries > span,
+.province-governor {
+  color: var(--ink-muted);
+  font-size: var(--font-note);
+}
+.province-industries ul {
+  list-style: none;
+  margin: var(--s1) var(--s0);
+  padding: var(--s0);
+}
+.province-industries li span {
+  color: var(--ink-muted);
+}
+.province-governor strong {
+  font-weight: 500;
+  color: var(--ink);
+}
+.province > button {
+  width: 100%;
+  margin-top: auto;
+}
+.development-plans {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s7);
+  margin-top: var(--s7);
+}
+.development-form {
+  min-width: var(--s0);
+  padding: var(--s7);
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-card);
+  background: var(--panel);
+}
+.development-form h3 {
+  color: var(--gold);
+  margin: var(--s0) var(--s0) var(--s5);
+}
+.development-form form {
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - var(--target));
+}
+.development-form .dialog-actions {
+  margin-top: auto;
+  padding-top: var(--s7);
+}
+.field-note {
+  font-size: var(--font-small);
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+input[type="range"] {
+  accent-color: var(--gold);
+  padding: var(--s0);
+  margin: var(--s0);
+}
+.tech-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s2) var(--s3);
+}
+.tech-heading h3 {
+  margin: var(--s0);
+}
+.tech-status {
+  font-size: var(--font-note);
+  color: var(--cinnabar-ink);
+}
+.tech-line > summary {
+  color: var(--gold);
+  border-bottom: var(--hairline) solid var(--line);
+  margin-bottom: var(--s5);
 }
 progress {
   width: 100%;
@@ -1268,6 +1398,8 @@ progress {
   flex: 1;
   display: grid;
   gap: var(--s5);
+  min-width: var(--s0);
+  overflow-wrap: anywhere;
 }
 summary {
   cursor: pointer;
@@ -1516,7 +1648,7 @@ dialog.memorial-shell[open] {
   margin-top: var(--s9);
 }
 .brush-writing {
-  overflow: hidden;
+  min-width: var(--s0);
   border-bottom: var(--hairline) solid var(--paper-line);
   padding: var(--s2) var(--s0);
 }
@@ -1541,8 +1673,6 @@ textarea.brush-input {
   border-radius: var(--s0);
   background: var(--clear);
   min-height: var(--slot-height);
-  transform: rotate(var(--brush-angle));
-  transform-origin: left center;
   padding: var(--s3);
   margin: var(--s0);
   resize: none;
@@ -2052,6 +2182,7 @@ textarea.brush-input::placeholder {
     padding: var(--s1);
   }
   .topbar {
+    min-height: var(--s0);
     padding: var(--s0) var(--s5);
     gap: var(--s3);
   }
@@ -2342,7 +2473,7 @@ textarea.brush-input::placeholder {
     gap: var(--s5);
   }
   .map-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   }
   .card {
     padding: var(--s5);
@@ -2441,7 +2572,7 @@ textarea.brush-input::placeholder {
     gap: var(--s0);
   }
   .card dl {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: auto minmax(0, 1fr);
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -2498,8 +2629,12 @@ textarea.brush-input::placeholder {
 .action-card {
   gap: var(--s1);
 }
+.action-card .glyph {
+  width: var(--s11);
+  height: var(--s11);
+}
 .action-copy small {
-  white-space: nowrap;
+  white-space: normal;
 }
 .slot-clear {
   top: auto;
@@ -2738,6 +2873,7 @@ textarea::placeholder {
 @media (max-width: 599px) {
   .fields,
   .palace .grid,
+  .development-plans,
   dialog:not(.drawer) > .grid {
     grid-template-columns: minmax(0, 1fr);
   }

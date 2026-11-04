@@ -312,7 +312,7 @@ async function newGame() {
         .join("") +
       '</select></div></div><label class="check"><input id="demo-mode" type="checkbox" ' +
       (!config.key ? "checked" : "") +
-      '>先试读一局（无需密钥）</label><p class="muted">想体验更丰富的故事，可在设置中连接 API。选择已有卷位时，会先封存旧存档。</p><p id="new-result" class="result hidden" role="status" aria-live="polite" tabindex="-1"></p><div class="dialog-actions"><button type="button" data-command="settings">设置接口</button><button type="submit" class="primary">承天践祚</button></div></form>',
+      '>先试读一局（无需密钥）</label><p class="muted">试读无需密钥。已有卷位会先封存旧卷。</p><p id="new-result" class="result hidden" role="status" aria-live="polite" tabindex="-1"></p><div class="dialog-actions"><button type="button" data-command="settings">故事设置</button><button type="submit" class="primary">承天践祚</button></div></form>',
   );
   const goalsHTML = ["宏愿", "宏愿", "心事", "心事"]
     .map(
@@ -555,7 +555,7 @@ function openScene(id,local=false,auto=false){
   const h=state.history.at(-1),pending=state.pending?.forecast;
   openDialog('自拟情节 · 接着写','<div id="scene-owner"><p class="muted">'+esc([r.slot+'间',r.people.map(p=>p.name).join('、')||'独处',r.place].filter(Boolean).join(' · '))+'</p><div class="scene-recap">'+
     [h.chapter[r.slot],...r.steps.slice(-3).map(t=>t.prose)].map(p=>'<p>'+esc(p).replace(/\n+/g,'</p><p>')+'</p>').join('')+
-    '</div><p class="muted">'+esc(sceneOutcomeText(pending?.outcome||r.steps.at(-1)?.outcome||r.outcome))+'</p><form id="scene-form"><label for="scene-follow">接下来想发生什么（选填）</label><textarea id="scene-follow" maxlength="8000" rows="4" '+(pending?'readonly':'')+' placeholder="留空会接着描写；也可以写下新的想法。">'+esc(pending?.request||'')+'</textarea><p class="muted">继续描写不再占时段或耗精力。新的尝试按当前自由度判断，已经发生的事不会重办。</p><div class="dialog-actions"><button type="submit" class="primary">'+(pending?'重试续写':'接着写')+'</button></div><p id="scene-status" role="status"></p></form></div>','action-shell');
+    '</div><p class="muted">'+esc(sceneOutcomeText(pending?.outcome||r.steps.at(-1)?.outcome||r.outcome))+'</p><form id="scene-form"><label for="scene-follow">接下来想发生什么（选填）</label><textarea id="scene-follow" maxlength="8000" rows="4" '+(pending?'readonly':'')+' placeholder="留空会接着描写；也可以写下新的想法。">'+esc(pending?.request||'')+'</textarea><p class="muted">续写不另耗精力。写下新的心意，让这段故事继续。</p><div class="dialog-actions"><button type="submit" class="primary">'+(pending?'重试续写':'接着写')+'</button></div><p id="scene-status" role="status"></p></form></div>','action-shell');
   $('#modal').classList.add('scene-dialog');
   if($('#action-document'))$('#action-document').innerHTML='<h3>'+esc(r.place||'自拟情节')+'</h3><p>'+esc(r.people.map(p=>p.name).join('、')||'独处')+'</p><p>'+esc(r.text)+'</p>';
   const dialog=$('#modal'),owner=$('#scene-owner'),scope=createDialogRequestScope(dialog,owner),form=$('#scene-form');
@@ -808,7 +808,7 @@ async function command(name) {
       $("#modal").insertAdjacentHTML(
         "beforeend",
         '<p class="muted" id="story-mode">' +
-          (state.settings.demo ? '正在试读。连接 API 后，可续写更丰富的故事。' : '已连接 API，故事随你的选择继续。') +
+          (state.settings.demo ? '正在试读。填写连接设置，即可随心续写。' : '故事随你的选择继续。') +
           '</p><div class="dialog-actions"><button id="mode-toggle">' +
           (state.settings.demo ? "保存并用于正文" : "切换为试读") +
           "</button></div>",

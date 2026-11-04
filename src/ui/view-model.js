@@ -44,6 +44,15 @@ export function actionMeta(kind, s = null) {
   if (kind === "批折") return time + " · 每3本1 · 独断，不经廷议";
   return time + " · " + (rule.full ? rule.energy+"点" : "精力 " + rule.energy);
 }
+export function actionCaption(kind, s = null) {
+  const rule = ACTIONS[kind];
+  if (!rule) return "";
+  const time = rule.full ? "整旬" : rule.slots.length === 3 ? "任意" : rule.slots.join("、");
+  if (kind === "上朝") return "廷议 · 耗" + rule.energy;
+  if (kind === "批折") return "独断·3本耗1";
+  if (kind === "召见") return "午 · 耗1／人";
+  return time + " · 耗" + rule.energy;
+}
 export function energyView(s) {
   const limit = s ? energyLimit(s) : 9, used = s ? scheduleCost(s.schedule) : 0;
   return {limit,used,remaining:Math.max(0,limit-used),excess:Math.max(0,used-limit)};

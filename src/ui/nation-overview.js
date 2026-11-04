@@ -47,13 +47,13 @@ export function nationOverviewHTML(s,span=12,expanded=false) {
     '<div class="nation-alerts">'+(d.alerts.length?d.alerts.map(a=>'<span>'+esc(a)+'</span>').join(''):'<span class="nation-calm">暂无紧急钱粮与边务警报</span>')+'</div>';
   const budget=figures([
     ['格物月经费',number(s.tech?.current?s.tech.funding:0),'万两'],['每月俸禄',number(d.monthly.salaries),'万两'],['每月军饷',number(d.monthly.armyPay),'万两'],
-    ['现银可付固定俸饷',number(d.months),'月'],['国库积欠',number(s.nation.arrears),'万两'],
+    ['现银可付俸饷',number(d.months),'月'],['国库积欠',number(s.nation.arrears),'万两'],
     ['内帑积欠',number(s.nation.privyArrears),'万两'],['缺粮积欠',number(s.nation.grainArrears),'万石'],
     ['每月军粮',number(d.grain.military),'万石'],['每月赈济用粮',number(d.grain.relief),'万石'],
     ['粮储可供',number(d.grainMonths),'月'],['仓容',number(d.grain.storageCapacity),'万石'],
-    ['按现状季结收入',number(d.quarterIncome),'万两'],['季结补欠后净入库',sign(d.quarterNet),'万两'],
-    ['按现状月结 · 国库',sign(d.monthNet.treasury),'万两'],['按现状月结 · 内帑',sign(d.monthNet.privy),'万两'],
-    ['按现状月结 · 粮储',sign(d.monthNet.grain),'万石'],['按现状冗费与侵吞',number(d.waste.amount),'万两 / 月'],
+    ['预计季入',number(d.quarterIncome),'万两'],['季入扣欠后',sign(d.quarterNet),'万两'],
+    ['预计月变 · 国库',sign(d.monthNet.treasury),'万两'],['预计月变 · 内帑',sign(d.monthNet.privy),'万两'],
+    ['预计月变 · 粮储',sign(d.monthNet.grain),'万石'],['每月冗费与侵吞',number(d.waste.amount),'万两'],
   ]);
   const charts='<div class="nation-charts">'+[['nation.treasury','国库'],['nation.morale','民心'],['nation.governance','吏治'],['emperor.prestige','皇威']].map(([path,label])=>
     '<article><h4>'+label+'</h4>'+nationSparkline(nationSeries(s,path,span),label)+'</article>').join('')+'</div>';
@@ -69,10 +69,10 @@ export function nationOverviewHTML(s,span=12,expanded=false) {
   const wars=d.campaigns.length?table(['战区','对手','已战 / 旬','胜负差','敌兵 / 人'],d.campaigns.map(w=>[w.dir+'境',s.foreign.find(f=>f.id===w.country)?.name||'外邦',w.round||0,w.score||0,number(w.enemyTroops)])):'<p class="muted">目前没有战事。</p>';
   const palace=figures([['皇帝年龄',s.emperor.age,'岁'],...Object.entries(s.emperor.talents).map(([k,v])=>[k,number(v)]),
     ['在宫嫔妃',d.consorts,'人'],['在世皇嗣',d.children.length,'人'],['储君',s.harem.children.find(c=>c.id===s.harem.heir)?.name||'尚未册立']]);
-  return top+section('钱粮底账与用度',budget,'按当前条件测算，不含之后新发生的事件和行动。俸饷可付月数只按固定俸禄、军饷计算。')+
-    section('近旬走势',period+charts,'只绘已有的连续旬次记录，纵轴按本段最低、最高值显示。')+
-    section('钱粮来去',flowHTML(s,span,expanded),'近'+span+'旬及本旬已办事项，包含库间调拨；同一事项合并展示净变化。')+
-    section('各州民情',figures([['总人口',number(d.population),'万人'],['有灾州郡',d.disaster],['州郡总数',d.provinces.length]])+provinces,'月税额是各州原定税额，季结实收还受吏治、灾情、减赋和民变影响。')+
+  return top+section('钱粮与用度',budget,'依眼下情势估算；俸饷月数仅计官俸与军饷。')+
+    section('近旬走势',period+charts)+
+    section('钱粮来去',flowHTML(s,span,expanded),'近'+span+'旬，含本旬已办事项与两库拨转。')+
+    section('各州民情',figures([['总人口',number(d.population),'万人'],['有灾州郡',d.disaster],['州郡总数',d.provinces.length]])+provinces,'所列为原定税额，实收随地方情势而变。')+
     section('京营与四境',armies)+section('朝堂各派',factions)+section('外邦往来',foreign)+section('在途政务',projects)+section('当前战事',wars)+
     section('战役与议约',campaignsHTML(s)+s.foreign.filter(f=>f.treaty).map(f=>'<h4>'+esc(f.name)+'</h4>'+treatyHTML(s,f)).join(''))+
     section('圣躬与储位',palace);

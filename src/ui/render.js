@@ -15,6 +15,7 @@ import {
   HALLS,
   GLYPHS,
   actionAvailability,
+  actionCaption,
   actionMeta,
   energyView,
   metricGroups,
@@ -48,7 +49,7 @@ export function actionButton(kind, s = null) {
     '</span><span class="action-copy"><strong>' +
     esc(label) +
     "</strong><small>" +
-    esc(reason || actionMeta(kind, s)) +
+    esc(reason || actionCaption(kind, s)) +
     "</small></span></button>"
   );
 }
@@ -228,7 +229,7 @@ export function chapterNotes(h) {
   const diagnostic = new RegExp("^(?:(?:朝|午|夜|附文)(?:" +
     "中无结算或状态依据的金额/人数/年龄已删除|中没有对应结算的.*陈述已删除|" +
     "执行度由.*改为.*|段经核对后无可保留文字，以平实叙述补足)|" +
-    "亲密场景已收束为含蓄叙述。|未知人物反应未采用。)$");
+    "亲密场景已收束为含蓄叙述。|未知人物反应未采用。|情节结果有出入的句子已收束)$");
   return (h.notes || []).filter((n) => !diagnostic.test(n)).map(gameText);
 }
 export function chapterHTML(h, ambitions = [], sceneActive = false, sceneState = null) {
@@ -410,7 +411,7 @@ export function introHTML() {
   return (
     '<div class="intro"><div class="eyebrow">架空帝王 · 文字经营</div><h1>御 极</h1><p class="motto">一人之志，天下之重。</p><div class' +
     '="rule"></div><p>朱笔落下，是一人心事，亦是万民生计。</p><p>在朝堂与宫闱之间，写下你的本纪。</p><div class="start-actions"><button class="primar' +
-    'y" data-command="new">登基开局</button><button data-command="saves">续读旧卷</button></div><small>先试读一局，也可连接 API 体验更丰富的故事。</sm' +
+    'y" data-command="new">登基开局</button><button data-command="saves">续读旧卷</button></div><small>先试读一局，或在设置中开启你的故事。</sm' +
     'all><div class="onboarding">朝、午、夜，三时由你安排。<br>批好奏报，便可起驾；也可歇息一旬。</div></div>'
   );
 }

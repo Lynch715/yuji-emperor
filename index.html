@@ -173,6 +173,7 @@ background:var(--panel);
 color:var(--text-soft);
 cursor:pointer;
 font-size:var(--font-ui);
+overflow-wrap:anywhere;
 }
 @media (hover: hover){
 button:hover{
@@ -195,6 +196,11 @@ color:var(--text-strong);
 font-family:var(--serif);
 font-weight:600;
 letter-spacing:var(--tracking);
+}
+button.primary:disabled{
+background:var(--chip);
+border-color:var(--line-strong);
+color:var(--text-muted);
 }
 @media (hover: hover){
 button.primary:hover{
@@ -330,7 +336,8 @@ flex-direction:column;
 min-height:var(--s0);
 }
 .topbar{
-height:var(--top-height);
+min-height:var(--top-height);
+height:auto;
 flex:none;
 display:flex;
 align-items:center;
@@ -354,10 +361,9 @@ min-width:var(--s0);
 font-size:var(--font-document);
 color:var(--text-strong);
 font-weight:600;
-white-space:nowrap;
+white-space:normal;
 max-width:100%;
-overflow:hidden;
-text-overflow:ellipsis;
+overflow-wrap:anywhere;
 }
 .seal{
 width:var(--seal-size);
@@ -374,9 +380,8 @@ font:900 var(--font-ui) / 1.2 var(--serif);
 .date{
 font-size:var(--font-micro);
 color:var(--text-muted);
-white-space:nowrap;
-overflow:hidden;
-text-overflow:ellipsis;
+white-space:normal;
+overflow-wrap:anywhere;
 }
 .top-actions{
 display:flex;
@@ -428,7 +433,9 @@ display:block;
 display:flex;
 align-items:baseline;
 gap:var(--s1);
-white-space:nowrap;
+flex-wrap:wrap;
+font-variant-numeric:tabular-nums;
+overflow-wrap:anywhere;
 }
 .metric strong{
 font-family:var(--serif);
@@ -500,11 +507,12 @@ grid-template-columns:repeat(2, minmax(0, 1fr));
 gap:var(--s2);
 }
 .action-card{
-height:var(--action-height);
+min-height:var(--action-height);
+height:auto;
 display:flex;
 align-items:center;
 gap:var(--s2);
-padding:var(--s0) var(--s3);
+padding:var(--s3);
 background:var(--panel);
 border-color:var(--line);
 text-align:left;
@@ -526,6 +534,7 @@ display:flex;
 flex-direction:column;
 min-width:var(--s0);
 gap:var(--s1);
+overflow-wrap:anywhere;
 }
 .action-copy strong{
 font-size:var(--font-ui);
@@ -669,9 +678,13 @@ gap:var(--s5);
 position:relative;
 min-width:var(--s0);
 }
+.slot-wrap > .slot{
+height:100%;
+}
 .slot{
 width:100%;
-height:var(--slot-height);
+min-height:var(--slot-height);
+height:auto;
 display:flex;
 flex-direction:column;
 align-items:stretch;
@@ -681,7 +694,6 @@ text-align:left;
 background:var(--clear);
 border:var(--hairline) dashed var(--line-dashed);
 border-radius:var(--radius-card);
-overflow:hidden;
 }
 .filled .slot{
 background:var(--panel-active);
@@ -700,7 +712,8 @@ color:var(--gold);
 .slot strong{
 font:600 var(--font-value) / 1.5 var(--serif);
 color:var(--text-soft);
-white-space:nowrap;
+white-space:normal;
+overflow-wrap:anywhere;
 }
 .filled .slot strong{
 color:var(--text-strong);
@@ -708,9 +721,8 @@ color:var(--text-strong);
 .slot small{
 font-size:var(--font-small);
 color:var(--text-muted);
-text-overflow:ellipsis;
-overflow:hidden;
-white-space:nowrap;
+white-space:normal;
+overflow-wrap:anywhere;
 }
 .slot-clear{
 position:absolute;
@@ -1217,6 +1229,7 @@ font-size:var(--font-small);
 color:var(--ink-muted);
 }
 .card button,
+.province button,
 .paper button:not(.primary):not(.accountability){
 background:var(--paper-chip);
 border-color:var(--paper-line);
@@ -1227,9 +1240,21 @@ background:var(--paper-line);
 }
 .card dl{
 display:grid;
-grid-template-columns:repeat(4, minmax(0, 1fr));
-gap:var(--s2);
+grid-template-columns:auto minmax(0, 1fr);
+gap:var(--s2) var(--s5);
 font-size:var(--font-small);
+align-items:baseline;
+}
+.card dd{
+text-align:right;
+font-variant-numeric:tabular-nums;
+}
+.card > button{
+margin:var(--s1) var(--s1) var(--s0) var(--s0);
+}
+.card .row > h3{
+min-width:var(--s0);
+flex:1;
 }
 dt{
 color:var(--ink-muted);
@@ -1254,14 +1279,119 @@ background:var(--paper-chip);
 border-radius:50%;
 font:600 var(--font-value) / 1 var(--serif);
 color:var(--ink-muted);
+flex:none;
 }
 .map-grid{
 display:grid;
-grid-template-columns:repeat(4, minmax(0, 1fr));
+grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
 gap:var(--s5);
 }
 .province.disaster{
 border-color:var(--cinnabar-ink);
+}
+.province{
+display:flex;
+flex-direction:column;
+gap:var(--s5);
+}
+.province h3,
+.province p{
+margin:var(--s0);
+}
+.province-readings{
+display:grid;
+grid-template-columns:repeat(2, minmax(0, 1fr));
+gap:var(--s3) var(--s5);
+margin:var(--s0);
+font-size:var(--font-small);
+}
+.province-readings dt{
+font-size:var(--font-note);
+}
+.province-readings dd{
+font-variant-numeric:tabular-nums;
+font-size:var(--font-base);
+}
+.province-industries{
+border-top:var(--hairline) solid var(--paper-line);
+padding-top:var(--s3);
+font-size:var(--font-small);
+}
+.province-industries > span,
+.province-governor{
+color:var(--ink-muted);
+font-size:var(--font-note);
+}
+.province-industries ul{
+list-style:none;
+margin:var(--s1) var(--s0);
+padding:var(--s0);
+}
+.province-industries li span{
+color:var(--ink-muted);
+}
+.province-governor strong{
+font-weight:500;
+color:var(--ink);
+}
+.province > button{
+width:100%;
+margin-top:auto;
+}
+.development-plans{
+display:grid;
+grid-template-columns:repeat(2, minmax(0, 1fr));
+gap:var(--s7);
+margin-top:var(--s7);
+}
+.development-form{
+min-width:var(--s0);
+padding:var(--s7);
+border:var(--hairline) solid var(--line);
+border-radius:var(--radius-card);
+background:var(--panel);
+}
+.development-form h3{
+color:var(--gold);
+margin:var(--s0) var(--s0) var(--s5);
+}
+.development-form form{
+display:flex;
+flex-direction:column;
+height:calc(100% - var(--target));
+}
+.development-form .dialog-actions{
+margin-top:auto;
+padding-top:var(--s7);
+}
+.field-note{
+font-size:var(--font-small);
+white-space:pre-line;
+overflow-wrap:anywhere;
+}
+input[type="range"]{
+accent-color:var(--gold);
+padding:var(--s0);
+margin:var(--s0);
+}
+.tech-heading{
+display:flex;
+flex-wrap:wrap;
+align-items:baseline;
+justify-content:space-between;
+gap:var(--s2) var(--s3);
+}
+.tech-heading h3{
+margin:var(--s0);
+}
+.tech-status{
+font-size:var(--font-note);
+color:var(--cinnabar-ink);
+}
+.tech-line > summary{
+color:var(--gold);
+border-bottom:var(--hairline) solid var(--line);
+margin-bottom:var(--s5);
 }
 progress{
 width:100%;
@@ -1283,6 +1413,8 @@ flex:none;
 flex:1;
 display:grid;
 gap:var(--s5);
+min-width:var(--s0);
+overflow-wrap:anywhere;
 }
 summary{
 cursor:pointer;
@@ -1531,7 +1663,7 @@ color:var(--ink-muted);
 margin-top:var(--s9);
 }
 .brush-writing{
-overflow:hidden;
+min-width:var(--s0);
 border-bottom:var(--hairline) solid var(--paper-line);
 padding:var(--s2) var(--s0);
 }
@@ -1556,8 +1688,6 @@ border:var(--s0);
 border-radius:var(--s0);
 background:var(--clear);
 min-height:var(--slot-height);
-transform:rotate(var(--brush-angle));
-transform-origin:left center;
 padding:var(--s3);
 margin:var(--s0);
 resize:none;
@@ -2067,6 +2197,7 @@ flex-wrap:wrap;
 padding:var(--s1);
 }
 .topbar{
+min-height:var(--s0);
 padding:var(--s0) var(--s5);
 gap:var(--s3);
 }
@@ -2357,7 +2488,7 @@ line-height:var(--mobile-line);
 gap:var(--s5);
 }
 .map-grid{
-grid-template-columns:repeat(2, minmax(0, 1fr));
+grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
 }
 .card{
 padding:var(--s5);
@@ -2456,7 +2587,7 @@ font-size:var(--font-ui);
 gap:var(--s0);
 }
 .card dl{
-grid-template-columns:repeat(2, minmax(0, 1fr));
+grid-template-columns:auto minmax(0, 1fr);
 }
 }
 @media (prefers-reduced-motion: reduce){
@@ -2510,8 +2641,12 @@ color:var(--cinnabar-ink);
 .action-card{
 gap:var(--s1);
 }
+.action-card .glyph{
+width:var(--s11);
+height:var(--s11);
+}
 .action-copy small{
-white-space:nowrap;
+white-space:normal;
 }
 .slot-clear{
 top:auto;
@@ -2743,6 +2878,7 @@ align-items:flex-start;
 @media (max-width: 599px){
 .fields,
 .palace .grid,
+.development-plans,
 dialog:not(.drawer) > .grid{
 grid-template-columns:minmax(0, 1fr);
 }
@@ -3184,7 +3320,7 @@ n +
 .join("") +
 '</select></div></div><label class="check"><input id="demo-mode" type="checkbox" ' +
 (!config.key ? "checked" : "") +
-'>先试读一局（无需密钥）</label><p class="muted">想体验更丰富的故事，可在设置中连接 API。选择已有卷位时，会先封存旧存档。</p><p id="new-result" class="result hidden" role="status" aria-live="polite" tabindex="-1"></p><div class="dialog-actions"><button type="button" data-command="settings">设置接口</button><button type="submit" class="primary">承天践祚</button></div></form>',
+'>先试读一局（无需密钥）</label><p class="muted">试读无需密钥。已有卷位会先封存旧卷。</p><p id="new-result" class="result hidden" role="status" aria-live="polite" tabindex="-1"></p><div class="dialog-actions"><button type="button" data-command="settings">故事设置</button><button type="submit" class="primary">承天践祚</button></div></form>',
 );
 const goalsHTML = ["宏愿", "宏愿", "心事", "心事"]
 .map(
@@ -3427,7 +3563,7 @@ if(state.pending&&(state.pending.kind!=='scene'||state.pending.forecast.sceneId!
 const h=state.history.at(-1),pending=state.pending?.forecast;
 openDialog('自拟情节 · 接着写','<div id="scene-owner"><p class="muted">'+esc([r.slot+'间',r.people.map(p=>p.name).join('、')||'独处',r.place].filter(Boolean).join(' · '))+'</p><div class="scene-recap">'+
 [h.chapter[r.slot],...r.steps.slice(-3).map(t=>t.prose)].map(p=>'<p>'+esc(p).replace(/\n+/g,'</p><p>')+'</p>').join('')+
-'</div><p class="muted">'+esc(sceneOutcomeText(pending?.outcome||r.steps.at(-1)?.outcome||r.outcome))+'</p><form id="scene-form"><label for="scene-follow">接下来想发生什么（选填）</label><textarea id="scene-follow" maxlength="8000" rows="4" '+(pending?'readonly':'')+' placeholder="留空会接着描写；也可以写下新的想法。">'+esc(pending?.request||'')+'</textarea><p class="muted">继续描写不再占时段或耗精力。新的尝试按当前自由度判断，已经发生的事不会重办。</p><div class="dialog-actions"><button type="submit" class="primary">'+(pending?'重试续写':'接着写')+'</button></div><p id="scene-status" role="status"></p></form></div>','action-shell');
+'</div><p class="muted">'+esc(sceneOutcomeText(pending?.outcome||r.steps.at(-1)?.outcome||r.outcome))+'</p><form id="scene-form"><label for="scene-follow">接下来想发生什么（选填）</label><textarea id="scene-follow" maxlength="8000" rows="4" '+(pending?'readonly':'')+' placeholder="留空会接着描写；也可以写下新的想法。">'+esc(pending?.request||'')+'</textarea><p class="muted">续写不另耗精力。写下新的心意，让这段故事继续。</p><div class="dialog-actions"><button type="submit" class="primary">'+(pending?'重试续写':'接着写')+'</button></div><p id="scene-status" role="status"></p></form></div>','action-shell');
 $('#modal').classList.add('scene-dialog');
 if($('#action-document'))$('#action-document').innerHTML='<h3>'+esc(r.place||'自拟情节')+'</h3><p>'+esc(r.people.map(p=>p.name).join('、')||'独处')+'</p><p>'+esc(r.text)+'</p>';
 const dialog=$('#modal'),owner=$('#scene-owner'),scope=createDialogRequestScope(dialog,owner),form=$('#scene-form');
@@ -3680,7 +3816,7 @@ if (state) {
 $("#modal").insertAdjacentHTML(
 "beforeend",
 '<p class="muted" id="story-mode">' +
-(state.settings.demo ? '正在试读。连接 API 后，可续写更丰富的故事。' : '已连接 API，故事随你的选择继续。') +
+(state.settings.demo ? '正在试读。填写连接设置，即可随心续写。' : '故事随你的选择继续。') +
 '</p><div class="dialog-actions"><button id="mode-toggle">' +
 (state.settings.demo ? "保存并用于正文" : "切换为试读") +
 "</button></div>",
@@ -4062,27 +4198,27 @@ const lead=researchLead(s,s.tech.lead)?.id||defaultResearchLead(s,techById(selec
 return '<label for="research-id">研究方向</label><select id="research-id">'+options(TECHS.map(t=>[t.id,t.name+(s.tech.done.includes(t.id)?' · 已研成':researchBlock(s,t.id)?' · '+researchBlock(s,t.id):''),!!researchBlock(s,t.id)||!!current&&current.id!==t.id]),selected)+'</select>'+
 '<label for="research-lead">主持官员</label><select id="research-lead">'+options(s.court.officials.filter(o=>researchLead(s,o.id)).map(o=>[o.id,o.name+' · 政务 '+o.abilities.政]),lead)+'</select>'+
 '<label for="research-funding">每月经费（万两）</label><input id="research-funding" type="range" min="0" max="'+RESEARCH_CAP+'" step="0.5" value="'+s.tech.funding+'"><output id="research-funding-value" for="research-funding">'+n(s.tech.funding)+' 万两／月</output>'+
-'<p class="muted">月结按国库余银拨付，上限20万两；调为0可暂停拨款，已研进度保留。更换主持不重置进度。</p>';
+'<p class="muted field-note">每月最多拨银20万两。停拨或换人，研习所得仍在。</p>';
 }
 function industryFields(s,province=null){
 const selected=Object.entries(INDUSTRIES).find(([,r])=>s.tech.done.includes(r.tech))?.[0]||'farm';
 return '<label for="industry-province">主办州郡</label><select id="industry-province">'+options(s.nation.provinces.map(p=>[p.id,p.name+' · 繁荣 '+n(p.prosperity)]),province||s.nation.provinces[0].id)+'</select>'+
-'<label for="industry-type">产业</label><select id="industry-type">'+options(Object.entries(INDUSTRIES).map(([id,r])=>[id,r.name+(!s.tech.done.includes(r.tech)?' · 须研成'+techById(r.tech).name:''),!s.tech.done.includes(r.tech)]),selected)+'</select><p id="industry-quote" class="muted">每州三个产业槽，同类可升至三级。营建在月结推进，建成后按季产出并支付维护费。</p>';
+'<label for="industry-type">产业</label><select id="industry-type">'+options(Object.entries(INDUSTRIES).map(([id,r])=>[id,r.name+(!s.tech.done.includes(r.tech)?' · 须研成'+techById(r.tech).name:''),!s.tech.done.includes(r.tech)]),selected)+'</select><p id="industry-quote" class="muted field-note">每州可兴办三类产业，各可扩建至三级。</p>';
 }
 function industryForm(s,province=null){return '<form id="industry-plan">'+industryFields(s,province)+slotField(s,'industry-slot')+planButton(s,'安排兴业旨意',Object.values(INDUSTRIES).some(r=>s.tech.done.includes(r.tech)))+'</form>';}
 function technologyHTML(s){
-const c=s.tech.current,q=researchQuote(s),title=c?(c.name||q.tech.name):'尚未立项';
-const status='<section class="card"><h3>'+esc(title)+'</h3>'+(c?'<progress aria-label="研究进度" max="'+q.tech.cost+'" value="'+c.progress+'"></progress><p>进度 '+n(c.progress)+'／'+q.tech.cost+' · 已研 '+c.elapsed+' 月／至少 '+q.tech.months+' 月</p>':'<p>委派官员并设经费，研成技艺后即可兴办产业。</p>')+
-'<p>主持：'+esc(q.lead?.name||'尚未委派或原主持已离任')+' · 月经费 '+n(s.tech.funding)+' 万两</p>'+(c?'<p class="muted">按当前条件，月拨 '+n(q.paid)+' 万两，约进 '+n(q.progress)+'；'+(q.opposed?'清议不满，研习受阻。':'主持能力与吏治影响进度。')+'</p>':'')+'</section>';
-const tree=TECH_LINES.map(line=>'<details class="section-spacer" open><summary>'+line+'</summary><div class="grid">'+TECHS.filter(t=>t.line===line).map(t=>{
+const c=s.tech.current,q=researchQuote(s),title=c?(c.name||q.tech.name):'格物待兴';
+const status='<section class="card research-status"><span class="eyebrow">格物近况</span><h3>'+esc(title)+'</h3>'+(c?'<progress aria-label="研究进度" max="'+q.tech.cost+'" value="'+c.progress+'"></progress><p>研习 '+n(c.progress)+'／'+q.tech.cost+' · 已历 '+c.elapsed+' 月，至少需 '+q.tech.months+' 月</p>':'<p>择一门技艺，延请能臣，开物成务。</p>')+
+'<p>主持 '+esc(q.lead?.name||'待委派')+' · 每月 '+n(s.tech.funding)+' 万两</p>'+(c?'<p class="muted">预计下月拨银 '+n(q.paid)+' 万两，研习进展 '+n(q.progress)+'。'+(q.opposed?'清议阻挠，进展稍缓。':'')+'</p>':'')+'</section>';
+const tree=TECH_LINES.map(line=>'<details class="tech-line section-spacer" open><summary>'+line+'</summary><div class="grid">'+TECHS.filter(t=>t.line===line).map(t=>{
 const done=s.tech.done.includes(t.id),reason=researchBlock(s,t.id);
-return '<article class="card"><h3>'+esc(t.name)+' · '+(done?'已研成':c?.id===t.id?'在研':reason?'待解锁':'可研习')+'</h3><p>基准经费 '+t.cost+' 万两 · 至少 '+t.months+' 月</p><p class="muted">'+esc(t.prereq.length?'前置：'+t.prereq.map(id=>techById(id).name).join('、'):'本线起点')+(t.openSea?' · 须先开海':'')+'</p><p>'+esc([techBenefit(t),...(t.unlocks.length?['解锁：'+t.unlocks.map(id=>INDUSTRIES[id].name).join('、')]:[])].join('；'))+'</p></article>';
+return '<article class="card tech-card"><div class="tech-heading"><h3>'+esc(t.name)+'</h3><span class="tech-status">'+(done?'已研成':c?.id===t.id?'研习中':reason?'尚待条件':'可研习')+'</span></div><p>所需研习 '+t.cost+' · 至少 '+t.months+' 月</p>'+(t.prereq.length||t.openSea?'<p class="muted">'+esc(t.prereq.length?'须先研成'+t.prereq.map(id=>techById(id).name).join('、'):'')+(t.openSea?(t.prereq.length?'，':'')+'须先开海':'')+'</p>':'')+'<p>'+esc([techBenefit(t),...(t.unlocks.length?['可兴办'+t.unlocks.map(id=>INDUSTRIES[id].name).join('、')]:[])].filter(Boolean).join('；'))+'</p></article>';
 }).join('')+'</div></details>').join('');
-return status+'<h3 class="section-spacer">格物经费与主持</h3><form id="research-plan">'+researchFields(s)+slotField(s,'research-slot')+planButton(s,'安排格物旨意',!!s.tech.current||TECHS.some(t=>!researchBlock(s,t.id)))+'</form><h3 class="section-spacer">兴业营建</h3>'+industryForm(s)+tree;
+return status+'<div class="development-plans"><section class="development-form"><h3>格物研习</h3><form id="research-plan">'+researchFields(s)+slotField(s,'research-slot')+planButton(s,'安排格物旨意',!!s.tech.current||TECHS.some(t=>!researchBlock(s,t.id)))+'</form></section><section class="development-form"><h3>兴业营建</h3>'+industryForm(s)+'</section></div>'+tree;
 }
 function techBenefit(t){
 const labels={grain:'粮产',cropProtection:'灾年粮产减损',riverDiscount:'修河节费',disasterProtection:'灾情减缓',prosperity:'每季繁荣',governance:'吏治',readiness:'战备',trade:'互市收入',production:'产业产出'};
-return Object.entries(t.effects).map(([key,v])=>labels[key]+(v>0?' +':' ')+(key==='prosperity'||key==='governance'||key==='readiness'?n(v):n(v*100)+'%')).join('；')||'完善本线基础技艺';
+return Object.entries(t.effects).map(([key,v])=>labels[key]+(v>0?' +':' ')+(key==='prosperity'||key==='governance'||key==='readiness'?n(v):n(v*100)+'%')).join('；');
 }
 function developmentAction(root,kind){
 const value=id=>root.querySelector('#'+id)?.value;
@@ -4092,8 +4228,12 @@ function updateDevelopmentPreview(root,s){
 const funding=root.querySelector('#research-funding'),out=root.querySelector('#research-funding-value');
 if(funding&&out)out.textContent=n(funding.value)+' 万两／月';
 const quote=root.querySelector('#industry-quote');
-if(quote){const type=root.querySelector('#industry-type').value,province=root.querySelector('#industry-province').value,q=industryQuote(s,province,type),r=INDUSTRIES[type];const yields=[r.grain?'粮 '+n(r.grain*q.level)+' 万石':'',r.tax?'税入基数 '+n(r.tax*q.level)+' 万两':'',r.cash?'收入基数 '+n(r.cash*q.level)+' 万两':'',r.trade?'互市增益 '+n(r.trade*q.level*100)+'%':'',r.grainTransport?'粮运增益 '+n(r.grainTransport*q.level*100)+'%':''].filter(Boolean).join('、');
-quote.textContent=q.blocked||r.name+' '+q.level+'级：需银 '+q.cost+' 万两，工期 '+q.months+' 月；每季维护 '+n(r.maintenance*q.level)+' 万两。季产：'+yields+'；繁荣基数 +'+n(r.prosperity*q.level)+'，实际受灾情、民心和吏治影响。'+(r.morale?'营建民心 '+r.morale+'。':'')+(r.governance?'盐课稽查承压。':'')+(r.threat?'海防边患增加。':'');}
+if(quote){
+const type=root.querySelector('#industry-type').value,province=root.querySelector('#industry-province').value;
+const q=industryQuote(s,province,type),r=INDUSTRIES[type];
+const yields=[r.grain?'粮 '+n(r.grain*q.level)+' 万石':'',r.tax?'税银 '+n(r.tax*q.level)+' 万两':'',r.cash?'收入 '+n(r.cash*q.level)+' 万两':'',r.trade?'互市 +'+n(r.trade*q.level*100)+'%':'',r.grainTransport?'粮运 +'+n(r.grainTransport*q.level*100)+'%':''].filter(Boolean).join('、');
+quote.textContent=q.blocked==='本州三个产业槽已满'?'本州已兴办三类产业，可扩建已有产业。':q.blocked||r.name+' '+q.level+'级 · 银 '+q.cost+' 万两 · 工期 '+q.months+' 月\n每季养护 '+n(r.maintenance*q.level)+' 万两\n参考季产：'+yields+'；繁荣 +'+n(r.prosperity*q.level)+'。收成随地方情势而变。'+(r.morale?'营建时民心 '+r.morale+'。':'')+(r.governance?'盐课稽查承压。':'')+(r.threat?'海防边患增加。':'');
+}
 }
 
 return {researchFields,industryFields,industryForm,technologyHTML,developmentAction,updateDevelopmentPreview};
@@ -5808,7 +5948,15 @@ const { initMobileViewport } = __load("src/ui/mobile.js");
 const $ = (selector) => document.querySelector(selector);
 // Display labels only; saves stay intact.
 function gameText(text) {
-return String(text ?? "")
+const value = String(text ?? "");
+const status = Number(value.match(/^HTTP (\d+)/)?.[1]);
+if (status) return ({401:'密钥未通过验证，请在设置中检查。',402:'服务账户余额不足，请先补充余额。',
+403:'连接未获许可，请检查账户与地域。',404:'未找到所选服务，请检查连接设置。',
+429:'来信太密，请稍后再试。'})[status] || '暂未收到回音，请稍后再试。';
+if (/^(?:EMPTY|TRUNCATED|STREAM_INVALID|STREAM_ERROR|STREAM_CUT|TOO_LARGE)$/.test(value))
+return '故事未能完整送达，请重试。';
+if (/^(?:Failed to fetch|Load failed|NetworkError)/.test(value)) return '连接未通，请检查网络后再试。';
+return value
 .replace(/^本旬引擎结算：人物、政务与岁时变化$/, "本旬变化")
 .replace(/^模型人物反应建议：引擎限额采纳$/, "人物态度变化")
 .replace(/^引擎结算$/, "本旬变化")
@@ -10930,7 +11078,14 @@ return defaults;
 function cacheSummary(metrics) {
 const input = metrics.reduce((t, m) => t + (m.inputTokens || 0), 0),
 cached = metrics.reduce((t, m) => t + (m.cachedTokens || 0), 0);
-return input ? "缓存命中 " + Math.round((cached / input) * 100) + "%（" + cached + " / " + input + " 输入 tokens）。" : "";
+return input ? "重复输入占 " + Math.round((cached / input) * 100) + "%（" + cached + "／" + input + "）。" : "";
+}
+function requestMetricHTML(m) {
+const result = ({ok:'成功',cancelled:'已取消',timeout:'超时',failed:'未完成'})[m.result] || '未完成';
+return '<p>' + esc(new Date(m.at).toLocaleTimeString('zh-CN')) + ' · ' + result +
+' · ' + (Number(m.durationMs || 0) / 1000).toLocaleString('zh-CN', {maximumFractionDigits:1}) +
+' 秒<br><span class="muted">用量：输入 ' + Number(m.inputTokens || 0) +
+' · 输出 ' + Number(m.outputTokens || 0) + '</span></p>';
 }
 function openSettings(config, metrics, onSave, recordMetric = null) {
 openDialog(
@@ -10962,25 +11117,10 @@ esc(config.key) +
 (config.remember ? "checked" : "") +
 '>在本机记住密钥</label><p class="muted">只在这台设备保存密钥，取消勾选即可清除。</p><div class="dialog-actions"><button type="button" id="probe">测试连接</button><button class="primary" type="submit">保存设置</button></div></form><div id="probe-result" class="result hidden" role="status" aria-live="polite"></div><details><summary>请求统计 · <span id="request-count">' +
 metrics.length +
-'</span> 次</summary><p class="muted">只留用量记录，不保存密钥和正文。' + cacheSummary(metrics) + '</p><div id="metric-list">' +
+'</span> 次</summary><p class="muted">只记用量，不留密钥与正文。' + cacheSummary(metrics) + '</p><div id="metric-list">' +
 metrics
 .slice(-10)
-.map(
-(m) =>
-"<p>" +
-new Date(m.at).toLocaleTimeString("zh-CN") +
-" · " +
-esc(m.result) +
-" · " +
-m.durationMs +
-"ms · " +
-m.inputTokens +
-"/" +
-m.outputTokens +
-" tokens" +
-(m.cachedTokens ? " · 缓存 " + m.cachedTokens : "") +
-"</p>",
-)
+.map(requestMetricHTML)
 .join("") +
 "</div></details>",
 );
@@ -11056,7 +11196,7 @@ const dialog=$("#modal"),form=$("#settings-form"),scope=createDialogRequestScope
 const metricList=$("#metric-list"),metricCount=$("#request-count");
 const renderMetrics=()=>{
 metricCount.textContent=String(metrics.length);
-metricList.innerHTML=metrics.slice(-10).map(m=>'<p>'+esc(new Date(m.at).toLocaleTimeString('zh-CN'))+' · '+esc(({ok:'成功',cancelled:'已取消',timeout:'超时',failed:'未完成'})[m.result]||m.result)+' · HTTP '+Number(m.httpStatus||0)+' · '+Number(m.durationMs||0)+'ms · 输入 '+Number(m.inputTokens||0)+' / 输出 '+Number(m.outputTokens||0)+'</p>').join('');
+metricList.innerHTML=metrics.slice(-10).map(requestMetricHTML).join('');
 };
 renderMetrics();
 $("#probe").onclick = async () => {
@@ -11099,7 +11239,7 @@ scope.finish(request);
 return { save };
 }
 
-return {loadSettings,cacheSummary,openSettings};
+return {loadSettings,cacheSummary,requestMetricHTML,openSettings};
 },
 "src/ui/request-scope.js":function(__load){
 // A native dialog's queued close event may belong to the window it previously held.
@@ -12842,6 +12982,7 @@ ACTION_GROUPS,
 HALLS,
 GLYPHS,
 actionAvailability,
+actionCaption,
 actionMeta,
 energyView,
 metricGroups,
@@ -12875,7 +13016,7 @@ GLYPHS[kind] +
 '</span><span class="action-copy"><strong>' +
 esc(label) +
 "</strong><small>" +
-esc(reason || actionMeta(kind, s)) +
+esc(reason || actionCaption(kind, s)) +
 "</small></span></button>"
 );
 }
@@ -13055,7 +13196,7 @@ function chapterNotes(h) {
 const diagnostic = new RegExp("^(?:(?:朝|午|夜|附文)(?:" +
 "中无结算或状态依据的金额/人数/年龄已删除|中没有对应结算的.*陈述已删除|" +
 "执行度由.*改为.*|段经核对后无可保留文字，以平实叙述补足)|" +
-"亲密场景已收束为含蓄叙述。|未知人物反应未采用。)$");
+"亲密场景已收束为含蓄叙述。|未知人物反应未采用。|情节结果有出入的句子已收束)$");
 return (h.notes || []).filter((n) => !diagnostic.test(n)).map(gameText);
 }
 function chapterHTML(h, ambitions = [], sceneActive = false, sceneState = null) {
@@ -13237,7 +13378,7 @@ function introHTML() {
 return (
 '<div class="intro"><div class="eyebrow">架空帝王 · 文字经营</div><h1>御 极</h1><p class="motto">一人之志，天下之重。</p><div class' +
 '="rule"></div><p>朱笔落下，是一人心事，亦是万民生计。</p><p>在朝堂与宫闱之间，写下你的本纪。</p><div class="start-actions"><button class="primar' +
-'y" data-command="new">登基开局</button><button data-command="saves">续读旧卷</button></div><small>先试读一局，也可连接 API 体验更丰富的故事。</sm' +
+'y" data-command="new">登基开局</button><button data-command="saves">续读旧卷</button></div><small>先试读一局，或在设置中开启你的故事。</sm' +
 'all><div class="onboarding">朝、午、夜，三时由你安排。<br>批好奏报，便可起驾；也可歇息一旬。</div></div>'
 );
 }
@@ -13477,7 +13618,7 @@ const {memoryButton,socialChangesHTML} = __load("src/ui/memories.js");
 const {esc} = __load("src/ui/common.js");
 const {scenePeople,sceneOutcomeText} = __load("src/core/scenes.js");
 function sceneActionFields(s,old={}){
-return '<fieldset class="scene-people"><legend>一起经历的人（可多选，不选则独处）</legend><div class="scene-people-list">'+scenePeople(s).map(p=>'<label class="check"><input type="checkbox" name="scene-person" value="'+esc(p.id)+'" '+(old.people?.includes(p.id)?'checked':'')+'>'+esc(p.name)+'</label>').join('')+'</div></fieldset><label for="scene-place">地点（选填）</label><input id="scene-place" maxlength="120" value="'+esc(old.place||'')+'" placeholder="如：御花园、书房、城外驿站"><label for="scene-text">想发生怎样的故事</label><textarea id="scene-text" required maxlength="8000" rows="6" placeholder="如：陪她在御花园散步，聊聊近日心事，希望她说出自己的顾虑。">'+esc(old.text||'')+'</textarea><p class="muted">每场耗精力1。人物会记得共同经历，亲疏随相处变化；成败按当前自由度判断。起驾后展开故事，还可接着写。</p>';
+return '<fieldset class="scene-people"><legend>同行之人（可多选，留空独处）</legend><div class="scene-people-list">'+scenePeople(s).map(p=>'<label class="check"><input type="checkbox" name="scene-person" value="'+esc(p.id)+'" '+(old.people?.includes(p.id)?'checked':'')+'>'+esc(p.name)+'</label>').join('')+'</div></fieldset><label for="scene-place">地点（选填）</label><input id="scene-place" maxlength="120" value="'+esc(old.place||'')+'" placeholder="如：御花园、书房、城外驿站"><label for="scene-text">想发生怎样的故事</label><textarea id="scene-text" required maxlength="8000" rows="6" placeholder="如：陪她在御花园散步，聊聊近日心事，希望她说出自己的顾虑。">'+esc(old.text||'')+'</textarea><p class="muted">耗精力1。共同经历会留在彼此记忆里；起驾后可读，也可续写。</p>';
 }
 function sceneChapterHTML(h,slot,active=false,state=null){
 return (h.scenes||[]).filter(r=>r.slot===slot).map(r=>'<section class="scene-story"><p class="muted">'+esc([r.people.map(p=>p.name).join('、')||'独处',r.place,sceneOutcomeText(r.outcome)].filter(Boolean).join(' · '))+'</p>'+(state?socialChangesHTML(state,r.socialChanges||[]):'')+'<div class="scene-memory-links">'+r.people.map(p=>memoryButton(p.id,p.name)).join('')+'</div><details><summary>原定情节</summary><p>'+esc(r.text)+'</p></details>'+r.steps.map(t=>'<div class="scene-continuation">'+(state?socialChangesHTML(state,t.socialChanges||[]):'')+'<p class="scene-request">接着写：'+esc(t.request)+'</p><p>'+esc(t.prose).replace(/\n+/g,'</p><p>')+'</p></div>').join('')+(active?'<button class="scene-continue" data-scene="'+esc(r.id)+'">接着写</button>':'')+'</section>').join('');
@@ -13574,6 +13715,15 @@ if (kind === "召见") return time+" · 每人精力1，续谈不加耗";
 if (kind === "批折") return time + " · 每3本1 · 独断，不经廷议";
 return time + " · " + (rule.full ? rule.energy+"点" : "精力 " + rule.energy);
 }
+function actionCaption(kind, s = null) {
+const rule = ACTIONS[kind];
+if (!rule) return "";
+const time = rule.full ? "整旬" : rule.slots.length === 3 ? "任意" : rule.slots.join("、");
+if (kind === "上朝") return "廷议 · 耗" + rule.energy;
+if (kind === "批折") return "独断·3本耗1";
+if (kind === "召见") return "午 · 耗1／人";
+return time + " · 耗" + rule.energy;
+}
 function energyView(s) {
 const limit = s ? energyLimit(s) : 9, used = s ? scheduleCost(s.schedule) : 0;
 return {limit,used,remaining:Math.max(0,limit-used),excess:Math.max(0,used-limit)};
@@ -13667,7 +13817,7 @@ if (s.memorials.some((m) => m.urgent)) return "急报呈至";
 return "";
 }
 
-return {ACTION_GROUPS,HALLS,GLYPHS,selectionDescription,actionAvailability,actionMeta,energyView,metricGroups,scheduleEstimate,REPEATABLE,repeatSchedule,delegateSchedule,DELEGATE_STOPS,delegateStop};
+return {ACTION_GROUPS,HALLS,GLYPHS,selectionDescription,actionAvailability,actionMeta,actionCaption,energyView,metricGroups,scheduleEstimate,REPEATABLE,repeatSchedule,delegateSchedule,DELEGATE_STOPS,delegateStop};
 },
 "src/ui/memorials.js":function(__load){
 const {developmentChoiceBlock} = __load("src/core/development-choices.js");
@@ -14634,7 +14784,7 @@ let fields = "";
 if(kind==='自拟情节')fields=sceneActionFields(s,s.schedule[preferred]?.kind===kind?s.schedule[preferred]:{});
 if (kind === "下旨")
 fields =
-'<label for="edict-type">旨意模板</label><select id="edict-type">' +
+'<label for="edict-type">旨意事项</label><select id="edict-type">' +
 Object.keys(EDICTS)
 .map((x) => "<option>" + x + "</option>")
 .join("") +
@@ -14937,6 +15087,20 @@ const { annualBudget, wasteQuote,grainBudget } = __load("src/core/finance.js");
 const { esc, openDialog } = __load("src/ui/common.js");
 const { num, ledgerHTML, chapterHTML, chapterTitle, ambitionsHTML } = __load("src/ui/render.js");
 const { campaignsHTML, treatyHTML } = __load("src/ui/campaigns.js");
+function provinceCardHTML(z, governor) {
+const readings = [['民心', num(z.morale)], ['灾情', num(z.disaster)],
+['人口', num(z.pop) + ' 万'], ['驻军', num(z.garrison)], ['繁荣', num(z.prosperity || 0)]];
+const industries = (z.industries || []).map(i =>
+'<li>' + esc(INDUSTRIES[i.type].name) + ' <span>' + i.level + '级' +
+(i.paused ? ' · 停产：' + esc(i.paused) : '') + '</span></li>').join('');
+return '<article class="province' + (z.disaster > 20 ? ' disaster' : '') + '"><h3>' + esc(z.name) +
+'</h3><dl class="province-readings">' + readings.map(([k,v]) =>
+'<div><dt>' + k + '</dt><dd>' + v + '</dd></div>').join('') + '</dl>' +
+'<div class="province-industries"><span>地方产业</span>' +
+(industries ? '<ul>' + industries + '</ul>' : '<p>尚未兴办</p>') + '</div>' +
+'<p class="province-governor">巡抚 <strong>' + esc(governor) + '</strong></p>' +
+'<button data-industry-province="' + esc(z.id) + '">兴办产业</button></article>';
+}
 function palacePanel(s, name) {
 if (!s) {
 openDialog(name, "<p>请先登基，方可进入殿阁。</p>");
@@ -15108,26 +15272,7 @@ if (name === "天下")
 html =
 '<h3>十二州郡</h3><div class="map-grid">' +
 s.nation.provinces
-.map(
-(z) =>
-'<div class="province ' +
-(z.disaster > 20 ? "disaster" : "") +
-'"><h3>' +
-esc(z.name) +
-"</h3><small>民心 " +
-num(z.morale) +
-" · 灾情 " +
-num(z.disaster) +
-"<br>人口 " +
-num(z.pop) +
-" 万 · 驻军 " +
-num(z.garrison) +
-'<br>繁荣 '+num(z.prosperity||0)+'<br>产业 '+
-esc((z.industries||[]).map(i=>INDUSTRIES[i.type].name+' '+i.level+'级'+(i.paused?'（'+i.paused+'）':'')).join('、')||'暂无')+
-'<br><button data-industry-province="'+z.id+'">兴办产业</button>'+"<br>巡抚 " +
-esc(official(z.governor)) +
-"</small></div>",
-)
+.map(z => provinceCardHTML(z, official(z.governor)))
 .join("") +
 '</div><h3>京营</h3><div class="card"><p>兵力 '+num(s.nation.army.capital.troops)+' · 军备 '+num(s.nation.army.capital.readiness)+'</p></div><h3>四境军情</h3><div class="grid">' +
 s.nation.army.frontiers
@@ -15360,7 +15505,7 @@ cards.slice(6).join("") +
 );
 }
 
-return {palacePanel,fold};
+return {provinceCardHTML,palacePanel,fold};
 },
 "src/ui/campaigns.js":function(__load){
 const { esc } = __load("src/ui/common.js");
@@ -15883,13 +16028,13 @@ esc((FREEDOM_RULES[s.settings.freedom]||FREEDOM_RULES.mid).label)+' · 施政：
 '<div class="nation-alerts">'+(d.alerts.length?d.alerts.map(a=>'<span>'+esc(a)+'</span>').join(''):'<span class="nation-calm">暂无紧急钱粮与边务警报</span>')+'</div>';
 const budget=figures([
 ['格物月经费',number(s.tech?.current?s.tech.funding:0),'万两'],['每月俸禄',number(d.monthly.salaries),'万两'],['每月军饷',number(d.monthly.armyPay),'万两'],
-['现银可付固定俸饷',number(d.months),'月'],['国库积欠',number(s.nation.arrears),'万两'],
+['现银可付俸饷',number(d.months),'月'],['国库积欠',number(s.nation.arrears),'万两'],
 ['内帑积欠',number(s.nation.privyArrears),'万两'],['缺粮积欠',number(s.nation.grainArrears),'万石'],
 ['每月军粮',number(d.grain.military),'万石'],['每月赈济用粮',number(d.grain.relief),'万石'],
 ['粮储可供',number(d.grainMonths),'月'],['仓容',number(d.grain.storageCapacity),'万石'],
-['按现状季结收入',number(d.quarterIncome),'万两'],['季结补欠后净入库',sign(d.quarterNet),'万两'],
-['按现状月结 · 国库',sign(d.monthNet.treasury),'万两'],['按现状月结 · 内帑',sign(d.monthNet.privy),'万两'],
-['按现状月结 · 粮储',sign(d.monthNet.grain),'万石'],['按现状冗费与侵吞',number(d.waste.amount),'万两 / 月'],
+['预计季入',number(d.quarterIncome),'万两'],['季入扣欠后',sign(d.quarterNet),'万两'],
+['预计月变 · 国库',sign(d.monthNet.treasury),'万两'],['预计月变 · 内帑',sign(d.monthNet.privy),'万两'],
+['预计月变 · 粮储',sign(d.monthNet.grain),'万石'],['每月冗费与侵吞',number(d.waste.amount),'万两'],
 ]);
 const charts='<div class="nation-charts">'+[['nation.treasury','国库'],['nation.morale','民心'],['nation.governance','吏治'],['emperor.prestige','皇威']].map(([path,label])=>
 '<article><h4>'+label+'</h4>'+nationSparkline(nationSeries(s,path,span),label)+'</article>').join('')+'</div>';
@@ -15905,10 +16050,10 @@ const projects=d.projects.length?table(['政务','主办','进度','尚余 / 旬
 const wars=d.campaigns.length?table(['战区','对手','已战 / 旬','胜负差','敌兵 / 人'],d.campaigns.map(w=>[w.dir+'境',s.foreign.find(f=>f.id===w.country)?.name||'外邦',w.round||0,w.score||0,number(w.enemyTroops)])):'<p class="muted">目前没有战事。</p>';
 const palace=figures([['皇帝年龄',s.emperor.age,'岁'],...Object.entries(s.emperor.talents).map(([k,v])=>[k,number(v)]),
 ['在宫嫔妃',d.consorts,'人'],['在世皇嗣',d.children.length,'人'],['储君',s.harem.children.find(c=>c.id===s.harem.heir)?.name||'尚未册立']]);
-return top+section('钱粮底账与用度',budget,'按当前条件测算，不含之后新发生的事件和行动。俸饷可付月数只按固定俸禄、军饷计算。')+
-section('近旬走势',period+charts,'只绘已有的连续旬次记录，纵轴按本段最低、最高值显示。')+
-section('钱粮来去',flowHTML(s,span,expanded),'近'+span+'旬及本旬已办事项，包含库间调拨；同一事项合并展示净变化。')+
-section('各州民情',figures([['总人口',number(d.population),'万人'],['有灾州郡',d.disaster],['州郡总数',d.provinces.length]])+provinces,'月税额是各州原定税额，季结实收还受吏治、灾情、减赋和民变影响。')+
+return top+section('钱粮与用度',budget,'依眼下情势估算；俸饷月数仅计官俸与军饷。')+
+section('近旬走势',period+charts)+
+section('钱粮来去',flowHTML(s,span,expanded),'近'+span+'旬，含本旬已办事项与两库拨转。')+
+section('各州民情',figures([['总人口',number(d.population),'万人'],['有灾州郡',d.disaster],['州郡总数',d.provinces.length]])+provinces,'所列为原定税额，实收随地方情势而变。')+
 section('京营与四境',armies)+section('朝堂各派',factions)+section('外邦往来',foreign)+section('在途政务',projects)+section('当前战事',wars)+
 section('战役与议约',campaignsHTML(s)+s.foreign.filter(f=>f.treaty).map(f=>'<h4>'+esc(f.name)+'</h4>'+treatyHTML(s,f)).join(''))+
 section('圣躬与储位',palace);

@@ -2,7 +2,15 @@ import { initMobileViewport } from "./mobile.js";
 export const $ = (selector) => document.querySelector(selector);
 // Display labels only; saves stay intact.
 export function gameText(text) {
-  return String(text ?? "")
+  const value = String(text ?? "");
+  const status = Number(value.match(/^HTTP (\d+)/)?.[1]);
+  if (status) return ({401:'密钥未通过验证，请在设置中检查。',402:'服务账户余额不足，请先补充余额。',
+    403:'连接未获许可，请检查账户与地域。',404:'未找到所选服务，请检查连接设置。',
+    429:'来信太密，请稍后再试。'})[status] || '暂未收到回音，请稍后再试。';
+  if (/^(?:EMPTY|TRUNCATED|STREAM_INVALID|STREAM_ERROR|STREAM_CUT|TOO_LARGE)$/.test(value))
+    return '故事未能完整送达，请重试。';
+  if (/^(?:Failed to fetch|Load failed|NetworkError)/.test(value)) return '连接未通，请检查网络后再试。';
+  return value
     .replace(/^本旬引擎结算：人物、政务与岁时变化$/, "本旬变化")
     .replace(/^模型人物反应建议：引擎限额采纳$/, "人物态度变化")
     .replace(/^引擎结算$/, "本旬变化")

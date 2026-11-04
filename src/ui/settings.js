@@ -26,7 +26,14 @@ export function loadSettings() {
 export function cacheSummary(metrics) {
   const input = metrics.reduce((t, m) => t + (m.inputTokens || 0), 0),
     cached = metrics.reduce((t, m) => t + (m.cachedTokens || 0), 0);
-  return input ? "缓存命中 " + Math.round((cached / input) * 100) + "%（" + cached + " / " + input + " 输入 tokens）。" : "";
+  return input ? "重复输入占 " + Math.round((cached / input) * 100) + "%（" + cached + "／" + input + "）。" : "";
+}
+export function requestMetricHTML(m) {
+  const result = ({ok:'成功',cancelled:'已取消',timeout:'超时',failed:'未完成'})[m.result] || '未完成';
+  return '<p>' + esc(new Date(m.at).toLocaleTimeString('zh-CN')) + ' · ' + result +
+    ' · ' + (Number(m.durationMs || 0) / 1000).toLocaleString('zh-CN', {maximumFractionDigits:1}) +
+    ' 秒<br><span class="muted">用量：输入 ' + Number(m.inputTokens || 0) +
+    ' · 输出 ' + Number(m.outputTokens || 0) + '</span></p>';
 }
 export function openSettings(config, metrics, onSave, recordMetric = null) {
   openDialog(
@@ -58,25 +65,10 @@ export function openSettings(config, metrics, onSave, recordMetric = null) {
       (config.remember ? "checked" : "") +
       '>在本机记住密钥</label><p class="muted">只在这台设备保存密钥，取消勾选即可清除。</p><div class="dialog-actions"><button type="button" id="probe">测试连接</button><button class="primary" type="submit">保存设置</button></div></form><div id="probe-result" class="result hidden" role="status" aria-live="polite"></div><details><summary>请求统计 · <span id="request-count">' +
       metrics.length +
-      '</span> 次</summary><p class="muted">只留用量记录，不保存密钥和正文。' + cacheSummary(metrics) + '</p><div id="metric-list">' +
+      '</span> 次</summary><p class="muted">只记用量，不留密钥与正文。' + cacheSummary(metrics) + '</p><div id="metric-list">' +
       metrics
         .slice(-10)
-        .map(
-          (m) =>
-            "<p>" +
-            new Date(m.at).toLocaleTimeString("zh-CN") +
-            " · " +
-            esc(m.result) +
-            " · " +
-            m.durationMs +
-            "ms · " +
-            m.inputTokens +
-            "/" +
-            m.outputTokens +
-            " tokens" +
-            (m.cachedTokens ? " · 缓存 " + m.cachedTokens : "") +
-            "</p>",
-        )
+        .map(requestMetricHTML)
         .join("") +
       "</div></details>",
   );
@@ -152,7 +144,7 @@ export function openSettings(config, metrics, onSave, recordMetric = null) {
   const metricList=$("#metric-list"),metricCount=$("#request-count");
   const renderMetrics=()=>{
     metricCount.textContent=String(metrics.length);
-    metricList.innerHTML=metrics.slice(-10).map(m=>'<p>'+esc(new Date(m.at).toLocaleTimeString('zh-CN'))+' · '+esc(({ok:'成功',cancelled:'已取消',timeout:'超时',failed:'未完成'})[m.result]||m.result)+' · HTTP '+Number(m.httpStatus||0)+' · '+Number(m.durationMs||0)+'ms · 输入 '+Number(m.inputTokens||0)+' / 输出 '+Number(m.outputTokens||0)+'</p>').join('');
+    metricList.innerHTML=metrics.slice(-10).map(requestMetricHTML).join('');
   };
   renderMetrics();
   $("#probe").onclick = async () => {

@@ -30,7 +30,7 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
   if(kind==='自拟情节')fields=sceneActionFields(s,s.schedule[preferred]?.kind===kind?s.schedule[preferred]:{});
   if (kind === "下旨")
     fields =
-      '<label for="edict-type">旨意模板</label><select id="edict-type">' +
+      '<label for="edict-type">旨意事项</label><select id="edict-type">' +
       Object.keys(EDICTS)
         .map((x) => "<option>" + x + "</option>")
         .join("") +

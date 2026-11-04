@@ -7,6 +7,20 @@ import { annualBudget, wasteQuote,grainBudget } from "../core/finance.js";
 import { esc, openDialog } from "./common.js";
 import { num, ledgerHTML, chapterHTML, chapterTitle, ambitionsHTML } from "./render.js";
 import { campaignsHTML, treatyHTML } from './campaigns.js';
+export function provinceCardHTML(z, governor) {
+  const readings = [['民心', num(z.morale)], ['灾情', num(z.disaster)],
+    ['人口', num(z.pop) + ' 万'], ['驻军', num(z.garrison)], ['繁荣', num(z.prosperity || 0)]];
+  const industries = (z.industries || []).map(i =>
+    '<li>' + esc(INDUSTRIES[i.type].name) + ' <span>' + i.level + '级' +
+    (i.paused ? ' · 停产：' + esc(i.paused) : '') + '</span></li>').join('');
+  return '<article class="province' + (z.disaster > 20 ? ' disaster' : '') + '"><h3>' + esc(z.name) +
+    '</h3><dl class="province-readings">' + readings.map(([k,v]) =>
+      '<div><dt>' + k + '</dt><dd>' + v + '</dd></div>').join('') + '</dl>' +
+    '<div class="province-industries"><span>地方产业</span>' +
+    (industries ? '<ul>' + industries + '</ul>' : '<p>尚未兴办</p>') + '</div>' +
+    '<p class="province-governor">巡抚 <strong>' + esc(governor) + '</strong></p>' +
+    '<button data-industry-province="' + esc(z.id) + '">兴办产业</button></article>';
+}
 export function palacePanel(s, name) {
   if (!s) {
     openDialog(name, "<p>请先登基，方可进入殿阁。</p>");
@@ -178,26 +192,7 @@ export function palacePanel(s, name) {
     html =
       '<h3>十二州郡</h3><div class="map-grid">' +
       s.nation.provinces
-        .map(
-          (z) =>
-            '<div class="province ' +
-            (z.disaster > 20 ? "disaster" : "") +
-            '"><h3>' +
-            esc(z.name) +
-            "</h3><small>民心 " +
-            num(z.morale) +
-            " · 灾情 " +
-            num(z.disaster) +
-            "<br>人口 " +
-            num(z.pop) +
-            " 万 · 驻军 " +
-            num(z.garrison) +
-            '<br>繁荣 '+num(z.prosperity||0)+'<br>产业 '+
-            esc((z.industries||[]).map(i=>INDUSTRIES[i.type].name+' '+i.level+'级'+(i.paused?'（'+i.paused+'）':'')).join('、')||'暂无')+
-            '<br><button data-industry-province="'+z.id+'">兴办产业</button>'+"<br>巡抚 " +
-            esc(official(z.governor)) +
-            "</small></div>",
-        )
+        .map(z => provinceCardHTML(z, official(z.governor)))
         .join("") +
       '</div><h3>京营</h3><div class="card"><p>兵力 '+num(s.nation.army.capital.troops)+' · 军备 '+num(s.nation.army.capital.readiness)+'</p></div><h3>四境军情</h3><div class="grid">' +
       s.nation.army.frontiers
