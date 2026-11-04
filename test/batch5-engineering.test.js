@@ -38,10 +38,10 @@ test('E4 私下行动复用传入骰子不改RNG、上朝批折必须显式选�
  const source=readFileSync('src/core/edicts.js','utf8');assert.doesNotMatch(source,/import \{ fateModifier \}/);
 });
 
-test('E3 三个界面文件无长单行且七路径预演哈希不变',()=>{
+test('E3 三个界面文件无长单行且七路径预演符合v12奏折轮换基线',()=>{
  for(const file of ['src/ui/render.js','src/ui/memorials.js','src/ui/style.css'])assert.ok(Math.max(...readFileSync(file,'utf8').split('\n').map(l=>l.length))<200,file);
  const actual=JSON.parse(execFileSync(process.execPath,['scripts/batch5-format-proof.mjs','--stdout'],{encoding:'utf8'}));
- assert.deepEqual(actual,JSON.parse(readFileSync('qa/batch5/summary.json')).formatForecastHashes);
+ assert.deepEqual(actual,JSON.parse(readFileSync('qa/batch5/summary.json')).memorialVarietyForecastHashesV12);
 });
 
 import {compactEntries} from '../src/core/archive.js';

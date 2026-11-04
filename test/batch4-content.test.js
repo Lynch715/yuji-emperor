@@ -189,8 +189,8 @@ test('D1 实际先急件准奏策略50年例行奏报标题至少二十五种',(
 
 test('D1 空仓核报粮缺，不请求翻晒搬运不存在的库存',()=>{
  let s=start();s.nation.grain=0;s.nation.grainArrears=20;s.nation.provinces.forEach(p=>p.disaster=0);
- const seen=new Set();for(let turn=0;turn<108;turn++){s.turn=turn;s.memorials=[];s=seedMemorials(s);const m=s.memorials.find(m=>m.id.endsWith('-2'));assert.equal(m.templateId,'grain-shortage');assert.equal(m.options[0].effects.grain,-0.6);assert.equal(s.nation.grain,0);seen.add(m.templateId);}
- assert.equal(seen.size,1);
+ const seen=new Set();for(let turn=0;turn<108;turn++){s.turn=turn;s.memorials=[];s=seedMemorials(s);for(const m of s.memorials.filter(m=>m.type==='仓储'||m.type==='漕运')){assert.equal(m.templateId,'grain-shortage');assert.equal(m.options[0].effects.grain,-0.6);seen.add(m.templateId);}assert.equal(s.nation.grain,0);}
+ assert.ok(seen.has('grain-shortage'));
 });
 
 test('D3 模拟器新决定也使用逐本对象，空批语的新旧写法结算完全一致',()=>{

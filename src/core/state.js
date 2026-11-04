@@ -3,7 +3,7 @@ import { seedNumber, random, DRAFT } from "./rng.js";
 import { uniqueName } from "./names.js";
 import { chooseRegent } from "./regency-info.js";
 import {factionPowers} from './politics.js';
-export const VERSION = 11;
+export const VERSION = 12;
 export const TALENTS = ["政略", "权谋", "武略", "文采", "魅力"];
 export const SLOTS = ["朝", "午", "夜"];
 export const POST_NAMES = [
@@ -375,6 +375,7 @@ export function createState(options = {}) {
     })),
     ambitions: [],
     memorials: [],
+    memorialVariety: [],
     threads: [],
     projects: [],
     schedule: { 朝: null, 午: null, 夜: null },
@@ -473,6 +474,8 @@ export function migrate(input) {
   // on commit; never rerun an old schedule, roll, settlement or calendar.
   if (input.v >= 11 && !Array.isArray(s.intentResults)) throw new Error("口谕裁决记录损坏");
   s.intentResults ??= [];
+  if(input.v>=12&&!Array.isArray(s.memorialVariety))throw new Error('奏折轮换记录损坏');
+  s.memorialVariety ??= s.memorials.filter(m=>m.templateId).slice(-72).map(m=>({id:m.templateId,type:m.type,turn:s.turn}));
   s.settings.freedom ??= "mid";
   s.v = VERSION;
   s.volumeIndex ??= [];
@@ -629,6 +632,8 @@ export function assertState(s) {
     if(!Array.isArray(s.intentResults))throw new Error('口谕裁决记录损坏');
     for(const r of s.intentResults)if(!r||typeof r.id!=='string'||!Number.isSafeInteger(r.turn)||!['success','partial','failed','narrative'].includes(r.status)||!r.actual||typeof r.actual!=='object')throw new Error('口谕裁决记录损坏');
   }
+  if(s.v>=12&&(!Array.isArray(s.memorialVariety)||s.memorialVariety.length>72||s.memorialVariety.some(r=>!r||typeof r.id!=='string'||typeof r.type!=='string'||!Number.isSafeInteger(r.turn)||r.turn<0||r.turn>s.turn)))throw new Error('奏折轮换记录损坏');
+  if(s.v>=12&&s.turnBudget?.rewriteAttempted!==undefined&&typeof s.turnBudget.rewriteAttempted!=='boolean')throw new Error('剧情改写标记损坏');
   const walk = (x) => {
     if (typeof x === "number" && !Number.isFinite(x))
       throw new Error("存档含 NaN/Infinity");

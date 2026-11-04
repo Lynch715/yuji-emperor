@@ -175,8 +175,9 @@ export async function callJSON(config, messages, options = {}) {
   const now = options.now || Date.now,
     sleep = options.sleep || ((ms) => new Promise((r) => setTimeout(r, ms)));
   const fetcher = options.fetcher || fetch;
+  const attemptLimit=Math.min(4,budget.used+(options.maxAttempts??4));
   let lastError;
-  while (budget.used < 4 && now() < budget.deadline) {
+  while (budget.used < attemptLimit && now() < budget.deadline) {
     if (options.signal?.aborted) throw new Error("请求已取消");
     budget.used++;
     const ac = new AbortController(),
@@ -268,7 +269,7 @@ export async function callJSON(config, messages, options = {}) {
         cachedTokens: Number(usage.prompt_tokens_details?.cached_tokens ?? usage.prompt_cache_hit_tokens) || 0,
       });
     }
-    if (budget.used < 4 && now() + waitMs < budget.deadline)
+    if (budget.used < attemptLimit && now() + waitMs < budget.deadline)
       await sleep(waitMs);
   }
   throw lastError || new Error("本回合请求预算已用完（最多 4 次、240 秒）");

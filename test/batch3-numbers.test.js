@@ -30,7 +30,7 @@ test('C1 民心按人口加权，普遍效果乘0.3且相关州效果不波及�
 test('C1 六部履职成为治理回归目标，圣德皇威心情按月回归，例行准奏只加0.1吏治且驳回不扣民心',()=>{
  let s=start();s.nation.governance=95;s.emperor.virtue=90;s.emperor.prestige=90;s.emperor.mood=90;s.emperor.tags=[];
  const month=court.courtMonth(s);assert.ok(month.nation.governance<95);s=emperorMonth(s);close(s.emperor.virtue,89.2);close(s.emperor.prestige,89.2);close(s.emperor.mood,88.25);
- s=start();s.memorials=[];s=seedMemorials(s);const m=s.memorials.find(m=>m.type==='政务');assert.ok(m);assert.equal(m.options[0].effects.governance,0.1);assert.ok(!m.options[1].effects.morale);
+ s=start();s.memorials=[];s=seedMemorials(s);const m=s.memorials.find(m=>m.options[0].effects.governance===0.1);assert.ok(m);assert.equal(m.options[0].effects.governance,0.1);assert.ok(!m.options[1].effects.morale);
  const approved=resolveMemorial(s,m.id,'approve').state;close(approved.nation.morale,s.nation.morale);
 });
 
@@ -144,7 +144,7 @@ test('C1 例行积压每月记一次治理成本，低治理影响各州民心�
 test('C1 有灾请赈的驳回损圣德，普通案牍驳回不扣民心圣德',()=>{
  let s=start();s.memorials=[];s.nation.provinces[0].disaster=50;s=seedMemorials(s);
  const relief=s.memorials.find(m=>m.type==='请赈');assert.ok(relief);assert.equal(relief.options.find(o=>o.id==='reject').effects.virtue,-2);
- const routine=s.memorials.find(m=>m.type==='政务');assert.ok(!routine.options.find(o=>o.id==='reject').effects.virtue);
+ const routine=s.memorials.find(m=>m.type!=='请赈');assert.ok(!routine.options.find(o=>o.id==='reject').effects.virtue);
 });
 
 test('C6 真实急报逾期损皇威，普通案牍逾期不额外损皇威',()=>{

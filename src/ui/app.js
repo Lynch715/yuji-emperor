@@ -452,7 +452,7 @@ async function advance(local = false) {
     const f = state.pending.forecast;
     // v4 saves may contain an absolute planning-time deadline. Only the
     // attempt count belongs to a pending turn; the request owns its clock.
-    state.turnBudget = { used: state.turnBudget?.used || 0 };
+    state.turnBudget = { used: state.turnBudget?.used || 0, ...(state.turnBudget?.rewriteAttempted?{rewriteAttempted:true}:{}) };
     render();
     let narrative;
     if (state.settings.demo || local) narrative = mockNarrative(f);
@@ -462,6 +462,7 @@ async function advance(local = false) {
         signal: ac.signal,
         onMetric: markMetric,
         onPartial: streamDraft,
+        onBeforeRewrite:async()=>{if(!(await persist()))throw new Error('本旬尚未存妥，请先导出存档，再重试。');},
       });
     }
     state = commitTurn(state, f, narrative);

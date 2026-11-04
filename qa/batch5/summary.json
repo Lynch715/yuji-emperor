@@ -311,5 +311,15 @@
     "remark": "c763b085ef3d2d736994e43640fa57b6faa34f56ccd88fa1a834da92f595c630",
     "debate": "2fef58554eb907375767d55cb6a4e4328d9a4c75e65c4deaafa2ee90bead0efe"
   },
-  "formatForecastHashesNote": "第二轮审计 F4 升 v9（settings 增 length/pov），F5 升 v10（增 scenario/postNames/governorTitle/childNaming/weddingNames，自拟王朝均为 null）。去掉这些字段并把 v 记回 8 后，七条路径哈希与 formatForecastHashesV8 逐一相同。"
+  "formatForecastHashesNote": "第二轮审计 F4 升 v9（settings 增 length/pov），F5 升 v10（增 scenario/postNames/governorTitle/childNaming/weddingNames，自拟王朝均为 null）。去掉这些字段并把 v 记回 8 后，七条路径哈希与 formatForecastHashesV8 逐一相同。",
+  "memorialVarietyForecastHashesV12": {
+    "court3": "f1639d0b610d69f8b9bb582b2859ed4537676ce8d705555441334833ce4463bc",
+    "batch6": "1c9bb39b820d04c6a916a1aa66b3723f4f36ef4c2a50b8df4dd2d8ccf69a2ee1",
+    "discuss": "0beb484779e63777e9a1508323ac8bdc3562b665ba8168664c35329b15bd3a27",
+    "hold": "4cbda934761b1036cf5ab9d55f48a92f362100f7920f4edcd439e2d3572d1fab",
+    "accountability": "7c8759c0017dbc2353ec3c12a5df6e8956156b64edcb9a85918ab8efd1962831",
+    "remark": "9ad584115cb6769086f9adc09b360f38c7b5992482801364002959fd2e2fd7c2",
+    "debate": "22b2b0e26d54d5427811c71faf14bfc369020abcdd421a560c59453a0d0fc886"
+  },
+  "memorialVarietyForecastHashesNote": "v12新增奏折轮换记录、95种题材模板及灾情请赈，固定分组改为各类型轮换，故七条路径的奏折文本、选择与预演内容按本次授权变化。新基线保留完整当前预演；原formatForecastHashes及V8历史基线未覆盖。"
 }

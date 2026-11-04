@@ -1,5 +1,6 @@
 import { NUMBER_SOURCE, parseNumber, quantityMatches, quantityEvidence, invalidQuantity } from "./quantities.js";
 import { sceneNarrative } from "./mock-narrative.js";
+import { memorialText } from "../core/memorial-templates.js";
 // Pure JSON repair. Never evaluate model text as JavaScript.
 export function parseJSONLoose(raw) {
   if (typeof raw !== "string" || raw.length > 1500000)
@@ -125,12 +126,7 @@ export function mockNarrative(forecast) {
     hook: mockHook(forecast),
     memorialTexts: forecast.newMemorials.map((m) => ({
       id: m.id,
-      text:
-        forecast.state?.settings?.prose === "modern"
-        ? "陛下，" + m.title + "。这件事关系到地方百姓的生活和朝廷现行的规矩，请您决定如何处理。臣等会按照您的决定去办，并把后续情况及时报上来。"
-        : "臣谨奏：" +
-        m.title +
-        "。事关地方生计与朝廷成法，伏乞陛下裁处，臣等当依旨奉行。",
+      text: m.text || memorialText(m,forecast.state?.settings?.prose==='modern'),
     })),
     reactions: [],
     rumors: [],
@@ -172,7 +168,7 @@ export function retrospective(sentence, kind) {
 // “一两句”“三两步”中的“两”是约数，不是银两。
 const LOOSE_MEASURE = /^[句声步眼行旁侧下回趟遍口天日个分笔字语言]/;
 const MONEY_CONTEXT = /银|库|帑|款|饷|税|赏|拨|贿|俸|赋|钱粮|万两/;
-export function validateTurn(data, forecast) {
+export function validateTurn(data, forecast, options = {}) {
   if (
     !data?.chapter ||
     !["朝", "午", "夜"].every((k) => typeof data.chapter[k] === "string")
@@ -204,11 +200,11 @@ export function validateTurn(data, forecast) {
     }));
   aliases.push(...['皇帝','陛下','新帝','天子'].map(alias=>({alias,name:s.emperor.name})),
     ...s.harem.consorts.map(c=>({alias:c.rank,name:c.name})));
-  const scrutinize = (raw, slot) => {
+  const scrutinize = (raw, slot, path = null, limit = 3500) => {
     let previousActors = [];
     return raw
       .split(/(?<=[。！？\n])/)
-      .map((original) => {
+      .map((original, index) => {
         let sentence = original;
         const actors = roster
           .filter((o) => sentence.includes(o.name))
@@ -224,6 +220,7 @@ export function validateTurn(data, forecast) {
             invalidNumbers.push(m);
           }
         if (invalidNumbers.length) {
+          if(path)options.onViolation?.({path,index,limit,sentence:original,reason:'数值没有本旬结果或对应人物、军队的状态依据：'+invalidNumbers.map(q=>q.raw||q[0]).join('、')});
           fixNotes.push(
             (slot || "附文") + "中无结算或状态依据的金额/人数/年龄已删除",
           );
@@ -305,6 +302,7 @@ export function validateTurn(data, forecast) {
                 appointment: "任免",
                 war: "战果",
               }[kind];
+              if(path)options.onViolation?.({path,index,limit,sentence:original,reason:'本旬没有对应的'+subject+'结果'+(claimSubjects.length?'（'+claimSubjects.join('、')+'）':'')});
               fixNotes.push(
                 (slot || "附文") + "中没有对应结算的" + subject + "陈述已删除",
               );
@@ -340,7 +338,7 @@ export function validateTurn(data, forecast) {
   const emptied = [];
   for (const slot of ["朝", "午", "夜"]) {
     const original = cleanText(data.chapter[slot], 3500);
-    chapter[slot] = scrutinize(original, slot);
+    chapter[slot] = scrutinize(original, slot, ['chapter',slot]);
     if (original.trim() && !chapter[slot].trim()) emptied.push(slot);
   }
   // 只有部分段落被删空时才补足；整章都没有可保留文字时仍交由重试处理。
@@ -381,17 +379,17 @@ export function validateTurn(data, forecast) {
     }));
   return {
     chapter,
-    summary: scrutinize(cleanText(data.summary, 100), null) || fallback.summary,
-    hook: scrutinize(cleanText(data.hook, 60), null),
+    summary: scrutinize(cleanText(data.summary, 100), null, ['summary'],100) || fallback.summary,
+    hook: scrutinize(cleanText(data.hook, 60), null, ['hook'],60),
     reactions,
     memorialTexts: (Array.isArray(data.memorialTexts) ? data.memorialTexts : [])
       .filter((m) => forecast.newMemorials.some((n) => n.id === m.id))
       .map((m) => ({
         id: m.id,
-        text: scrutinize(cleanText(m.text, 1000), null),
+        text: scrutinize(cleanText(m.text, 1000), null, ['memorialTexts',data.memorialTexts.indexOf(m),'text'],1000),
       })),
     rumors: (Array.isArray(data.rumors) ? data.rumors : [])
-      .map((r) => scrutinize(cleanText(r, 150), null))
+      .map((r,i) => scrutinize(cleanText(r, 150), null, ['rumors',i],150))
       .filter(Boolean)
       .slice(0, 3),
     ambitionEvidence: evidence,

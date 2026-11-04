@@ -1,6 +1,6 @@
 import { freedomRules } from "./freedom.js";
 import { remarkCategory, REMARK_KINDS } from "./memorial-decisions.js";
-import { routineTemplate, routineOptions } from "./memorial-templates.js";
+import { routineTemplate, routineOptions, memorialText } from "./memorial-templates.js";
 import { clone } from "./state.js";
 import { roll } from "./rng.js";
 import { applyPackage } from "./effects.js";
@@ -16,7 +16,7 @@ export function pickMemorialist(state, type, provinceId = null) {
   const exact=money?(local||eligible.find(x=>x.post.title==='户部尚书')):
     military?(eligible.find(x=>x.post.title===provinceId+'境总兵')||eligible.find(x=>x.post.title==='兵部尚书')):
     censor?eligible.find(x=>x.post.title==='左都御史'):null;
-  const office=money?'户部':military?'兵部':censor?'都察':'通政';
+  const office=money||/盐政|仓储|漕运|商贸|农桑/.test(type)?'户部':military?'兵部':censor?'都察':/河工|工务/.test(type)?'工部':/刑狱/.test(type)?'刑部':/科举|文教|礼制|外邦/.test(type)?'礼部':/宗室/.test(type)?'宗人':'通政';
   const chosen=exact||eligible.find(x=>x.post.title.startsWith(office))||eligible.find(x=>x.post.title==='通政使');
   return chosen?{from:chosen.o.name,fromId:chosen.o.id}:{from:'通政司',fromId:null};
 }
@@ -59,9 +59,11 @@ export function seedMemorials(state) {
   for (let i = 0; i < r.value; i++) {
     const pool=i===2?s.nation.provinces.filter(p=>p.disaster>0):s.nation.provinces;
     const pick=roll(s,0,Math.max(0,(pool.length?pool:s.nation.provinces).length-1));s=pick.state;
-    const z=(pool.length?pool:s.nation.provinces)[pick.value];
-    const template=routineTemplate(s,i,z,pick.value),relief=!!template.relief;
-    s.memorials.push({
+    let z=(pool.length?pool:s.nation.provinces)[pick.value];
+    const template=routineTemplate(s,i,z,pick.value);if(!template)continue;
+    z=s.nation.provinces.find(p=>p.id===template.provinceId)||z;
+    const relief=!!template.relief;
+    const memorial={
       id: "routine-" + s.turn + "-" + i,
       templateId:template.id,
       title:template.title,
@@ -75,7 +77,9 @@ export function seedMemorials(state) {
       urgent: relief,
       secret: false,
       text: "",
-    });
+    };
+    memorial.text=memorialText(memorial,s.settings.prose==='modern');s.memorials.push(memorial);
+    s.memorialVariety=[...(s.memorialVariety||[]),{id:template.id,type:template.type,turn:s.turn}].slice(-72);
   }
   return s;
 }

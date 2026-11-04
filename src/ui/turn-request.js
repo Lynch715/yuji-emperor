@@ -1,6 +1,7 @@
 import { callJSON, createBudget } from "../llm/client.js";
 import { turnMessages } from "../llm/prompts.js";
 import { validateTurn } from "../llm/validate.js";
+import {inspectNarrative,rewriteMessages,validateRewrites,applySentenceRewrites} from '../llm/rewrite.js';
 
 // Interface narration must contain prose after settlement checks. An empty
 // chapter is a failed response, never a reason to silently use trial text.
@@ -13,6 +14,7 @@ export function validateTurnNarrative(data, forecast) {
 
 export async function requestTurnNarrative(config, state, forecast, options = {}) {
   const saved = options.budget;
+  const tracker=saved||{};
   const budget = createBudget((options.now || Date.now)());
   budget.used = saved?.used || 0;
   const rememberAttempts = () => {
@@ -23,15 +25,31 @@ export async function requestTurnNarrative(config, state, forecast, options = {}
     }
   };
   try {
-    return await callJSON({ ...config }, turnMessages(state, forecast), {
-      ...options,
-      budget,
-      onMetric: (metric) => {
+    const requestOptions={...options,budget,onMetric:(metric)=>{
         rememberAttempts();
         options.onMetric?.(metric);
-      },
-      validate: (data) => validateTurnNarrative(data, forecast),
-    });
+    }};
+    while(budget.used<4){
+      const candidate=await callJSON({...config},turnMessages(state,forecast),{...requestOptions,validate:data=>{
+        const inspected=inspectNarrative(data,forecast);
+        if(!inspected.violations.length||tracker.rewriteAttempted)validateTurnNarrative(data,forecast);
+        return {data,...inspected};
+      }});
+      let data=candidate.data;
+      if(candidate.violations.length&&!tracker.rewriteAttempted&&budget.used<4&&(options.now||Date.now)()<budget.deadline){
+        tracker.rewriteAttempted=true;rememberAttempts();
+        // Persist before sending: cancellation, reload and manual retry reuse this marker.
+        await options.onBeforeRewrite?.();
+        try{
+          const rewrites=await callJSON({...config},rewriteMessages(forecast,candidate.violations),{...requestOptions,maxAttempts:1,onPartial:undefined,validate:validateRewrites});
+          data=applySentenceRewrites(data,candidate.violations,rewrites);
+        }catch(error){if(options.signal?.aborted)throw error;}
+      }
+      try{return validateTurnNarrative(data,forecast);}catch(error){
+        if(budget.used>=4||(options.now||Date.now)()>=budget.deadline)throw error;
+      }
+    }
+    throw new Error('本回合请求预算已用完');
   } finally {
     rememberAttempts();
   }
