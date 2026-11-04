@@ -1,9 +1,9 @@
 import { roll } from './rng.js';
 import { applyPackage } from './effects.js';
 export const FREEDOM_RULES=Object.freeze({
- free:Object.freeze({label:'随心所欲',k:1,collapseImmune:true,courtLimit:Infinity,referrals:Infinity,talkRounds:Infinity,talkMultiplier:Infinity,appointmentAge:18,firstRankTalent:0,otherTalent:0,edictCooldown:0,selectionPeriod:0,rankCaps:false,tradeCooldown:0,energyPenalty:0.5}),
- mid:Object.freeze({label:'一般',k:0.5,collapseImmune:false,partialCosts:Object.freeze({treasury:1,favor:3,morale:0.5}),courtLimit:5,referrals:3,talkRounds:5,talkMultiplier:2,appointmentAge:20,firstRankTalent:30,otherTalent:15,edictCooldown:3,selectionPeriod:2,rankCaps:true,tradeCooldown:36,energyPenalty:1}),
- real:Object.freeze({label:'严格',k:0,collapseImmune:false,courtLimit:3,referrals:2,talkRounds:3,talkMultiplier:1,appointmentAge:25,firstRankTalent:40,otherTalent:25,edictCooldown:6,selectionPeriod:3,rankCaps:true,tradeCooldown:36,energyPenalty:1}),
+ free:Object.freeze({label:'想做就成',note:'口谕必成，行动限制更少；钱粮仍以现有家底为限。',k:1,collapseImmune:true,courtLimit:Infinity,referrals:Infinity,talkRounds:Infinity,talkMultiplier:Infinity,appointmentAge:18,firstRankTalent:0,otherTalent:0,edictCooldown:0,selectionPeriod:0,rankCaps:false,tradeCooldown:0,energyPenalty:0.5}),
+ mid:Object.freeze({label:'多数能成',note:'办事较容易，难事有时要多花钱、做让步或承担损失。',k:0.5,collapseImmune:false,partialCosts:Object.freeze({treasury:1,favor:3,morale:0.5}),courtLimit:5,referrals:3,talkRounds:5,talkMultiplier:2,appointmentAge:20,firstRankTalent:30,otherTalent:15,edictCooldown:3,selectionPeriod:2,rankCaps:true,tradeCooldown:36,energyPenalty:1}),
+ real:Object.freeze({label:'成败看实力',note:'按人物能力、朝局和天命判断，办事门槛也更严格。',k:0,collapseImmune:false,courtLimit:3,referrals:2,talkRounds:3,talkMultiplier:1,appointmentAge:25,firstRankTalent:40,otherTalent:25,edictCooldown:6,selectionPeriod:3,rankCaps:true,tradeCooldown:36,energyPenalty:1}),
 });
 export function freedomRules(state){return FREEDOM_RULES[state?.settings?.freedom]||FREEDOM_RULES.mid;}
 export function successProbability(p,state){return p+(1-p)*freedomRules(state).k;}

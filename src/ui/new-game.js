@@ -6,6 +6,7 @@ import { applyScenario, scenarioById } from "../core/scenarios.js";
 import { callJSON } from "../llm/client.js";
 import { worldMessages } from "../llm/prompts.js";
 import { validateWorld } from "../llm/validate.js";
+import { scenarioRecommendations } from "./opening-options.js";
 
 let seedSequence = 0;
 // This is an opening seed, not an authentication token. All game rolls still
@@ -44,7 +45,8 @@ export async function createOpening(options, goals, config, requestOptions = {})
     });
     draft = applyWorld(draft, world);
   }
-  return initialTurn(selectAmbitions(draft, goals));
+  const selected = sc && (!Array.isArray(goals) || !goals.length) ? scenarioRecommendations(sc.id).map(g=>g.id) : goals;
+  return initialTurn(selectAmbitions(draft, selected));
 }
 
 export function openingErrorMessage(error) {

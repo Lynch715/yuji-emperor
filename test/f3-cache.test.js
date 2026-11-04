@@ -4,7 +4,7 @@ import {createState} from '../src/core/state.js';
 import {initialTurn,forecastTurn,commitTurn} from '../src/core/turn.js';
 import {talkAttempt} from '../src/core/court.js';
 import {mockNarrative} from '../src/llm/validate.js';
-import {turnMessages,talkMessages} from '../src/llm/prompts.js';
+import {turnMessages,talkMessages,worldRules} from '../src/llm/prompts.js';
 import {callJSON} from '../src/llm/client.js';
 
 const flat=m=>m.map(x=>x.role+'\u0000'+x.content).join('\u0001');
@@ -31,10 +31,11 @@ test('F3 同人连续面谈：后一请求以前一请求为前缀（除末条�
   assert.ok(!a2.includes('别人的话')&&!a2.includes('他人回话'));
   assert.equal(m2.length,4);assert.equal(m2[2].role,'assistant');assert.match(m2[2].content,/臣近来尚好/);
 });
-test('F3 正文与面谈共享系统提示与王朝设定前缀',()=>{
+test('F3 正文与面谈共享王朝规则前缀，各自只带本任务格式',()=>{
   const s=initialTurn(createState({seed:'f3-share'})),f=forecastTurn(s,rest);
   const t=turnMessages(s,f),r=talkAttempt(s,s.court.officials[0].id,'问安'),k=talkMessages(r.state,r.result,r.state.talks);
-  assert.equal(t[0].content,k[0].content);
+  assert.ok(t[0].content.startsWith(worldRules(s)));assert.ok(k[0].content.startsWith(worldRules(s)));
+  assert.ok(!t[0].content.includes('【面谈任务】'));assert.ok(!k[0].content.includes('【正文任务】'));
   const bible=t[1].content.slice(0,t[1].content.indexOf('\n'));
   assert.ok(k[1].content.startsWith(bible));
 });

@@ -119,7 +119,7 @@ export function metricsHTML(s, mobile = false) {
       '%"></i></span></div>';
   if (mobile)
     return (
-      '<button class="mobile-stats" data-command="stats" title="展开完整国势" aria-description="点击查看四组完整国势与单位">' +
+      '<button class="mobile-stats" data-command="stats" title="展开完整国势" aria-description="点击查看钱粮、州郡、军备与朝局详情">' +
       ["国库", "民心", "吏治", "皇威"]
         .map((k) =>
           draw(groups.flatMap((g) => g.stats).find((m) => m.label === k)),
@@ -459,7 +459,8 @@ export function renderApp(
     energyHTML(s, true) +
     "</div></div></div>" +
     metricsHTML(s) +
-    ('<div class="top-actions"><button data-command="saves">存档</button><button data-command="settings">设置</button></' +
+    ('<div class="top-actions"><button data-command="stats">国势全览</button>' +
+      '<button data-command="saves">存档</button><button data-command="settings">设置</button></' +
       'div><button class="mobile-menu" data-command="menu" aria-label="御前菜单">☰</button>') +
     metricsHTML(s, true) +
     '</header><div class="workbench"><aside class="dock" aria-label="行动坞">' +

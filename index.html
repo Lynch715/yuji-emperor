@@ -1640,6 +1640,237 @@ width:100%;
 height:auto;
 border-radius:var(--radius-card);
 }
+.mode-hint{
+font-size:var(--font-small);
+line-height:var(--ui-line);
+margin:var(--s2) var(--s0);
+}
+#goal-recommendations{
+border:var(--hairline) solid var(--line-strong);
+background:var(--panel-active);
+padding:var(--s5);
+border-radius:var(--radius-card);
+}
+.goal-recommend-grid{
+display:grid;
+grid-template-columns:repeat(2, minmax(0, 1fr));
+gap:var(--s4);
+margin-bottom:var(--s4);
+}
+.goal-recommend-grid p{
+font-size:var(--font-small);
+color:var(--text-soft);
+}
+dialog.nation-shell{
+width:min(1120px, calc(100vw - 24px));
+max-width:1120px;
+}
+#nation-overview{
+font-variant-numeric:tabular-nums;
+}
+.nation-dateline{
+font-family:var(--serif);
+color:var(--gold);
+}
+.nation-summary{
+display:grid;
+grid-template-columns:repeat(5, minmax(0, 1fr));
+gap:var(--s3);
+}
+.nation-reading{
+border:var(--hairline) solid var(--line);
+border-radius:var(--radius-card);
+padding:var(--s4);
+background:var(--panel-active);
+line-height:1.4;
+}
+.nation-reading > span{
+font-size:var(--font-small);
+}
+.nation-reading > strong{
+display:block;
+font-size:var(--font-heading);
+color:var(--text-strong);
+overflow-wrap:anywhere;
+line-height:1.3;
+}
+.nation-reading small{
+font-size:var(--font-small);
+margin-left:var(--s2);
+}
+.nation-reading p{
+font-size:var(--font-small);
+margin:var(--s1) var(--s0);
+line-height:1.4;
+}
+.nation-danger{
+border-color:var(--danger-border);
+}
+.nation-alerts{
+display:flex;
+flex-wrap:wrap;
+gap:var(--s2);
+margin:var(--s4) var(--s0);
+}
+.nation-alerts span{
+padding:var(--s2) var(--s3);
+background:var(--chip);
+color:var(--down);
+border-radius:var(--radius-chip);
+}
+.nation-alerts .nation-calm{
+color:var(--up);
+}
+.nation-section{
+border-top:var(--hairline) solid var(--line-strong);
+padding-top:var(--s5);
+margin-top:var(--s6);
+}
+.nation-note{
+font-size:var(--font-small);
+}
+.nation-figures{
+display:grid;
+grid-template-columns:repeat(4, minmax(0, 1fr));
+gap:var(--s3);
+}
+.nation-figures > div{
+padding:var(--s3);
+background:var(--panel);
+border-bottom:var(--hairline) solid var(--line);
+}
+.nation-figures dt{
+color:var(--text-muted);
+font-size:var(--font-small);
+}
+.nation-figures dd{
+margin:var(--s1) var(--s0);
+font-size:var(--font-value);
+overflow-wrap:anywhere;
+}
+.nation-figures small{
+font-size:var(--font-small);
+color:var(--text-soft);
+}
+.nation-charts{
+display:grid;
+grid-template-columns:repeat(2, minmax(0, 1fr));
+gap:var(--s4);
+}
+.nation-charts article{
+background:var(--panel);
+border:var(--hairline) solid var(--line);
+border-radius:var(--radius-card);
+padding:var(--s4);
+}
+.nation-spark{
+display:block;
+width:100%;
+color:var(--gold);
+}
+.nation-spark polyline{
+fill:none;
+stroke:currentColor;
+stroke-width:2;
+}
+.nation-spark circle{
+fill:currentColor;
+}
+.nation-spark-grid{
+fill:none;
+stroke:var(--line);
+stroke-width:1;
+}
+.nation-chart-range{
+display:flex;
+justify-content:space-between;
+font-size:var(--font-small);
+color:var(--text-muted);
+}
+.nation-period{
+display:flex;
+flex-wrap:wrap;
+gap:var(--s3);
+margin-bottom:var(--s4);
+}
+.nation-period [aria-pressed="true"]{
+border-color:var(--gold);
+color:var(--gold);
+}
+.nation-flow-totals{
+display:grid;
+grid-template-columns:repeat(3, minmax(0, 1fr));
+gap:var(--s3);
+}
+.nation-flow-totals > div{
+border-left:var(--focus-line) solid var(--line-strong);
+padding-left:var(--s3);
+}
+.nation-table{
+width:100%;
+border-collapse:collapse;
+font-size:var(--font-small);
+}
+.nation-table th,
+.nation-table td{
+padding:var(--s3);
+text-align:right;
+border-bottom:var(--hairline) solid var(--line);
+overflow-wrap:anywhere;
+}
+.nation-table th:first-child,
+.nation-table td:first-child{
+text-align:left;
+color:var(--text-strong);
+}
+@media (min-width: 601px) and (max-width: 899px){
+.nation-summary{
+grid-template-columns:repeat(3, minmax(0, 1fr));
+}
+}
+@media (max-width: 600px){
+.goal-recommend-grid,
+.nation-charts{
+grid-template-columns:minmax(0, 1fr);
+}
+.nation-summary,
+.nation-figures{
+grid-template-columns:repeat(2, minmax(0, 1fr));
+}
+.nation-flow-totals{
+grid-template-columns:minmax(0, 1fr);
+}
+.nation-table thead{
+display:none;
+}
+.nation-table tbody,
+.nation-table tr{
+display:block;
+}
+.nation-table tr{
+display:grid;
+grid-template-columns:repeat(2, minmax(0, 1fr));
+gap:var(--s2);
+margin-bottom:var(--s3);
+padding:var(--s3);
+border:var(--hairline) solid var(--line);
+background:var(--panel);
+}
+.nation-table td{
+text-align:left;
+padding:var(--s1);
+border:none;
+}
+.nation-table td:first-child{
+grid-column:1 / -1;
+}
+.nation-table td::before{
+content:attr(data-label);
+display:block;
+font-size:var(--font-note);
+color:var(--text-muted);
+}
+}
 textarea.brush-input::placeholder{
 font:var(--font-small) / 1.5 var(--sans);
 color:var(--ink-muted);
@@ -2611,7 +2842,7 @@ renderApp,
 actionButton,
 memorialListHTML,
 ambitionsHTML,
-actionsHTML, metricsHTML, chapterHTML, chapterTitle, chapterNotes, ledgerLabel,
+actionsHTML, chapterHTML, chapterTitle, chapterNotes, ledgerLabel,
 } = __load("src/ui/render.js");
 const { memorialDialog, scheduledMemorialDialog } = __load("src/ui/memorials.js");
 const { memorialAssignments } = __load("src/ui/memorial-state.js");
@@ -2645,6 +2876,8 @@ extractPartialChapter,
 mockNarrative,
 validateTalk,
 } = __load("src/llm/validate.js");
+const { DIFFICULTIES, scenarioDifficulty, scenarioRecommendations } = __load("src/ui/opening-options.js");
+const { openNationOverview } = __load("src/ui/nation-overview.js");
 initCommon();
 setLeaveGuard(() => busy);
 initAppIcon();
@@ -2858,8 +3091,12 @@ return;
 openDialog(
 "登基 · 定年号",
 '<form id="new-form"><div class="scenario-pick"><label for="scenario">开局</label><select id="scenario"><option value="">自拟王朝（架空）</option>' +
-SCENARIOS.map((sc) => '<option value="' + sc.id + '">' + esc(sc.title) + " · " + esc(sc.difficulty) + "</option>").join("") +
-'</select><div id="scenario-card" class="scenario-card muted">自拟帝名与年号，开创自己的王朝。</div></div><div class="fields"><div><label for="emperor-name">皇帝名</label><input id="emperor-name" required maxlength="12" value="萧承熙"></div><div><label for="era-name">年号</label><input id="era-name" required maxlength="8" value="永宁"></div><div><label for="freedom">自由度</label><select id="freedom"><option value="mid">一般</option><option value="free">随心所欲</option><option value="real">严格</option></select></div><div><label for="difficulty">难度</label><select id="difficulty"><option value="normal">常制</option><option value="easy">宽和</option><option value="hard">艰危</option></select></div><div><label for="prose-style">文笔</label><select id="prose-style">' +
+SCENARIOS.map((sc) => '<option value="' + sc.id + '">' + esc(sc.title) + " · " + esc(DIFFICULTIES[scenarioDifficulty(sc)].label) + "</option>").join("") +
+'</select><div id="scenario-card" class="scenario-card muted">自拟帝名与年号，开创自己的王朝。</div></div><div class="fields"><div><label for="emperor-name">皇帝名</label><input id="emperor-name" required maxlength="12" value="萧承熙"></div><div><label for="era-name">年号</label><input id="era-name" required maxlength="8" value="永宁"></div><div><label for="freedom">口谕自由度</label><select id="freedom" aria-describedby="freedom-hint">' +
+['mid','free','real'].map(id=>'<option value="'+id+'">'+FREEDOM_RULES[id].label+'</option>').join('')+
+'</select><p class="muted mode-hint" id="freedom-hint">'+FREEDOM_RULES.mid.note+'</p></div><div><label for="difficulty">施政难度</label><select id="difficulty" aria-describedby="difficulty-hint">'+
+['normal','easy','hard'].map(id=>'<option value="'+id+'">'+DIFFICULTIES[id].label+'</option>').join('')+
+'</select><p class="muted mode-hint" id="difficulty-hint">'+DIFFICULTIES.normal.note+'</p></div><div><label for="prose-style">文笔</label><select id="prose-style">' +
 Object.entries(STYLES)
 .map(([k, v]) => '<option value="' + k + '">' + v.label + "</option>")
 .join("") +
@@ -2891,7 +3128,7 @@ kind +
 ((i % 2) + 1) +
 '</label><select data-goal-select id="goal-' +
 i +
-'"><option value="">天定</option>' +
+'"><option value="">随机分配</option>' +
 GOALS.filter((g) => g.kind === kind)
 .map((g) => '<option value="' + g.id + '">' + g.title + "</option>")
 .join("") +
@@ -2902,19 +3139,42 @@ $("#demo-mode")
 .closest("label")
 .insertAdjacentHTML(
 "beforebegin",
-'<div class="fields">' + goalsHTML + "</div>",
+'<section id="goal-recommendations" hidden></section><div class="fields">' + goalsHTML + "</div>",
 );
 const form = $("#new-form"), dialog = $("#modal"), result = $("#new-result");
 const scope = createDialogRequestScope(dialog, form);
+const goalDrafts = new Map(); let previousScenario='',customSetup=null;
+const goalInputs = () => [...form.querySelectorAll('[data-goal-select]')];
+const updateModeHints = () => {
+$("#freedom-hint").textContent=FREEDOM_RULES[$("#freedom").value].note;
+$("#difficulty-hint").textContent=DIFFICULTIES[$("#difficulty").value].note;
+};
+$("#freedom").onchange=updateModeHints;$("#difficulty").onchange=updateModeHints;
 $("#scenario").onchange = () => {
-const sc = SCENARIOS.find((x) => x.id === $("#scenario").value), card = $("#scenario-card");
-for (const id of ["emperor-name", "era-name"]) $("#" + id).disabled = !!sc;
-if (!sc) { card.textContent = "自拟帝名与年号，开创自己的王朝。"; return; }
-const v = scenarioPreview(sc);
-$("#emperor-name").value = v.emperor; $("#era-name").value = v.era;
-$("#difficulty").value = { 宽和: "easy", 常制: "normal", 艰危: "hard" }[v.difficulty] || "normal";
-card.innerHTML = "<strong>" + esc(v.dynasty + " · " + v.year + " · " + v.emperor + " " + v.age + " 岁") + "</strong><p>" + esc(v.blurb) +
-"</p><small>朝中：" + esc(v.cast.join("、")) + "等</small>";
+goalDrafts.set(previousScenario,goalInputs().map(el=>el.value));
+if(!previousScenario)customSetup={name:$("#emperor-name").value,era:$("#era-name").value,difficulty:$("#difficulty").value};
+const id=$("#scenario").value,sc=SCENARIOS.find(x=>x.id===id),card=$("#scenario-card"),recommended=scenarioRecommendations(id);
+previousScenario=id;
+for (const name of ["emperor-name", "era-name"]) $("#"+name).disabled=!!sc;
+goalInputs().forEach((el,i)=>{
+for(const opt of el.options){const g=GOALS.find(g=>g.id===opt.value);if(g)opt.textContent=g.title+(recommended.some(r=>r.id===g.id)?'（推荐）':'');}
+el.value=(goalDrafts.get(id)||recommended.map(g=>g.id))[i]||'';
+});
+const panel=$("#goal-recommendations"); panel.hidden=!sc;
+if(sc){
+const v=scenarioPreview(sc);$("#emperor-name").value=v.emperor;$("#era-name").value=v.era;$("#difficulty").value=scenarioDifficulty(sc);
+card.innerHTML='<strong>'+esc(v.dynasty+' · '+v.year+' · '+v.emperor+' '+v.age+' 岁')+'</strong><p>'+esc(v.blurb)+
+'</p><small>朝中：'+esc(v.cast.join('、'))+'等</small>';
+panel.innerHTML='<h3>推荐宏愿与心事</h3><p class="muted">按这个开局推荐，可随时自行更换。</p><div class="goal-recommend-grid">'+
+recommended.map(g=>'<div><strong>'+esc(g.kind+' · '+g.title)+'</strong><p>'+esc(g.reason)+'</p></div>').join('')+
+'</div><button type="button" id="use-recommended">采用这组推荐</button>';
+$("#use-recommended").onclick=()=>goalInputs().forEach((el,i)=>el.value=recommended[i].id);
+}else{
+card.textContent='自拟帝名与年号，开创自己的王朝。';
+if(customSetup){$("#emperor-name").value=customSetup.name;$("#era-name").value=customSetup.era;$("#difficulty").value=customSetup.difficulty;}
+panel.innerHTML='';
+}
+updateModeHints();
 };
 const showResult = (text, error = false) => {
 result.classList.remove("hidden");
@@ -3299,8 +3559,8 @@ $("#modal").insertAdjacentHTML(
 '<section class="narrative-settings" aria-label="故事文风"><h3>故事文风</h3><div class="fields"><div><label for="prose-style">文风</label><select id="prose-style">' +
 Object.entries(STYLES).map(([k, v]) => '<option value="' + k + '"' + (k === state.settings.prose ? " selected" : "") + ">" + esc(v.label) + "</option>").join("") +
 "</select></div>" + narrativeFields(state.settings) +
-'<div><label for="freedom-mode">自由度</label><select id="freedom-mode">'+Object.entries(FREEDOM_RULES).map(([id,r])=>'<option value="'+id+'"'+(id===state.settings.freedom?' selected':'')+'>'+r.label+'</option>').join('')+'</select></div>' +
-'</div><p class="muted" id="prose-note">' + esc(proseNote()) + ' 用于之后的新故事。</p></section>',
+'<div><label for="freedom-mode">口谕自由度</label><select id="freedom-mode">'+Object.entries(FREEDOM_RULES).map(([id,r])=>'<option value="'+id+'"'+(id===state.settings.freedom?' selected':'')+'>'+r.label+'</option>').join('')+'</select><p class="muted mode-hint" id="freedom-mode-hint">'+esc((FREEDOM_RULES[state.settings.freedom]||FREEDOM_RULES.mid).note)+'</p></div>' +
+'</div><p class="muted">施政难度：'+esc((DIFFICULTIES[state.settings.difficulty]||DIFFICULTIES.normal).label)+'（开局确定）</p><p class="muted" id="prose-note">' + esc(proseNote()) + ' 用于之后的新故事。</p></section>',
 );
 for (const id of ["prose-style", "prose-length", "prose-pov", "freedom-mode"])
 $("#" + id).onchange = () => {
@@ -3316,7 +3576,7 @@ state = { ...state, settings: { ...state.settings, freedom: $("#freedom-mode").v
 if(id==='freedom-mode'&&selectionYear(state)&&(state.harem.selectionYear!==globalYear(state.turn)||!state.harem.candidates.length))state=generateCandidates(state);
 $("#prose-note").textContent = proseNote() + " 用于之后的新故事。";
 scheduleSave.schedule();
-if(id==='freedom-mode')render();
+if(id==='freedom-mode'){render();$('#freedom-mode-hint').textContent=FREEDOM_RULES[state.settings.freedom].note;}
 toast(id==='freedom-mode' ? "自由度已改为" + FREEDOM_RULES[state.settings.freedom].label : "文风已改为" + STYLES[state.settings.prose].label + " · " + LENGTHS[state.settings.length].label + " · " + POVS[state.settings.pov].label);
 };
 $("#mode-toggle").onclick = () => {
@@ -3387,7 +3647,7 @@ return;
 if (name === "export-json" && state){await scheduleSave.flush();return download("御极-第" + slot + "卷.json", store.exportJSON(state));}
 if (name === "export-md") return exportMarkdown();
 if (name === "menu") return openDialog('御前菜单','<div class="grid"><button data-command="saves">存档</button><button data-command="settings">设置</button><button data-command="self">天子心事</button><button data-command="oral">拟口谕</button></div>','drawer');
-if (name === "stats") return openDialog('国势全览',metricsHTML(state),'drawer');
+if (name === "stats") return openNationOverview(state);
 if (name === "journal") return openDialog('起居注',state?'<button data-panel="史馆">前往史馆全本</button>'+state.history.slice(-3).reverse().map(h=>'<section class="paper section-spacer">'+chapterHTML(h,state.ambitions)+'</section>').join(''):'<p>尚未登基。</p>','drawer');
 if (name === "oral") { guard(); return openDialog('拟口谕','<form id="oral-form"><label for="oral">口谕</label><textarea id="oral" maxlength="500" required placeholder="如：赈济河南、整饬吏治"></textarea><div class="dialog-actions"><button class="primary" type="submit">降旨</button></div></form>','drawer'); }
 if (name === "actions") return openDialog('行动坞',actionsHTML(state)+'<button class="section-spacer" data-command="oral">拟口谕</button>','drawer');
@@ -3634,9 +3894,9 @@ return {};
 const { roll } = __load("src/core/rng.js");
 const { applyPackage } = __load("src/core/effects.js");
 const FREEDOM_RULES=Object.freeze({
-free:Object.freeze({label:'随心所欲',k:1,collapseImmune:true,courtLimit:Infinity,referrals:Infinity,talkRounds:Infinity,talkMultiplier:Infinity,appointmentAge:18,firstRankTalent:0,otherTalent:0,edictCooldown:0,selectionPeriod:0,rankCaps:false,tradeCooldown:0,energyPenalty:0.5}),
-mid:Object.freeze({label:'一般',k:0.5,collapseImmune:false,partialCosts:Object.freeze({treasury:1,favor:3,morale:0.5}),courtLimit:5,referrals:3,talkRounds:5,talkMultiplier:2,appointmentAge:20,firstRankTalent:30,otherTalent:15,edictCooldown:3,selectionPeriod:2,rankCaps:true,tradeCooldown:36,energyPenalty:1}),
-real:Object.freeze({label:'严格',k:0,collapseImmune:false,courtLimit:3,referrals:2,talkRounds:3,talkMultiplier:1,appointmentAge:25,firstRankTalent:40,otherTalent:25,edictCooldown:6,selectionPeriod:3,rankCaps:true,tradeCooldown:36,energyPenalty:1}),
+free:Object.freeze({label:'想做就成',note:'口谕必成，行动限制更少；钱粮仍以现有家底为限。',k:1,collapseImmune:true,courtLimit:Infinity,referrals:Infinity,talkRounds:Infinity,talkMultiplier:Infinity,appointmentAge:18,firstRankTalent:0,otherTalent:0,edictCooldown:0,selectionPeriod:0,rankCaps:false,tradeCooldown:0,energyPenalty:0.5}),
+mid:Object.freeze({label:'多数能成',note:'办事较容易，难事有时要多花钱、做让步或承担损失。',k:0.5,collapseImmune:false,partialCosts:Object.freeze({treasury:1,favor:3,morale:0.5}),courtLimit:5,referrals:3,talkRounds:5,talkMultiplier:2,appointmentAge:20,firstRankTalent:30,otherTalent:15,edictCooldown:3,selectionPeriod:2,rankCaps:true,tradeCooldown:36,energyPenalty:1}),
+real:Object.freeze({label:'成败看实力',note:'按人物能力、朝局和天命判断，办事门槛也更严格。',k:0,collapseImmune:false,courtLimit:3,referrals:2,talkRounds:3,talkMultiplier:1,appointmentAge:25,firstRankTalent:40,otherTalent:25,edictCooldown:6,selectionPeriod:3,rankCaps:true,tradeCooldown:36,energyPenalty:1}),
 });
 function freedomRules(state){return FREEDOM_RULES[state?.settings?.freedom]||FREEDOM_RULES.mid;}
 function successProbability(p,state){return p+(1-p)*freedomRules(state).k;}
@@ -8788,22 +9048,23 @@ function roster(state) {
 }
 // ——— 缓存分层 ———
 // 请求自前向后由稳定到易变排列，服务商按公共前缀缓存：
-// L0 system：规则、文风、各类任务与输出格式（整局几乎不变，正文与面谈共用）
+// L0 system：共用王朝规则与文风前缀，再附当前任务格式，不发其他任务。
 // L1 王朝设定集：人物与州郡静态资料（任免、生死、册封时才变）
 // L2 只追加的历史：卷摘要与按窗口封存的长期事实
 // L3 本旬动态：数值、变化、排程、结算、新奏报
 const FACT_WINDOW = 12;
 const stable = (value) => JSON.stringify(value);
 const r1 = (n) => (Number.isFinite(n) ? Math.round(n * 10) / 10 : n);
-function systemPrompt(state) {
+function systemPrompt(state, task = "turn") {
+  if(task === "talk")return worldRules(state) + "\n" + TALK_RULES;
   return worldRules(state) + "\n" + TASK_RULES.replace("{{LENGTH}}", (LENGTHS[state.settings.length] || LENGTHS.standard).words);
 }
 const TASK_RULES = `【叙事守则】死亡、怀孕、生产、小产、任免、战果、执行度只在结算表列出时才可写成本旬发生；其余只能作回忆或传闻，并用“曾”“昔”“当年”标明。不写结算表以外的金额、人数、年龄。人物反应仅限官员，须在本章出场，每人好感-5到5，合计绝对值不超过10。宏愿证据须逐字引用本章原句并含该目标全部关键词。长期事实只记本章写明、日后仍成立的事。
 标题、正文、奏折、对白只写游戏中的人和事，禁用“据实落账”“引擎结算”“模型叙事”等开发说明，不向玩家解释生成或校验过程。
 【正文任务】把本旬写成「朝」「午」「夜」三段，每段{{LENGTH}}字，空槽可略写。必须表现结算表的执行度与成败。正文只写故事，不抄结算条目；起居注会另行展示结算。廷议按名单立场写。为新奏报写160–260字正文。风闻只写无关痛痒的市井传言。
 章末 hook 写一句 30 字内的下旬伏笔，只能取自未结奏报、在途政务或新近事实，用“恐”“将”“未知”等未定语气，不得断言结果。
-正文输出：{"chapter":{"朝":"","午":"","夜":""},"summary":"30字内","hook":"","memorialTexts":[{"id":"","text":""}],"reactions":[{"name":"官员全名","favorDelta":0,"mood":"","note":""}],"rumors":[],"ambitionEvidence":[{"id":"","objectiveId":"","evidence":""}],"factUpdates":[{"subject":"","key":"","value":"","reason":""}]}
-【面谈任务】扮演被召见者御前面谈。只写此人言行，成功才让步，失败不得让步，不得超过职权。未提供的秘密不得编造，未允时不得承诺拨款、调兵或落实请求。好感、让步与秘密是否揭露由引擎判定，照判定写即可。
+正文输出：{"chapter":{"朝":"","午":"","夜":""},"summary":"30字内","hook":"","memorialTexts":[{"id":"","text":""}],"reactions":[{"name":"官员全名","favorDelta":0,"mood":"","note":""}],"rumors":[],"ambitionEvidence":[{"id":"","objectiveId":"","evidence":""}],"factUpdates":[{"subject":"","key":"","value":"","reason":""}]}`;
+const TALK_RULES = `【面谈任务】扮演被召见者御前面谈。只写游戏中的人物言行，不解释生成或校验；成功才让步，失败不得让步，不得超过职权。未提供的秘密不得编造，未允时不得承诺拨款、调兵或落实请求。好感、让步与秘密是否揭露由引擎判定，照判定写即可。
 面谈输出 {"reply":"","innerThought":"","mood":"","summary":""}`;
 // L1：静态资料，按 id 排序，不含好感、势力等数值。
 function dynastyBible(state) {
@@ -8920,7 +9181,7 @@ function talkMessages(state, result, log = []) {
   const prior = (Array.isArray(log) ? log : [])
     .filter((t) => t && t.person === result.person && t.turn === result.turn && t.id !== result.id && t.reply)
     .slice(-6);
-  const messages = [{ role: "system", content: systemPrompt(state) }];
+  const messages = [{ role: "system", content: systemPrompt(state, "talk") }];
   prior.forEach((t, i) => {
     messages.push({ role: "user", content: (i === 0 ? header : "") + talkTurnLine(t) });
     messages.push({ role: "assistant", content: stable({ reply: t.reply }) });
@@ -8966,7 +9227,7 @@ function biographyMessages(state, record) {
   // dynasty-wide cumulative stats. Do not send existing full biographies.
   const { biography, commentary, ...sealed } = record;
   return [
-    { role: "system", content: systemPrompt(state) },
+    { role: "system", content: worldRules(state) },
     {
       role: "user",
       content: `按引擎所定谥号与庙号写500–800字本纪与一段史臣曰。不得编造实录外的事，不得另定谥号。年度提要最多列本朝最近80个年度，较早政绩仅以引擎统计为据。输出 {"biography":"","commentary":""}。\n【封卷】${JSON.stringify(sealed)}\n【年度提要】${JSON.stringify(annual)}\n【引擎统计】${JSON.stringify({ accessionTurn: accession, reignTurns: record.reignTurns, stats: record.stats, children: record.children, score: record.score, 国势终值: { treasury: state.nation.treasury, privy: state.nation.privy, grain: state.nation.grain, morale: state.nation.morale, governance: state.nation.governance } })}`,
@@ -9020,6 +9281,7 @@ const { applyScenario, scenarioById } = __load("src/core/scenarios.js");
 const { callJSON } = __load("src/llm/client.js");
 const { worldMessages } = __load("src/llm/prompts.js");
 const { validateWorld } = __load("src/llm/validate.js");
+const { scenarioRecommendations } = __load("src/ui/opening-options.js");
 let seedSequence = 0;
 // This is an opening seed, not an authentication token. All game rolls still
 // use core/rng.js. Missing/restricted UUID APIs must not block the start form.
@@ -9056,7 +9318,8 @@ validate: validateWorld,
 });
 draft = applyWorld(draft, world);
 }
-return initialTurn(selectAmbitions(draft, goals));
+const selected = sc && (!Array.isArray(goals) || !goals.length) ? scenarioRecommendations(sc.id).map(g=>g.id) : goals;
+return initialTurn(selectAmbitions(draft, selected));
 }
 function openingErrorMessage(error) {
 const message = error?.message || "";
@@ -10870,6 +11133,43 @@ return s;
 
 return {applyWorld};
 },
+"src/ui/opening-options.js":function(__load){
+const { GOALS } = __load("src/core/ambitions.js");
+const DIFFICULTIES = {
+easy:{label:'容易',note:'大臣更容易把圣旨办好，适合先熟悉朝政。'},
+normal:{label:'标准',note:'圣旨能否落实，按平常的朝局条件判断。'},
+hard:{label:'困难',note:'圣旨更难落实，需要更用心地选人、理财和稳住朝局。'},
+};
+function scenarioDifficulty(sc) {return {宽和:'easy',常制:'normal',艰危:'hard'}[sc?.difficulty] || 'normal';}
+const RECOMMENDATIONS = {
+'han-wudi':[
+['clean','少年立新政，先把办事的班底理顺。'],['north','以北边匈奴为长期对手，逐步积攒军力。'],
+['friend','在两宫之间，结识肯为你办事的大臣。'],['heir','立下储君，安定后宫与继统。']],
+'tang-taizong':[
+['peace','兵临渭水之际，也要让百姓和朝臣安心。'],['north','先守住边关，再争取战场上的主动。'],
+['friend','用人不拘旧怨，争取能臣信任。'],['love','朝堂之外，也留心身边相伴的人。']],
+'song-renzong':[
+['clean','从厘清朝臣职责入手，为亲政做准备。'],['peace','把安民与治理当作长久功课。'],
+['health','幼帝起步，先安稳长大，养好身体。'],['friend','结识直臣，亲政时才有人可用。']],
+'ming-wanli':[
+['clean','考成与新政正待推行，可先整顿六部。'],['wealth','清理钱粮，让朝廷和地方都有余力。'],
+['friend','在太后与首辅身边，逐渐建立自己的班底。'],['family','从幼帝成长到成家，经营自己的宫廷。']],
+'ming-chongzhen':[
+['clean','阉党盘根错节，先选可用之臣、整顿朝局。'],['wealth','国库吃紧，赈灾与边饷都等着钱粮。'],
+['friend','危局之中，找到能信任、能办事的大臣。'],['heir','在救急之外，也为大明留下承继之人。']],
+'qing-kangxi':[
+['peace','从辅政起步，逐步稳住地方与朝局。'],['tribute','边地与藩镇各有所求，尝试以战和交涉安定四方。'],
+['health','幼帝先养好身体，等待亲政。'],['friend','结识自己的能臣，逐渐掌握用人之权。']],
+'qing-yongzheng':[
+['clean','继位之争未平，先理清六部、整顿官场。'],['wealth','清查亏空，让钱粮真正可用。'],
+['heir','继统之事早做安排，免留后患。'],['friend','在旧党与新臣之间，建立可靠的班底。']],
+};
+function scenarioRecommendations(id) {
+return (RECOMMENDATIONS[id] || []).map(([goal,reason]) => ({...GOALS.find(g=>g.id===goal),reason}));
+}
+
+return {DIFFICULTIES,scenarioDifficulty,scenarioRecommendations};
+},
 "src/ui/render.js":function(__load){
 const { esc, gameText } = __load("src/ui/common.js");
 const {
@@ -10992,7 +11292,7 @@ Math.min(100, Math.max(0, ((m.value || 0) / m.max) * 100)) +
 '%"></i></span></div>';
 if (mobile)
 return (
-'<button class="mobile-stats" data-command="stats" title="展开完整国势" aria-description="点击查看四组完整国势与单位">' +
+'<button class="mobile-stats" data-command="stats" title="展开完整国势" aria-description="点击查看钱粮、州郡、军备与朝局详情">' +
 ["国库", "民心", "吏治", "皇威"]
 .map((k) =>
 draw(groups.flatMap((g) => g.stats).find((m) => m.label === k)),
@@ -11332,7 +11632,8 @@ esc(s.emperor.name) +
 energyHTML(s, true) +
 "</div></div></div>" +
 metricsHTML(s) +
-('<div class="top-actions"><button data-command="saves">存档</button><button data-command="settings">设置</button></' +
+('<div class="top-actions"><button data-command="stats">国势全览</button>' +
+'<button data-command="saves">存档</button><button data-command="settings">设置</button></' +
 'div><button class="mobile-menu" data-command="menu" aria-label="御前菜单">☰</button>') +
 metricsHTML(s, true) +
 '</header><div class="workbench"><aside class="dock" aria-label="行动坞">' +
@@ -13735,6 +14036,167 @@ try{const r=typeof raw==='string'?JSON.parse(raw):raw;return [r.revision,r.check
 function sameEnvelope(a,b){return JSON.stringify(envelopeIdentity(a))===JSON.stringify(envelopeIdentity(b));}
 
 return {storedLayout,recoveryState,envelopeIdentity,sameEnvelope};
+},
+"src/ui/nation-overview.js":function(__load){
+const { esc, gameText, openDialog } = __load("src/ui/common.js");
+const { metricGroups } = __load("src/ui/view-model.js");
+const { nationData, nationFlow, nationSeries } = __load("src/ui/nation-data.js");
+const { FREEDOM_RULES } = __load("src/core/freedom.js");
+const { DIFFICULTIES } = __load("src/ui/opening-options.js");
+const number=n=>Number.isFinite(n)?n.toLocaleString('zh-CN',{maximumFractionDigits:2}):'—';
+const sign=n=>Math.abs(n)<0.005?'0':(n>0?'+':n<0?'−':'')+number(Math.abs(n));
+const delta=n=>'<span class="'+(Math.abs(n)<0.005?'muted':n>0?'positive':'negative')+'">'+sign(n)+'</span>';
+const table=(headers,rows)=>'<div class="nation-table-wrap"><table class="nation-table"><thead><tr>'+
+headers.map(h=>'<th scope="col">'+esc(h)+'</th>').join('')+'</tr></thead><tbody>'+
+rows.map(row=>'<tr>'+row.map((cell,i)=>'<td data-label="'+esc(headers[i])+'">'+esc(cell)+'</td>').join('')+'</tr>').join('')+
+'</tbody></table></div>';
+const section=(title,body,note='')=>'<section class="nation-section"><h3>'+esc(title)+'</h3>'+
+(note?'<p class="muted nation-note">'+esc(note)+'</p>':'')+body+'</section>';
+const figures=items=>'<dl class="nation-figures">'+items.map(([label,value,unit=''])=>'<div><dt>'+esc(label)+'</dt><dd>'+esc(value)+
+(unit?'<small> '+esc(unit)+'</small>':'')+'</dd></div>').join('')+'</dl>';
+function nationSparkline(points,label) {
+if(!points.length)return '<p class="muted">推进几旬后，这里会留下走势。</p>';
+const min=Math.min(...points.map(p=>p.value)),max=Math.max(...points.map(p=>p.value));
+const xy=points.map((p,i)=>({x:12+i*296/Math.max(1,points.length-1),y:max===min?56:96-(p.value-min)/(max-min)*80,p}));
+return '<svg class="nation-spark" viewBox="0 0 320 112" role="img" aria-label="'+esc(label+'走势，共'+points.length+'旬记录')+'">'+
+'<path class="nation-spark-grid" d="M12 16H308 M12 56H308 M12 96H308"/>'+
+'<polyline points="'+xy.map(v=>v.x+','+v.y).join(' ')+'"/>'+xy.map(v=>'<circle cx="'+v.x+'" cy="'+v.y+'" r="3"><title>'+esc('第'+v.p.turn+'旬：'+number(v.p.value))+'</title></circle>').join('')+
+'</svg><p class="nation-chart-range"><span>最低 '+number(min)+'</span><span>最高 '+number(max)+'</span></p>';
+}
+function flowHTML(s,span,expanded) {
+const flow=nationFlow(s,span);
+const summary='<div class="nation-flow-totals">'+[['treasury','国库','万两'],['privy','内帑','万两'],['grain','粮储','万石']].map(([key,name,unit])=>{
+const t=flow.totals[key];return '<div><h4>'+name+' <small>'+unit+'</small></h4><p>入 '+number(t.income)+' · 出 '+number(t.expense)+'</p><strong>净变 '+delta(t.net)+'</strong></div>';
+}).join('')+'</div>';
+const rows=flow.rows.slice(0,expanded?undefined:12).map(r=>[r.current?'本旬已办':'第'+r.turn+'旬',gameText(r.source),sign(r.treasury),sign(r.privy),sign(r.grain)]);
+return summary+(rows.length?table(['时日','事项','国库 / 万两','内帑 / 万两','粮储 / 万石'],rows):'<p class="muted">这段时间尚无钱粮变化。</p>')+
+(flow.rows.length>12?'<button data-nation-expand>'+ (expanded?'收起流水':'展开全部 '+flow.rows.length+' 条流水')+'</button>':'');
+}
+function nationOverviewHTML(s,span=12,expanded=false) {
+if(!s)return '<p>登基后，可在这里查看天下钱粮与朝局。</p>';
+const d=nationData(s),metrics=metricGroups(s).flatMap(g=>g.stats);
+const cards='<div class="nation-summary">'+metrics.map(m=>'<article class="nation-reading'+(m.danger?' nation-danger':'')+'"><span>'+m.label+'</span><strong>'+number(m.value)+
+'<small>'+m.unit+'</small></strong><p>本旬 '+delta(m.delta)+'</p></article>').join('')+'</div>';
+const dates=s.era.name+s.era.year+'年'+s.era.month+'月'+['上','中','下'][s.era.xun]+'旬';
+const top='<p class="nation-dateline">'+esc(s.dynasty+' · '+dates+' · '+s.emperor.name)+'</p><p class="muted">口谕：'+
+esc((FREEDOM_RULES[s.settings.freedom]||FREEDOM_RULES.mid).label)+' · 施政：'+esc((DIFFICULTIES[s.settings.difficulty]||DIFFICULTIES.normal).label)+'</p>'+cards+
+'<div class="nation-alerts">'+(d.alerts.length?d.alerts.map(a=>'<span>'+esc(a)+'</span>').join(''):'<span class="nation-calm">暂无紧急钱粮与边务警报</span>')+'</div>';
+const budget=figures([
+['每月俸禄',number(d.monthly.salaries),'万两'],['每月军饷',number(d.monthly.armyPay),'万两'],
+['现银可付固定俸饷',number(d.months),'月'],['国库积欠',number(s.nation.arrears),'万两'],
+['内帑积欠',number(s.nation.privyArrears),'万两'],['缺粮积欠',number(s.nation.grainArrears),'万石'],
+['每月军粮',number(d.grain.military),'万石'],['每月赈济用粮',number(d.grain.relief),'万石'],
+['粮储可供',number(d.grainMonths),'月'],['仓容',number(d.grain.storageCapacity),'万石'],
+['按现状季结收入',number(d.quarterIncome),'万两'],['季结补欠后净入库',sign(d.quarterNet),'万两'],
+['按现状月结 · 国库',sign(d.monthNet.treasury),'万两'],['按现状月结 · 内帑',sign(d.monthNet.privy),'万两'],
+['按现状月结 · 粮储',sign(d.monthNet.grain),'万石'],['按现状冗费与侵吞',number(d.waste.amount),'万两 / 月'],
+]);
+const charts='<div class="nation-charts">'+[['nation.treasury','国库'],['nation.morale','民心'],['nation.governance','吏治'],['emperor.prestige','皇威']].map(([path,label])=>
+'<article><h4>'+label+'</h4>'+nationSparkline(nationSeries(s,path,span),label)+'</article>').join('')+'</div>';
+const period='<div class="nation-period" role="group" aria-label="查看时段">'+[3,12,36].map(n=>'<button data-nation-period="'+n+'" aria-pressed="'+(n===span)+'">近'+n+'旬</button>').join('')+'</div>';
+const provinces=table(['州郡','人口 / 万人','月税额 / 万两','民心','灾情','驻军 / 人','主官'],d.provinces.map(p=>
+[p.name,number(p.pop),number(p.tax),number(p.morale),number(p.disaster)+(p.rebellion?' · 民变':''),number(p.garrison),p.governor]));
+const armies=table(['军镇','兵员 / 人','战备','边患','主将'],d.armies.map(b=>[b.name,number(b.troops),number(b.readiness),b.threat===undefined?'—':number(b.threat),b.commander]));
+const factions=figures([['在任职位',d.serving],['空缺职位',d.vacancies],['已批奏折',s.stats.petitions],['已颁圣旨',s.stats.edicts]])+
+table(['派系','势力','态度','在任席位'],d.factions.map(f=>[f.name,number(f.power),number(f.attitude),f.posts]));
+const foreign=table(['外邦','关系','边境','态度','年贡 / 万两','互市约定'],s.foreign.map(f=>[f.name,f.status,f.frontier+'境',number(f.attitude),
+number(f.status==='朝贡'?f.tribute:0),f.trade&&f.trade.until>=s.turn&&f.status!=='交战'?number(f.trade.income)+'万两 / 季 · 余'+(f.trade.until-s.turn)+'旬':'无']));
+const projects=d.projects.length?table(['政务','主办','进度','尚余 / 旬'],d.projects.map(p=>[p.name||p.edictType,p.office,number(p.progress)+'%',Math.max(0,p.end-s.turn)])):'<p class="muted">暂无在途政务。</p>';
+const wars=d.campaigns.length?table(['战区','对手','已战 / 旬','胜负差','敌兵 / 人'],d.campaigns.map(w=>[w.dir+'境',s.foreign.find(f=>f.id===w.country)?.name||'外邦',w.round||0,w.score||0,number(w.enemyTroops)])):'<p class="muted">目前没有战事。</p>';
+const palace=figures([['皇帝年龄',s.emperor.age,'岁'],...Object.entries(s.emperor.talents).map(([k,v])=>[k,number(v)]),
+['在宫嫔妃',d.consorts,'人'],['在世皇嗣',d.children.length,'人'],['储君',s.harem.children.find(c=>c.id===s.harem.heir)?.name||'尚未册立']]);
+return top+section('钱粮底账与用度',budget,'按当前条件测算，不含之后新发生的事件和行动。俸饷可付月数只按固定俸禄、军饷计算。')+
+section('近旬走势',period+charts,'只绘已有的连续旬次记录，纵轴按本段最低、最高值显示。')+
+section('钱粮来去',flowHTML(s,span,expanded),'近'+span+'旬及本旬已办事项，包含库间调拨；同一事项合并展示净变化。')+
+section('各州民情',figures([['总人口',number(d.population),'万人'],['有灾州郡',d.disaster],['州郡总数',d.provinces.length]])+provinces,'月税额是各州原定税额，季结实收还受吏治、灾情、减赋和民变影响。')+
+section('京营与四境',armies)+section('朝堂各派',factions)+section('外邦往来',foreign)+section('在途政务',projects)+section('当前战事',wars)+section('圣躬与储位',palace);
+}
+function openNationOverview(state) {
+let span=12,expanded=false;
+openDialog('国势全览','<div id="nation-overview">'+nationOverviewHTML(state,span,expanded)+'</div>','nation-shell');
+const root=document.querySelector('#nation-overview');
+root.onclick=e=>{
+const b=e.target.closest('button');if(!b)return;
+if(b.dataset.nationPeriod){span=Number(b.dataset.nationPeriod);expanded=false;}
+else if(b.hasAttribute('data-nation-expand'))expanded=!expanded;
+else return;
+root.innerHTML=nationOverviewHTML(state,span,expanded);
+};
+}
+
+return {nationSparkline,nationOverviewHTML,openNationOverview};
+},
+"src/ui/nation-data.js":function(__load){
+const { monthlyBudget, grainBudget, wasteQuote } = __load("src/core/finance.js");
+const { nationMonth, nationQuarter } = __load("src/core/nation.js");
+function entryChange(e) {
+return Number.isFinite(e.before)&&Number.isFinite(e.after)?e.after-e.before:Number.isFinite(e.delta)?e.delta:0;
+}
+function recentNationEntries(s, span=12) {
+const chapters=[...s.volumes.flatMap(v=>v.chapters),...s.history];
+return chapters.filter(h=>h.turn>s.turn-span&&h.turn<=s.turn).flatMap(h=>(h.entries||[]).map(e=>({...e,turn:h.turn})))
+.concat((s.interimEntries||[]).map(e=>({...e,turn:s.turn+1,current:true})));
+}
+function nationSeries(s, path, span=12) {
+let value=path.split('.').reduce((o,k)=>o?.[k],s), next=s.turn;
+if(!Number.isFinite(value))return [];
+value-=(s.interimEntries||[]).filter(e=>e.path===path).reduce((n,e)=>n+entryChange(e),0);
+const chapters=[...s.volumes.flatMap(v=>v.chapters),...s.history].filter(h=>h.turn<=s.turn).sort((a,b)=>b.turn-a.turn);
+const out=[];
+for(const h of chapters){
+if(h.turn!==next||out.length>=span)break;
+out.push({turn:h.turn,value});
+value-=(h.entries||[]).filter(e=>e.path===path).reduce((n,e)=>n+entryChange(e),0);next--;
+}
+return out.reverse();
+}
+function nationFlow(s, span=12) {
+const currencies=['treasury','privy','grain'],rows=new Map();
+const totals=Object.fromEntries(currencies.map(k=>[k,{income:0,expense:0,net:0}]));
+for(const e of recentNationEntries(s,span)){
+const k=e.path?.split('.')[1];if(!currencies.includes(k)||e.path!=='nation.'+k)continue;
+const change=entryChange(e);if(!change)continue;
+const t=totals[k];t.net+=change;if(change>0)t.income+=change;else t.expense-=change;
+const id=e.turn+'\0'+e.source;
+if(!rows.has(id))rows.set(id,{turn:e.turn,current:!!e.current,source:e.source,treasury:0,privy:0,grain:0});
+rows.get(id)[k]+=change;
+}
+return {totals,rows:[...rows.values()].filter(r=>currencies.some(k=>Math.abs(r[k])>1e-7)).reverse()};
+}
+function nationData(s) {
+const monthly=monthlyBudget(s),grain=grainBudget(s),waste=wasteQuote(s);
+// Use the same pure settlements as the game; the preview never advances the
+// saved state or rolls dice. It is a quote at today's conditions, not a promise.
+const month=nationMonth(s),quarter=nationQuarter(s),fixed=monthly.salaries+monthly.armyPay;
+const named=id=>s.court.officials.find(o=>o.id===id&&o.alive&&!o.retired&&!o.jailed&&o.health>0)?.name||'空缺';
+const serving=s.court.posts.filter(p=>named(p.holder)!=='空缺');
+const alerts=[];
+if(s.nation.treasury<fixed)alerts.push('现银不足一月俸禄与军饷');
+if(s.nation.grain<grain.monthly)alerts.push('现粮不足一月军粮与赈济');
+if(s.nation.arrears>0)alerts.push('国库仍有积欠 '+s.nation.arrears.toFixed(1)+' 万两');
+const disaster=s.nation.provinces.filter(p=>p.disaster>0),unrest=s.nation.provinces.filter(p=>p.morale<30||p.rebellion);
+if(disaster.length)alerts.push(disaster.length+'州有灾');
+if(unrest.length)alerts.push(unrest.length+'州民情不稳');
+for(const b of s.nation.army.frontiers.filter(b=>b.threat>=80))alerts.push(b.dir+'境边患 '+Math.round(b.threat));
+const urgent=s.memorials.filter(m=>m.urgent&&m.due-s.turn<=1).length;if(urgent)alerts.push(urgent+'本急报即将到期');
+return {
+monthly,grain,waste,fixed,alerts,disaster:disaster.length,
+population:s.nation.provinces.reduce((n,p)=>n+p.pop,0),
+months:fixed?s.nation.treasury/fixed:null,grainMonths:grain.monthly?s.nation.grain/grain.monthly:null,
+monthNet:Object.fromEntries(['treasury','privy','grain'].map(k=>[k,month.nation[k]-s.nation[k]])),
+quarterIncome:quarter.stats.income-s.stats.income,quarterNet:quarter.nation.treasury-s.nation.treasury,
+provinces:s.nation.provinces.map(p=>({...p,governor:named(s.court.posts.find(x=>x.provinceId===p.id)?.holder||p.governor)})),
+armies:[{name:'京营',...s.nation.army.capital,commander:named(s.court.posts.find(p=>p.title==='京营统领')?.holder)},
+...s.nation.army.frontiers.map(b=>({...b,name:b.dir+'境',commander:named(s.court.posts.find(p=>p.title===b.dir+'境总兵')?.holder)}))],
+serving:serving.length,vacancies:s.court.posts.length-serving.length,
+factions:s.court.factions.map(f=>({...f,posts:serving.filter(p=>s.court.officials.find(o=>o.id===p.holder)?.faction===f.id).length})),
+projects:s.projects.filter(p=>!p.done),campaigns:s.campaigns.filter(w=>!w.done),
+children:s.harem.children.filter(c=>c.health>0&&c.id!==s.reign?.emperorId&&c.name!==s.emperor.name),
+consorts:s.harem.consorts.filter(c=>!c.retired&&c.health>0).length,
+};
+}
+
+return {entryChange,recentNationEntries,nationSeries,nationFlow,nationData};
 }}; const __cache={}; function __load(id){return __cache[id] || (__cache[id]=__modules[id](__load));} __load("src/ui/app.js");})();
     </script>
   </body>

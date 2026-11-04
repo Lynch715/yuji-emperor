@@ -3,11 +3,11 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {APP_ICONS,createAppManifest} from '../src/ui/icon.js';
-test('E2 图标只保留32、180、192且单文件小于580KB（新增御批档案与图片导出，图标预算不变）',()=>{
+test('E2 图标只保留32、180、192且单文件小于600KB（新增皇帝推荐与国势数据面板，图标预算不变）',()=>{
  assert.deepEqual(Object.keys(APP_ICONS),['32','180','192']);
  assert.ok(Buffer.byteLength(readFileSync('src/ui/icon.js'))<60000);
  execFileSync(process.execPath,['scripts/build.mjs']);
- assert.ok(readFileSync('index.html').length<580000);
+ assert.ok(readFileSync('index.html').length<600000);
  assert.deepEqual(createAppManifest('https://example.com/game/?x=1','#123').icons.map(i=>i.sizes),['192x192']);
 });
 

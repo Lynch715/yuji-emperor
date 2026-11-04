@@ -124,22 +124,23 @@ export function roster(state) {
 }
 // ——— 缓存分层 ———
 // 请求自前向后由稳定到易变排列，服务商按公共前缀缓存：
-// L0 system：规则、文风、各类任务与输出格式（整局几乎不变，正文与面谈共用）
+// L0 system：共用王朝规则与文风前缀，再附当前任务格式，不发其他任务。
 // L1 王朝设定集：人物与州郡静态资料（任免、生死、册封时才变）
 // L2 只追加的历史：卷摘要与按窗口封存的长期事实
 // L3 本旬动态：数值、变化、排程、结算、新奏报
 export const FACT_WINDOW = 12;
 const stable = (value) => JSON.stringify(value);
 const r1 = (n) => (Number.isFinite(n) ? Math.round(n * 10) / 10 : n);
-export function systemPrompt(state) {
+export function systemPrompt(state, task = "turn") {
+  if(task === "talk")return worldRules(state) + "\n" + TALK_RULES;
   return worldRules(state) + "\n" + TASK_RULES.replace("{{LENGTH}}", (LENGTHS[state.settings.length] || LENGTHS.standard).words);
 }
 const TASK_RULES = `【叙事守则】死亡、怀孕、生产、小产、任免、战果、执行度只在结算表列出时才可写成本旬发生；其余只能作回忆或传闻，并用“曾”“昔”“当年”标明。不写结算表以外的金额、人数、年龄。人物反应仅限官员，须在本章出场，每人好感-5到5，合计绝对值不超过10。宏愿证据须逐字引用本章原句并含该目标全部关键词。长期事实只记本章写明、日后仍成立的事。
 标题、正文、奏折、对白只写游戏中的人和事，禁用“据实落账”“引擎结算”“模型叙事”等开发说明，不向玩家解释生成或校验过程。
 【正文任务】把本旬写成「朝」「午」「夜」三段，每段{{LENGTH}}字，空槽可略写。必须表现结算表的执行度与成败。正文只写故事，不抄结算条目；起居注会另行展示结算。廷议按名单立场写。为新奏报写160–260字正文。风闻只写无关痛痒的市井传言。
 章末 hook 写一句 30 字内的下旬伏笔，只能取自未结奏报、在途政务或新近事实，用“恐”“将”“未知”等未定语气，不得断言结果。
-正文输出：{"chapter":{"朝":"","午":"","夜":""},"summary":"30字内","hook":"","memorialTexts":[{"id":"","text":""}],"reactions":[{"name":"官员全名","favorDelta":0,"mood":"","note":""}],"rumors":[],"ambitionEvidence":[{"id":"","objectiveId":"","evidence":""}],"factUpdates":[{"subject":"","key":"","value":"","reason":""}]}
-【面谈任务】扮演被召见者御前面谈。只写此人言行，成功才让步，失败不得让步，不得超过职权。未提供的秘密不得编造，未允时不得承诺拨款、调兵或落实请求。好感、让步与秘密是否揭露由引擎判定，照判定写即可。
+正文输出：{"chapter":{"朝":"","午":"","夜":""},"summary":"30字内","hook":"","memorialTexts":[{"id":"","text":""}],"reactions":[{"name":"官员全名","favorDelta":0,"mood":"","note":""}],"rumors":[],"ambitionEvidence":[{"id":"","objectiveId":"","evidence":""}],"factUpdates":[{"subject":"","key":"","value":"","reason":""}]}`;
+const TALK_RULES = `【面谈任务】扮演被召见者御前面谈。只写游戏中的人物言行，不解释生成或校验；成功才让步，失败不得让步，不得超过职权。未提供的秘密不得编造，未允时不得承诺拨款、调兵或落实请求。好感、让步与秘密是否揭露由引擎判定，照判定写即可。
 面谈输出 {"reply":"","innerThought":"","mood":"","summary":""}`;
 // L1：静态资料，按 id 排序，不含好感、势力等数值。
 export function dynastyBible(state) {
@@ -256,7 +257,7 @@ export function talkMessages(state, result, log = []) {
   const prior = (Array.isArray(log) ? log : [])
     .filter((t) => t && t.person === result.person && t.turn === result.turn && t.id !== result.id && t.reply)
     .slice(-6);
-  const messages = [{ role: "system", content: systemPrompt(state) }];
+  const messages = [{ role: "system", content: systemPrompt(state, "talk") }];
   prior.forEach((t, i) => {
     messages.push({ role: "user", content: (i === 0 ? header : "") + talkTurnLine(t) });
     messages.push({ role: "assistant", content: stable({ reply: t.reply }) });
@@ -302,7 +303,7 @@ export function biographyMessages(state, record) {
   // dynasty-wide cumulative stats. Do not send existing full biographies.
   const { biography, commentary, ...sealed } = record;
   return [
-    { role: "system", content: systemPrompt(state) },
+    { role: "system", content: worldRules(state) },
     {
       role: "user",
       content: `按引擎所定谥号与庙号写500–800字本纪与一段史臣曰。不得编造实录外的事，不得另定谥号。年度提要最多列本朝最近80个年度，较早政绩仅以引擎统计为据。输出 {"biography":"","commentary":""}。\n【封卷】${JSON.stringify(sealed)}\n【年度提要】${JSON.stringify(annual)}\n【引擎统计】${JSON.stringify({ accessionTurn: accession, reignTurns: record.reignTurns, stats: record.stats, children: record.children, score: record.score, 国势终值: { treasury: state.nation.treasury, privy: state.nation.privy, grain: state.nation.grain, morale: state.nation.morale, governance: state.nation.governance } })}`,

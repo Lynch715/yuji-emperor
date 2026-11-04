@@ -30,7 +30,7 @@ import {
   actionButton,
   memorialListHTML,
   ambitionsHTML,
-  actionsHTML, metricsHTML, chapterHTML, chapterTitle, chapterNotes, ledgerLabel,
+  actionsHTML, chapterHTML, chapterTitle, chapterNotes, ledgerLabel,
 } from "./render.js";
 import { memorialDialog, scheduledMemorialDialog } from "./memorials.js";
 import { memorialAssignments } from "./memorial-state.js";
@@ -64,6 +64,8 @@ import {
   mockNarrative,
   validateTalk,
 } from "../llm/validate.js";
+import { DIFFICULTIES, scenarioDifficulty, scenarioRecommendations } from "./opening-options.js";
+import { openNationOverview } from "./nation-overview.js";
 initCommon();
 setLeaveGuard(() => busy);
 initAppIcon();
@@ -277,8 +279,12 @@ async function newGame() {
   openDialog(
     "登基 · 定年号",
     '<form id="new-form"><div class="scenario-pick"><label for="scenario">开局</label><select id="scenario"><option value="">自拟王朝（架空）</option>' +
-      SCENARIOS.map((sc) => '<option value="' + sc.id + '">' + esc(sc.title) + " · " + esc(sc.difficulty) + "</option>").join("") +
-      '</select><div id="scenario-card" class="scenario-card muted">自拟帝名与年号，开创自己的王朝。</div></div><div class="fields"><div><label for="emperor-name">皇帝名</label><input id="emperor-name" required maxlength="12" value="萧承熙"></div><div><label for="era-name">年号</label><input id="era-name" required maxlength="8" value="永宁"></div><div><label for="freedom">自由度</label><select id="freedom"><option value="mid">一般</option><option value="free">随心所欲</option><option value="real">严格</option></select></div><div><label for="difficulty">难度</label><select id="difficulty"><option value="normal">常制</option><option value="easy">宽和</option><option value="hard">艰危</option></select></div><div><label for="prose-style">文笔</label><select id="prose-style">' +
+      SCENARIOS.map((sc) => '<option value="' + sc.id + '">' + esc(sc.title) + " · " + esc(DIFFICULTIES[scenarioDifficulty(sc)].label) + "</option>").join("") +
+      '</select><div id="scenario-card" class="scenario-card muted">自拟帝名与年号，开创自己的王朝。</div></div><div class="fields"><div><label for="emperor-name">皇帝名</label><input id="emperor-name" required maxlength="12" value="萧承熙"></div><div><label for="era-name">年号</label><input id="era-name" required maxlength="8" value="永宁"></div><div><label for="freedom">口谕自由度</label><select id="freedom" aria-describedby="freedom-hint">' +
+      ['mid','free','real'].map(id=>'<option value="'+id+'">'+FREEDOM_RULES[id].label+'</option>').join('')+
+      '</select><p class="muted mode-hint" id="freedom-hint">'+FREEDOM_RULES.mid.note+'</p></div><div><label for="difficulty">施政难度</label><select id="difficulty" aria-describedby="difficulty-hint">'+
+      ['normal','easy','hard'].map(id=>'<option value="'+id+'">'+DIFFICULTIES[id].label+'</option>').join('')+
+      '</select><p class="muted mode-hint" id="difficulty-hint">'+DIFFICULTIES.normal.note+'</p></div><div><label for="prose-style">文笔</label><select id="prose-style">' +
       Object.entries(STYLES)
         .map(([k, v]) => '<option value="' + k + '">' + v.label + "</option>")
         .join("") +
@@ -310,7 +316,7 @@ async function newGame() {
         ((i % 2) + 1) +
         '</label><select data-goal-select id="goal-' +
         i +
-        '"><option value="">天定</option>' +
+        '"><option value="">随机分配</option>' +
         GOALS.filter((g) => g.kind === kind)
           .map((g) => '<option value="' + g.id + '">' + g.title + "</option>")
           .join("") +
@@ -321,19 +327,42 @@ async function newGame() {
     .closest("label")
     .insertAdjacentHTML(
       "beforebegin",
-      '<div class="fields">' + goalsHTML + "</div>",
+      '<section id="goal-recommendations" hidden></section><div class="fields">' + goalsHTML + "</div>",
     );
   const form = $("#new-form"), dialog = $("#modal"), result = $("#new-result");
   const scope = createDialogRequestScope(dialog, form);
+  const goalDrafts = new Map(); let previousScenario='',customSetup=null;
+  const goalInputs = () => [...form.querySelectorAll('[data-goal-select]')];
+  const updateModeHints = () => {
+    $("#freedom-hint").textContent=FREEDOM_RULES[$("#freedom").value].note;
+    $("#difficulty-hint").textContent=DIFFICULTIES[$("#difficulty").value].note;
+  };
+  $("#freedom").onchange=updateModeHints;$("#difficulty").onchange=updateModeHints;
   $("#scenario").onchange = () => {
-    const sc = SCENARIOS.find((x) => x.id === $("#scenario").value), card = $("#scenario-card");
-    for (const id of ["emperor-name", "era-name"]) $("#" + id).disabled = !!sc;
-    if (!sc) { card.textContent = "自拟帝名与年号，开创自己的王朝。"; return; }
-    const v = scenarioPreview(sc);
-    $("#emperor-name").value = v.emperor; $("#era-name").value = v.era;
-    $("#difficulty").value = { 宽和: "easy", 常制: "normal", 艰危: "hard" }[v.difficulty] || "normal";
-    card.innerHTML = "<strong>" + esc(v.dynasty + " · " + v.year + " · " + v.emperor + " " + v.age + " 岁") + "</strong><p>" + esc(v.blurb) +
-      "</p><small>朝中：" + esc(v.cast.join("、")) + "等</small>";
+    goalDrafts.set(previousScenario,goalInputs().map(el=>el.value));
+    if(!previousScenario)customSetup={name:$("#emperor-name").value,era:$("#era-name").value,difficulty:$("#difficulty").value};
+    const id=$("#scenario").value,sc=SCENARIOS.find(x=>x.id===id),card=$("#scenario-card"),recommended=scenarioRecommendations(id);
+    previousScenario=id;
+    for (const name of ["emperor-name", "era-name"]) $("#"+name).disabled=!!sc;
+    goalInputs().forEach((el,i)=>{
+      for(const opt of el.options){const g=GOALS.find(g=>g.id===opt.value);if(g)opt.textContent=g.title+(recommended.some(r=>r.id===g.id)?'（推荐）':'');}
+      el.value=(goalDrafts.get(id)||recommended.map(g=>g.id))[i]||'';
+    });
+    const panel=$("#goal-recommendations"); panel.hidden=!sc;
+    if(sc){
+      const v=scenarioPreview(sc);$("#emperor-name").value=v.emperor;$("#era-name").value=v.era;$("#difficulty").value=scenarioDifficulty(sc);
+      card.innerHTML='<strong>'+esc(v.dynasty+' · '+v.year+' · '+v.emperor+' '+v.age+' 岁')+'</strong><p>'+esc(v.blurb)+
+        '</p><small>朝中：'+esc(v.cast.join('、'))+'等</small>';
+      panel.innerHTML='<h3>推荐宏愿与心事</h3><p class="muted">按这个开局推荐，可随时自行更换。</p><div class="goal-recommend-grid">'+
+        recommended.map(g=>'<div><strong>'+esc(g.kind+' · '+g.title)+'</strong><p>'+esc(g.reason)+'</p></div>').join('')+
+        '</div><button type="button" id="use-recommended">采用这组推荐</button>';
+      $("#use-recommended").onclick=()=>goalInputs().forEach((el,i)=>el.value=recommended[i].id);
+    }else{
+      card.textContent='自拟帝名与年号，开创自己的王朝。';
+      if(customSetup){$("#emperor-name").value=customSetup.name;$("#era-name").value=customSetup.era;$("#difficulty").value=customSetup.difficulty;}
+      panel.innerHTML='';
+    }
+    updateModeHints();
   };
   const showResult = (text, error = false) => {
     result.classList.remove("hidden");
@@ -718,8 +747,8 @@ async function command(name) {
         '<section class="narrative-settings" aria-label="故事文风"><h3>故事文风</h3><div class="fields"><div><label for="prose-style">文风</label><select id="prose-style">' +
           Object.entries(STYLES).map(([k, v]) => '<option value="' + k + '"' + (k === state.settings.prose ? " selected" : "") + ">" + esc(v.label) + "</option>").join("") +
           "</select></div>" + narrativeFields(state.settings) +
-          '<div><label for="freedom-mode">自由度</label><select id="freedom-mode">'+Object.entries(FREEDOM_RULES).map(([id,r])=>'<option value="'+id+'"'+(id===state.settings.freedom?' selected':'')+'>'+r.label+'</option>').join('')+'</select></div>' +
-          '</div><p class="muted" id="prose-note">' + esc(proseNote()) + ' 用于之后的新故事。</p></section>',
+          '<div><label for="freedom-mode">口谕自由度</label><select id="freedom-mode">'+Object.entries(FREEDOM_RULES).map(([id,r])=>'<option value="'+id+'"'+(id===state.settings.freedom?' selected':'')+'>'+r.label+'</option>').join('')+'</select><p class="muted mode-hint" id="freedom-mode-hint">'+esc((FREEDOM_RULES[state.settings.freedom]||FREEDOM_RULES.mid).note)+'</p></div>' +
+          '</div><p class="muted">施政难度：'+esc((DIFFICULTIES[state.settings.difficulty]||DIFFICULTIES.normal).label)+'（开局确定）</p><p class="muted" id="prose-note">' + esc(proseNote()) + ' 用于之后的新故事。</p></section>',
       );
       for (const id of ["prose-style", "prose-length", "prose-pov", "freedom-mode"])
         $("#" + id).onchange = () => {
@@ -735,7 +764,7 @@ async function command(name) {
           if(id==='freedom-mode'&&selectionYear(state)&&(state.harem.selectionYear!==globalYear(state.turn)||!state.harem.candidates.length))state=generateCandidates(state);
           $("#prose-note").textContent = proseNote() + " 用于之后的新故事。";
           scheduleSave.schedule();
-          if(id==='freedom-mode')render();
+          if(id==='freedom-mode'){render();$('#freedom-mode-hint').textContent=FREEDOM_RULES[state.settings.freedom].note;}
           toast(id==='freedom-mode' ? "自由度已改为" + FREEDOM_RULES[state.settings.freedom].label : "文风已改为" + STYLES[state.settings.prose].label + " · " + LENGTHS[state.settings.length].label + " · " + POVS[state.settings.pov].label);
         };
       $("#mode-toggle").onclick = () => {
@@ -806,7 +835,7 @@ async function command(name) {
   if (name === "export-json" && state){await scheduleSave.flush();return download("御极-第" + slot + "卷.json", store.exportJSON(state));}
   if (name === "export-md") return exportMarkdown();
   if (name === "menu") return openDialog('御前菜单','<div class="grid"><button data-command="saves">存档</button><button data-command="settings">设置</button><button data-command="self">天子心事</button><button data-command="oral">拟口谕</button></div>','drawer');
-  if (name === "stats") return openDialog('国势全览',metricsHTML(state),'drawer');
+  if (name === "stats") return openNationOverview(state);
   if (name === "journal") return openDialog('起居注',state?'<button data-panel="史馆">前往史馆全本</button>'+state.history.slice(-3).reverse().map(h=>'<section class="paper section-spacer">'+chapterHTML(h,state.ambitions)+'</section>').join(''):'<p>尚未登基。</p>','drawer');
   if (name === "oral") { guard(); return openDialog('拟口谕','<form id="oral-form"><label for="oral">口谕</label><textarea id="oral" maxlength="500" required placeholder="如：赈济河南、整饬吏治"></textarea><div class="dialog-actions"><button class="primary" type="submit">降旨</button></div></form>','drawer'); }
   if (name === "actions") return openDialog('行动坞',actionsHTML(state)+'<button class="section-spacer" data-command="oral">拟口谕</button>','drawer');
