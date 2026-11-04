@@ -126,10 +126,9 @@ export function diplomacy(state, action, die) {
         }
     }
   } else if (operation === "互市") {
-    other.trade={start:s.turn,until:s.turn+36,income:0};
     if (c.success) {
       other.status = "通好";
-      other.trade.income=Math.min(6,other.authorization/2);
+      other.trade={start:s.turn,until:s.turn+36,income:Math.min(6,other.authorization/2)};
     }
   } else if (operation === "册封" || operation === "索贡") {
     if (c.success) other.status = "朝贡";

@@ -120,9 +120,9 @@ test('C9 宴请好感按俭常盛加2加4加7，同客六旬内减半且不影�
  }
 });
 
-test('C9 互市成功只设季度收入与一年期限，同国外邦一年只能议一次，交战停收',()=>{
+test('C9 互市成功只设季度收入与一年期限，同国外邦可重新议约，交战停收',()=>{
  let s=start();s.emperor.talents.魅力=100;s.foreign[0].attitude=100;const treasury=s.nation.treasury;
- let r=diplomacy(s,{country:'w0',operation:'互市'},20);assert.equal(r.state.nation.treasury,treasury);assert.ok(r.state.foreign[0].trade.income>0);assert.equal(r.state.foreign[0].trade.until,s.turn+36);assert.match(diplomacyBlock(r.state,{country:'w0',operation:'互市'}),/一年/);
+ let r=diplomacy(s,{country:'w0',operation:'互市'},20);assert.equal(r.state.nation.treasury,treasury);assert.ok(r.state.foreign[0].trade.income>0);assert.equal(r.state.foreign[0].trade.until,s.turn+36);assert.equal(diplomacyBlock(r.state,{country:'w0',operation:'互市'}),'');
  const traded=structuredClone({...r.state,turn:9}),none=structuredClone(traded);none.foreign[0].trade=null;close(nationQuarter(traded).nation.treasury-nationQuarter(none).nation.treasury,r.state.foreign[0].trade.income);
  traded.foreign[0].status='交战';close(nationQuarter(traded).nation.treasury,nationQuarter(none).nation.treasury);assert.equal(diplomacyBlock({...r.state,turn:36},{country:'w0',operation:'互市'}),'');
 });

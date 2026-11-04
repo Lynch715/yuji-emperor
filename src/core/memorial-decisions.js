@@ -1,3 +1,4 @@
+import { TEXT_LIMITS } from './text.js';
 export const REMARK_KINDS=['嘉奖','申饬','附旨','无'];
 export function memorialDecision(action,id){
  const value=action?.decisions?.[id];
@@ -7,7 +8,7 @@ export function memorialDecision(action,id){
  const object=value&&typeof value==='object'&&!Array.isArray(value)?value:null;
  const option=typeof value==='string'?value:typeof object?.option==='string'?object.option:action?.decision||'approve';
  const remark=typeof object?.remark==='string'?object.remark:typeof action?.remark==='string'?action.remark:'';
- return {option,remark:remark.slice(0,100),...(REMARK_KINDS.includes(object?.remarkKind)?{remarkKind:object.remarkKind}:{})};
+ return {option,remark:remark.slice(0,TEXT_LIMITS.remark),...(REMARK_KINDS.includes(object?.remarkKind)?{remarkKind:object.remarkKind}:{})};
 }
 export function normalizeMemorialAction(action){
  if(!action||!['上朝','批折'].includes(action.kind))return action;

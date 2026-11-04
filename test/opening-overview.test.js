@@ -58,10 +58,10 @@ test('正文、面谈与本纪只发送各自任务格式，保留当前开局�
  assert.ok(!c.includes('【正文任务】')&&!c.includes('【面谈任务】'));
  for(const text of [a,b,c])assert.match(text,/不得按史书预言或补写结局/);
 });
-test('通俗档位沿用原自由度与难度ID，概率和严格档门槛保持不变',()=>{
+test('通俗档位沿用原自由度与难度ID，概率保持不变，上朝改为不限本数',()=>{
  assert.deepEqual(Object.keys(FREEDOM_RULES),['free','mid','real']);assert.equal(FREEDOM_RULES.free.k,1);assert.equal(FREEDOM_RULES.mid.k,0.5);assert.equal(FREEDOM_RULES.real.k,0);
  assert.deepEqual(Object.values(FREEDOM_RULES).map(r=>r.label),['想做就成','多数能成','成败看实力']);
- assert.deepEqual(Object.keys(DIFFICULTIES),['easy','normal','hard']);assert.equal(FREEDOM_RULES.real.courtLimit,3);
+ assert.deepEqual(Object.keys(DIFFICULTIES),['easy','normal','hard']);assert.equal(FREEDOM_RULES.real.courtLimit,Infinity);
 });
 test('国势测算复用月结季结，币种与债务口径正确且不改变状态或随机数',()=>{
  const s=fresh();s.nation.arrears=70;s.nation.privyArrears=2;s.nation.grainArrears=10;s.nation.provinces[0].disaster=35;

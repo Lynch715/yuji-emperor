@@ -17,6 +17,7 @@ const MODERN_SCENES={
  歇息:'皇帝暂时放下手里的事，坐在窗边歇一会儿。',日常:'宫里照常有人来往，送来文书，再安静地退下。',
 };
 export function modernTalkFallback(result){
+ if(result.mode==='chat')return '臣在听，陛下请讲。';
  return result.denied?'这件事超出了臣的职权，需要先回去商议。':result.success?'臣明白陛下的意思，会在自己的职权范围内尽力去办。':'臣有些难处，眼下还办不到。';
 }
 export function sceneNarrative(forecast){

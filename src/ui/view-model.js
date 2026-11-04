@@ -16,7 +16,7 @@ export const ACTION_GROUPS = [
 ];
 export const HALLS = ["朝堂", "后宫", "天下", "内库", "宗室", "史馆"];
 export const GLYPHS = {上朝:"朝",批折:"批",下旨:"旨",任命:"任",召见:"见",宴请:"宴",外交:"使",私下行事:"密",后宫:"宫",选妃:"选",出巡:"行",亲征:"征",歇息:"憩"};
-export function selectionDescription(s){const period=freedomRules(s).selectionPeriod;return period?'每'+period+'年选秀一次，非选秀年无法留牌。':'可随时选秀，位分名额不限。';}
+export function selectionDescription(s){const period=freedomRules(s).selectionPeriod;return period?'每'+period+'年大选一次；平日可花内帑三万两举荐一人，已有候选人可随时留牌。':'可随时选秀，位分名额不限。';}
 export function actionAvailability(s, kind) {
   if (!s) return "待登基";
   if(s.regency&&!["批折","召见","私下行事","歇息"].includes(kind))return "摄政期间不可安排";
@@ -29,7 +29,7 @@ export function actionAvailability(s, kind) {
     if (kind === "批折" && s.schedule.朝 && s.schedule.午) return "朝午已排定";
   }
   if (kind === "亲征" && !s.campaigns.some(w=>!w.done)) return "无战事";
-  if (kind === "选妃" && (!selectionYear(s) || !s.harem.candidates.length)) return "非选秀年";
+
   if (s.campaigns.some(w=>w.personal&&!w.done) && !["亲征","歇息"].includes(kind)&&kind!=='批折') return "御驾在外";
   return "";
 }
@@ -37,7 +37,8 @@ export function actionMeta(kind, s = null) {
   const rule = ACTIONS[kind];
   if (!rule) return "";
   const time = rule.full ? "占满一旬" : rule.slots.length === 3 ? "任意" : rule.slots.join("/");
-  if (kind === "上朝") return time + " · 精力 " + rule.energy + " · " + (freedomRules(s).courtLimit===Infinity?"本数不限":freedomRules(s).courtLimit+"本内") + "，可廷议问责";
+  if (kind === "上朝") return time + " · 精力 " + rule.energy + " · " + (freedomRules(s).courtLimit===Infinity?"本数不限，每多3本加耗1":freedomRules(s).courtLimit+"本内") + "，可廷议问责";
+  if (kind === "召见") return time+" · 每人精力1，续谈不加耗";
   if (kind === "批折") return time + " · 每3本1 · 独断，不经廷议";
   return time + " · " + (rule.full ? rule.energy+"点" : "精力 " + rule.energy);
 }
@@ -65,9 +66,11 @@ export function scheduleEstimate(s) {
     if (a.kind === "下旨" && EDICTS[a.edictType]) {
       const e=EDICTS[a.edictType];
       if (a.edictType === "转内帑" || a.edictType === "转国库") {
-        const amount=Number(a.amount)||10,from=a.edictType==="转内帑"?"treasury":"privy";
+        const from=a.edictType==="转内帑"?"treasury":"privy",to=from==="treasury"?"privy":"treasury",amount=Math.min(Math.max(0,Number(a.amount??10)),s.nation[from],1000000-s.nation[to]);
         totals[from]-=amount;totals[from==="treasury"?"privy":"treasury"]+=amount;
       } else {
+        const existing=s.projects.find(p=>!p.done&&p.edictType===a.edictType&&(p.province||null)===(a.province||null)&&(a.edictType!=='征兵'||p.armyTarget===(a.armyTarget||'capital')));
+        if(existing&&(a.followup!=='督办'||existing.end<=s.turn+1&&existing.execRate>=1))continue;
         totals[e.private?"privy":"treasury"]-=e.cost;
         totals.grain-=e.grain||0;
         if (e.months) executions.push(a.edictType+"「"+execution(s,a.edictType,11).label+"」");
@@ -83,8 +86,9 @@ export function scheduleEstimate(s) {
     if(a.kind==="宴请")totals.privy-=({俭:2,常:5,盛:12}[a.cost||"常"]||0);
     if(a.kind==="出巡")totals.privy-=6;
     if(a.kind==="私下行事"&&a.operation==="收买")totals.privy-=5;
-    if(a.kind==="后宫"&&a.operation==="赏赐")totals.privy-=Number(a.amount)||2;
+    if(a.kind==="后宫"&&a.operation==="赏赐")totals.privy-=Math.min(Math.max(0,Number(a.amount??2)),s.nation.privy);
     if(a.kind==="外交"&&a.operation==="宣战"){const goal=WAR_GOALS[a.warGoal||'repel'];totals.treasury-=goal?.silver||25;totals.grain-=goal?.grain||30;}
+    if(a.kind==="选妃"&&a.operation==="举荐")totals.privy-=3;
     if(a.kind==="外交"&&a.operation==="和亲")totals.privy-=10;
   }
   return {totals,executions};

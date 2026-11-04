@@ -149,6 +149,10 @@ function finishInstant(s,type,province) {
   s.edictCooldowns[type==='赈灾'?type+':'+(province||'all'):type]=s.turn+freedomRules(s).edictCooldown;
   return s;
 }
+function projectExecution(p){
+ const label=p.execRate>=1.2?'雷厉风行':p.execRate>=1?'照办':p.execRate>=0.6?'敷衍':'阳奉阴违';
+ return {label,rate:p.execRate,official:p.office};
+}
 export function issueEdict(state, action, die) {
   const type = action.edictType || "禁令",
     rule = EDICTS[type];
@@ -163,6 +167,7 @@ export function issueEdict(state, action, die) {
         (c) => c.id === action.child && c.sex === "男" && c.health > 0,
       );
     if (!child) throw new Error("立储须选择在世皇子");
+    if(s.harem.heir===child.id)return {state:s,note:child.name+' 已为储君，重申原旨'};
     s.harem.heir = child.id;
     return {
       state: finishInstant(applyPackage(s, rule.effects, "册立储君"),type),
@@ -178,15 +183,26 @@ export function issueEdict(state, action, die) {
   if (type === "转内帑" || type === "转国库") {
     const from = type === "转内帑" ? "treasury" : "privy",
       to = from === "treasury" ? "privy" : "treasury",
-      amount = Math.floor(Number(action.amount) || 10);
-    if (amount <= 0 || amount > 100 || state.nation[from] < amount)
-      throw new Error("拨转须为 1–100 万两，且余额足够");
+      requested = Number(action.amount ?? 10);
+    if (!Number.isFinite(requested)||requested<=0)throw new Error('请填写大于零的拨转金额');
+    const amount=Math.min(requested,state.nation[from],1000000-state.nation[to]);
     return {
       state: finishInstant(applyPackage(state, { [from]: -amount, [to]: amount }, "两库拨转"),type),
-      note: "拨转 " + amount + " 万两",
+      note: "拨转 " + amount + " 万两"+(amount<requested?'（按余银及收款余量办理）':''),
     };
   }
   const account = rule.private ? "privy" : "treasury";
+  const ongoing=state.projects.find(p=>!p.done&&p.edictType===type&&(p.province||null)===(action.province||null)&&(type!=='征兵'||p.armyTarget===armyTarget));
+  if(ongoing){
+    if(action.followup!=='督办')return {state:clone(state),note:type+' · 重申原旨，仍由原班人马办理，未另支钱粮 · '+projectExecution(ongoing).label,execution:projectExecution(ongoing)};
+    if(ongoing.end<=state.turn+1&&ongoing.execRate>=1)return {state:clone(state),note:type+' · 即将办结，未再追加钱粮 · '+projectExecution(ongoing).label,execution:projectExecution(ongoing)};
+    if(state.nation[account]<rule.cost||state.nation.grain<(rule.grain||0))throw new Error('钱粮不足，无法追加督办');
+    const s=applyPackage(state,{[account]:-rule.cost,grain:-(rule.grain||0)},type+'：追加督办');
+    const p=s.projects.find(p=>p.id===ongoing.id);p.end=Math.max(s.turn+1,p.end-3);p.execRate=p.execRate<0.6?0.6:p.execRate<1?1:1.2;p.cost+=rule.cost;
+    p.effects=Object.fromEntries(Object.entries(rule.effects).map(([k,v])=>[k,v*p.execRate]));
+    s.stats.edicts++;
+    return {state:s,note:type+' · 追加督办，期限缩短、执行改善；仍只办结一次 · '+projectExecution(p).label,execution:projectExecution(p)};
+  }
   if (
     !action.intent && (state.nation[account] < rule.cost ||
     state.nation.grain < (rule.grain || 0))

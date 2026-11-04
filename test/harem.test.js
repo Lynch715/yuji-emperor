@@ -48,7 +48,7 @@ test("only an active night visit can conceive, birth after ten months and retry 
   assert.equal(found.harem.children.length, 1);
   assert.equal(found.stats.births, 1);
 });
-test("rank limits and triennial selection are enforced", () => {
+test("rank limits and triennial grand selection remain; pending candidates can be chosen later", () => {
   let s = initial();s.settings.freedom="real";
   assert.ok(s.harem.candidates.length >= 6 && s.harem.candidates.length <= 10);
   assert.throws(() => selectConsort(s, s.harem.candidates[0].id, "皇后"));
@@ -56,7 +56,7 @@ test("rank limits and triennial selection are enforced", () => {
   assert.equal(s.harem.consorts.length, 4);
   s.era.year = 2;s.turn=36;
   assert.throws(() => generateCandidates(s));
-  assert.throws(() => selectConsort(s, s.harem.candidates[0].id));
+  assert.doesNotThrow(() => selectConsort(s, s.harem.candidates[0].id));
 });
 test("heir edict needs a live son and death without heir triggers factional succession", () => {
   const s = initial();

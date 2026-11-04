@@ -435,7 +435,7 @@ export function validateTalk(data, result, state) {
     const checked=validateTurn({chapter:{朝:'',午:reply,夜:''}},f).chapter.午;
     return {reply:checked||result.intentResults.map(r=>r.summary).join('；'),innerThought:result.innerThought||'',effects:null};
   }
-  if (result.denied || !result.success) {
+  if (result.denied || !result.success || result.mode==='chat') {
     // Remove entire unsupported promise/number sentences so removing a word
     // cannot turn a refusal into an apparent agreement.
     const numeral='[0-9０-９零〇一二两三四五六七八九十百千万亿壹贰叁肆伍陆柒捌玖拾佰仟萬億]';

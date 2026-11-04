@@ -42,7 +42,7 @@ test('B2 上奏人按衙门和州选取且朱批按ID区分同名官员',()=>{
  s.court.officials.find(o=>o.id==='o13').jailed=true;
  assert.equal(events.pickMemorialist(s,'钱粮','z0').fromId,money);
  for(const o of s.court.officials){o.alive=false;o.post=null;}for(const p of s.court.posts)p.holder=null;
- assert.deepEqual(events.pickMemorialist(s,'言官',null),{from:'通政司',fromId:null});
+ assert.deepEqual(events.pickMemorialist(s,'言官',null),{from:'通政司',fromId:null,fromPost:'',fromRole:'转呈（原折未署名）'});
  s=initial();s.court.officials[1].name=s.court.officials[0].name;s.memorials=[{...s.memorials[0],from:s.court.officials[0].name,fromId:'o1'}];
  const n=events.resolveMemorial(s,s.memorials[0].id,'remark','勤勉可嘉').state;assert.equal(n.court.officials[1].favor,s.court.officials[1].favor+2);assert.equal(n.court.officials[0].favor,s.court.officials[0].favor);
 });
@@ -100,11 +100,11 @@ test('B6 宏愿按本朝时间子嗣宠爱计算，继位重掷并封存旧愿�
  assert.ok(s.receipts.includes('goal:'+reignId(s)+':wealth'));const again=evaluateAmbitions(s);assert.equal(again.emperor.prestige,s.emperor.prestige);
 });
 
-test('B7 封驳退钱粮，阳奉阴违记侵吞，同类在途及完工后六旬禁止重复',()=>{
+test('B7 封驳退钱粮，阳奉阴违记侵吞，重复旨意沿用原项目且完工后可以再办',()=>{
  let s=initial();s.emperor.prestige=0;s.nation.governance=0;s.court.officials.forEach(o=>{o.abilities.政=0;o.greed=100;});
  const no=issueEdict(s,{edictType:'赈灾'},1);assert.equal(no.execution.tier,4);assert.equal(no.state.nation.treasury,s.nation.treasury);assert.equal(no.state.nation.grain,s.nation.grain);assert.match(no.note,/内阁封还/);
- s=high(initial());const r=issueEdict(s,{edictType:'修河'},20);assert.throws(()=>issueEdict(r.state,{edictType:'修河'},20),/在途|冷却/);
- let done={...r.state,turn:r.state.projects[0].end};done=advanceProjects(done);assert.throws(()=>issueEdict(done,{edictType:'修河'},20),/冷却/);done.turn+=6;assert.doesNotThrow(()=>issueEdict(done,{edictType:'修河'},20));
+ s=high(initial());const r=issueEdict(s,{edictType:'修河'},20);assert.deepEqual(issueEdict(r.state,{edictType:'修河'},20).state.projects,r.state.projects);
+ let done={...r.state,turn:r.state.projects[0].end};done=advanceProjects(done);assert.doesNotThrow(()=>issueEdict(done,{edictType:'修河'},20));done.turn+=6;assert.doesNotThrow(()=>issueEdict(done,{edictType:'修河'},20));
  s=initial();s.emperor.prestige=30;s.nation.governance=30;for(const o of s.court.officials){o.abilities.政=50;o.greed=0;}for(const f of s.court.factions)f.attitude=50;
  const diverted=issueEdict(s,{edictType:'修河'},11);assert.equal(diverted.execution.tier,3);assert.match(diverted.note,/截留侵吞/);assert.equal(diverted.state.nation.treasury,s.nation.treasury-60);assert.equal(diverted.state.projects[0].execRate,0.3);
 });

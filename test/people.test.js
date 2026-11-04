@@ -87,8 +87,9 @@ test("private actions are bounded, referrals expire and imperial examinations ad
   let s = initial();
   const r = privateAction(s, { operation: "收买", person: "o0" });
   assert.equal(r.state.nation.privy, s.nation.privy - 5);
+  const due=s.memorials[0].due;
   s = resolveMemorial(s, s.memorials[0].id, "discuss").state;
-  assert.equal(s.memorials[0].due, 7);
+  assert.equal(s.memorials[0].due, due);
   s.turn = 108;
   const n = courtYear(s);
   assert.equal(n.court.officials.length,30);

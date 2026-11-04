@@ -1,4 +1,5 @@
 import { memorialDecision } from './memorial-decisions.js';
+import { TEXT_LIMITS } from './text.js';
 
 // Capture the original petition only on commit, including saved old forecasts.
 export function collectMemorialReviews(state, forecast) {
@@ -19,7 +20,9 @@ export function collectMemorialReviews(state, forecast) {
         memorialId: id, turn: forecast.state.turn, slot,
         dynasty: state.dynasty, emperor: state.emperor.name,
         era: structuredClone(state.era), title: m.title,
-        from: m.from || '通政司', type: m.type || '政务',
+        from: m.from || '', type: m.type || '政务',
+        ...(m.fromPost!==undefined?{fromPost:m.fromPost}:{}),
+        ...(m.fromRole!==undefined?{fromRole:m.fromRole}:{}),
         text: typeof m.text === 'string' && m.text ? m.text : String(m.request || ''),
         decision: canceled?'战局已变，原拟军令收回':labels[d.option] || chosen?.label || d.option,
         consequence: canceled?'原拟处置未再执行，口谕办理结果见本旬起居注。':labels[d.option] ? '' : chosen?.consequence || '',
@@ -41,7 +44,8 @@ export function validateMemorialReviews(chapters) {
         !Number.isSafeInteger(r.turn) || r.turn !== h.turn || !['朝','午','夜'].includes(r.slot) ||
         !r.era || typeof r.era.name !== 'string' || !Number.isSafeInteger(r.era.year) ||
         !Number.isSafeInteger(r.era.month) || r.era.month < 1 || r.era.month > 12 ||
-        ![0,1,2].includes(r.era.xun) || r.remark.length > 100) throw new Error('御批档案损坏');
+        ![0,1,2].includes(r.era.xun) || r.remark.length > TEXT_LIMITS.remark ||
+        ['fromPost','fromRole'].some(k=>r[k]!==undefined&&(typeof r[k]!=='string'||r[k].length>120))) throw new Error('御批档案损坏');
       seen.add(r.id);
     }
   }

@@ -9,11 +9,8 @@ for(const [name,c] of Object.entries(CASES)){
  session.ids=s.memorials.slice(0,c.count).map(m=>m.id);session.stance=c.stance;
  for(const id of session.ids){session.choices[id]=c.decision;session.remarks[id]=c.remark||'';}
  const f=forecastTurn(s,{...s.schedule,[c.slot]:memorialAction(s,session)});
- // v14-v16 add archive records, optional goals and campaigns; generic forecasts
- // against the v13 policy baseline with its historical version marker.
- f.state.v=13;
- // v13 changes memorial choices and their real effects intentionally.
- // Hash the current complete forecast; older format-only hashes stay archived.
+ // v17 deliberately changes hearing energy, referral deadlines and author snapshots.
+ // Keep the complete current forecast and retain historical hashes in summary.json.
  proof[name]=createHash('sha256').update(JSON.stringify(f)).digest('hex');
 }
 if(process.argv[2]!=='--stdout')writeFileSync(process.argv[2]||'qa/batch5/format-after.json',JSON.stringify(proof,null,2));

@@ -59,7 +59,7 @@ test('D1 三十种国势模板覆盖灾边亏欠贪举河盐宗言使，50年标
   for(const m of s.memorials){titles.add(m.title);kinds.add(m.templateId);
    assert.ok(m.options.length>=2&&m.options.length<=4);
    if(m.type==='请赈')assert.ok(s.nation.provinces.find(p=>p.id===m.provinceId).disaster>0);
-   assert.deepEqual({from:m.from,fromId:m.fromId},pickMemorialist(s,m.type,m.provinceId));
+   assert.deepEqual({from:m.from,fromId:m.fromId,fromPost:m.fromPost,fromRole:m.fromRole},pickMemorialist(s,m.type,m.provinceId));
   }
  }
  assert.ok(titles.size>=25,`标题${titles.size}`);assert.ok(kinds.size>=30,`模板${kinds.size}`);

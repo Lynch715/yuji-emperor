@@ -1,3 +1,4 @@
+import { talkPeople } from '../core/text.js';
 import { FREEDOM_RULES, selectionYear } from "../core/freedom.js";
 import { globalYear } from "../core/calendar.js";
 import { requestScheduleIntents, requestPlayerIntents } from "./intent-request.js";
@@ -531,8 +532,6 @@ function startTalk(person) {
   guard();
   if (state.schedule.午 && state.schedule.午.kind !== "召见")
     throw new Error("午间已有安排，请先撤下");
-  if (state.schedule.午?.kind === "召见" && state.schedule.午.person !== person)
-    throw new Error("午间已召见另一人，请待下旬");
   const npc =
     state.court.officials.find((o) => o.id === person) ||
     state.harem.consorts.find((o) => o.id === person) ||
@@ -540,7 +539,7 @@ function startTalk(person) {
   if (!npc) throw new Error("请选择人物");
   openDialog(
     "召见 · " + npc.name,
-    '<p class="muted">召见占午间，耗精力1。所议之事须在此人职权之内。</p><div id="talk-log">' +
+    '<p class="muted">午间可先后召见多人，每人耗精力1；同一人继续交谈不再加耗。所议之事须在此人职权之内。</p><div id="talk-log">' +
       state.talks
         .filter((t) => t.person === person && t.turn === state.turn)
         .map(
@@ -552,13 +551,13 @@ function startTalk(person) {
             "</div>",
         )
         .join("") +
-      '</div><form id="talk-form"><label for="talk-line">御前垂询</label><textarea id="talk-line" required maxlength="500" placeholder="卿以为此事当如何？"></textarea><div class="dialog-actions"><button type="submit" class="primary">垂询</button></div></form>',
+      '</div><form id="talk-form"><label for="talk-line">御前垂询</label><textarea id="talk-line" required maxlength="8000" placeholder="卿以为此事当如何？"></textarea><div class="dialog-actions"><button type="submit" class="primary">垂询</button></div></form>',
     "action-shell",
   );
   const refreshTalkPaper=()=>{
     if(!$('#talk-form')||!$('#action-document'))return;
     const live=state.court.officials.find(o=>o.id===person)||state.harem.consorts.find(o=>o.id===person)||state.foreign.find(o=>o.id===person)||npc;
-    $('#action-document').innerHTML='<span class="portrait" aria-hidden="true">'+esc(live.name[0])+'</span><h3>'+esc(live.name)+'</h3><p>'+esc(postTitle(state,state.court.posts.find(p=>p.holder===person))||live.family||live.status||'御前候见')+'</p><p>'+esc(live.age?live.age+' 岁':'')+(live.favor!==undefined?' · 好感 '+live.favor:'')+'</p><p class="muted">垂询有度。拨款与让步须在此人职权之内，过分要求仍须回部再议。</p>';
+    $('#action-document').innerHTML='<span class="portrait" aria-hidden="true">'+esc(live.name[0])+'</span><h3>'+esc(live.name)+'</h3><p>'+esc(postTitle(state,state.court.posts.find(p=>p.holder===person))||live.family||live.status||'御前候见')+'</p><p>'+esc(live.age?live.age+' 岁':'')+(live.favor!==undefined?' · 好感 '+live.favor:'')+'</p><p class="muted">可以继续垂询，也可稍后召见别人。聊天不限轮数，办事仍须核对钱粮和职权。</p>';
   };
   refreshTalkPaper();
   $("#talk-form").onsubmit = async (e) => {
@@ -575,7 +574,8 @@ function startTalk(person) {
       let attempt = talkAttempt(state, person, line, intents.some(a=>a.type!=='other'));
       if(intents.length)attempt=resolveTalkIntents(attempt.state,attempt.result,intents);
       state = attempt.state;
-      state.schedule.午 = { kind: "召见", person, label: npc.name };
+      const persons=[...new Set([...talkPeople(state.schedule.午),...state.talks.filter(t=>t.turn===state.turn).map(t=>t.person),person])];
+      state.schedule.午 = { kind: '召见', person, persons, label: persons.length>1?npc.name+'等 '+persons.length+' 人':npc.name };
       const result = attempt.result;
       await persist();
       let response = {
@@ -608,14 +608,12 @@ function startTalk(person) {
           (response.innerThought
             ? '<p class="muted">心声：' + esc(response.innerThought) + "</p>"
             : "") +
-          "<small>天命 " +
-          result.die +
-          " · " +
+          "<small>" + (result.mode==='chat'?'御前交谈':result.reused?'沿用方才议定':(result.die===null?'所议之事 · ':'天命 '+result.die+' · ') +
           (result.denied
             ? "超出职权"
             : result.success
               ? "应允"
-              : "未允") +
+              : "未允")) +
           "</small></div>",
       );
       if ($("#talk-line")) $("#talk-line").value = "";
@@ -840,7 +838,7 @@ async function command(name) {
   if (name === "menu") return openDialog('御前菜单','<div class="grid"><button data-command="saves">存档</button><button data-command="settings">设置</button><button data-command="self">天子心事</button><button data-command="oral">拟口谕</button></div>','drawer');
   if (name === "stats") return openNationOverview(state);
   if (name === "journal") return openDialog('起居注',state?'<button data-panel="史馆">前往史馆全本</button>'+state.history.slice(-3).reverse().map(h=>'<section class="paper section-spacer">'+chapterHTML(h,state.ambitions)+'</section>').join(''):'<p>尚未登基。</p>','drawer');
-  if (name === "oral") { guard(); return openDialog('拟口谕','<form id="oral-form"><label for="oral">口谕</label><textarea id="oral" maxlength="500" required placeholder="如：赈济河南、整饬吏治"></textarea><div class="dialog-actions"><button class="primary" type="submit">降旨</button></div></form>','drawer'); }
+  if (name === "oral") { guard(); return openDialog('拟口谕','<form id="oral-form"><label for="oral">口谕</label><textarea id="oral" maxlength="8000" required placeholder="如：赈济河南、整饬吏治"></textarea><div class="dialog-actions"><button class="primary" type="submit">降旨</button></div></form>','drawer'); }
   if (name === "actions") return openDialog('行动坞',actionsHTML(state)+'<button class="section-spacer" data-command="oral">拟口谕</button>','drawer');
   if (name === "memorials") {
     openDialog(

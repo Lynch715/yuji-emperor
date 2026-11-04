@@ -2837,6 +2837,10 @@ margin-top:var(--s5);
 color:var(--gold);
 text-indent:0;
 }
+.memorial-body,.archive-original {white-space:normal;text-indent:0;}
+.memorial-body p,.archive-original p {text-indent:2em;margin:0 0 0.9em;overflow-wrap:anywhere;}
+.memorial-signature {text-align:right;font:var(--font-small)/1.9 var(--serif);margin:1em 0;overflow-wrap:anywhere;}
+.memorial-author {color:var(--ink);font-weight:600;}
     </style>
   </head>
   <body>
@@ -2849,6 +2853,7 @@ text-indent:0;
     >
     <script>
       (() => { "use strict"; const __modules = {"src/ui/app.js":function(__load){
+const { talkPeople } = __load("src/core/text.js");
 const { FREEDOM_RULES, selectionYear } = __load("src/core/freedom.js");
 const { globalYear } = __load("src/core/calendar.js");
 const { requestScheduleIntents, requestPlayerIntents } = __load("src/ui/intent-request.js");
@@ -3382,8 +3387,6 @@ function startTalk(person) {
 guard();
 if (state.schedule.午 && state.schedule.午.kind !== "召见")
 throw new Error("午间已有安排，请先撤下");
-if (state.schedule.午?.kind === "召见" && state.schedule.午.person !== person)
-throw new Error("午间已召见另一人，请待下旬");
 const npc =
 state.court.officials.find((o) => o.id === person) ||
 state.harem.consorts.find((o) => o.id === person) ||
@@ -3391,7 +3394,7 @@ state.foreign.find((o) => o.id === person);
 if (!npc) throw new Error("请选择人物");
 openDialog(
 "召见 · " + npc.name,
-'<p class="muted">召见占午间，耗精力1。所议之事须在此人职权之内。</p><div id="talk-log">' +
+'<p class="muted">午间可先后召见多人，每人耗精力1；同一人继续交谈不再加耗。所议之事须在此人职权之内。</p><div id="talk-log">' +
 state.talks
 .filter((t) => t.person === person && t.turn === state.turn)
 .map(
@@ -3403,13 +3406,13 @@ esc(t.reply) +
 "</div>",
 )
 .join("") +
-'</div><form id="talk-form"><label for="talk-line">御前垂询</label><textarea id="talk-line" required maxlength="500" placeholder="卿以为此事当如何？"></textarea><div class="dialog-actions"><button type="submit" class="primary">垂询</button></div></form>',
+'</div><form id="talk-form"><label for="talk-line">御前垂询</label><textarea id="talk-line" required maxlength="8000" placeholder="卿以为此事当如何？"></textarea><div class="dialog-actions"><button type="submit" class="primary">垂询</button></div></form>',
 "action-shell",
 );
 const refreshTalkPaper=()=>{
 if(!$('#talk-form')||!$('#action-document'))return;
 const live=state.court.officials.find(o=>o.id===person)||state.harem.consorts.find(o=>o.id===person)||state.foreign.find(o=>o.id===person)||npc;
-$('#action-document').innerHTML='<span class="portrait" aria-hidden="true">'+esc(live.name[0])+'</span><h3>'+esc(live.name)+'</h3><p>'+esc(postTitle(state,state.court.posts.find(p=>p.holder===person))||live.family||live.status||'御前候见')+'</p><p>'+esc(live.age?live.age+' 岁':'')+(live.favor!==undefined?' · 好感 '+live.favor:'')+'</p><p class="muted">垂询有度。拨款与让步须在此人职权之内，过分要求仍须回部再议。</p>';
+$('#action-document').innerHTML='<span class="portrait" aria-hidden="true">'+esc(live.name[0])+'</span><h3>'+esc(live.name)+'</h3><p>'+esc(postTitle(state,state.court.posts.find(p=>p.holder===person))||live.family||live.status||'御前候见')+'</p><p>'+esc(live.age?live.age+' 岁':'')+(live.favor!==undefined?' · 好感 '+live.favor:'')+'</p><p class="muted">可以继续垂询，也可稍后召见别人。聊天不限轮数，办事仍须核对钱粮和职权。</p>';
 };
 refreshTalkPaper();
 $("#talk-form").onsubmit = async (e) => {
@@ -3426,7 +3429,8 @@ const intents=await requestPlayerIntents(config,state,[{id:'talk-'+state.turn+'-
 let attempt = talkAttempt(state, person, line, intents.some(a=>a.type!=='other'));
 if(intents.length)attempt=resolveTalkIntents(attempt.state,attempt.result,intents);
 state = attempt.state;
-state.schedule.午 = { kind: "召见", person, label: npc.name };
+const persons=[...new Set([...talkPeople(state.schedule.午),...state.talks.filter(t=>t.turn===state.turn).map(t=>t.person),person])];
+state.schedule.午 = { kind: '召见', person, persons, label: persons.length>1?npc.name+'等 '+persons.length+' 人':npc.name };
 const result = attempt.result;
 await persist();
 let response = {
@@ -3459,14 +3463,12 @@ esc(response.reply) +
 (response.innerThought
 ? '<p class="muted">心声：' + esc(response.innerThought) + "</p>"
 : "") +
-"<small>天命 " +
-result.die +
-" · " +
+"<small>" + (result.mode==='chat'?'御前交谈':result.reused?'沿用方才议定':(result.die===null?'所议之事 · ':'天命 '+result.die+' · ') +
 (result.denied
 ? "超出职权"
 : result.success
 ? "应允"
-: "未允") +
+: "未允")) +
 "</small></div>",
 );
 if ($("#talk-line")) $("#talk-line").value = "";
@@ -3691,7 +3693,7 @@ if (name === "export-md") return exportMarkdown();
 if (name === "menu") return openDialog('御前菜单','<div class="grid"><button data-command="saves">存档</button><button data-command="settings">设置</button><button data-command="self">天子心事</button><button data-command="oral">拟口谕</button></div>','drawer');
 if (name === "stats") return openNationOverview(state);
 if (name === "journal") return openDialog('起居注',state?'<button data-panel="史馆">前往史馆全本</button>'+state.history.slice(-3).reverse().map(h=>'<section class="paper section-spacer">'+chapterHTML(h,state.ambitions)+'</section>').join(''):'<p>尚未登基。</p>','drawer');
-if (name === "oral") { guard(); return openDialog('拟口谕','<form id="oral-form"><label for="oral">口谕</label><textarea id="oral" maxlength="500" required placeholder="如：赈济河南、整饬吏治"></textarea><div class="dialog-actions"><button class="primary" type="submit">降旨</button></div></form>','drawer'); }
+if (name === "oral") { guard(); return openDialog('拟口谕','<form id="oral-form"><label for="oral">口谕</label><textarea id="oral" maxlength="8000" required placeholder="如：赈济河南、整饬吏治"></textarea><div class="dialog-actions"><button class="primary" type="submit">降旨</button></div></form>','drawer'); }
 if (name === "actions") return openDialog('行动坞',actionsHTML(state)+'<button class="section-spacer" data-command="oral">拟口谕</button>','drawer');
 if (name === "memorials") {
 openDialog(
@@ -3932,13 +3934,29 @@ render();
 
 return {};
 },
+"src/core/text.js":function(__load){
+const TEXT_LIMITS={talk:8000,decree:8000,remark:2000};
+function textParagraphs(text){return String(text||'').replace(/\r\n?/g,'\n').split(/\n+/).map(p=>p.trim()).filter(Boolean);}
+function talkPeople(action){return [...new Set(action?.persons||[action?.person].filter(Boolean))];}
+function talkMode(line,structured=false){
+if(structured)return '议事';
+const text=String(line).split(/[。！？；\n]/).filter(t=>!/(不必|不要|无需|无须|不得|不可|勿|毋|未曾)/.test(t)).join('。');
+if(/威吓|问罪|严惩|朕要斩|朕要杀/.test(text))return '威吓';
+if(/试探|暗查|打探.*秘密|查.*底细/.test(text))return '试探';
+if(/说服|劝服|劝说|再考虑|请.*答应|请.*应允|愿不愿|肯不肯/.test(text))return '说服';
+if(/(?:拨|挪|转|赏|借|给).{0,12}[0-9一二三四五六七八九十百千万亿两]+.{0,3}(?:两|银)/.test(text))return '拨款';
+return '闲谈';
+}
+
+return {TEXT_LIMITS,textParagraphs,talkPeople,talkMode};
+},
 "src/core/freedom.js":function(__load){
 const { roll } = __load("src/core/rng.js");
 const { applyPackage } = __load("src/core/effects.js");
 const FREEDOM_RULES=Object.freeze({
 free:Object.freeze({label:'想做就成',note:'口谕必成，行动限制更少；钱粮仍以现有家底为限。',k:1,collapseImmune:true,courtLimit:Infinity,referrals:Infinity,talkRounds:Infinity,talkMultiplier:Infinity,appointmentAge:18,firstRankTalent:0,otherTalent:0,edictCooldown:0,selectionPeriod:0,rankCaps:false,tradeCooldown:0,energyPenalty:0.5}),
-mid:Object.freeze({label:'多数能成',note:'办事较容易，难事有时要多花钱、做让步或承担损失。',k:0.5,collapseImmune:false,partialCosts:Object.freeze({treasury:1,favor:3,morale:0.5}),courtLimit:5,referrals:3,talkRounds:5,talkMultiplier:2,appointmentAge:20,firstRankTalent:30,otherTalent:15,edictCooldown:3,selectionPeriod:2,rankCaps:true,tradeCooldown:36,energyPenalty:1}),
-real:Object.freeze({label:'成败看实力',note:'按人物能力、朝局和天命判断，办事门槛也更严格。',k:0,collapseImmune:false,courtLimit:3,referrals:2,talkRounds:3,talkMultiplier:1,appointmentAge:25,firstRankTalent:40,otherTalent:25,edictCooldown:6,selectionPeriod:3,rankCaps:true,tradeCooldown:36,energyPenalty:1}),
+mid:Object.freeze({label:'多数能成',note:'办事较容易，难事有时要多花钱、做让步或承担损失。',k:0.5,collapseImmune:false,partialCosts:Object.freeze({treasury:1,favor:3,morale:0.5}),courtLimit:Infinity,referrals:Infinity,talkRounds:Infinity,talkMultiplier:2,appointmentAge:20,firstRankTalent:30,otherTalent:15,edictCooldown:0,selectionPeriod:2,rankCaps:true,tradeCooldown:0,energyPenalty:1}),
+real:Object.freeze({label:'成败看实力',note:'按人物能力、朝局和天命判断，办事门槛也更严格。',k:0,collapseImmune:false,courtLimit:Infinity,referrals:Infinity,talkRounds:Infinity,talkMultiplier:1,appointmentAge:25,firstRankTalent:40,otherTalent:25,edictCooldown:0,selectionPeriod:3,rankCaps:true,tradeCooldown:0,energyPenalty:1}),
 });
 function freedomRules(state){return FREEDOM_RULES[state?.settings?.freedom]||FREEDOM_RULES.mid;}
 function successProbability(p,state){return p+(1-p)*freedomRules(state).k;}
@@ -4122,7 +4140,7 @@ const { seedNumber, random, DRAFT } = __load("src/core/rng.js");
 const { uniqueName } = __load("src/core/names.js");
 const { chooseRegent } = __load("src/core/regency-info.js");
 const {factionPowers} = __load("src/core/politics.js");
-const VERSION = 16;
+const VERSION = 17;
 const TALENTS = ["政略", "权谋", "武略", "文采", "魅力"];
 const SLOTS = ["朝", "午", "夜"];
 const POST_NAMES = [
@@ -4604,6 +4622,8 @@ s.memorialVariety ??= s.memorials.filter(m=>m.templateId).slice(-72).map(m=>({id
 if(input.v<15)for(const a of s.ambitions)if(a.scenarioId&&a.holdTurns){a.stableTurns??=0;a.checkedTurn??=s.turn;}
 // v16 campaignVersion and treaties are optional. Keep legacy wars and saved
 // forecasts untouched; only newly declared wars get the richer rules.
+// v17 adds optional author snapshots and cumulative gifts. Missing fields
+// mean historical/unused; do not reconstruct old signatures or forecasts.
 s.settings.freedom ??= "mid";
 s.v = VERSION;
 s.volumeIndex ??= [];
@@ -4766,6 +4786,12 @@ if(s.v>=13&&s.memorials.some(m=>m.options?.some(o=>o.consequence!==undefined&&ty
 if(s.v>=14)validateMemorialReviews([...(s.volumes||[]).flatMap(v=>v.chapters),...(s.history||[])]);
 if(s.v>=15)validateScenarioAmbitions(s,reignId(s));
 if(s.v>=16)validateCampaignState(s);
+if(s.v>=17){
+for(const m of s.memorials)for(const k of ['fromPost','fromRole'])if(m[k]!==undefined&&(typeof m[k]!=='string'||m[k].length>120))throw new Error('上奏人资料损坏');
+for(const c of s.harem.consorts)if(c.gifts!==undefined&&(!c.gifts||!Number.isSafeInteger(c.gifts.turn)||c.gifts.turn<0||c.gifts.turn>s.turn||!Number.isFinite(c.gifts.amount)||c.gifts.amount<0))throw new Error('赏赐记录损坏');
+const a=s.schedule?.午;
+if(a?.persons!==undefined&&(!Array.isArray(a.persons)||a.persons.some(id=>typeof id!=='string')||new Set(a.persons).size!==a.persons.length))throw new Error('召见名单损坏');
+}
 const walk = (x) => {
 if (typeof x === "number" && !Number.isFinite(x))
 throw new Error("存档含 NaN/Infinity");
@@ -4783,6 +4809,7 @@ return (s.reign?.number || 1) === 1
 return {VERSION,TALENTS,SLOTS,POST_NAMES,withDraft,clone,createState,migrate,assertState,reignId};
 },
 "src/core/memorial-decisions.js":function(__load){
+const { TEXT_LIMITS } = __load("src/core/text.js");
 const REMARK_KINDS=['嘉奖','申饬','附旨','无'];
 function memorialDecision(action,id){
 const value=action?.decisions?.[id];
@@ -4792,7 +4819,7 @@ if(!value||typeof value!=='object'||Array.isArray(value)||typeof value.option!==
 const object=value&&typeof value==='object'&&!Array.isArray(value)?value:null;
 const option=typeof value==='string'?value:typeof object?.option==='string'?object.option:action?.decision||'approve';
 const remark=typeof object?.remark==='string'?object.remark:typeof action?.remark==='string'?action.remark:'';
-return {option,remark:remark.slice(0,100),...(REMARK_KINDS.includes(object?.remarkKind)?{remarkKind:object.remarkKind}:{})};
+return {option,remark:remark.slice(0,TEXT_LIMITS.remark),...(REMARK_KINDS.includes(object?.remarkKind)?{remarkKind:object.remarkKind}:{})};
 }
 function normalizeMemorialAction(action){
 if(!action||!['上朝','批折'].includes(action.kind))return action;
@@ -4811,6 +4838,7 @@ return {REMARK_KINDS,memorialDecision,normalizeMemorialAction,remarkCategory};
 },
 "src/core/memorial-records.js":function(__load){
 const { memorialDecision } = __load("src/core/memorial-decisions.js");
+const { TEXT_LIMITS } = __load("src/core/text.js");
 // Capture the original petition only on commit, including saved old forecasts.
 function collectMemorialReviews(state, forecast) {
 const records = [];
@@ -4830,7 +4858,9 @@ id: forecast.turnId + ':' + slot + ':' + id,
 memorialId: id, turn: forecast.state.turn, slot,
 dynasty: state.dynasty, emperor: state.emperor.name,
 era: structuredClone(state.era), title: m.title,
-from: m.from || '通政司', type: m.type || '政务',
+from: m.from || '', type: m.type || '政务',
+...(m.fromPost!==undefined?{fromPost:m.fromPost}:{}),
+...(m.fromRole!==undefined?{fromRole:m.fromRole}:{}),
 text: typeof m.text === 'string' && m.text ? m.text : String(m.request || ''),
 decision: canceled?'战局已变，原拟军令收回':labels[d.option] || chosen?.label || d.option,
 consequence: canceled?'原拟处置未再执行，口谕办理结果见本旬起居注。':labels[d.option] ? '' : chosen?.consequence || '',
@@ -4851,7 +4881,8 @@ if (!r || ['id','memorialId','dynasty','emperor','title','from','type','text','d
 !Number.isSafeInteger(r.turn) || r.turn !== h.turn || !['朝','午','夜'].includes(r.slot) ||
 !r.era || typeof r.era.name !== 'string' || !Number.isSafeInteger(r.era.year) ||
 !Number.isSafeInteger(r.era.month) || r.era.month < 1 || r.era.month > 12 ||
-![0,1,2].includes(r.era.xun) || r.remark.length > 100) throw new Error('御批档案损坏');
+![0,1,2].includes(r.era.xun) || r.remark.length > TEXT_LIMITS.remark ||
+['fromPost','fromRole'].some(k=>r[k]!==undefined&&(typeof r[k]!=='string'||r[k].length>120))) throw new Error('御批档案损坏');
 seen.add(r.id);
 }
 }
@@ -5961,7 +5992,7 @@ const f={state,die:result.die,newMemorials:[],slotResults:{朝:[],午:[],夜:[]}
 const checked=validateTurn({chapter:{朝:'',午:reply,夜:''}},f).chapter.午;
 return {reply:checked||result.intentResults.map(r=>r.summary).join('；'),innerThought:result.innerThought||'',effects:null};
 }
-if (result.denied || !result.success) {
+if (result.denied || !result.success || result.mode==='chat') {
 // Remove entire unsupported promise/number sentences so removing a word
 // cannot turn a refusal into an apparent agreement.
 const numeral='[0-9０-９零〇一二两三四五六七八九十百千万亿壹贰叁肆伍陆柒捌玖拾佰仟萬億]';
@@ -6116,6 +6147,7 @@ const MODERN_SCENES={
 歇息:'皇帝暂时放下手里的事，坐在窗边歇一会儿。',日常:'宫里照常有人来往，送来文书，再安静地退下。',
 };
 function modernTalkFallback(result){
+if(result.mode==='chat')return '臣在听，陛下请讲。';
 return result.denied?'这件事超出了臣的职权，需要先回去商议。':result.success?'臣明白陛下的意思，会在自己的职权范围内尽力去办。':'臣有些难处，眼下还办不到。';
 }
 function sceneNarrative(forecast){
@@ -6658,6 +6690,7 @@ return normalizeIntents(state,actions,inputs);
 return {intentInputs,intentMessages,validateIntents,localIntents};
 },
 "src/core/intents.js":function(__load){
+const { TEXT_LIMITS } = __load("src/core/text.js");
 const { adjudicate } = __load("src/core/freedom.js");
 const { clone } = __load("src/core/state.js");
 const { applyPackage } = __load("src/core/effects.js");
@@ -6673,7 +6706,7 @@ function normalizeIntents(state,actions,inputs){
 const byId=(list,value)=>list.find(x=>x.id===value||x.name===value);
 return (Array.isArray(actions)?actions:[]).map((raw,i)=>{
 const input=inputs.find(x=>x.id===raw?.inputId),type=INTENT_TYPES.includes(raw?.type)?raw.type:'other';
-const a={id:(input?.id||'unknown')+':'+i,inputId:input?.id||'',slot:input?.slot||'朝',type,text:String(raw?.text||input?.text||'').slice(0,500)};
+const a={id:(input?.id||'unknown')+':'+i,inputId:input?.id||'',slot:input?.slot||'朝',type,text:String(raw?.text||input?.text||'').slice(0,TEXT_LIMITS.decree)};
 if(!input)return {...a,type:'other',text:'未能对应原口谕'};
 const person=byId(persons(state),raw.targetId||raw.target),country=byId(state.foreign,raw.countryId||raw.country);
 const post=state.court.posts.find(p=>p.id===raw.postId||p.title===raw.postId||state.postNames?.[p.id]===raw.postId);
@@ -6775,7 +6808,18 @@ r.facts=facts.slice(factStart);results.push(r);s.intentResults.push(r);
 return {state:s,results,facts};
 }
 function resolveTalkIntents(state,result,actions){
-const before=state.ledger.length,resolved=resolveIntents(state,actions,{slot:'午',source:result.id,transferCap:result.cap});
+if(!actions.some(a=>a.type!=='other'))return {state,result};
+const key=a=>JSON.stringify(['type','targetId','postId','countryId','operation','resource','amount','source','destination','edictType','province'].map(k=>a[k]??null));
+const previous=state.talks.filter(t=>t.turn===state.turn&&t.person===result.person&&t.id!==result.id).flatMap(t=>t.intentResults||[]);
+const reused=new Map(),fresh=actions.filter(a=>{
+const prior=a.type!=='other'&&!/再拨|再赏|追加|另拨|另赏|再给/.test(a.text)&&previous.find(r=>r.actionKey===key(a));
+if(prior){reused.set(a.id,prior);return false;}return true;
+});
+const before=state.ledger.length,resolved=resolveIntents(state,fresh,{slot:'午',source:result.id,transferCap:result.cap});
+resolved.results.forEach((r,i)=>r.actionKey=key(fresh[i]));
+const freshResults=new Map(fresh.map((a,i)=>[a.id,resolved.results[i]]));
+resolved.results=actions.map(a=>reused.get(a.id)||freshResults.get(a.id));
+resolved.facts=[...resolved.facts,...[...reused.values()].flatMap(r=>r.facts||[])];
 let s=resolved.state;
 const entries=auditChanges(state,s,s.ledger.slice(before),'御前口谕');
 s.ledger=[...s.ledger.slice(0,before),...entries];
@@ -6797,6 +6841,7 @@ const { uniqueName } = __load("src/core/names.js");
 const { roll, check } = __load("src/core/rng.js");
 const {factionPowers} = __load("src/core/politics.js");
 const { campaignChoiceBlock } = __load("src/core/campaign-rules.js");
+const { TEXT_LIMITS, talkMode } = __load("src/core/text.js");
 function strongmanCandidate(s){
 const candidates=s.court.officials.filter(o=>o.alive&&o.health>0&&!o.retired&&!o.jailed&&s.court.posts.some(p=>p.holder===o.id&&p.id===o.post));
 return candidates.map(o=>({o,power:s.court.factions.find(f=>f.id===o.faction)?.power||0}))
@@ -6864,7 +6909,7 @@ const post=s.court.posts.find(p=>p.holder===o.id);
 s=addEvent(s,'致仕',o.name+'请致仕','年届七旬，乞骸骨归里',[
 {label:'准予致仕',effects:{virtue:0.5}},{label:'温旨留任',effects:{prestige:0.2}},
 ],[o.id],post?.provinceId||null);
-const m=s.memorials.at(-1);if(inCapital(o)||post?.provinceId){m.from=o.name;m.fromId=o.id;}
+const m=s.memorials.at(-1);if(inCapital(o)||post?.provinceId){m.from=o.name;m.fromId=o.id;m.fromPost=s.postNames?.[post?.id]||post?.title||'原任官';m.fromRole='上奏';}
 }
 }
 for(const p of s.nation.provinces)p.governor=s.court.posts.find(o=>o.provinceId===p.id)?.holder||null;
@@ -6996,46 +7041,43 @@ note: removing ? "处分 " + old?.name : person.name + " 出任 " + post.title,
 };
 }
 function talkAttempt(state, personId, line, structured = false) {
-if (
-state.talks.filter((t) => t.person === personId && t.turn === state.turn)
-.length >= freedomRules(state).talkRounds
-)
-throw new Error("本旬面谈已达"+freedomRules(state).talkRounds+"轮，请待下旬再议");
 let s = clone(state);
 const person =
 s.court.officials.find((o) => o.id === personId && o.alive) ||
 s.harem.consorts.find((o) => o.id === personId) ||
 s.foreign.find((o) => o.id === personId);
-if (!person) throw new Error("此人不在名册");
+if (!person||person.health!==undefined&&person.health<=0||person.jailed||person.retired)throw new Error('此人当前无法召见');
 const post = s.court.posts.find((p) => p.holder === personId),
 isOfficial = !!person.abilities;
 const requested = Number(line.match(/(\d+(?:\.\d+)?)\s*万?两/)?.[1] || 0),
-asking = !structured && /拨|钱|银|挪|给|赏|借/.test(line);
-const used = state.talks
-.filter((t) => t.person === personId && t.turn === state.turn)
-.reduce((n,t)=>n+(t.intentResults?.length?t.intentResults.filter(r=>r.type==='allocate'&&['success','partial'].includes(r.status)&&r.actual.source==='treasury').reduce((m,r)=>m+(r.actual.treasurySpent??r.actual.amount??0),0):(t.effects?.privy||0)),0);
+mode=talkMode(line,structured),asking=!structured&&mode==='拨款';
+const receipts=new Set();let used=0;
+for(const t of state.talks.filter(t=>t.person===personId&&t.turn===state.turn)){
+if(!t.intentResults?.length){used+=t.effects?.privy||0;continue;}
+for(const r of t.intentResults)if(!receipts.has(r.id)&&r.type==='allocate'&&['success','partial'].includes(r.status)&&r.actual.source==='treasury'){
+receipts.add(r.id);used+=r.actual.treasurySpent??r.actual.amount??0;
+}
+}
 const cap =
 s.settings.freedom==='free'?s.nation.treasury:isOfficial && post?.tags.includes("管钱")
 ? Math.min(Math.max(0,20*freedomRules(s).talkMultiplier-used),Math.floor(s.nation.treasury*0.03)*freedomRules(s).talkMultiplier,Math.floor((person.favor||0)/3)*freedomRules(s).talkMultiplier,s.nation.treasury):0;
-const r = roll(s);
-s = r.state;
-const kind = /威吓|问罪|斩|严惩/.test(line)
-? "威吓"
-: /试探|秘密|暗查/.test(line)
-? "试探"
-: "说服";
-let verdict = check(
-s.emperor.talents[kind === "说服" ? "魅力" : "权谋"],
+const kind=mode;
+const prior=!structured&&state.talks.find(t=>t.person===personId&&t.turn===state.turn&&t.kind===kind&&
+(t.mode==='check'||t.mode===undefined&&Number.isFinite(t.die)));
+const mechanical=!['闲谈','议事'].includes(kind),r=mechanical&&!prior?roll(s):{state:s,value:prior?.die??null};
+s=r.state;
+let verdict=prior?{success:prior.success}:!mechanical?{success:true}:check(
+s.emperor.talents[['说服','拨款'].includes(kind) ? "魅力" : "权谋"],
 r.value,
 "一般",
 person.abilities?.才 || person.scheming || 50,
 (s.emperor.mood < 20 ? -10 : 0) +
 (person.favor || person.attitude || 0) / 5,
 );
-const outcome=structured?{state:s,verdict}:adjudicate(s,verdict,personId);s=outcome.state;verdict=outcome.verdict;
+const outcome=!mechanical||prior?{state:s,verdict}:adjudicate(s,verdict,personId);s=outcome.state;verdict=outcome.verdict;
 const denied = asking && (requested > cap || cap === 0),
 effects =
-!denied && verdict.success && asking
+!prior && !denied && verdict.success && asking
 ? {
 treasury: -Math.min(requested, cap),
 privy: Math.min(requested, cap),
@@ -7044,7 +7086,7 @@ privy: Math.min(requested, cap),
 if (verdict.success && !denied && kind === "试探" && isOfficial)
 s.court.officials.find((o) => o.id === personId).secretKnown = true;
 s = applyPackage(s, effects, "御前面谈：职权内拨款");
-s = applyPackage(
+if(mechanical&&!prior)s = applyPackage(
 s,
 { official: { id: personId, favor: verdict.success ? 2 : -1 } },
 "御前面谈：" + kind,
@@ -7053,15 +7095,17 @@ const result = {
 turn: s.turn,
 id: "talk-" + s.turn + "-" + s.talks.length,
 person: personId,
-line: String(line).slice(0, 500),
+line: String(line).slice(0, TEXT_LIMITS.talk),
 die: r.value,
 kind,
+mode:structured?'action':mechanical?'check':'chat',
+reused:!!prior,
 success: verdict.success && !denied,
 denied,
 cap,
 effects,
 ...(verdict.partial?{partial:true,cost:verdict.cost}:{}),
-reply: denied
+reply:!mechanical&&!structured?'臣在，陛下请讲。':prior?'此事方才已议，臣仍照先前所奏办理。':denied
 ? "臣无此职权，请容臣回去议。"
 : verdict.success
 ? "臣谨遵圣意，当在职权内尽力。"
@@ -7311,6 +7355,7 @@ const { quarterIndex } = __load("src/core/finance.js");
 const {factionPowers} = __load("src/core/politics.js");
 const { campaignChoiceBlock } = __load("src/core/campaign-rules.js");
 const { applyCampaignDecision, expireCampaignPetition } = __load("src/core/campaigns.js");
+const { TEXT_LIMITS } = __load("src/core/text.js");
 function pickMemorialist(state, type, provinceId = null) {
 const eligible=state.court.posts.flatMap(post=>{
 const o=state.court.officials.find(o=>o.id===post.holder&&o.post===post.id&&o.alive&&o.health>0&&!o.jailed&&!o.retired);
@@ -7322,8 +7367,9 @@ const exact=money?(local||eligible.find(x=>x.post.title==='户部尚书')):
 military?(eligible.find(x=>x.post.title===provinceId+'境总兵')||eligible.find(x=>x.post.title==='兵部尚书')):
 censor?eligible.find(x=>x.post.title==='左都御史'):null;
 const office=money||/盐政|仓储|漕运|商贸|农桑/.test(type)?'户部':military?'兵部':censor?'都察':/河工|工务/.test(type)?'工部':/刑狱/.test(type)?'刑部':/科举|文教|礼制|外邦/.test(type)?'礼部':/宗室/.test(type)?'宗人':'通政';
-const chosen=exact||eligible.find(x=>x.post.title.startsWith(office))||eligible.find(x=>x.post.title==='通政使');
-return chosen?{from:chosen.o.name,fromId:chosen.o.id}:{from:'通政司',fromId:null};
+const direct=exact||eligible.find(x=>x.post.title.startsWith(office));
+const chosen=direct||eligible.find(x=>x.post.title==='通政使')||[...eligible].sort((a,b)=>a.post.rank-b.post.rank)[0];
+return chosen?{from:chosen.o.name,fromId:chosen.o.id,fromPost:chosen.post.provinceId&&state.governorTitle?(state.nation.provinces.find(z=>z.id===chosen.post.provinceId)?.name||'')+state.governorTitle:state.postNames?.[chosen.post.id]||chosen.post.title,fromRole:direct?'上奏':'转奏'}:{from:'通政司',fromId:null,fromPost:'',fromRole:'转呈（原折未署名）'};
 }
 function addEvent(state, type, title, cause, options, actors = [], provinceId = null) {
 const s = clone(state),
@@ -7399,7 +7445,7 @@ remarkKind = null,
 ) {
 const m = state.memorials.find((m) => m.id === id);
 if (!m) throw new Error("奏报已处置或不存在");
-const brushNote=remark?" · 朱批「"+String(remark).slice(0,100)+"」":"";
+const brushNote=remark?" · 朱批「"+String(remark).slice(0,TEXT_LIMITS.remark)+"」":"";
 if (option === "hold")
 return { state: applyMemorialRemark(state,m,remark,remarkKind), note: m.title + " · 留中" + brushNote };
 if (option === "discuss") {
@@ -7408,13 +7454,12 @@ mem = s.memorials.find((x) => x.id === id);
 if ((mem.referrals || 0) >= freedomRules(s).referrals)
 throw new Error("此折已发部再议"+freedomRules(s).referrals+"次，请准驳裁处");
 mem.referrals = (mem.referrals || 0) + 1;
-if(!mem.campaignOrder)mem.due += 3;
 const t = s.threads.find((t) => t.id === mem.threadId);
 if (t && t.stage !== "结束") t.stage = "搁置";
-return { state: applyMemorialRemark(s,m,remark,remarkKind), note: m.title + " · 发部再议"+(mem.campaignOrder?'（军情期限不顺延）':'') + brushNote };
+return { state: applyMemorialRemark(s,m,remark,remarkKind), note: m.title + ' · 发部再议（原定期限不顺延）' + brushNote };
 }
 if (option === "remark") {
-return {state:applyMemorialRemark(state,m,remark,remarkKind),note:m.title+' · 朱批「'+String(remark).slice(0,100)+'」（原请款仍待准驳）'};
+return {state:applyMemorialRemark(state,m,remark,remarkKind),note:m.title+' · 朱批「'+String(remark).slice(0,TEXT_LIMITS.remark)+'」（原请款仍待准驳）'};
 }
 const chosen =
 m.options.find((o) => o.id === option) ||
@@ -7452,7 +7497,7 @@ if (province) province.rebellion = false;
 return { state: applyMemorialRemark(s,m,remark,remarkKind), note: m.title + " · " + chosen.label + (chosen.consequence?'：'+chosen.consequence:'') + brushNote };
 }
 function applyMemorialRemark(state,memorial,remark,kind){
-const text=String(remark||'').slice(0,100),category=REMARK_KINDS.includes(kind)?kind:remarkCategory(text);
+const text=String(remark||'').slice(0,TEXT_LIMITS.remark),category=REMARK_KINDS.includes(kind)?kind:remarkCategory(text);
 const o=state.court.officials.find(o=>o.id===memorial.fromId&&o.alive&&o.health>0&&!o.jailed&&!o.retired&&state.court.posts.some(p=>p.holder===o.id&&p.id===o.post));
 if(!text||!o)return clone(state);
 const favor=category==='嘉奖'?2:category==='申饬'?-3:0;
@@ -7661,9 +7706,9 @@ finish:'用兵至此，继续争胜与保全兵力，各有一番道理。增拨
 treaty:w.result==='胜利'?'战场获胜，收兵未必事事皆了。索取赔款能解眼前之急，却未必能换来长久安稳；开市有利于钱粮，也会让对方休养；若留兵督贡，日后饷粮仍须朝廷按月供给。行营请把停战期限与后续供养一并定下，免得战场上虽已停手，关外仍无可遵的约定。所议条款请候陛下裁可后，再发国书办理。':
 '此次未能以全胜收局，眼下先要决定如何收兵。付银与交粮，占用的是不同家底，须留够国内俸饷与赈济；若不议条件便径自撤军，虽可省下眼前钱粮，却不能指望对方守住停战之约。后续守边仍需可用兵马，不能只求一时息事。请陛下核看各项条件，定下可以承担的办法，再令行营与使臣照旨办理。',
 };
-const text=request+details[stage];
+const text=request+'\n'+details[stage];
 s.memorials.unshift({id:'campaign-'+w.id+'-'+stage,title,type:stage==='treaty'?'战后议约':'战中军报',
-from:author?.name||'兵部',fromId:author?.id||null,provinceId:null,request,text,options,urgent:true,secret:false,
+from:author?.name||'兵部',fromId:author?.id||null,...(author?{fromPost:s.postNames?.[author.post]||s.court.posts.find(p=>p.id===author.post)?.title||'行营',fromRole:'上奏'}:{}),provinceId:null,request,text,options,urgent:true,secret:false,
 threadId:null,due:s.turn+(stage==='treaty'?3:1),campaignOrder:{warId:w.id,stage,fallback,...(donor?{donor}:{})}});
 }
 const option=(id,label,consequence,effects={})=>({id,label,consequence,effects});
@@ -7930,10 +7975,9 @@ war.result = "议和";
 }
 }
 } else if (operation === "互市") {
-other.trade={start:s.turn,until:s.turn+36,income:0};
 if (c.success) {
 other.status = "通好";
-other.trade.income=Math.min(6,other.authorization/2);
+other.trade={start:s.turn,until:s.turn+36,income:Math.min(6,other.authorization/2)};
 }
 } else if (operation === "册封" || operation === "索贡") {
 if (c.success) other.status = "朝贡";
@@ -8249,6 +8293,10 @@ s.edictCooldowns ??= {};
 s.edictCooldowns[type==='赈灾'?type+':'+(province||'all'):type]=s.turn+freedomRules(s).edictCooldown;
 return s;
 }
+function projectExecution(p){
+const label=p.execRate>=1.2?'雷厉风行':p.execRate>=1?'照办':p.execRate>=0.6?'敷衍':'阳奉阴违';
+return {label,rate:p.execRate,official:p.office};
+}
 function issueEdict(state, action, die) {
 const type = action.edictType || "禁令",
 rule = EDICTS[type];
@@ -8263,6 +8311,7 @@ child = s.harem.children.find(
 (c) => c.id === action.child && c.sex === "男" && c.health > 0,
 );
 if (!child) throw new Error("立储须选择在世皇子");
+if(s.harem.heir===child.id)return {state:s,note:child.name+' 已为储君，重申原旨'};
 s.harem.heir = child.id;
 return {
 state: finishInstant(applyPackage(s, rule.effects, "册立储君"),type),
@@ -8278,15 +8327,26 @@ return { state: s, note: "诏告天下，禅位储君" };
 if (type === "转内帑" || type === "转国库") {
 const from = type === "转内帑" ? "treasury" : "privy",
 to = from === "treasury" ? "privy" : "treasury",
-amount = Math.floor(Number(action.amount) || 10);
-if (amount <= 0 || amount > 100 || state.nation[from] < amount)
-throw new Error("拨转须为 1–100 万两，且余额足够");
+requested = Number(action.amount ?? 10);
+if (!Number.isFinite(requested)||requested<=0)throw new Error('请填写大于零的拨转金额');
+const amount=Math.min(requested,state.nation[from],1000000-state.nation[to]);
 return {
 state: finishInstant(applyPackage(state, { [from]: -amount, [to]: amount }, "两库拨转"),type),
-note: "拨转 " + amount + " 万两",
+note: "拨转 " + amount + " 万两"+(amount<requested?'（按余银及收款余量办理）':''),
 };
 }
 const account = rule.private ? "privy" : "treasury";
+const ongoing=state.projects.find(p=>!p.done&&p.edictType===type&&(p.province||null)===(action.province||null)&&(type!=='征兵'||p.armyTarget===armyTarget));
+if(ongoing){
+if(action.followup!=='督办')return {state:clone(state),note:type+' · 重申原旨，仍由原班人马办理，未另支钱粮 · '+projectExecution(ongoing).label,execution:projectExecution(ongoing)};
+if(ongoing.end<=state.turn+1&&ongoing.execRate>=1)return {state:clone(state),note:type+' · 即将办结，未再追加钱粮 · '+projectExecution(ongoing).label,execution:projectExecution(ongoing)};
+if(state.nation[account]<rule.cost||state.nation.grain<(rule.grain||0))throw new Error('钱粮不足，无法追加督办');
+const s=applyPackage(state,{[account]:-rule.cost,grain:-(rule.grain||0)},type+'：追加督办');
+const p=s.projects.find(p=>p.id===ongoing.id);p.end=Math.max(s.turn+1,p.end-3);p.execRate=p.execRate<0.6?0.6:p.execRate<1?1:1.2;p.cost+=rule.cost;
+p.effects=Object.fromEntries(Object.entries(rule.effects).map(([k,v])=>[k,v*p.execRate]));
+s.stats.edicts++;
+return {state:s,note:type+' · 追加督办，期限缩短、执行改善；仍只办结一次 · '+projectExecution(p).label,execution:projectExecution(p)};
+}
 if (
 !action.intent && (state.nation[account] < rule.cost ||
 state.nation.grain < (rule.grain || 0))
@@ -8418,6 +8478,7 @@ if (
 "greed",
 "secret",
 "secretKnown",
+"gifts",
 "growth",
 "born",
 "due",
@@ -8439,6 +8500,7 @@ if (
 "greed",
 "secret",
 "secretKnown",
+"gifts",
 "born",
 "due",
 "conceived",
@@ -8481,6 +8543,7 @@ const excluded = new Set([
 "greed",
 "secret",
 "secretKnown",
+"gifts",
 "growth",
 "born",
 "due",
@@ -9454,6 +9517,7 @@ rememberAttempts();
 return {validateTurnNarrative,requestTurnNarrative};
 },
 "src/llm/prompts.js":function(__load){
+const { TEXT_LIMITS } = __load("src/core/text.js");
 const { postTitle, scenarioById } = __load("src/core/scenarios.js");
 const { WAR_GOALS } = __load("src/core/campaign-rules.js");
 // 文风：规则 + 范文。范文只示范笔法，人物与事件不得照搬；它们位于系统提示，
@@ -9596,6 +9660,7 @@ const TASK_RULES = `【叙事守则】死亡、怀孕、生产、小产、任免
 标题、正文、奏折、对白只写游戏中的人和事，禁用“据实落账”“引擎结算”“模型叙事”等开发说明，不向玩家解释生成或校验过程。
 【正文任务】把本旬写成「朝」「午」「夜」三段，每段{{LENGTH}}字，空槽可略写。必须表现结算表的执行度与成败。正文只写故事，不抄结算条目；起居注会另行展示结算。廷议按名单立场写。为新奏报写160–260字正文。风闻只写无关痛痒的市井传言。
 章末 hook 写一句 30 字内的下旬伏笔，只能取自未结奏报、在途政务或新近事实，用“恐”“将”“未知”等未定语气，不得断言结果。
+奏折正文分成三至五个自然段，用换行分隔，写明缘由、现状与所请，不另编上奏人。
 正文输出：{"chapter":{"朝":"","午":"","夜":""},"summary":"30字内","hook":"","memorialTexts":[{"id":"","text":""}],"reactions":[{"name":"官员全名","favorDelta":0,"mood":"","note":""}],"rumors":[],"ambitionEvidence":[{"id":"","objectiveId":"","evidence":""}],"factUpdates":[{"subject":"","key":"","value":"","reason":""}]}`;
 const TALK_RULES = `【面谈任务】扮演被召见者御前面谈。只写游戏中的人物言行，不解释生成或校验；成功才让步，失败不得让步，不得超过职权。未提供的秘密不得编造，未允时不得承诺拨款、调兵或落实请求。好感、让步与秘密是否揭露由引擎判定，照判定写即可。
 面谈输出 {"reply":"","innerThought":"","mood":"","summary":""}`;
@@ -9671,6 +9736,7 @@ function turnMessages(state, forecast) {
       剧情目标: a.objectives.filter((o) => o.type === "story" && !o.done).map((o) => ({ objectiveId: o.id, keywords: o.keywords })),
     })),
     玩家口谕裁决: (state.intentResults||[]).map(({type,status,actual,summary})=>({type,status,actual,summary})),
+    御前交谈: (state.talks||[]).filter(t=>t.turn===before.turn).slice(-8).map(t=>({人物:[...state.court.officials,...state.harem.consorts,...state.foreign].find(o=>o.id===t.person)?.name||t.person,朕:t.line.slice(0,500),答:t.reply.slice(0,400)})),
     ...(state.campaigns.some(w=>w.campaignVersion===1)?{军情:state.campaigns.filter(w=>w.campaignVersion===1&&
       (!w.done||w.settlement?.status==='pending'||before.campaigns.find(x=>x.id===w.id)?.settlement?.status!==w.settlement?.status))
       .map(w=>({对手:state.foreign.find(f=>f.id===w.country)?.name,目标:WAR_GOALS[w.warGoal].label,方向:w.dir,已战:w.round,胜负差:w.score,
@@ -9705,7 +9771,7 @@ function worldMessages(state) {
 // 面谈按真实多轮组织：同一人本旬的每一句在后续请求中原样重现，便于命中缓存。
 // 好感、秘密等会变的信息只放在最后一条。
 function talkTurnLine(t) {
-  return "朕：" + t.line + "\n【引擎判定】" + stable({ kind: t.kind, die: t.die, success: t.success, denied: t.denied, cap: t.cap, effects: t.effects, ...(t.intentResults?.length?{口谕裁决:t.intentResults.map(({type,status,actual,summary})=>({type,status,actual,summary}))}:{}) });
+  return (t.mode==='chat'?"【本轮为普通交谈，无须允诺办事】\n":"") + "朕：" + t.line + "\n【引擎判定】" + stable({ kind: t.kind, die: t.die, success: t.success, denied: t.denied, cap: t.cap, effects: t.effects, ...(t.intentResults?.length?{口谕裁决:t.intentResults.map(({type,status,actual,summary})=>({type,status,actual,summary}))}:{}) });
 }
 function talkMessages(state, result, log = []) {
   const npc =
@@ -9717,9 +9783,11 @@ function talkMessages(state, result, log = []) {
   const post = postTitle(state, state.court.posts.find((p) => p.holder === npc.id));
   const header = dynastyBible(state) + "\n【面谈对象】" + stable({ id: card.id, name: card.name, 职位: post || card.rank || card.status || "", personality: card.personality, family: card.family, faction: card.faction, ruler: card.ruler, demand: card.demand }) +
     "\n【此人能做到什么】妃嫔不能给钱兵；其他职权外请求必须回去议。\n";
-  const prior = (Array.isArray(log) ? log : [])
+  const recent = (Array.isArray(log) ? log : [])
     .filter((t) => t && t.person === result.person && t.turn === result.turn && t.id !== result.id && t.reply)
-    .slice(-6);
+    .slice(-20);
+  const prior=[];let used=0;
+  for(const t of [...recent].reverse()){const size=t.line.length+t.reply.length;if(used+size>24000)break;prior.unshift(t);used+=size;}
   const messages = [{ role: "system", content: systemPrompt(state, "talk") }];
   prior.forEach((t, i) => {
     messages.push({ role: "user", content: (i === 0 ? header : "") + talkTurnLine(t) });
@@ -9737,7 +9805,7 @@ function talkMessages(state, result, log = []) {
 function classifyMessages(text,mode='oral') {
   if(mode==='remark')return [
     {role:'system',content:'你是御笔朱批分类员。只输出 JSON {"kind":"嘉奖"}，kind 仅限嘉奖、申饬、附旨、无。识别否定词；责成核查属于附旨，不是申饬；不必嘉奖属于无。混合措辞按主要意图归类，不决定对象，不创造数值，不执行附旨。'},
-    {role:'user',content:String(text).slice(0,100)},
+    {role:'user',content:String(text).slice(0,TEXT_LIMITS.remark)},
   ];
   return [
     {
@@ -9745,7 +9813,7 @@ function classifyMessages(text,mode='oral') {
       content:
         '你是旨意分类员。只归类不写剧情，输出 JSON {"kind":"","edictType":null,"params":{},"risky":false,"attr":"","level":"","why":"十字内"}。kind 从上朝、批折、召见、宴请、下旨、任命、外交、后宫、出巡、私下行事、闲谈中选。edictType 从赈灾、减赋、加税、修河、整饬吏治、征兵、大赦、修园、编修大典、开海、转内帑、转国库、立储、禅位、禁令中选。不得创造数值效果。',
     },
-    { role: "user", content: text.slice(0, 500) },
+    { role: "user", content: text.slice(0, TEXT_LIMITS.decree) },
   ];
 }
 function biographyMessages(state, record) {
@@ -9910,6 +9978,7 @@ haremMonth,
 haremYear,
 haremAction,
 selectConsort,
+recommendCandidates,
 generateCandidates,
 succession,
 } = __load("src/core/harem.js");
@@ -9923,6 +9992,7 @@ advanceCampaigns,
 checkCollapse,
 } = __load("src/core/foreign.js");
 const { issueEdict, advanceProjects, edictBlock } = __load("src/core/edicts.js");
+const { talkPeople } = __load("src/core/text.js");
 const {
 seedMemorials,
 resolveMemorial,
@@ -9953,14 +10023,15 @@ return Object.values(schedule)
 a +
 (x.kind === "批折"
 ? Math.max(1, Math.ceil((x.memorials?.length || 1) / 3))
-: ACTIONS[x.kind]?.energy || 0),
+: x.kind==='上朝'?2+Math.max(0,Math.ceil((x.memorials?.length||0)/3)-1)
+: x.kind==='召见'?Math.max(1,talkPeople(x).length):ACTIONS[x.kind]?.energy || 0),
 0,
 );
 }
 function validateSchedule(state, schedule) {
 const talks = state.talks.filter((t) => t.turn === state.turn);
-if (talks.some((t) => schedule.午?.kind !== "召见" || schedule.午.person !== t.person))
-throw new Error("本旬面谈已落账，午槽须保留对应人物的召见");
+if(talks.some(t=>schedule.午?.kind!=='召见'||!talkPeople(schedule.午).includes(t.person)))
+throw new Error('本旬面谈已生效，午间须保留已经召见的人物');
 let full = false,
 count = 0;
 const seen = new Set();
@@ -9975,6 +10046,7 @@ if (!rule || !rule.slots.includes(slot))
 throw new Error(a.kind + " 不能安排在" + slot + "槽");
 if(a.kind==='外交'){const blocked=diplomacyBlock(state,a);if(blocked)throw new Error(blocked);}
 if(a.kind==='下旨'){const blocked=edictBlock(state,a.edictType,a.province);if(blocked)throw new Error(blocked);}
+if(a.kind==='召见'&&(talkPeople(a).length===0||talkPeople(a).some(id=>![...state.court.officials,...state.harem.consorts,...state.foreign].some(o=>o.id===id))))throw new Error('请选择名册中的召见人物');
 if (rule.full) full = true;
 for (const id of a.memorials || []) {
 if (seen.has(id)) throw new Error("同一奏报不能重复处置");
@@ -10131,10 +10203,11 @@ result = privateAction(s, action, die);
 s = result.state;
 slotResults[slot].push(result.note);
 } else if (action.kind === "选妃") {
-s = selectConsort(s, action.person, action.rank);
+if(action.operation==='举荐'){s=recommendCandidates(s);slotResults[slot].push('日常荐选：'+s.harem.candidates.at(-1).name+'，年满十八，已查验入京，待陛下留牌');}
+else {s = selectConsort(s, action.person, action.rank);
 slotResults[slot].push(
 "殿选赐位，" + s.harem.consorts.at(-1).name + " 入宫",
-);
+);}
 } else if (action.kind === "出巡") {
 if (s.nation.privy < 6) throw new Error("内帑不足以安排出巡");
 s = applyPackage(
@@ -10163,8 +10236,7 @@ slotResults[slot].push("御驾亲征，留守大臣代行政务");
 } else if (action.kind === "召见") {
 slotResults[slot].push(
 "召见 " +
-(s.court.officials.find((o) => o.id === action.person)?.name ||
-action.person) +
+talkPeople(action).map(id=>[...s.court.officials,...s.harem.consorts,...s.foreign].find(o=>o.id===id)?.name||id).join('、') +
 "；面谈结果已落账",
 );
 } else {
@@ -10517,7 +10589,7 @@ if (s.harem.selectionYear === year && (freedomRules(s).selectionPeriod || s.hare
 const r = roll(s, 6, 10);
 s = r.state;
 s.harem.selectionYear = year;
-s.harem.candidates = [];
+s.harem.candidates = s.harem.candidates.filter(c=>c.id.includes('-recommend-'));
 for(let i=0;i<r.value;i++) {
 const named=uniqueName(s);s=named.state;
 const draw=(a,b)=>{const r=roll(s,a,b);s=r.state;return r.value;};
@@ -10528,13 +10600,22 @@ appearance:draw(45,95),personality:['沉静','直率','敏慧','温和','谨慎'
 }
 return s;
 }
+function recommendCandidates(state){
+if(state.regency||state.reign?.married===false)throw new Error('须亲政大婚后方可荐选');
+if(state.nation.privy<3)throw new Error('内帑不足三万两，暂不能筹办荐选');
+let s=applyPackage(state,{privy:-3},'日常荐选：查验家世、安排入京');
+const named=uniqueName(s);s=named.state;
+const draw=(a,b)=>{const r=roll(s,a,b);s=r.state;return r.value;};
+const faction=s.court.factions[draw(0,s.court.factions.length-1)].id;
+s.harem.candidates.push({id:reignId(s)+'-recommend-'+s.turn+'-'+s.harem.consorts.length+'-'+s.harem.candidates.length,name:named.name,age:draw(18,25),family:'经查验举荐入京',faction,appearance:draw(45,95),personality:['沉静','直率','敏慧','温和','谨慎'][draw(0,4)],ambition:draw(15,70),scheming:draw(15,75),health:85});
+return s;
+}
 function selectConsort(state, id, rank = "贵人") {
-if (!selectionYear(state) || state.harem.selectionYear !== globalYear(state.turn))
-throw new Error("本年不是选秀年");
 if(state.regency || state.reign?.married===false)throw new Error("须亲政大婚后方可选妃");
 let s = clone(state);
 const c = s.harem.candidates.find((c) => c.id === id);
 if (!c) throw new Error("此秀女已离开殿选");
+if(c.age<18)throw new Error('荐选须年满十八');
 if (!rankAvailable(s, rank)) throw new Error("此位分已满额");
 s.harem.consorts.push({
 ...c,
@@ -10608,12 +10689,14 @@ c.favor = clamp(c.favor + 3);
 c.mood = clamp(c.mood + 5);
 s = applyPackage(s, { mood: 2 }, "探望 " + c.name);
 } else if (operation === "赏赐") {
-const amount = Number(action.amount) || 2;
-if (amount < 1 || amount > 20 || s.nation.privy < amount)
-throw new Error("内帑不足或赏赐超限");
+const requested = Number(action.amount ?? 2);
+if(!Number.isFinite(requested)||requested<=0)throw new Error('请填写大于零的赏赐金额');
+const amount=Math.min(requested,s.nation.privy),before=c.gifts?.turn===s.turn?c.gifts.amount:0;
 s = applyPackage(s, { privy: -amount }, "赏赐 " + c.name);
 c = s.harem.consorts.find((x) => x.id === action.person);
-c.favor = clamp(c.favor + amount);
+c.favor = clamp(c.favor + 8*Math.log1p((before+amount)/8)-8*Math.log1p(before/8));
+c.gifts={turn:s.turn,amount:before+amount};
+return {state:s,note:c.name+' · 赏赐 '+amount+' 万两'+(amount<requested?'（按内帑余银办理）':'')+'；厚赏愈多，好感增长愈缓'};
 } else if (operation === "禁足") {
 c.confined = !c.confined;
 c.favor = clamp(c.favor - 4);
@@ -10792,7 +10875,7 @@ s.revision++;
 return s;
 }
 
-return {RANKS,RANK_CAPS,rankAvailable,generateCandidates,selectConsort,canVisit,haremAction,haremMonth,miscarriageChance,choosePalacePlot,haremYear,succession,assignTutor};
+return {RANKS,RANK_CAPS,rankAvailable,generateCandidates,recommendCandidates,selectConsort,canVisit,haremAction,haremMonth,miscarriageChance,choosePalacePlot,haremYear,succession,assignTutor};
 },
 "src/core/ambitions.js":function(__load){
 const { clone, reignId } = __load("src/core/state.js");
@@ -12425,7 +12508,7 @@ const ACTION_GROUPS = [
 ];
 const HALLS = ["朝堂", "后宫", "天下", "内库", "宗室", "史馆"];
 const GLYPHS = {上朝:"朝",批折:"批",下旨:"旨",任命:"任",召见:"见",宴请:"宴",外交:"使",私下行事:"密",后宫:"宫",选妃:"选",出巡:"行",亲征:"征",歇息:"憩"};
-function selectionDescription(s){const period=freedomRules(s).selectionPeriod;return period?'每'+period+'年选秀一次，非选秀年无法留牌。':'可随时选秀，位分名额不限。';}
+function selectionDescription(s){const period=freedomRules(s).selectionPeriod;return period?'每'+period+'年大选一次；平日可花内帑三万两举荐一人，已有候选人可随时留牌。':'可随时选秀，位分名额不限。';}
 function actionAvailability(s, kind) {
 if (!s) return "待登基";
 if(s.regency&&!["批折","召见","私下行事","歇息"].includes(kind))return "摄政期间不可安排";
@@ -12438,7 +12521,6 @@ if (kind === "上朝" && s.schedule.朝) return "朝间已有安排";
 if (kind === "批折" && s.schedule.朝 && s.schedule.午) return "朝午已排定";
 }
 if (kind === "亲征" && !s.campaigns.some(w=>!w.done)) return "无战事";
-if (kind === "选妃" && (!selectionYear(s) || !s.harem.candidates.length)) return "非选秀年";
 if (s.campaigns.some(w=>w.personal&&!w.done) && !["亲征","歇息"].includes(kind)&&kind!=='批折') return "御驾在外";
 return "";
 }
@@ -12446,7 +12528,8 @@ function actionMeta(kind, s = null) {
 const rule = ACTIONS[kind];
 if (!rule) return "";
 const time = rule.full ? "占满一旬" : rule.slots.length === 3 ? "任意" : rule.slots.join("/");
-if (kind === "上朝") return time + " · 精力 " + rule.energy + " · " + (freedomRules(s).courtLimit===Infinity?"本数不限":freedomRules(s).courtLimit+"本内") + "，可廷议问责";
+if (kind === "上朝") return time + " · 精力 " + rule.energy + " · " + (freedomRules(s).courtLimit===Infinity?"本数不限，每多3本加耗1":freedomRules(s).courtLimit+"本内") + "，可廷议问责";
+if (kind === "召见") return time+" · 每人精力1，续谈不加耗";
 if (kind === "批折") return time + " · 每3本1 · 独断，不经廷议";
 return time + " · " + (rule.full ? rule.energy+"点" : "精力 " + rule.energy);
 }
@@ -12474,9 +12557,11 @@ if (a.kind === "下旨" && a.text?.trim()) continue;
 if (a.kind === "下旨" && EDICTS[a.edictType]) {
 const e=EDICTS[a.edictType];
 if (a.edictType === "转内帑" || a.edictType === "转国库") {
-const amount=Number(a.amount)||10,from=a.edictType==="转内帑"?"treasury":"privy";
+const from=a.edictType==="转内帑"?"treasury":"privy",to=from==="treasury"?"privy":"treasury",amount=Math.min(Math.max(0,Number(a.amount??10)),s.nation[from],1000000-s.nation[to]);
 totals[from]-=amount;totals[from==="treasury"?"privy":"treasury"]+=amount;
 } else {
+const existing=s.projects.find(p=>!p.done&&p.edictType===a.edictType&&(p.province||null)===(a.province||null)&&(a.edictType!=='征兵'||p.armyTarget===(a.armyTarget||'capital')));
+if(existing&&(a.followup!=='督办'||existing.end<=s.turn+1&&existing.execRate>=1))continue;
 totals[e.private?"privy":"treasury"]-=e.cost;
 totals.grain-=e.grain||0;
 if (e.months) executions.push(a.edictType+"「"+execution(s,a.edictType,11).label+"」");
@@ -12492,8 +12577,9 @@ for(const k of Object.keys(totals)) totals[k]+=o?.effects?.[k]||0;
 if(a.kind==="宴请")totals.privy-=({俭:2,常:5,盛:12}[a.cost||"常"]||0);
 if(a.kind==="出巡")totals.privy-=6;
 if(a.kind==="私下行事"&&a.operation==="收买")totals.privy-=5;
-if(a.kind==="后宫"&&a.operation==="赏赐")totals.privy-=Number(a.amount)||2;
+if(a.kind==="后宫"&&a.operation==="赏赐")totals.privy-=Math.min(Math.max(0,Number(a.amount??2)),s.nation.privy);
 if(a.kind==="外交"&&a.operation==="宣战"){const goal=WAR_GOALS[a.warGoal||'repel'];totals.treasury-=goal?.silver||25;totals.grain-=goal?.grain||30;}
+if(a.kind==="选妃"&&a.operation==="举荐")totals.privy-=3;
 if(a.kind==="外交"&&a.operation==="和亲")totals.privy-=10;
 }
 return {totals,executions};
@@ -12538,6 +12624,8 @@ return "";
 return {ACTION_GROUPS,HALLS,GLYPHS,selectionDescription,actionAvailability,actionMeta,energyView,metricGroups,scheduleEstimate,REPEATABLE,repeatSchedule,delegateSchedule,DELEGATE_STOPS,delegateStop};
 },
 "src/ui/memorials.js":function(__load){
+const { TEXT_LIMITS } = __load("src/core/text.js");
+const { memorialParagraphHTML, memorialAuthor, memorialSignature } = __load("src/ui/memorial-document.js");
 const { freedomRules } = __load("src/core/freedom.js");
 const { postTitle } = __load("src/core/scenarios.js");
 const { memorialDecision } = __load("src/core/memorial-decisions.js");
@@ -12644,7 +12732,7 @@ id,
 option: session.choices[id],
 remark: String(session.remarks?.[id] ?? session.remark ?? "").slice(
 0,
-100,
+TEXT_LIMITS.remark,
 ),
 },
 ]),
@@ -12860,7 +12948,7 @@ o.id === "hold"
 : o.id === "discuss"
 ? o.disabled
 ? "已达再议次数，请裁处"
-: (m.campaignOrder?'军情紧急，再议不延期限':'发部再议，期限 +3 旬')+' · '+
+: (m.campaignOrder?'军情紧急，再议不延期限':'发部再议，原定期限不顺延')+' · '+
 (freedomRules(s).referrals===Infinity?'次数不限':'最多'+freedomRules(s).referrals+'次')
 : o.id === "remark"
 ? "识别嘉奖／申饬，原请款仍待准驳"
@@ -12945,10 +13033,8 @@ pickerItems +
 (m.urgent ? '<span class="stamp">急</span>' : "") +
 '<h3 id="memorial-title" tabindex="-1">' +
 esc(m.title) +
-'</h3></div><div class="memorial-meta"><div class="memorial-author"><span>上奏　' +
-esc(postTitle(s, post)) +
-" " +
-esc(m.from) +
+'</h3></div><div class="memorial-meta"><div class="memorial-author"><span>' +
+esc(memorialAuthor(m,postTitle(s,post))) +
 (faction ? "（" + esc(faction.name) + "）" : "") +
 "</span>" +
 (person?.alive
@@ -12962,11 +13048,11 @@ person.id +
 esc(m.type) +
 "</span><span>期限　剩 " +
 Math.max(0, m.due - s.turn) +
-' 旬</span></div></div><p class="memorial-body">' +
-esc(
+' 旬</span></div></div><div class="memorial-body">' +
+memorialParagraphHTML(
 m.text || "臣谨奏：" + m.title + "。" + (m.request || "伏乞陛下裁处。"),
 ) +
-'</p><div class="memorial-foot">' +
+'</div><p class="memorial-signature">'+esc(memorialSignature(m,postTitle(s,post)))+'</p><div class="memorial-foot">' +
 (region
 ? '<p class="memorial-region">' +
 esc(region.name) +
@@ -12981,7 +13067,7 @@ number(region.garrison) +
 ('<div class="brush-control"><label for="review-remark" class="brush-label">御笔朱批（本折）</label><button type="button' +
 '" class="brush-mode" data-review-option="remark" aria-pressed="') +
 (selected === "remark") +
-('">只作朱批</button></div><div class="brush-writing"><textarea id="review-remark" class="brush-input" maxlength="10' +
+('">只作朱批</button></div><div class="brush-writing"><textarea id="review-remark" class="brush-input" maxlength="200' +
 '0" placeholder="写下嘉奖或申饬">') +
 esc(session.remarks[m.id] || "") +
 ('</textarea></div><p class="shared-remark-note">只作朱批，可嘉奖申饬；原请款仍须准驳。</p></div></article><section class="review-p' +
@@ -13268,7 +13354,24 @@ paint("#memorial-title");
 
 return {createMemorialSession,applyCabinetDrafts,memorialAction,scheduledMemorialDialog,effectItems,effectLabel,factionDemandReason,memorialOptions,memorialHTML,memorialDialog};
 },
+"src/ui/memorial-document.js":function(__load){
+const { textParagraphs } = __load("src/core/text.js");
+const { esc } = __load("src/ui/common.js");
+function memorialParagraphHTML(text){return textParagraphs(text).map(p=>'<p>'+esc(p)+'</p>').join('');}
+function memorialAuthor(m,fallbackPost=''){
+const name=String(m.from||'').trim(),post=m.fromPost??fallbackPost;
+if(!name||['通政司','兵部'].includes(name))return (name||'原折')+'转呈（原折未留署名）';
+return [post,name,m.fromRole||'上奏'].filter(Boolean).join('　');
+}
+function memorialSignature(m,fallbackPost=''){
+if(!m.from||['通政司','兵部'].includes(m.from))return '原折未留署名';
+return [m.fromPost??fallbackPost,m.from,m.fromRole==='转奏'?'谨转奏':'谨奏'].filter(Boolean).join('　');
+}
+
+return {memorialParagraphHTML,memorialAuthor,memorialSignature};
+},
 "src/ui/memorial-archive.js":function(__load){
+const { memorialParagraphHTML, memorialAuthor, memorialSignature } = __load("src/ui/memorial-document.js");
 const { memorialArchive, memorialReviewDate } = __load("src/core/memorial-records.js");
 const { esc, openDialog, toast, download } = __load("src/ui/common.js");
 const { onDialogExit } = __load("src/ui/request-scope.js");
@@ -13288,8 +13391,8 @@ esc(memorialReviewDate(r)+' · '+(r.from||'旧折摘录'))+'</small><span>'+esc(
 function memorialArchiveDetailHTML(r) {
 return '<p><button data-archive-back>‹ 返回档案</button></p><article class="paper archive-document"><p class="muted">'+
 esc([r.dynasty,r.emperor,memorialReviewDate(r),r.slot&&r.slot+'间'].filter(Boolean).join(' · '))+'</p><h3>'+esc(r.title)+
-'</h3><p>'+esc([r.from&&'上奏 '+r.from,r.type].filter(Boolean).join(' · '))+'</p><div class="archive-original">'+
-esc(r.text||'旧卷未留存奏折全文，以下为起居注中留下的批阅记录。')+'</div><section class="archive-verdict"><h4>御批</h4><p>'+esc(r.decision)+
+'</h3><p>'+esc([memorialAuthor(r),r.type].filter(Boolean).join(' · '))+'</p><div class="archive-original">'+
+memorialParagraphHTML(r.text||'旧卷未留存奏折全文，以下为起居注中留下的批阅记录。')+'</div><p class="memorial-signature">'+esc(memorialSignature(r))+'</p><section class="archive-verdict"><h4>御批</h4><p>'+esc(r.decision)+
 '</p>'+(r.consequence?'<p>'+esc(r.consequence)+'</p>':'')+(r.remark?'<blockquote class="archive-brush">'+esc(r.remark)+
 '</blockquote>':'<p class="muted">未另写朱批。</p>')+'</section></article><div class="dialog-actions">'+
 '<button class="primary" data-archive-image>生成分享图</button></div><div id="archive-images" aria-live="polite"></div>';
@@ -13365,6 +13468,8 @@ return {filterMemorialArchive,memorialArchiveListHTML,memorialArchiveDetailHTML,
 },
 "src/ui/memorial-image.js":function(__load){
 const { memorialReviewDate } = __load("src/core/memorial-records.js");
+const { textParagraphs } = __load("src/core/text.js");
+const { memorialAuthor, memorialSignature } = __load("src/ui/memorial-document.js");
 function wrapMemorialText(text, width, measure) {
 return String(text).split('\n').flatMap(paragraph => {
 const lines = []; let line = '';
@@ -13395,9 +13500,10 @@ runs.push({text:textLine, size, y, tone, brush}); y += line;
 };
 add(record.title, 46, 70);
 add([record.dynasty,record.emperor].filter(Boolean).join(' · '), 28, 48, 'soft');
-add([record.from && '上奏 '+record.from, record.type].filter(Boolean).join(' · '), 28, 48, 'soft');
+add([memorialAuthor(record), record.type].filter(Boolean).join(' · '), 28, 48, 'soft');
 y += 28;
-add(record.text || '旧卷未留存奏折全文。', 32, 54, record.text ? 'ink' : 'soft');
+for(const p of textParagraphs(record.text || '旧卷未留存奏折全文。')){add('　　'+p,32,54,record.text?'ink':'soft');y+=18;}
+add(memorialSignature(record),28,48,'soft');
 y += 38;
 add('御批', 28, 52, 'red');
 add(record.decision, 38, 64, 'red');
@@ -13477,9 +13583,9 @@ Object.keys(EDICTS)
 .join("") +
 '</select><label for="province">主办州郡</label><select id="province">' +
 '<option value="">全国</option>' + opt(s.nation.provinces) +
-'</select><div id="edict-army-field"><label for="edict-army">补充军队</label><select id="edict-army"><option value="capital">京营</option>'+s.nation.army.frontiers.map(b=>'<option value="'+esc(b.dir)+'">'+esc(b.dir)+'境边军</option>').join('')+'</select></div><div id="edict-amount-field"><label for="edict-amount">拨转金额（万两）</label><input id="edict-amount" type="number" min="1" max="100" value="10"></div><div id="edict-child-field"><label for="edict-child">储君人选</label><select id="edict-child"><option value="">请选择在世皇子</option>' +
+'</select><div id="edict-army-field"><label for="edict-army">补充军队</label><select id="edict-army"><option value="capital">京营</option>'+s.nation.army.frontiers.map(b=>'<option value="'+esc(b.dir)+'">'+esc(b.dir)+'境边军</option>').join('')+'</select></div><div id="edict-amount-field"><label for="edict-amount">拨转金额（万两）</label><input id="edict-amount" type="number" min="0.01" step="any" value="10"></div><div id="edict-child-field"><label for="edict-child">储君人选</label><select id="edict-child"><option value="">请选择在世皇子</option>' +
 opt(s.harem.children.filter((c) => c.sex === "男" && c.health > 0)) +
-'</select></div><label for="edict-text">御旨（选填）</label><textarea id="edict-text" maxlength="500" placeholder="着有司依议施行。"></textarea><label class="check"><input id="force-edict" type="checkbox">遭封驳仍强推（可能引发党争）</label>';
+'</select></div><div id="edict-followup-field"><label for="edict-followup">同一事项尚未办结时</label><select id="edict-followup"><option value="重申">重申原旨，不另花钱</option><option value="督办">追加督办，再付一份钱粮，缩短工期、改善执行</option></select></div><label for="edict-text">御旨（选填）</label><textarea id="edict-text" maxlength="8000" placeholder="着有司依议施行。"></textarea><label class="check"><input id="force-edict" type="checkbox">遭封驳仍强推（可能引发党争）</label>';
 if (kind === "任命")
 fields =
 '<label for="post">官职</label><select id="post">' +
@@ -13506,7 +13612,7 @@ fields =
 opt(s.court.officials.filter((o) => o.alive)) +
 opt(s.harem.consorts) +
 opt(s.foreign) +
-'</select><p class="muted">召见占午间，耗精力1。'+(s.settings.freedom==='free'?'拨款以国库余银为限。':'拨款须看官职与交情。')+'</p>';
+'</select><p class="muted">午间可先后召见多人，每人耗精力1，继续交谈不限轮数。'+(s.settings.freedom==='free'?'拨款以国库余银为限。':'拨款须看官职与交情。')+'</p>';
 if (kind === "宴请")
 fields =
 '<label for="banquet-type">宴会类型</label><select id="banquet-type"><option>君臣宴</option><option>家宴</option><option>寿宴</option><option>接风宴</option><option>鸿门宴</option></select><label for="banquet-cost">开销档</label><select id="banquet-cost"><option value="俭">俭 · 2 万两</option><option value="常" selected>常 · 5 万两</option><option value="盛">盛 · 12 万两</option></select><fieldset><legend>宾客（2–6 人）</legend>' +
@@ -13552,12 +13658,12 @@ opt(s.harem.consorts) +
 ["探望", "侍寝", "晋位", "降位", "赏赐", "禁足", "冷宫"]
 .map((x) => "<option>" + x + "</option>")
 .join("") +
-'</select><div id="harem-amount-field"><label for="harem-amount">赏赐（万两）</label><input id="harem-amount" type="number" min="1" max="20" value="2"></div>';
+'</select><div id="harem-amount-field"><label for="harem-amount">赏赐（万两）</label><input id="harem-amount" type="number" min="0.01" step="any" value="2"></div>';
 if (kind === "选妃")
 fields =
-'<label for="person">本届秀女</label><select id="person">' +
+'<label for="selection-operation">荐选安排</label><select id="selection-operation"><option value="留牌">从候选人中留牌</option><option value="举荐">日常举荐一人（内帑三万两）</option></select><div id="selection-candidates"><label for="person">待选人选</label><select id="person">' +
 opt(s.harem.candidates) +
-'</select><label for="rank">赐位</label><select id="rank"><option>贵人</option><option>常在</option><option>答应</option><option>嫔</option></select><p class="muted">'+selectionDescription(s)+'</p>';
+'</select><label for="rank">赐位</label><select id="rank"><option>贵人</option><option>常在</option><option>答应</option><option>嫔</option></select></div><p class="muted">'+selectionDescription(s)+'</p>';
 if (kind === "出巡")
 fields =
 '<label for="destination">去向</label><select id="destination"><option>微服江南</option><option>游幸</option><option>狩猎</option><option>祭天</option></select><p class="warning">占满一旬，其他时段必须空白；出行期间奏报仍会积压。内帑支出 6 万两。</p>';
@@ -13620,7 +13726,12 @@ e.cost +
 x.label +
 "」，仍须看本旬天命。";
 }
-if(kind==='下旨'){const blocked=edictBlock(s,$('#edict-type').value,$('#province').value||null);if(blocked)text+='；'+blocked;}
+if(kind==='下旨'){
+const type=$('#edict-type').value,province=$('#province').value||null;
+const ongoing=s.projects.find(p=>!p.done&&p.edictType===type&&(p.province||null)===province&&(type!=='征兵'||p.armyTarget===$('#edict-army').value));
+if(['转内帑','转国库'].includes(type))text='按实际余银拨转，超过余额或收款余量时只拨可用部分。';
+else if(ongoing)text=$('#edict-followup').value==='督办'?'追加一份钱粮，催办原来的事项；不会再另开一项。':'重申原旨，不另支钱粮，仍按原来的进度办理。';
+const blocked=edictBlock(s,$('#edict-type').value,$('#province').value||null);if(blocked)text+='；'+blocked;}
 if(kind==='外交'){
 const country=s.foreign.find(f=>f.id===$('#country').value),operation=$('#operation');
 for(const option of operation.options)option.disabled=country.status==='交战'&&!['接见','议和'].includes(option.value)||country.status==='停战待议'&&option.value!=='接见';
@@ -13634,6 +13745,9 @@ if(operation.value==='宣战')text+='；备军银'+goal.silver+'万两、粮'+go
 if(country.status==='停战待议')text+='；请先批复战后议约奏报';
 }
 if(kind==='下旨'&&$('#edict-text')?.value.trim())text='精力 '+rule.energy+'；御旨已拟，起驾后可查看办理结果与支出。';
+if(kind==='后宫'&&$('#operation')?.value==='赏赐')text+='；按内帑余银赏赐，厚赏愈多，好感增长愈缓。';
+if(kind==='选妃'&&$('#selection-operation')?.value==='举荐')text+='；查验并举荐一人，内帑三万两，留牌另择时安排。';
+if(kind==='外交'&&$('#operation')?.value==='互市')text+='；可重新议约，议成后替换原约，未成仍照旧约往来。';
 $("#action-estimate").textContent = text;
 const show=(id,visible)=>$("#"+id)?.classList.toggle("hidden",!visible);
 show("edict-amount-field",["转内帑","转国库"].includes($("#edict-type")?.value));
@@ -13644,6 +13758,7 @@ const other=s.foreign.find(f=>f.id===$('#country')?.value);
 show("breach-field",kind==="外交"&&$("#operation")?.value==="宣战"&&(["婚盟","朝贡"].includes(other?.status)||treatyProtected(other,s.turn)));
 show("bride-field",$("#operation")?.value==="和亲");
 show("harem-amount-field",$("#operation")?.value==="赏赐");
+show("selection-candidates",$("#selection-operation")?.value!=="举荐");
 };
 estimate();
 const paper=()=>{
@@ -13652,9 +13767,9 @@ let html='<div class="eyebrow">'+kind+' · 待定</div><h3>'+esc(person?.name||$
 if(person)html+='<p>'+esc(person.family||person.personality||postTitle(s,s.court.posts.find(p=>p.holder===person.id))||person.status||'御前候命')+'</p><p>'+esc(person.age?person.age+' 岁':'')+(person.favor!==undefined?' · 好感 '+person.favor:'')+'</p>';
 if(kind==='下旨'){
 const r=EDICTS[$('#edict-type').value];
-html+='<p>主办　'+r.office+'</p><p>所需 '+r.cost+' 万两'+(r.grain?'、'+r.grain+' 万石':'')+'，预计 '+r.months+' 个月。</p><p>预计成算「'+execution(s,$('#edict-type').value,11).label+'」</p>';
+html+='<p>主办　'+r.office+'</p><p>每次新办或追加督办需 '+r.cost+' 万两'+(r.grain?'、'+r.grain+' 万石':'')+'，预计 '+r.months+' 个月。</p><p>预计成算「'+execution(s,$('#edict-type').value,11).label+'」</p>';
 }
-html+='<p class="muted action-preview-note">'+({召见:'候见之人已至殿外。',宴请:'择宾客，定酒席。',后宫:'宫中诸事，待陛下裁定。',任命:'官职与人选，均在此列。',外交:'先定来往之国，再议国书。',选妃:'本届秀女候选于此。',出巡:'出行占满一旬，奏报仍会呈来。',亲征:'御驾亲征，须留一臣守京。',私下行事:'择一人，定所行之事。',下旨:'旨意发至有司，须待回奏。'}[kind]||'安排时辰后，放入本旬日程。')+'</p>';
+html+='<p class="muted action-preview-note">'+({召见:'候见之人已至殿外。',宴请:'择宾客，定酒席。',后宫:'宫中诸事，待陛下裁定。',任命:'官职与人选，均在此列。',外交:'先定来往之国，再议国书。',选妃:'大选有定期，平日也可举荐；候选人须年满十八。',出巡:'出行占满一旬，奏报仍会呈来。',亲征:'御驾亲征，须留一臣守京。',私下行事:'择一人，定所行之事。',下旨:'旨意发至有司，须待回奏。'}[kind]||'安排时辰后，放入本旬日程。')+'</p>';
 $('#action-document').innerHTML=html;
 };
 paper();
@@ -13678,6 +13793,7 @@ child: val("edict-child"),
 text: val("edict-text"),
 force: $("#force-edict").checked,
 });
+if(kind==='下旨'&&val('edict-followup')==='督办')a.followup='督办';
 if (kind === "任命")
 Object.assign(a, {
 post: val("post"),
@@ -13715,8 +13831,10 @@ Object.assign(a, {
 person: val("person"),
 operation: val("operation"),
 });
-if (kind === "选妃")
-Object.assign(a, { person: val("person"), rank: val("rank") });
+if (kind === "选妃") {
+if(val("selection-operation")==="举荐")a.operation="举荐";
+else Object.assign(a, { person: val("person"), rank: val("rank") });
+}
 if (kind === "出巡") a.destination = val("destination");
 if (kind === "亲征") a.regent = val("regent");
 a.label =

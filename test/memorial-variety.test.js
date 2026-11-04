@@ -14,7 +14,7 @@ test('奏折：短期覆盖各类，单批不重复、未批同题不重发、�
   s.turn=turn;s.memorials=s.memorials.filter(m=>m.due>=turn);
   const before=new Set(s.memorials.map(m=>m.templateId)),oldIds=new Set(s.memorials.map(m=>m.id));s=seedMemorials(s);
   const added=s.memorials.filter(m=>!oldIds.has(m.id));assert.equal(new Set(added.map(m=>m.type)).size,added.length);
-  for(const m of added){assert.ok(!before.has(m.templateId),m.templateId);seen.add(m.templateId);types.add(m.type);texts.add(m.text);assert.ok(m.text.includes(m.request));assert.deepEqual({from:m.from,fromId:m.fromId},pickMemorialist(s,m.type,m.provinceId));}
+  for(const m of added){assert.ok(!before.has(m.templateId),m.templateId);seen.add(m.templateId);types.add(m.type);texts.add(m.text);assert.ok(m.text.includes(m.request));assert.deepEqual({from:m.from,fromId:m.fromId,fromPost:m.fromPost,fromRole:m.fromRole},pickMemorialist(s,m.type,m.provinceId));}
   assert.ok(added.every(m=>m.text.length>=140&&m.text.split('\n\n').length===3),'奏折须有详情与分段');
  }
  assert.ok(seen.size>=65,'题目覆盖 '+seen.size);assert.ok(types.size>=22,'类型覆盖 '+types.size);assert.ok(texts.size>=100,'正文覆盖 '+texts.size);

@@ -1,3 +1,4 @@
+import { TEXT_LIMITS } from './text.js';
 import { adjudicate } from "./freedom.js";
 import { clone } from './state.js';
 import { applyPackage } from './effects.js';
@@ -13,7 +14,7 @@ export function normalizeIntents(state,actions,inputs){
  const byId=(list,value)=>list.find(x=>x.id===value||x.name===value);
  return (Array.isArray(actions)?actions:[]).map((raw,i)=>{
   const input=inputs.find(x=>x.id===raw?.inputId),type=INTENT_TYPES.includes(raw?.type)?raw.type:'other';
-  const a={id:(input?.id||'unknown')+':'+i,inputId:input?.id||'',slot:input?.slot||'朝',type,text:String(raw?.text||input?.text||'').slice(0,500)};
+  const a={id:(input?.id||'unknown')+':'+i,inputId:input?.id||'',slot:input?.slot||'朝',type,text:String(raw?.text||input?.text||'').slice(0,TEXT_LIMITS.decree)};
   if(!input)return {...a,type:'other',text:'未能对应原口谕'};
   const person=byId(persons(state),raw.targetId||raw.target),country=byId(state.foreign,raw.countryId||raw.country);
   const post=state.court.posts.find(p=>p.id===raw.postId||p.title===raw.postId||state.postNames?.[p.id]===raw.postId);
@@ -116,7 +117,18 @@ export function resolveIntents(state,actions,{slot='朝',source='decree',transfe
 }
 
 export function resolveTalkIntents(state,result,actions){
- const before=state.ledger.length,resolved=resolveIntents(state,actions,{slot:'午',source:result.id,transferCap:result.cap});
+ if(!actions.some(a=>a.type!=='other'))return {state,result};
+ const key=a=>JSON.stringify(['type','targetId','postId','countryId','operation','resource','amount','source','destination','edictType','province'].map(k=>a[k]??null));
+ const previous=state.talks.filter(t=>t.turn===state.turn&&t.person===result.person&&t.id!==result.id).flatMap(t=>t.intentResults||[]);
+ const reused=new Map(),fresh=actions.filter(a=>{
+  const prior=a.type!=='other'&&!/再拨|再赏|追加|另拨|另赏|再给/.test(a.text)&&previous.find(r=>r.actionKey===key(a));
+  if(prior){reused.set(a.id,prior);return false;}return true;
+ });
+ const before=state.ledger.length,resolved=resolveIntents(state,fresh,{slot:'午',source:result.id,transferCap:result.cap});
+ resolved.results.forEach((r,i)=>r.actionKey=key(fresh[i]));
+ const freshResults=new Map(fresh.map((a,i)=>[a.id,resolved.results[i]]));
+ resolved.results=actions.map(a=>reused.get(a.id)||freshResults.get(a.id));
+ resolved.facts=[...resolved.facts,...[...reused.values()].flatMap(r=>r.facts||[])];
  let s=resolved.state;
  const entries=auditChanges(state,s,s.ledger.slice(before),'御前口谕');
  s.ledger=[...s.ledger.slice(0,before),...entries];

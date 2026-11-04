@@ -8,6 +8,7 @@ import { quarterIndex } from "./finance.js";
 import {factionPowers} from './politics.js';
 import { campaignChoiceBlock } from './campaign-rules.js';
 import { applyCampaignDecision, expireCampaignPetition } from './campaigns.js';
+import { TEXT_LIMITS } from './text.js';
 export function pickMemorialist(state, type, provinceId = null) {
   const eligible=state.court.posts.flatMap(post=>{
     const o=state.court.officials.find(o=>o.id===post.holder&&o.post===post.id&&o.alive&&o.health>0&&!o.jailed&&!o.retired);
@@ -19,8 +20,9 @@ export function pickMemorialist(state, type, provinceId = null) {
     military?(eligible.find(x=>x.post.title===provinceId+'境总兵')||eligible.find(x=>x.post.title==='兵部尚书')):
     censor?eligible.find(x=>x.post.title==='左都御史'):null;
   const office=money||/盐政|仓储|漕运|商贸|农桑/.test(type)?'户部':military?'兵部':censor?'都察':/河工|工务/.test(type)?'工部':/刑狱/.test(type)?'刑部':/科举|文教|礼制|外邦/.test(type)?'礼部':/宗室/.test(type)?'宗人':'通政';
-  const chosen=exact||eligible.find(x=>x.post.title.startsWith(office))||eligible.find(x=>x.post.title==='通政使');
-  return chosen?{from:chosen.o.name,fromId:chosen.o.id}:{from:'通政司',fromId:null};
+  const direct=exact||eligible.find(x=>x.post.title.startsWith(office));
+  const chosen=direct||eligible.find(x=>x.post.title==='通政使')||[...eligible].sort((a,b)=>a.post.rank-b.post.rank)[0];
+  return chosen?{from:chosen.o.name,fromId:chosen.o.id,fromPost:chosen.post.provinceId&&state.governorTitle?(state.nation.provinces.find(z=>z.id===chosen.post.provinceId)?.name||'')+state.governorTitle:state.postNames?.[chosen.post.id]||chosen.post.title,fromRole:direct?'上奏':'转奏'}:{from:'通政司',fromId:null,fromPost:'',fromRole:'转呈（原折未署名）'};
 }
 export function addEvent(state, type, title, cause, options, actors = [], provinceId = null) {
   const s = clone(state),
@@ -96,7 +98,7 @@ export function resolveMemorial(
 ) {
   const m = state.memorials.find((m) => m.id === id);
   if (!m) throw new Error("奏报已处置或不存在");
-  const brushNote=remark?" · 朱批「"+String(remark).slice(0,100)+"」":"";
+  const brushNote=remark?" · 朱批「"+String(remark).slice(0,TEXT_LIMITS.remark)+"」":"";
   if (option === "hold")
     return { state: applyMemorialRemark(state,m,remark,remarkKind), note: m.title + " · 留中" + brushNote };
   if (option === "discuss") {
@@ -105,13 +107,12 @@ export function resolveMemorial(
     if ((mem.referrals || 0) >= freedomRules(s).referrals)
       throw new Error("此折已发部再议"+freedomRules(s).referrals+"次，请准驳裁处");
     mem.referrals = (mem.referrals || 0) + 1;
-    if(!mem.campaignOrder)mem.due += 3;
     const t = s.threads.find((t) => t.id === mem.threadId);
     if (t && t.stage !== "结束") t.stage = "搁置";
-    return { state: applyMemorialRemark(s,m,remark,remarkKind), note: m.title + " · 发部再议"+(mem.campaignOrder?'（军情期限不顺延）':'') + brushNote };
+    return { state: applyMemorialRemark(s,m,remark,remarkKind), note: m.title + ' · 发部再议（原定期限不顺延）' + brushNote };
   }
   if (option === "remark") {
-    return {state:applyMemorialRemark(state,m,remark,remarkKind),note:m.title+' · 朱批「'+String(remark).slice(0,100)+'」（原请款仍待准驳）'};
+    return {state:applyMemorialRemark(state,m,remark,remarkKind),note:m.title+' · 朱批「'+String(remark).slice(0,TEXT_LIMITS.remark)+'」（原请款仍待准驳）'};
   }
   const chosen =
     m.options.find((o) => o.id === option) ||
@@ -149,7 +150,7 @@ export function resolveMemorial(
   return { state: applyMemorialRemark(s,m,remark,remarkKind), note: m.title + " · " + chosen.label + (chosen.consequence?'：'+chosen.consequence:'') + brushNote };
 }
 function applyMemorialRemark(state,memorial,remark,kind){
-  const text=String(remark||'').slice(0,100),category=REMARK_KINDS.includes(kind)?kind:remarkCategory(text);
+  const text=String(remark||'').slice(0,TEXT_LIMITS.remark),category=REMARK_KINDS.includes(kind)?kind:remarkCategory(text);
   const o=state.court.officials.find(o=>o.id===memorial.fromId&&o.alive&&o.health>0&&!o.jailed&&!o.retired&&state.court.posts.some(p=>p.holder===o.id&&p.id===o.post));
   if(!text||!o)return clone(state);
   const favor=category==='嘉奖'?2:category==='申饬'?-3:0;

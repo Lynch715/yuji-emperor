@@ -1,3 +1,4 @@
+import { TEXT_LIMITS } from '../core/text.js';
 import { postTitle, scenarioById } from "../core/scenarios.js";
 import { WAR_GOALS } from '../core/campaign-rules.js';
 // 文风：规则 + 范文。范文只示范笔法，人物与事件不得照搬；它们位于系统提示，
@@ -140,6 +141,7 @@ const TASK_RULES = `【叙事守则】死亡、怀孕、生产、小产、任免
 标题、正文、奏折、对白只写游戏中的人和事，禁用“据实落账”“引擎结算”“模型叙事”等开发说明，不向玩家解释生成或校验过程。
 【正文任务】把本旬写成「朝」「午」「夜」三段，每段{{LENGTH}}字，空槽可略写。必须表现结算表的执行度与成败。正文只写故事，不抄结算条目；起居注会另行展示结算。廷议按名单立场写。为新奏报写160–260字正文。风闻只写无关痛痒的市井传言。
 章末 hook 写一句 30 字内的下旬伏笔，只能取自未结奏报、在途政务或新近事实，用“恐”“将”“未知”等未定语气，不得断言结果。
+奏折正文分成三至五个自然段，用换行分隔，写明缘由、现状与所请，不另编上奏人。
 正文输出：{"chapter":{"朝":"","午":"","夜":""},"summary":"30字内","hook":"","memorialTexts":[{"id":"","text":""}],"reactions":[{"name":"官员全名","favorDelta":0,"mood":"","note":""}],"rumors":[],"ambitionEvidence":[{"id":"","objectiveId":"","evidence":""}],"factUpdates":[{"subject":"","key":"","value":"","reason":""}]}`;
 const TALK_RULES = `【面谈任务】扮演被召见者御前面谈。只写游戏中的人物言行，不解释生成或校验；成功才让步，失败不得让步，不得超过职权。未提供的秘密不得编造，未允时不得承诺拨款、调兵或落实请求。好感、让步与秘密是否揭露由引擎判定，照判定写即可。
 面谈输出 {"reply":"","innerThought":"","mood":"","summary":""}`;
@@ -215,6 +217,7 @@ export function turnMessages(state, forecast) {
       剧情目标: a.objectives.filter((o) => o.type === "story" && !o.done).map((o) => ({ objectiveId: o.id, keywords: o.keywords })),
     })),
     玩家口谕裁决: (state.intentResults||[]).map(({type,status,actual,summary})=>({type,status,actual,summary})),
+    御前交谈: (state.talks||[]).filter(t=>t.turn===before.turn).slice(-8).map(t=>({人物:[...state.court.officials,...state.harem.consorts,...state.foreign].find(o=>o.id===t.person)?.name||t.person,朕:t.line.slice(0,500),答:t.reply.slice(0,400)})),
     ...(state.campaigns.some(w=>w.campaignVersion===1)?{军情:state.campaigns.filter(w=>w.campaignVersion===1&&
       (!w.done||w.settlement?.status==='pending'||before.campaigns.find(x=>x.id===w.id)?.settlement?.status!==w.settlement?.status))
       .map(w=>({对手:state.foreign.find(f=>f.id===w.country)?.name,目标:WAR_GOALS[w.warGoal].label,方向:w.dir,已战:w.round,胜负差:w.score,
@@ -249,7 +252,7 @@ export function worldMessages(state) {
 // 面谈按真实多轮组织：同一人本旬的每一句在后续请求中原样重现，便于命中缓存。
 // 好感、秘密等会变的信息只放在最后一条。
 function talkTurnLine(t) {
-  return "朕：" + t.line + "\n【引擎判定】" + stable({ kind: t.kind, die: t.die, success: t.success, denied: t.denied, cap: t.cap, effects: t.effects, ...(t.intentResults?.length?{口谕裁决:t.intentResults.map(({type,status,actual,summary})=>({type,status,actual,summary}))}:{}) });
+  return (t.mode==='chat'?"【本轮为普通交谈，无须允诺办事】\n":"") + "朕：" + t.line + "\n【引擎判定】" + stable({ kind: t.kind, die: t.die, success: t.success, denied: t.denied, cap: t.cap, effects: t.effects, ...(t.intentResults?.length?{口谕裁决:t.intentResults.map(({type,status,actual,summary})=>({type,status,actual,summary}))}:{}) });
 }
 export function talkMessages(state, result, log = []) {
   const npc =
@@ -261,9 +264,11 @@ export function talkMessages(state, result, log = []) {
   const post = postTitle(state, state.court.posts.find((p) => p.holder === npc.id));
   const header = dynastyBible(state) + "\n【面谈对象】" + stable({ id: card.id, name: card.name, 职位: post || card.rank || card.status || "", personality: card.personality, family: card.family, faction: card.faction, ruler: card.ruler, demand: card.demand }) +
     "\n【此人能做到什么】妃嫔不能给钱兵；其他职权外请求必须回去议。\n";
-  const prior = (Array.isArray(log) ? log : [])
+  const recent = (Array.isArray(log) ? log : [])
     .filter((t) => t && t.person === result.person && t.turn === result.turn && t.id !== result.id && t.reply)
-    .slice(-6);
+    .slice(-20);
+  const prior=[];let used=0;
+  for(const t of [...recent].reverse()){const size=t.line.length+t.reply.length;if(used+size>24000)break;prior.unshift(t);used+=size;}
   const messages = [{ role: "system", content: systemPrompt(state, "talk") }];
   prior.forEach((t, i) => {
     messages.push({ role: "user", content: (i === 0 ? header : "") + talkTurnLine(t) });
@@ -281,7 +286,7 @@ export function talkMessages(state, result, log = []) {
 export function classifyMessages(text,mode='oral') {
   if(mode==='remark')return [
     {role:'system',content:'你是御笔朱批分类员。只输出 JSON {"kind":"嘉奖"}，kind 仅限嘉奖、申饬、附旨、无。识别否定词；责成核查属于附旨，不是申饬；不必嘉奖属于无。混合措辞按主要意图归类，不决定对象，不创造数值，不执行附旨。'},
-    {role:'user',content:String(text).slice(0,100)},
+    {role:'user',content:String(text).slice(0,TEXT_LIMITS.remark)},
   ];
   return [
     {
@@ -289,7 +294,7 @@ export function classifyMessages(text,mode='oral') {
       content:
         '你是旨意分类员。只归类不写剧情，输出 JSON {"kind":"","edictType":null,"params":{},"risky":false,"attr":"","level":"","why":"十字内"}。kind 从上朝、批折、召见、宴请、下旨、任命、外交、后宫、出巡、私下行事、闲谈中选。edictType 从赈灾、减赋、加税、修河、整饬吏治、征兵、大赦、修园、编修大典、开海、转内帑、转国库、立储、禅位、禁令中选。不得创造数值效果。',
     },
-    { role: "user", content: text.slice(0, 500) },
+    { role: "user", content: text.slice(0, TEXT_LIMITS.decree) },
   ];
 }
 export function biographyMessages(state, record) {

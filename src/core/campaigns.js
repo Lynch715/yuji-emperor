@@ -32,9 +32,9 @@ function petition(s,w,stage,options,fallback,request,donor=null){
   treaty:w.result==='胜利'?'战场获胜，收兵未必事事皆了。索取赔款能解眼前之急，却未必能换来长久安稳；开市有利于钱粮，也会让对方休养；若留兵督贡，日后饷粮仍须朝廷按月供给。行营请把停战期限与后续供养一并定下，免得战场上虽已停手，关外仍无可遵的约定。所议条款请候陛下裁可后，再发国书办理。':
    '此次未能以全胜收局，眼下先要决定如何收兵。付银与交粮，占用的是不同家底，须留够国内俸饷与赈济；若不议条件便径自撤军，虽可省下眼前钱粮，却不能指望对方守住停战之约。后续守边仍需可用兵马，不能只求一时息事。请陛下核看各项条件，定下可以承担的办法，再令行营与使臣照旨办理。',
  };
- const text=request+details[stage];
+ const text=request+'\n'+details[stage];
  s.memorials.unshift({id:'campaign-'+w.id+'-'+stage,title,type:stage==='treaty'?'战后议约':'战中军报',
-  from:author?.name||'兵部',fromId:author?.id||null,provinceId:null,request,text,options,urgent:true,secret:false,
+  from:author?.name||'兵部',fromId:author?.id||null,...(author?{fromPost:s.postNames?.[author.post]||s.court.posts.find(p=>p.id===author.post)?.title||'行营',fromRole:'上奏'}:{}),provinceId:null,request,text,options,urgent:true,secret:false,
   threadId:null,due:s.turn+(stage==='treaty'?3:1),campaignOrder:{warId:w.id,stage,fallback,...(donor?{donor}:{})}});
 }
 const option=(id,label,consequence,effects={})=>({id,label,consequence,effects});

@@ -2833,3 +2833,8 @@ button.primary:not(:disabled):active {
   color: var(--gold);
   text-indent: 0;
 }
+
+.memorial-body,.archive-original {white-space:normal;text-indent:0;}
+.memorial-body p,.archive-original p {text-indent:2em;margin:0 0 0.9em;overflow-wrap:anywhere;}
+.memorial-signature {text-align:right;font:var(--font-small)/1.9 var(--serif);margin:1em 0;overflow-wrap:anywhere;}
+.memorial-author {color:var(--ink);font-weight:600;}

@@ -38,6 +38,7 @@ import {
   haremYear,
   haremAction,
   selectConsort,
+  recommendCandidates,
   generateCandidates,
   succession,
 } from "./harem.js";
@@ -51,6 +52,7 @@ import {
   checkCollapse,
 } from "./foreign.js";
 import { issueEdict, advanceProjects, edictBlock } from "./edicts.js";
+import { talkPeople } from './text.js';
 import {
   seedMemorials,
   resolveMemorial,
@@ -81,14 +83,15 @@ export function scheduleCost(schedule) {
         a +
         (x.kind === "批折"
           ? Math.max(1, Math.ceil((x.memorials?.length || 1) / 3))
-          : ACTIONS[x.kind]?.energy || 0),
+          : x.kind==='上朝'?2+Math.max(0,Math.ceil((x.memorials?.length||0)/3)-1)
+          : x.kind==='召见'?Math.max(1,talkPeople(x).length):ACTIONS[x.kind]?.energy || 0),
       0,
     );
 }
 export function validateSchedule(state, schedule) {
   const talks = state.talks.filter((t) => t.turn === state.turn);
-  if (talks.some((t) => schedule.午?.kind !== "召见" || schedule.午.person !== t.person))
-    throw new Error("本旬面谈已落账，午槽须保留对应人物的召见");
+  if(talks.some(t=>schedule.午?.kind!=='召见'||!talkPeople(schedule.午).includes(t.person)))
+    throw new Error('本旬面谈已生效，午间须保留已经召见的人物');
   let full = false,
     count = 0;
   const seen = new Set();
@@ -103,6 +106,7 @@ export function validateSchedule(state, schedule) {
       throw new Error(a.kind + " 不能安排在" + slot + "槽");
     if(a.kind==='外交'){const blocked=diplomacyBlock(state,a);if(blocked)throw new Error(blocked);}
     if(a.kind==='下旨'){const blocked=edictBlock(state,a.edictType,a.province);if(blocked)throw new Error(blocked);}
+    if(a.kind==='召见'&&(talkPeople(a).length===0||talkPeople(a).some(id=>![...state.court.officials,...state.harem.consorts,...state.foreign].some(o=>o.id===id))))throw new Error('请选择名册中的召见人物');
     if (rule.full) full = true;
     for (const id of a.memorials || []) {
       if (seen.has(id)) throw new Error("同一奏报不能重复处置");
@@ -259,10 +263,11 @@ function forecastDraft(state, schedule, intents = []) {
       s = result.state;
       slotResults[slot].push(result.note);
     } else if (action.kind === "选妃") {
-      s = selectConsort(s, action.person, action.rank);
+      if(action.operation==='举荐'){s=recommendCandidates(s);slotResults[slot].push('日常荐选：'+s.harem.candidates.at(-1).name+'，年满十八，已查验入京，待陛下留牌');}
+      else {s = selectConsort(s, action.person, action.rank);
       slotResults[slot].push(
         "殿选赐位，" + s.harem.consorts.at(-1).name + " 入宫",
-      );
+      );}
     } else if (action.kind === "出巡") {
       if (s.nation.privy < 6) throw new Error("内帑不足以安排出巡");
       s = applyPackage(
@@ -291,8 +296,7 @@ function forecastDraft(state, schedule, intents = []) {
     } else if (action.kind === "召见") {
       slotResults[slot].push(
         "召见 " +
-          (s.court.officials.find((o) => o.id === action.person)?.name ||
-            action.person) +
+          talkPeople(action).map(id=>[...s.court.officials,...s.harem.consorts,...s.foreign].find(o=>o.id===id)?.name||id).join('、') +
           "；面谈结果已落账",
       );
     } else {

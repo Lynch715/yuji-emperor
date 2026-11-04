@@ -1,3 +1,4 @@
+import { memorialParagraphHTML, memorialAuthor, memorialSignature } from './memorial-document.js';
 import { memorialArchive, memorialReviewDate } from '../core/memorial-records.js';
 import { esc, openDialog, toast, download } from './common.js';
 import { onDialogExit } from './request-scope.js';
@@ -18,8 +19,8 @@ export function memorialArchiveListHTML(records, page=0) {
 export function memorialArchiveDetailHTML(r) {
   return '<p><button data-archive-back>‹ 返回档案</button></p><article class="paper archive-document"><p class="muted">'+
     esc([r.dynasty,r.emperor,memorialReviewDate(r),r.slot&&r.slot+'间'].filter(Boolean).join(' · '))+'</p><h3>'+esc(r.title)+
-    '</h3><p>'+esc([r.from&&'上奏 '+r.from,r.type].filter(Boolean).join(' · '))+'</p><div class="archive-original">'+
-    esc(r.text||'旧卷未留存奏折全文，以下为起居注中留下的批阅记录。')+'</div><section class="archive-verdict"><h4>御批</h4><p>'+esc(r.decision)+
+    '</h3><p>'+esc([memorialAuthor(r),r.type].filter(Boolean).join(' · '))+'</p><div class="archive-original">'+
+    memorialParagraphHTML(r.text||'旧卷未留存奏折全文，以下为起居注中留下的批阅记录。')+'</div><p class="memorial-signature">'+esc(memorialSignature(r))+'</p><section class="archive-verdict"><h4>御批</h4><p>'+esc(r.decision)+
     '</p>'+(r.consequence?'<p>'+esc(r.consequence)+'</p>':'')+(r.remark?'<blockquote class="archive-brush">'+esc(r.remark)+
     '</blockquote>':'<p class="muted">未另写朱批。</p>')+'</section></article><div class="dialog-actions">'+
     '<button class="primary" data-archive-image>生成分享图</button></div><div id="archive-images" aria-live="polite"></div>';

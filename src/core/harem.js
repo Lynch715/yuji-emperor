@@ -33,7 +33,7 @@ export function generateCandidates(state) {
   const r = roll(s, 6, 10);
   s = r.state;
   s.harem.selectionYear = year;
-  s.harem.candidates = [];
+  s.harem.candidates = s.harem.candidates.filter(c=>c.id.includes('-recommend-'));
   for(let i=0;i<r.value;i++) {
     const named=uniqueName(s);s=named.state;
     const draw=(a,b)=>{const r=roll(s,a,b);s=r.state;return r.value;};
@@ -44,13 +44,22 @@ export function generateCandidates(state) {
   }
   return s;
 }
+export function recommendCandidates(state){
+  if(state.regency||state.reign?.married===false)throw new Error('须亲政大婚后方可荐选');
+  if(state.nation.privy<3)throw new Error('内帑不足三万两，暂不能筹办荐选');
+  let s=applyPackage(state,{privy:-3},'日常荐选：查验家世、安排入京');
+  const named=uniqueName(s);s=named.state;
+  const draw=(a,b)=>{const r=roll(s,a,b);s=r.state;return r.value;};
+  const faction=s.court.factions[draw(0,s.court.factions.length-1)].id;
+  s.harem.candidates.push({id:reignId(s)+'-recommend-'+s.turn+'-'+s.harem.consorts.length+'-'+s.harem.candidates.length,name:named.name,age:draw(18,25),family:'经查验举荐入京',faction,appearance:draw(45,95),personality:['沉静','直率','敏慧','温和','谨慎'][draw(0,4)],ambition:draw(15,70),scheming:draw(15,75),health:85});
+  return s;
+}
 export function selectConsort(state, id, rank = "贵人") {
-  if (!selectionYear(state) || state.harem.selectionYear !== globalYear(state.turn))
-    throw new Error("本年不是选秀年");
   if(state.regency || state.reign?.married===false)throw new Error("须亲政大婚后方可选妃");
   let s = clone(state);
   const c = s.harem.candidates.find((c) => c.id === id);
   if (!c) throw new Error("此秀女已离开殿选");
+  if(c.age<18)throw new Error('荐选须年满十八');
   if (!rankAvailable(s, rank)) throw new Error("此位分已满额");
   s.harem.consorts.push({
     ...c,
@@ -124,12 +133,14 @@ export function haremAction(state, action) {
     c.mood = clamp(c.mood + 5);
     s = applyPackage(s, { mood: 2 }, "探望 " + c.name);
   } else if (operation === "赏赐") {
-    const amount = Number(action.amount) || 2;
-    if (amount < 1 || amount > 20 || s.nation.privy < amount)
-      throw new Error("内帑不足或赏赐超限");
+    const requested = Number(action.amount ?? 2);
+    if(!Number.isFinite(requested)||requested<=0)throw new Error('请填写大于零的赏赐金额');
+    const amount=Math.min(requested,s.nation.privy),before=c.gifts?.turn===s.turn?c.gifts.amount:0;
     s = applyPackage(s, { privy: -amount }, "赏赐 " + c.name);
     c = s.harem.consorts.find((x) => x.id === action.person);
-    c.favor = clamp(c.favor + amount);
+    c.favor = clamp(c.favor + 8*Math.log1p((before+amount)/8)-8*Math.log1p(before/8));
+    c.gifts={turn:s.turn,amount:before+amount};
+    return {state:s,note:c.name+' · 赏赐 '+amount+' 万两'+(amount<requested?'（按内帑余银办理）':'')+'；厚赏愈多，好感增长愈缓'};
   } else if (operation === "禁足") {
     c.confined = !c.confined;
     c.favor = clamp(c.favor - 4);

@@ -6,6 +6,7 @@ import { uniqueName } from "./names.js";
 import { roll, check } from "./rng.js";
 import {factionPowers} from './politics.js';
 import { campaignChoiceBlock } from './campaign-rules.js';
+import { TEXT_LIMITS, talkMode } from './text.js';
 export function strongmanCandidate(s){
  const candidates=s.court.officials.filter(o=>o.alive&&o.health>0&&!o.retired&&!o.jailed&&s.court.posts.some(p=>p.holder===o.id&&p.id===o.post));
  return candidates.map(o=>({o,power:s.court.factions.find(f=>f.id===o.faction)?.power||0}))
@@ -73,7 +74,7 @@ export function courtYear(state) {
       s=addEvent(s,'致仕',o.name+'请致仕','年届七旬，乞骸骨归里',[
         {label:'准予致仕',effects:{virtue:0.5}},{label:'温旨留任',effects:{prestige:0.2}},
       ],[o.id],post?.provinceId||null);
-      const m=s.memorials.at(-1);if(inCapital(o)||post?.provinceId){m.from=o.name;m.fromId=o.id;}
+      const m=s.memorials.at(-1);if(inCapital(o)||post?.provinceId){m.from=o.name;m.fromId=o.id;m.fromPost=s.postNames?.[post?.id]||post?.title||'原任官';m.fromRole='上奏';}
     }
   }
   for(const p of s.nation.provinces)p.governor=s.court.posts.find(o=>o.provinceId===p.id)?.holder||null;
@@ -206,46 +207,43 @@ export function appoint(state, action) {
   };
 }
 export function talkAttempt(state, personId, line, structured = false) {
-  if (
-    state.talks.filter((t) => t.person === personId && t.turn === state.turn)
-      .length >= freedomRules(state).talkRounds
-  )
-    throw new Error("本旬面谈已达"+freedomRules(state).talkRounds+"轮，请待下旬再议");
   let s = clone(state);
   const person =
     s.court.officials.find((o) => o.id === personId && o.alive) ||
     s.harem.consorts.find((o) => o.id === personId) ||
     s.foreign.find((o) => o.id === personId);
-  if (!person) throw new Error("此人不在名册");
+  if (!person||person.health!==undefined&&person.health<=0||person.jailed||person.retired)throw new Error('此人当前无法召见');
   const post = s.court.posts.find((p) => p.holder === personId),
     isOfficial = !!person.abilities;
   const requested = Number(line.match(/(\d+(?:\.\d+)?)\s*万?两/)?.[1] || 0),
-    asking = !structured && /拨|钱|银|挪|给|赏|借/.test(line);
-  const used = state.talks
-    .filter((t) => t.person === personId && t.turn === state.turn)
-    .reduce((n,t)=>n+(t.intentResults?.length?t.intentResults.filter(r=>r.type==='allocate'&&['success','partial'].includes(r.status)&&r.actual.source==='treasury').reduce((m,r)=>m+(r.actual.treasurySpent??r.actual.amount??0),0):(t.effects?.privy||0)),0);
+    mode=talkMode(line,structured),asking=!structured&&mode==='拨款';
+  const receipts=new Set();let used=0;
+  for(const t of state.talks.filter(t=>t.person===personId&&t.turn===state.turn)){
+    if(!t.intentResults?.length){used+=t.effects?.privy||0;continue;}
+    for(const r of t.intentResults)if(!receipts.has(r.id)&&r.type==='allocate'&&['success','partial'].includes(r.status)&&r.actual.source==='treasury'){
+      receipts.add(r.id);used+=r.actual.treasurySpent??r.actual.amount??0;
+    }
+  }
   const cap =
     s.settings.freedom==='free'?s.nation.treasury:isOfficial && post?.tags.includes("管钱")
       ? Math.min(Math.max(0,20*freedomRules(s).talkMultiplier-used),Math.floor(s.nation.treasury*0.03)*freedomRules(s).talkMultiplier,Math.floor((person.favor||0)/3)*freedomRules(s).talkMultiplier,s.nation.treasury):0;
-  const r = roll(s);
-  s = r.state;
-  const kind = /威吓|问罪|斩|严惩/.test(line)
-    ? "威吓"
-    : /试探|秘密|暗查/.test(line)
-      ? "试探"
-      : "说服";
-  let verdict = check(
-    s.emperor.talents[kind === "说服" ? "魅力" : "权谋"],
+  const kind=mode;
+  const prior=!structured&&state.talks.find(t=>t.person===personId&&t.turn===state.turn&&t.kind===kind&&
+    (t.mode==='check'||t.mode===undefined&&Number.isFinite(t.die)));
+  const mechanical=!['闲谈','议事'].includes(kind),r=mechanical&&!prior?roll(s):{state:s,value:prior?.die??null};
+  s=r.state;
+  let verdict=prior?{success:prior.success}:!mechanical?{success:true}:check(
+    s.emperor.talents[['说服','拨款'].includes(kind) ? "魅力" : "权谋"],
     r.value,
     "一般",
     person.abilities?.才 || person.scheming || 50,
     (s.emperor.mood < 20 ? -10 : 0) +
       (person.favor || person.attitude || 0) / 5,
   );
-  const outcome=structured?{state:s,verdict}:adjudicate(s,verdict,personId);s=outcome.state;verdict=outcome.verdict;
+  const outcome=!mechanical||prior?{state:s,verdict}:adjudicate(s,verdict,personId);s=outcome.state;verdict=outcome.verdict;
   const denied = asking && (requested > cap || cap === 0),
     effects =
-      !denied && verdict.success && asking
+      !prior && !denied && verdict.success && asking
         ? {
             treasury: -Math.min(requested, cap),
             privy: Math.min(requested, cap),
@@ -254,7 +252,7 @@ export function talkAttempt(state, personId, line, structured = false) {
   if (verdict.success && !denied && kind === "试探" && isOfficial)
     s.court.officials.find((o) => o.id === personId).secretKnown = true;
   s = applyPackage(s, effects, "御前面谈：职权内拨款");
-  s = applyPackage(
+  if(mechanical&&!prior)s = applyPackage(
     s,
     { official: { id: personId, favor: verdict.success ? 2 : -1 } },
     "御前面谈：" + kind,
@@ -263,15 +261,17 @@ export function talkAttempt(state, personId, line, structured = false) {
     turn: s.turn,
     id: "talk-" + s.turn + "-" + s.talks.length,
     person: personId,
-    line: String(line).slice(0, 500),
+    line: String(line).slice(0, TEXT_LIMITS.talk),
     die: r.value,
     kind,
+    mode:structured?'action':mechanical?'check':'chat',
+    reused:!!prior,
     success: verdict.success && !denied,
     denied,
     cap,
     effects,
     ...(verdict.partial?{partial:true,cost:verdict.cost}:{}),
-    reply: denied
+    reply:!mechanical&&!structured?'臣在，陛下请讲。':prior?'此事方才已议，臣仍照先前所奏办理。':denied
       ? "臣无此职权，请容臣回去议。"
       : verdict.success
         ? "臣谨遵圣意，当在职权内尽力。"

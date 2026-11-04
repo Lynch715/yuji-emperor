@@ -1,3 +1,5 @@
+import { TEXT_LIMITS } from '../core/text.js';
+import { memorialParagraphHTML, memorialAuthor, memorialSignature } from './memorial-document.js';
 import { freedomRules } from "../core/freedom.js";
 import { postTitle } from "../core/scenarios.js";
 import { memorialDecision } from "../core/memorial-decisions.js";
@@ -104,7 +106,7 @@ export function memorialAction(s, session) {
         option: session.choices[id],
         remark: String(session.remarks?.[id] ?? session.remark ?? "").slice(
           0,
-          100,
+          TEXT_LIMITS.remark,
         ),
       },
     ]),
@@ -320,7 +322,7 @@ export function memorialHTML(s, session) {
           : o.id === "discuss"
             ? o.disabled
               ? "已达再议次数，请裁处"
-              : (m.campaignOrder?'军情紧急，再议不延期限':'发部再议，期限 +3 旬')+' · '+
+              : (m.campaignOrder?'军情紧急，再议不延期限':'发部再议，原定期限不顺延')+' · '+
                 (freedomRules(s).referrals===Infinity?'次数不限':'最多'+freedomRules(s).referrals+'次')
             : o.id === "remark"
               ? "识别嘉奖／申饬，原请款仍待准驳"
@@ -405,10 +407,8 @@ export function memorialHTML(s, session) {
     (m.urgent ? '<span class="stamp">急</span>' : "") +
     '<h3 id="memorial-title" tabindex="-1">' +
     esc(m.title) +
-    '</h3></div><div class="memorial-meta"><div class="memorial-author"><span>上奏　' +
-    esc(postTitle(s, post)) +
-    " " +
-    esc(m.from) +
+    '</h3></div><div class="memorial-meta"><div class="memorial-author"><span>' +
+    esc(memorialAuthor(m,postTitle(s,post))) +
     (faction ? "（" + esc(faction.name) + "）" : "") +
     "</span>" +
     (person?.alive
@@ -422,11 +422,11 @@ export function memorialHTML(s, session) {
     esc(m.type) +
     "</span><span>期限　剩 " +
     Math.max(0, m.due - s.turn) +
-    ' 旬</span></div></div><p class="memorial-body">' +
-    esc(
+    ' 旬</span></div></div><div class="memorial-body">' +
+    memorialParagraphHTML(
       m.text || "臣谨奏：" + m.title + "。" + (m.request || "伏乞陛下裁处。"),
     ) +
-    '</p><div class="memorial-foot">' +
+    '</div><p class="memorial-signature">'+esc(memorialSignature(m,postTitle(s,post)))+'</p><div class="memorial-foot">' +
     (region
       ? '<p class="memorial-region">' +
         esc(region.name) +
@@ -441,7 +441,7 @@ export function memorialHTML(s, session) {
     ('<div class="brush-control"><label for="review-remark" class="brush-label">御笔朱批（本折）</label><button type="button' +
       '" class="brush-mode" data-review-option="remark" aria-pressed="') +
     (selected === "remark") +
-    ('">只作朱批</button></div><div class="brush-writing"><textarea id="review-remark" class="brush-input" maxlength="10' +
+    ('">只作朱批</button></div><div class="brush-writing"><textarea id="review-remark" class="brush-input" maxlength="200' +
       '0" placeholder="写下嘉奖或申饬">') +
     esc(session.remarks[m.id] || "") +
     ('</textarea></div><p class="shared-remark-note">只作朱批，可嘉奖申饬；原请款仍须准驳。</p></div></article><section class="review-p' +

@@ -1,4 +1,6 @@
 import { memorialReviewDate } from '../core/memorial-records.js';
+import { textParagraphs } from '../core/text.js';
+import { memorialAuthor, memorialSignature } from './memorial-document.js';
 
 export function wrapMemorialText(text, width, measure) {
   return String(text).split('\n').flatMap(paragraph => {
@@ -31,9 +33,10 @@ export function memorialImageLayout(record, measure) {
   };
   add(record.title, 46, 70);
   add([record.dynasty,record.emperor].filter(Boolean).join(' · '), 28, 48, 'soft');
-  add([record.from && '上奏 '+record.from, record.type].filter(Boolean).join(' · '), 28, 48, 'soft');
+  add([memorialAuthor(record), record.type].filter(Boolean).join(' · '), 28, 48, 'soft');
   y += 28;
-  add(record.text || '旧卷未留存奏折全文。', 32, 54, record.text ? 'ink' : 'soft');
+  for(const p of textParagraphs(record.text || '旧卷未留存奏折全文。')){add('　　'+p,32,54,record.text?'ink':'soft');y+=18;}
+  add(memorialSignature(record),28,48,'soft');
   y += 38;
   add('御批', 28, 52, 'red');
   add(record.decision, 38, 64, 'red');

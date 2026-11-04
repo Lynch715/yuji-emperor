@@ -28,10 +28,10 @@ for(const mode of ['free','mid','real'])test('第二步 门槛矩阵 '+mode,()=>
  s=fresh(mode);for(let i=0;i<(Number.isFinite(rules.talkRounds)?rules.talkRounds:8);i++)s=talkAttempt(s,'o0','说说近况').state;
  if(Number.isFinite(rules.talkRounds))assert.throws(()=>talkAttempt(s,'o0','说说近况'));
  s=fresh(mode);const o=s.court.officials.find(o=>o.id===s.court.posts[1].holder);assert.equal(talkAttempt(s,o.id,'近况',true).result.cap,{free:480,mid:28,real:14}[mode]);
- s.edictCooldowns.修河=s.turn+rules.edictCooldown;assert.equal(!!edictBlock(s,'修河'),mode!=='free');
+ s.edictCooldowns.修河=s.turn+rules.edictCooldown;assert.equal(!!edictBlock(s,'修河'),false);
  s=fresh(mode);s.turn=3*36;assert.equal(selectionYear(s),mode!=='mid');assert.equal(rankAvailable(s,'皇后'),mode==='free');
- assert.ok(selectionDescription(s).includes(mode==='free'?'可随时选秀':'每'+rules.selectionPeriod+'年选秀一次'));
- const f=s.foreign[0];f.status='通好';f.trade={start:s.turn,until:s.turn+36,income:1};assert.equal(!!diplomacyBlock(s,{country:f.id,operation:'互市'}),mode!=='free');
+ assert.ok(selectionDescription(s).includes(mode==='free'?'可随时选秀':'每'+rules.selectionPeriod+'年大选一次'));
+ const f=s.foreign[0];f.status='通好';f.trade={start:s.turn,until:s.turn+36,income:1};assert.equal(!!diplomacyBlock(s,{country:f.id,operation:'互市'}),false);
  const before=fresh(mode),cost=energyLimit(before)+2,after=settleEnergy(before,cost);assert.equal(before.emperor.health-after.emperor.health,mode==='free'?2:4);
 });
 test('第二步 一般档100次：完整成功接近60%，办成接近80%，部分成功保存真实代价',()=>{

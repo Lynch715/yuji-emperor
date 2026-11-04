@@ -28,13 +28,12 @@ for(const old of legacy)test('夜御案同种子实走对照：'+old.case,()=>{
  assert.equal(forecast.state.v,VERSION);
  assert.deepEqual(s,before);
 });
-test('逐本混合决定沿用既有 decisions 字段，未选完或超过三议题不得写入',()=>{
+test('逐本混合决定沿用既有 decisions 字段，未选完不得写入，上朝不限本数',()=>{
  const s=stage9Fixture(),model=createMemorialSession(s,'上朝','朝');
  assert.throws(()=>memorialAction(s,model),/逐本/);
- model.ids.forEach((id,i)=>model.choices[id]=['approve','hold','discuss'][i]);
+ model.ids.forEach((id,i)=>model.choices[id]=['approve','hold','discuss'][i%3]);
  assert.deepEqual(memorialAction(s,model).decisions,Object.fromEntries(Object.entries(model.choices).map(([id,option])=>[id,{option,remark:''}])));
- model.ids.push(s.memorials[3].id);model.choices[model.ids[3]]='reject';
- assert.throws(()=>memorialAction(s,model),/三个/);
+ assert.ok(model.ids.length>3);assert.doesNotThrow(()=>memorialAction(s,model));
 });
 test('国势涨跌、精力圆点与钱粮估算从现有数据推算，不写状态',()=>{
  const s=stage9Fixture(true),before=structuredClone(s),e=energyView(s);
@@ -73,6 +72,8 @@ test('其余行动表单的日程序列化沿用改版前代码',()=>{
  const block=code=>{const a=code.indexOf('$("#action-form").onsubmit');return code.slice(code.indexOf('if (kind === "下旨")',a),code.indexOf('      onSchedule(val("action-slot"), a);',a));};
  const base=block(old),updated=block(fresh).replace(/      if\(kind==="任命"&&\$\("#pardon-person"\)\?\.checked\)a\.pardon=true;\n/,'').replace(/      if\(kind==="外交"&&\$\("#confirm-breach"\)\?\.checked\)a\.confirmBreach=true;\n/,'');
  const policies=updated.replace("          ...($('#edict-type').value==='征兵'?{armyTarget:val('edict-army')}:{}),\n",'')
-  .replace("      if(kind==='外交'&&val('operation')==='宣战')Object.assign(a,{warGoal:val('war-goal'),levyProvince:val('war-province')});\n",'');
+  .replace("      if(kind==='外交'&&val('operation')==='宣战')Object.assign(a,{warGoal:val('war-goal'),levyProvince:val('war-province')});\n",'')
+  .replace("      if(kind==='下旨'&&val('edict-followup')==='督办')a.followup='督办';\n",'')
+  .replace('      if (kind === "选妃") {\n        if(val("selection-operation")==="举荐")a.operation="举荐";\n        else Object.assign(a, { person: val("person"), rank: val("rank") });\n      }','      if (kind === "选妃")\n        Object.assign(a, { person: val("person"), rank: val("rank") });');
  assert.equal(policies,base);
 });
