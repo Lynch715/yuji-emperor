@@ -4,7 +4,7 @@ import {localSocial,groupRelationModifier,emperorKey} from './social-rules.js';
 import {clone,assertState,migrate,VERSION} from './state.js';
 import {roll,check} from './rng.js';
 import {adjudicate} from './freedom.js';
-import {resolveIntents} from './intents.js';
+import {intentActionKey,resolveIntents} from './intents.js';
 import {auditChanges} from './audit.js';
 import {canVisit} from './harem.js';
 export const SCENE_ENERGY=1;
@@ -22,7 +22,7 @@ export function resolveScene(state,action,actions,slot,source,previous=null){
  const blocked=sceneBlock(state,action,!!previous);if(blocked)throw new Error(blocked);
  const people=action.people.map(id=>{const p=scenePeople(state,true).find(p=>p.id===id);return {id,name:p.name};});
  let s=clone(state),results=[],facts=[],outcome;
- const key=a=>JSON.stringify(['type','targetId','postId','countryId','operation','resource','amount','source','destination','edictType','province'].map(k=>a[k]??null));
+ const key=intentActionKey;
  const real=actions.filter(a=>a.type!=='other');
  if(real.length){
   const priorResults=previous?[...(previous.results||[]),...previous.steps.flatMap(t=>t.results)]:[],reuse=new Map();

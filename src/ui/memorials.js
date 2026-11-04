@@ -1,3 +1,4 @@
+import {developmentChoiceBlock} from '../core/development-choices.js';
 import { TEXT_LIMITS } from '../core/text.js';
 import { memorialParagraphHTML, memorialAuthor, memorialSignature } from './memorial-document.js';
 import { freedomRules } from "../core/freedom.js";
@@ -225,7 +226,7 @@ export function factionDemandReason(s, speaker, memorial) {
 }
 export function memorialOptions(s, m) {
   const options = m.options.map((o) => ({ ...o,
-    disabled: !!campaignChoiceBlock(s,m,o)||["treasury", "privy", "grain"].some(k => (s.nation[k] || 0) < -(o.effects?.[k] || 0))
+    disabled: !!campaignChoiceBlock(s,m,o)||!!developmentChoiceBlock(s,o)||["treasury", "privy", "grain"].some(k => (s.nation[k] || 0) < -(o.effects?.[k] || 0))
   }));
   if (!options.some((o) => o.id === "hold"))
     options.push({ id: "hold", label: "留中", effects: {} });

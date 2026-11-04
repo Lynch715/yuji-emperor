@@ -1,3 +1,4 @@
+import {developmentNotes} from './tech.js';
 import {resolveScene,sceneBlock,sceneOutcomeText,rememberScene,SCENE_ENERGY} from './scenes.js';
 import { freedomRules, selectionYear, adjudicate } from "./freedom.js";
 import { resolveIntents } from "./intents.js";
@@ -56,6 +57,7 @@ import { issueEdict, advanceProjects, edictBlock } from "./edicts.js";
 import { talkPeople } from './text.js';
 import {
   seedMemorials,
+  seedDevelopmentMemorials,
   resolveMemorial,
   expireMemorials,
   eventsMonth,
@@ -378,7 +380,8 @@ function forecastDraft(state, schedule, intents = []) {
       !o.alive && state.court.officials.find((old) => old.id === o.id)?.alive,
   ))
     notes.push(o.name + " 寿终，原职出缺");
-  s = seedMemorials(s);
+  notes.push(...developmentNotes(state,s));
+  s = seedDevelopmentMemorials(seedMemorials(s),state);
   // A month-end sender may leave office during the same year-end settlement.
   // Before exposing new memorials, bind them to the final eligible incumbent.
   for(const m of s.memorials.filter(m=>!state.memorials.some(old=>old.id===m.id))) {

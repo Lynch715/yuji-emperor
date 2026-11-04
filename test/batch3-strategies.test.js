@@ -9,7 +9,7 @@ test('C1 验收口径 四类策略按同一规则选件，尽职与贪心先急�
  const s=initialTurn(createState({seed:'四类策略'}));
  s.memorials=[['ordinary',false,1],['urgent-late',true,4],['urgent-first',true,2],['ordinary-next',false,3]].map(([id,urgent,due])=>({id,urgent,due,options:[{id:'approve',effects:{treasury:-1}},{id:'reject',effects:{}}]}));
  const before=JSON.stringify(s);
- assert.deepEqual(Object.keys(sim.SIMULATION_STRATEGIES),['rest','random','diligent','greedy']);
+ assert.deepEqual(Object.keys(sim.SIMULATION_STRATEGIES),['rest','random','diligent','greedy','tech']);
  const run=strategy=>sim.makeSimulationSchedule(s,()=>0,strategy);
  assert.deepEqual(run('random').朝.memorials,['ordinary','urgent-late','urgent-first']);
  assert.deepEqual(run('diligent').朝.memorials,['urgent-first','urgent-late','ordinary']);

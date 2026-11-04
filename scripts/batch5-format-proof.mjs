@@ -12,6 +12,9 @@ for(const [name,c] of Object.entries(CASES)){
  // v17 deliberately changes hearing energy, referral deadlines and author snapshots.
  // v18 only adds optional scenes. Normalize its version for the v17 legacy-path comparison.
  f.state.v=17;
+ // v21 neutral development fields do not alter these pre-quarter legacy paths.
+ delete f.state.tech;
+ for(const p of f.state.nation.provinces){delete p.prosperity;delete p.industries;}
  // Keep the complete current forecast and retain historical hashes in summary.json.
  proof[name]=createHash('sha256').update(JSON.stringify(f)).digest('hex');
 }

@@ -1,3 +1,4 @@
+import {techEffects,activeIndustryLevels,INDUSTRIES} from './tech-rules.js';
 import { applyPackage } from "./effects.js";
 // Treasury uses 万两 and grain uses 万石. Budget covers twelve months of recurring treasury obligations.
 export function monthlyBudget(state) {
@@ -19,8 +20,9 @@ export function grainBudget(state){
 // normal harvest to recurring military demand, then weight crop damage by people.
 export function quarterlyGrain(state){
   const population=state.nation.provinces.reduce((n,p)=>n+p.pop,0);
-  const crop=population?state.nation.provinces.reduce((n,p)=>n+p.pop*(1-Math.max(0,Math.min(100,p.disaster))/100),0)/population:0;
-  return monthlyBudget(state).grain*3*1.2*crop;
+  const effects=techEffects(state),protection=effects.cropProtection||0;
+  const crop=population?state.nation.provinces.reduce((n,p)=>n+p.pop*(1-Math.max(0,Math.min(100,p.disaster))/100*(1-protection))*(1+(p.prosperity||0)/200),0)/population:0;
+  return monthlyBudget(state).grain*3*1.2*crop*(1+(effects.grain||0))*(1+Math.min(0.18,activeIndustryLevels(state,'canal')*INDUSTRIES.canal.grainTransport));
 }
 export function wasteQuote(state) {
   const budget = annualBudget(state),

@@ -25,7 +25,7 @@ export function numericSnapshot(s) {
         walk(v, path + "." + k);
       }
   };
-  for (const root of ["emperor", "nation"]) walk(s[root], root);
+  for (const root of ["emperor", "nation", "tech"]) walk(s[root], root);
   const list = (items, prefix) => {
     for (const x of items) {
       for (const [k, v] of Object.entries(x)) {
@@ -115,6 +115,7 @@ export function auditChanges(
     }
   };
   visit(before.emperor, after.emperor, "emperor");
+  visit(before.tech,after.tech,"tech");
   const { provinces, ...nation } = after.nation;
   visit(before.nation, nation, "nation");
   for (const [old, rows, prefix] of [

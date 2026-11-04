@@ -1,3 +1,7 @@
+import {techEffects,TECHS,INDUSTRIES,techById,defaultResearchLead} from './tech-rules.js';
+import {researchBlock} from './tech.js';
+import {industryQuote} from './industries.js';
+import {developmentChoiceBlock,applyDevelopmentChoice} from './development-choices.js';
 import { freedomRules } from "./freedom.js";
 import { remarkCategory, REMARK_KINDS } from "./memorial-decisions.js";
 import { routineTemplate, routineOptions, memorialText } from "./memorial-templates.js";
@@ -118,15 +122,13 @@ export function resolveMemorial(
     m.options.find((o) => o.id === option) ||
     m.options.find((o) => o.id === (option === "reject" ? "opt1" : "opt0"));
   if (!chosen) throw new Error("无此处置选项");
-  const blocked=campaignChoiceBlock(state,m,chosen);if(blocked)throw new Error(blocked);
+  const blocked=campaignChoiceBlock(state,m,chosen)||developmentChoiceBlock(state,chosen);if(blocked)throw new Error(blocked);
   for(const [key,label]of [['treasury','国库'],['privy','内帑'],['grain','粮储']])
     if(chosen.effects[key]<0&&state.nation[key]<-chosen.effects[key])throw new Error(label+'不足以办理此事');
   const regional=m.provinceId&&state.nation.provinces.some(p=>p.id===m.provinceId)&&Number.isFinite(chosen.effects.morale);
   const effects=regional?{...chosen.effects,morale:undefined,province:{...chosen.effects.province,id:m.provinceId,morale:(chosen.effects.province?.morale||0)+chosen.effects.morale}}:chosen.effects;
-  let s = applyPackage(
-    state,
-    effects,
-    sourcePrefix + "：" + m.title + " / " + chosen.label,
+  let s = chosen.development?applyDevelopmentChoice(state,chosen.development).state:applyPackage(
+    state,effects,sourcePrefix + "：" + m.title + " / " + chosen.label,
   );
   s.memorials = s.memorials.filter((x) => x.id !== id);
   if(m.campaignOrder)s=applyCampaignDecision(s,m,chosen);
@@ -222,7 +224,7 @@ export function eventsMonth(state) {
     ], [z.name], z.id);
     s = applyPackage(
       s,
-      { province: { id: z.id, disaster: 25,morale:-4 } },
+      { province: { id: z.id, disaster: 25*(1-(techEffects(s).disasterProtection||0)),morale:-4 } },
       kind + "发生",
     );
     }
@@ -267,4 +269,30 @@ export function eventsMonth(state) {
     );
   }
   return s;
+}
+
+export function seedDevelopmentMemorials(state,before){
+ let s=clone(state);
+ const append=(id,title,type,request,options,provinceId=null)=>{
+  if(s.memorials.some(m=>m.id===id))return;
+  const m={id,title,type,...pickMemorialist(s,type,provinceId),provinceId,request,options,due:s.turn+9,threadId:null,urgent:false,secret:false,text:''};
+  m.text=memorialText(m,s.settings.prose==='modern');s.memorials.push(m);
+ };
+ for(const id of s.tech.done.filter(id=>!before.tech?.done.includes(id)))append('tech-done-'+id+'-'+s.turn,'工部报捷：'+techById(id).name,'工务','此法已研成，谨报御前。',[{id:'approve',label:'知道了',effects:{}}]);
+ if(s.turn===0||s.turn%18||s.regency)return s;
+ const kinds=['industry','research'],kind=kinds[Math.floor(s.turn/18)%2];
+ if(kind==='research'&&!s.tech.current){
+  const t=TECHS.find(t=>!researchBlock(s,t.id));
+  if(t&&defaultResearchLead(s,t))append('tech-request-'+s.turn,'工部请研'+t.name,'工务','请委派主持，每月拨五万两研习'+t.name,[
+   {id:'approve',label:'每月拨五万两',effects:{},development:{kind:'research',techId:t.id,funding:5},consequence:'按国库余额月结拨付，研究须耗时；不在此刻一次扣款'},
+   {id:'reject',label:'暂缓研习',effects:{},consequence:'暂不新增经费'},
+  ]);
+ }else if(kind==='industry'){
+  const proposal=s.nation.provinces.flatMap(p=>Object.keys(INDUSTRIES).map(industry=>({p,industry,q:industryQuote(s,p.id,industry)}))).find(x=>!x.q.blocked&&x.q.level===1&&!s.projects.some(p=>!p.done&&p.edictType==='兴业'&&p.province===x.p.id&&p.industry===x.industry));
+  if(proposal){const {p,industry,q}=proposal,r=INDUSTRIES[industry];append('industry-request-'+s.turn,p.name+'请设'+r.name,'工务','请拨银营建'+r.name,[
+   {id:'approve',label:'准建'+r.name,effects:{treasury:-q.cost,...(r.morale?{province:{id:p.id,morale:r.morale}}:{})},development:{kind:'industry',province:p.id,industry,level:q.level},consequence:'支银'+q.cost+'万两，工期'+q.months+'月，建成后按季产出并支付维护费'},
+   {id:'reject',label:'暂缓营建',effects:{},consequence:'不支银、不营建'},
+  ],p.id);}
+ }
+ return s;
 }

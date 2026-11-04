@@ -1,3 +1,4 @@
+import {techById} from '../core/tech-rules.js';
 import {memoryContext} from '../core/memory.js';
 import { SCENE_RULES } from './scene-rules.js';
 import { TEXT_LIMITS } from '../core/text.js';
@@ -221,6 +222,7 @@ export function turnMessages(state, forecast) {
     ["treasury", "privy", "grain", "morale", "governance"].map((k) => [k, r1(s.nation[k])]));
   const oldRoster = roster(before).split("\n"), newRoster = roster(state).split("\n");
   const dynamic = {
+    格物:{在研:state.tech?.current?(state.tech.current.name||techById(state.tech.current.id)?.name):'无',进度百分比:state.tech?.current?Math.floor(state.tech.current.progress/techById(state.tech.current.id).cost*100):0,本旬突破:(state.tech?.done||[]).filter(id=>!before.tech?.done.includes(id)).map(id=>techById(id).name)},
     国势: nationSummary(state),
     流水账: (state.history || before.history || []).slice(-3).map((h) => h.summary),
     新近事实: factWindow(state).recent.map(({ subject, key, value }) => ({ subject, key, value })),
@@ -311,7 +313,7 @@ export function classifyMessages(text,mode='oral') {
     {
       role: "system",
       content:
-        '你是旨意分类员。只归类不写剧情，输出 JSON {"kind":"","edictType":null,"params":{},"risky":false,"attr":"","level":"","why":"十字内"}。kind 从上朝、批折、召见、宴请、下旨、任命、外交、后宫、出巡、私下行事、闲谈中选。edictType 从赈灾、减赋、加税、修河、整饬吏治、征兵、大赦、修园、编修大典、开海、转内帑、转国库、立储、禅位、禁令中选。不得创造数值效果。',
+        '你是旨意分类员。只归类不写剧情，输出 JSON {"kind":"","edictType":null,"params":{},"risky":false,"attr":"","level":"","why":"十字内"}。kind 从上朝、批折、召见、宴请、下旨、任命、外交、后宫、出巡、私下行事、闲谈中选。edictType 从赈灾、减赋、加税、修河、整饬吏治、征兵、大赦、修园、编修大典、开海、转内帑、转国库、立储、禅位、禁令、格物、兴业中选。不得创造数值效果。',
     },
     { role: "user", content: text.slice(0, TEXT_LIMITS.decree) },
   ];

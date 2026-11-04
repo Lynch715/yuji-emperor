@@ -1,3 +1,4 @@
+import {INDUSTRIES,techEffects} from '../src/core/tech-rules.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createState} from '../src/core/state.js';
@@ -31,11 +32,12 @@ test('C2 audit3先急件准奏30年粮储受收支和年损耗约束，连灾减
   const before=live,f=forecastTurn(live,makeSimulationSchedule(live,()=>0,'greedy'));
   // 年损耗只作用于超仓粮；仓容随军队、灾情变化，不能把当前仓容当硬上限。
   maxCapacity=Math.max(maxCapacity,grainBudget(before).storageCapacity,grainBudget(f.state).storageCapacity);
-  maxAnnualHarvest=Math.max(maxAnnualHarvest,quarterlyGrain(before)*4,quarterlyGrain(f.state)*4);
+  const annualHarvest=s=>4*(quarterlyGrain(s)+s.nation.provinces.reduce((n,p)=>n+(p.industries||[]).reduce((n,i)=>n+(INDUSTRIES[i.type].grain||0)*i.level*(1+(techEffects(s).production||0)),0),0));
+  maxAnnualHarvest=Math.max(maxAnnualHarvest,annualHarvest(before),annualHarvest(f.state));
   const bound=maxCapacity+maxAnnualHarvest/0.3;
   for(const e of f.entries.filter(e=>e.path==='nation.grain')){
    assert.ok(e.after>=0&&Math.max(e.before,e.after)<=bound+1e-7,`粮储${e.after}超过收支界限${bound}`);
-   if(e.after>e.before)assert.match(e.source,/^季结：赋税实收 .* 与新粮入仓$/);
+   if(e.after>e.before)assert.match(e.source,/^季结：(赋税实收 .* 与新粮入仓|.*屯田／圩田产出)$/);
   }
   assert.ok(Number.isFinite(f.state.nation.grain)&&f.state.nation.grain>=0&&f.state.nation.grain<=bound);
   live=commitTurn(live,f,{});assert.equal(live.ending,null);

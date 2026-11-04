@@ -1,3 +1,6 @@
+import {TECHS,INDUSTRIES,defaultResearchLead,seaOpen} from '../src/core/tech-rules.js';
+import {researchBlock} from '../src/core/tech.js';
+import {industryQuote} from '../src/core/industries.js';
 import { createState, assertState } from "../src/core/state.js";
 import { initialTurn, forecastTurn, commitTurn } from "../src/core/turn.js";
 import { canVisit } from "../src/core/harem.js";
@@ -7,9 +10,10 @@ import { edictBlock, EDICTS } from "../src/core/edicts.js";
 import { annualBudget,grainBudget,quarterlyGrain } from "../src/core/finance.js";
 import { random, seedNumber } from "../src/core/rng.js";
 import { applyScenario } from "../src/core/scenarios.js";
-export const SIMULATION_STRATEGIES=Object.freeze({rest:'无为',random:'乱批',diligent:'尽职',greedy:'贪心'});
+export const SIMULATION_STRATEGIES=Object.freeze({rest:'无为',random:'乱批',diligent:'尽职',greedy:'贪心',tech:'全力格物'});
 export function makeSimulationSchedule(s,pick,strategy="diligent") {
     if(!Object.hasOwn(SIMULATION_STRATEGIES,strategy))throw new Error('未知模拟策略');
+    if(strategy==='tech')return technologySchedule(s,pick);
     const action = strategy === "rest" ? -1 : strategy==='greedy'?0:pick(8),
       schedule = { 朝: null, 午: null, 夜: null };
     if (action >= 0 && action < 4) {
@@ -70,8 +74,27 @@ export function makeSimulationSchedule(s,pick,strategy="diligent") {
     if (strategy === "rest") for (const slot of ["朝", "午", "夜"]) schedule[slot] = {kind:"歇息"};
     return schedule;
 }
+export function technologySchedule(s,pick){
+ const schedule=makeSimulationSchedule(s,pick,'diligent');
+ if(s.regency||s.campaigns.some(w=>w.personal&&!w.done))return schedule;
+ const slot=['午','夜','朝'].find(k=>!schedule[k]);if(!slot)return schedule;
+ const reserve=annualBudget(s)/3,lead=defaultResearchLead(s),current=s.tech.current;
+ let action=null;
+ if(current&&lead&&(!s.court.officials.some(o=>o.id===s.tech.lead&&o.alive&&o.health>0&&!o.retired&&!o.jailed)||s.tech.funding!==(s.nation.treasury<reserve?0:20)))action={edictType:'格物',techId:current.id,lead:lead.id,funding:s.nation.treasury<reserve?0:20};
+ if(!action&&!current&&lead){const t=TECHS.find(t=>!researchBlock(s,t.id));if(t&&s.nation.treasury>reserve)action={edictType:'格物',techId:t.id,lead:defaultResearchLead(s,t)?.id,funding:20};}
+ if(!action){
+  const possibilities=s.nation.provinces.flatMap(p=>Object.keys(INDUSTRIES).map(industry=>({p,industry,q:industryQuote(s,p.id,industry)})))
+   .filter(x=>!x.q.blocked&&s.nation.treasury>=reserve+x.q.cost&&!s.projects.some(p=>!p.done&&p.edictType==='兴业'&&p.province===x.p.id&&p.industry===x.industry))
+   .sort((a,b)=>a.q.level-b.q.level||b.p.morale-a.p.morale||a.p.disaster-b.p.disaster);
+  const x=possibilities[0];if(x)action={edictType:'兴业',province:x.p.id,industry:x.industry};
+ }
+ if(!action&&!seaOpen(s)&&s.nation.treasury>reserve+35&&!s.projects.some(p=>p.edictType==='开海'&&!p.done))action={edictType:'开海'};
+ if(action)schedule[slot]={kind:'下旨',...action};
+ return schedule;
+}
 export function simulate(years = 200, seed = "御极·两百年", options = {}) {
   const policy=options.strategy||'diligent',sums={morale:0,governance:0,virtue:0,prestige:0},squares={...sums};
+  const development={research:0,construction:0,maintenance:0,industryIncome:0,completed:0,firstIndustryTurn:null};
   let sampleTurns=0,saturatedTurns=0,strongmanTurns=0,maxGrain=0,maxGrainFirst50=0,maxGrainLast50=0,maxGrainCapacity=0,maxAnnualGrainProduction=0,firstCollapseTurn=null;
   let strategy = seedNumber(seed),
     life = 0,
@@ -115,6 +138,15 @@ export function simulate(years = 200, seed = "御极·两百年", options = {}) 
       birthBefore = s.stats.births;
     invasionCount+=f.state.threads.filter(t=>t.type==="边警"&&t.born===f.state.turn&&!s.threads.some(old=>old.id===t.id)).length;
     options.onForecast?.(s,f);
+    development.completed+=f.state.tech.done.filter(id=>!s.tech.done.includes(id)).length;
+    if(development.firstIndustryTurn===null&&f.state.nation.provinces.some(p=>p.industries.length))development.firstIndustryTurn=i+1;
+    for(const e of f.entries.filter(e=>e.path==='nation.treasury')){
+      const change=e.after-e.before;
+      if(e.source.startsWith('月结：格物经费'))development.research-=change;
+      if(e.source.startsWith('兴业：'))development.construction-=change;
+      if(e.source==='季结：产业维护')development.maintenance-=change;
+      if(e.source.startsWith('季结：')&&e.source.endsWith('产出'))development.industryIncome+=change;
+    }
     s = commitTurn(s, f, {});
     assertState(s);
     if(i<20*36){
@@ -197,6 +229,9 @@ export function simulate(years = 200, seed = "御极·两百年", options = {}) 
       yearRow.governance = s.nation.governance;
       yearRow.arrears = s.nation.arrears;
       yearRow.turns = 36;
+      yearRow.prosperity=s.nation.provinces.reduce((n,p)=>n+p.prosperity,0)/s.nation.provinces.length;
+      yearRow.techDone=s.tech.done.length;
+      yearRow.industryLevels=s.nation.provinces.reduce((n,p)=>n+p.industries.reduce((n,i)=>n+i.level,0),0);
       annual.push(yearRow);
     }
   }
@@ -252,6 +287,7 @@ export function simulate(years = 200, seed = "御极·两百年", options = {}) 
     meanAnnualIncome: round(annual.reduce((n,r) => n + r.income,0) / (completedTurns / 36)),
     meanAnnualExpense: round(annual.reduce((n,r) => n + r.expense,0) / (completedTurns / 36)),
     annual: roundedAnnual,
+    development:Object.fromEntries(Object.entries({...development,done:s.tech.done.length,meanProsperity:s.nation.provinces.reduce((n,p)=>n+p.prosperity,0)/s.nation.provinces.length,industryLevels:s.nation.provinces.reduce((n,p)=>n+p.industries.reduce((n,i)=>n+i.level,0),0)}).map(([k,v])=>[k,v===null?null:round(v)])),
     finalTreasury: Math.round(s.nation.treasury),
   };
 }

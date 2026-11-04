@@ -1,3 +1,4 @@
+import {validateDevelopment} from './tech-schema.js';
 import {validateSocialState} from './social-schema.js';
 import { validateSceneState } from './scene-schema.js';
 import { normalizeMemorialAction } from "./memorial-decisions.js";
@@ -8,7 +9,7 @@ import { seedNumber, random, DRAFT } from "./rng.js";
 import { uniqueName } from "./names.js";
 import { chooseRegent } from "./regency-info.js";
 import {factionPowers} from './politics.js';
-export const VERSION = 20;
+export const VERSION = 21;
 export const TALENTS = ["政略", "权谋", "武略", "文采", "魅力"];
 export const SLOTS = ["朝", "午", "夜"];
 export const POST_NAMES = [
@@ -248,6 +249,8 @@ export function createState(options = {}) {
     tax: n(7, 13),
     morale: 62,
     disaster: 0,
+    prosperity:0,
+    industries:[],
     rebellion: false,
     rebellionQuarter: -1,
     garrison: n(8000, 18000),
@@ -294,6 +297,7 @@ export function createState(options = {}) {
       xun: 0,
       startTurn: 0,
     },
+    tech:{funding:0,current:null,done:[],lead:null,custom:[]},
     intentResults: [],
     settings: {
       freedom: options.freedom || "mid",
@@ -496,6 +500,10 @@ export function migrate(input) {
   // v19 reuses optional NPC memory/relations; old scenes are read as memories without recalculating effects.
   // v20 adds optional memorial.textStatus only on newly generated texts.
   // Missing means legacy prose; never replace old texts or pending forecasts.
+  if(input.v<21){
+    s.tech={funding:0,current:null,done:[],lead:null,custom:[]};
+    for(const p of s.nation.provinces){p.prosperity=0;p.industries=[];}
+  }
   s.settings.freedom ??= "mid";
   s.v = VERSION;
   s.volumeIndex ??= [];
@@ -583,6 +591,7 @@ export function migrate(input) {
   return s;
 }
 export function assertState(s) {
+  validateDevelopment(s);
   if (
     !Number.isSafeInteger(s.turn) ||
     s.turn < 0 ||

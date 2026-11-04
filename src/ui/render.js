@@ -149,6 +149,7 @@ export function metricsHTML(s, mobile = false) {
   );
 }
 export function ledgerLabel(path) {
+  if(path.startsWith('tech.'))return ({funding:'格物月经费',progress:'研究进度',elapsed:'研究月数',spent:'研究累计支银'})[path.split('.').at(-1)]||'格物变化';
   const key = path.split(".").at(-1);
   return {
     treasury: "国库",
@@ -180,6 +181,9 @@ export function ledgerLabel(path) {
     troops: "兵力",
     pop: "人口",
     tax: "赋税",
+    prosperity:"繁荣",
+    level:"产业等级",
+    builtTurn:"产业建成旬",
     education: "教养",
     progress: "政务进度",
     enemyTroops: "敌军兵力",

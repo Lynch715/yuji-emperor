@@ -1,3 +1,5 @@
+import {technologyHTML} from './technology.js';
+import {INDUSTRIES} from '../core/tech-rules.js';
 import {memoryButton,relationName} from './memories.js';
 import { postTitle } from "../core/scenarios.js";
 import { selectionDescription } from "./view-model.js";
@@ -13,6 +15,7 @@ export function palacePanel(s, name) {
   const official = (id) =>
     s.court.officials.find((o) => o.id === id)?.name || "空缺";
   let html = "";
+  if(name==='格物')html=technologyHTML(s);
   if (name === "朝堂") {
     const total = s.court.factions.reduce((a, f) => a + f.power, 0);
     let angle = 0;
@@ -189,7 +192,9 @@ export function palacePanel(s, name) {
             num(z.pop) +
             " 万 · 驻军 " +
             num(z.garrison) +
-            "<br>巡抚 " +
+            '<br>繁荣 '+num(z.prosperity||0)+'<br>产业 '+
+            esc((z.industries||[]).map(i=>INDUSTRIES[i.type].name+' '+i.level+'级'+(i.paused?'（'+i.paused+'）':'')).join('、')||'暂无')+
+            '<br><button data-industry-province="'+z.id+'">兴办产业</button>'+"<br>巡抚 " +
             esc(official(z.governor)) +
             "</small></div>",
         )
@@ -259,7 +264,7 @@ export function palacePanel(s, name) {
           .map(
             (p) =>
               '<div class="card"><h3>' +
-              esc(p.edictType) +
+              esc(p.edictType==='兴业'?(p.name||p.edictType):p.edictType) +
               " · " +
               (p.done ? "已结" : "在途") +
               "</h3><p>" +
@@ -271,7 +276,7 @@ export function palacePanel(s, name) {
               ' 万两</p><progress value="' +
               p.progress +
               '" max="100" aria-label="' +
-              esc(p.edictType) +
+              esc(p.edictType==='兴业'?(p.name||p.edictType):p.edictType) +
               '进度"></progress></div>',
           ),
       );

@@ -1,3 +1,4 @@
+import {INDUSTRIES} from '../core/tech-rules.js';
 import { esc, gameText, openDialog } from './common.js';
 import { campaignsHTML, treatyHTML } from './campaigns.js';
 import { metricGroups } from './view-model.js';
@@ -45,7 +46,7 @@ export function nationOverviewHTML(s,span=12,expanded=false) {
     esc((FREEDOM_RULES[s.settings.freedom]||FREEDOM_RULES.mid).label)+' · 施政：'+esc((DIFFICULTIES[s.settings.difficulty]||DIFFICULTIES.normal).label)+'</p>'+cards+
     '<div class="nation-alerts">'+(d.alerts.length?d.alerts.map(a=>'<span>'+esc(a)+'</span>').join(''):'<span class="nation-calm">暂无紧急钱粮与边务警报</span>')+'</div>';
   const budget=figures([
-    ['每月俸禄',number(d.monthly.salaries),'万两'],['每月军饷',number(d.monthly.armyPay),'万两'],
+    ['格物月经费',number(s.tech?.current?s.tech.funding:0),'万两'],['每月俸禄',number(d.monthly.salaries),'万两'],['每月军饷',number(d.monthly.armyPay),'万两'],
     ['现银可付固定俸饷',number(d.months),'月'],['国库积欠',number(s.nation.arrears),'万两'],
     ['内帑积欠',number(s.nation.privyArrears),'万两'],['缺粮积欠',number(s.nation.grainArrears),'万石'],
     ['每月军粮',number(d.grain.military),'万石'],['每月赈济用粮',number(d.grain.relief),'万石'],
@@ -57,8 +58,8 @@ export function nationOverviewHTML(s,span=12,expanded=false) {
   const charts='<div class="nation-charts">'+[['nation.treasury','国库'],['nation.morale','民心'],['nation.governance','吏治'],['emperor.prestige','皇威']].map(([path,label])=>
     '<article><h4>'+label+'</h4>'+nationSparkline(nationSeries(s,path,span),label)+'</article>').join('')+'</div>';
   const period='<div class="nation-period" role="group" aria-label="查看时段">'+[3,12,36].map(n=>'<button data-nation-period="'+n+'" aria-pressed="'+(n===span)+'">近'+n+'旬</button>').join('')+'</div>';
-  const provinces=table(['州郡','人口 / 万人','月税额 / 万两','民心','灾情','驻军 / 人','主官'],d.provinces.map(p=>
-    [p.name,number(p.pop),number(p.tax),number(p.morale),number(p.disaster)+(p.rebellion?' · 民变':''),number(p.garrison),p.governor]));
+  const provinces=table(['州郡','人口 / 万人','月税额 / 万两','民心','灾情','繁荣','产业','驻军 / 人','主官'],d.provinces.map(p=>
+    [p.name,number(p.pop),number(p.tax),number(p.morale),number(p.disaster)+(p.rebellion?' · 民变':''),number(p.prosperity||0),(p.industries||[]).map(i=>INDUSTRIES[i.type].name+i.level+'级'+(i.paused?'（停产）':'')).join('、')||'暂无',number(p.garrison),p.governor]));
   const armies=table(['军镇','兵员 / 人','战备','边患','主将'],d.armies.map(b=>[b.name,number(b.troops),number(b.readiness),b.threat===undefined?'—':number(b.threat),b.commander]));
   const factions=figures([['在任职位',d.serving],['空缺职位',d.vacancies],['已批奏折',s.stats.petitions],['已颁圣旨',s.stats.edicts]])+
     table(['派系','势力','态度','在任席位'],d.factions.map(f=>[f.name,number(f.power),number(f.attitude),f.posts]));

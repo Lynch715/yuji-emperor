@@ -1,3 +1,4 @@
+import {developmentChoiceBlock} from './development-choices.js';
 import { freedomRules, adjudicate } from "./freedom.js";
 import { resolveMemorial,addEvent } from "./events.js";
 import { clone } from "./state.js";
@@ -467,7 +468,7 @@ export function proxyMemorial(state, options = {}) {
         .filter(
           (o) =>
             o.id !== "hold" &&
-            !campaignChoiceBlock(state,m,o) &&
+            !campaignChoiceBlock(state,m,o) && !developmentChoiceBlock(state,o) &&
             ["treasury","privy","grain"].every(k=>state.nation[k]>=Math.max(0,-(o.effects?.[k]||0))),
         )
         .map((o) => ({ m, o, score: factionOptionScore(faction, m, o) })),
@@ -502,7 +503,7 @@ export function cabinetDraft(state, memorial) {
     (k) => (state.nation[k] || 0) >= Math.max(0, -(o.effects?.[k] || 0)));
   const ranked = memorial.options
     .map((o, i) => ({ o, i }))
-    .filter(({ o }) => o.id !== "hold" && affordable(o) && !campaignChoiceBlock(state,memorial,o))
+    .filter(({ o }) => o.id !== "hold" && affordable(o) && !campaignChoiceBlock(state,memorial,o)&&!developmentChoiceBlock(state,o))
     .map((x) => ({ ...x, score: faction ? factionOptionScore(faction, memorial, x.o) : 0 }))
     .sort((a, b) => b.score - a.score || a.i - b.i);
   if (!ranked.length) return null;

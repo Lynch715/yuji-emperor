@@ -1,3 +1,5 @@
+import {industryQuote} from '../core/industries.js';
+import {techEffects} from '../core/tech-rules.js';
 import { freedomRules, selectionYear } from "../core/freedom.js";
 import { memorialDecision } from "../core/memorial-decisions.js";
 import { ACTIONS, scheduleCost, validateSchedule } from "../core/turn.js";
@@ -14,7 +16,7 @@ export const ACTION_GROUPS = [
   ["内廷", ["后宫", "选妃"]],
   ["出行", ["出巡", "亲征"]],
 ];
-export const HALLS = ["朝堂", "后宫", "天下", "内库", "宗室", "史馆"];
+export const HALLS = ["朝堂", "后宫", "天下", "格物", "内库", "宗室", "史馆"];
 export const GLYPHS = {自拟情节:"叙",上朝:"朝",批折:"批",下旨:"旨",任命:"任",召见:"见",宴请:"宴",外交:"使",私下行事:"密",后宫:"宫",选妃:"选",出巡:"行",亲征:"征",歇息:"憩"};
 export function selectionDescription(s){const period=freedomRules(s).selectionPeriod;return period?'每'+period+'年大选一次；平日可花内帑三万两举荐一人，已有候选人可随时留牌。':'可随时选秀，位分名额不限。';}
 export function actionAvailability(s, kind) {
@@ -64,7 +66,12 @@ export function scheduleEstimate(s) {
   for (const a of Object.values(s.schedule).filter(Boolean)) {
     if (a.kind === "下旨" && a.text?.trim()) continue;
     if (a.kind === "下旨" && EDICTS[a.edictType]) {
-      const e=EDICTS[a.edictType];
+      const base=EDICTS[a.edictType],e={...base,cost:base.cost*(a.edictType==='修河'?1-(techEffects(s).riverDiscount||0):1)};
+      if(a.edictType==='格物')continue;
+      if(a.edictType==='兴业'){
+        if(!s.projects.some(p=>!p.done&&p.edictType==='兴业'&&p.province===a.province&&p.industry===a.industry))totals.treasury-=industryQuote(s,a.province,a.industry).cost;
+        continue;
+      }
       if (a.edictType === "转内帑" || a.edictType === "转国库") {
         const from=a.edictType==="转内帑"?"treasury":"privy",to=from==="treasury"?"privy":"treasury",amount=Math.min(Math.max(0,Number(a.amount??10)),s.nation[from],1000000-s.nation[to]);
         totals[from]-=amount;totals[from==="treasury"?"privy":"treasury"]+=amount;

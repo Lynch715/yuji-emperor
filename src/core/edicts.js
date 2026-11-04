@@ -1,3 +1,6 @@
+import {configureResearch} from './tech.js';
+import {buildIndustry,completeIndustry} from './industries.js';
+import {techEffects} from './tech-rules.js';
 import { freedomRules, adjudicate } from "./freedom.js";
 import { quarterIndex } from "./finance.js";
 import { clone } from "./state.js";
@@ -106,7 +109,10 @@ export const EDICTS = {
     office: "刑部尚书",
     effects: { governance: 2, morale: -1 },
   },
+  格物:{cost:0,months:0,difficulty:0,office:'工部尚书',effects:{}},
+  兴业:{cost:0,months:0,difficulty:0,office:'工部尚书',effects:{}},
 };
+export function edictCost(state,type){return EDICTS[type]?.cost*(type==='修河'?1-(techEffects(state).riverDiscount||0):1);}
 export function execution(state, type, die) {
   const edict = EDICTS[type];
   if (!edict) throw new Error("未知旨意类型");
@@ -155,8 +161,10 @@ function projectExecution(p){
 }
 export function issueEdict(state, action, die) {
   const type = action.edictType || "禁令",
-    rule = EDICTS[type];
+    rule = EDICTS[type]&&{...EDICTS[type],cost:edictCost(state,type)};
   if (!rule) throw new Error("无法识别此旨意，请选择模板");
+  if(type==='格物')return configureResearch(state,action);
+  if(type==='兴业')return buildIndustry(state,action);
   const blocked=edictBlock(state,type,action.province);if(blocked)throw new Error(blocked);
   if(action.province&&!state.nation.provinces.some(p=>p.id===action.province))throw new Error("请选择有效州郡");
   const armyTarget=action.armyTarget||'capital';
@@ -282,6 +290,7 @@ export function advanceProjects(state) {
     );
     if (s.turn >= project.end) {
       project.done = true;
+      if(project.edictType==='兴业'){s=completeIndustry(s,project);project.progress=100;continue;}
       finishInstant(s,project.edictType,project.province);
       if(["减赋","加税"].includes(project.edictType)) {
         for(const p of s.nation.provinces.filter(p=>!project.province||project.province===p.id)) {

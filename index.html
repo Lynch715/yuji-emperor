@@ -2870,6 +2870,9 @@ text-indent:0;
     >
     <script>
       (() => { "use strict"; const __modules = {"src/ui/app.js":function(__load){
+const {industryForm,developmentAction,updateDevelopmentPreview} = __load("src/ui/technology.js");
+const {configureResearch} = __load("src/core/tech.js");
+const {buildIndustry} = __load("src/core/industries.js");
 const {openNPCMemory} = __load("src/ui/memories.js");
 const {forecastScene,commitScene,latestScene,sceneInput,sceneOutcomeText,sceneBudget} = __load("src/core/scenes.js");
 const {sceneMessages,mockSceneNarrative} = __load("src/llm/scenes.js");
@@ -3569,6 +3572,8 @@ let kind =
 Object.keys(ACTIONS).find((k) => text.startsWith(k)) ||
 (/试探|离间|暗查|收买|闲谈/.test(text) ? "私下行事" : "下旨"),
 type = Object.keys({
+格物:1,
+兴业:1,
 赈灾: 1,
 减赋: 1,
 加税: 1,
@@ -3583,6 +3588,8 @@ type = Object.keys({
 禅位: 1,
 }).find((t) => text.includes(t));
 if (/赈济|救灾/.test(text)) type = "赈灾";
+if(/研制|研究|研习|格物|发明|改良|研新/.test(text))type='格物';
+else if(/兴业|兴建|建造|开设|设立/.test(text))type='兴业';
 if (!type && !state.settings.demo) {
 busy = true;
 render();
@@ -3785,9 +3792,9 @@ return;
 }
 if (name === "palaces") {
 openDialog(
-"六殿",
+"殿阁",
 '<div class="grid">' +
-["朝堂", "后宫", "天下", "内库", "宗室", "史馆"]
+["朝堂", "后宫", "天下", "格物", "内库", "宗室", "史馆"]
 .map((p) => '<button data-panel="' + p + '">' + p + "</button>")
 .join("") +
 "</div>",
@@ -3825,7 +3832,8 @@ if (!b || b.disabled) return;
 try {
 if (b.dataset.command) await command(b.dataset.command);
 else if (b.dataset.action) chooseAction(b.dataset.action);
-else if (b.dataset.panel) palacePanel(state, b.dataset.panel);
+else if (b.dataset.panel){palacePanel(state,b.dataset.panel);if(state&&b.dataset.panel==='格物')updateDevelopmentPreview($('#modal'),state);}
+else if(b.dataset.industryProvince){guard();openDialog('兴业营建',industryForm(state,b.dataset.industryProvince));updateDevelopmentPreview($('#modal'),state);}
 else if (b.dataset.slot) {
 guard();
 preferred = b.dataset.slot;
@@ -3976,6 +3984,16 @@ toast(error.message);
 }
 });
 document.addEventListener("submit", (e) => {
+if(['research-plan','industry-plan'].includes(e.target.id)){
+e.preventDefault();
+try{
+guard();const a=developmentAction(e.target,e.target.id==='research-plan'?'格物':'兴业'),which=e.target.querySelector('[name="development-slot"]').value;
+if(!which||state.schedule[which])throw new Error('该时段已有安排，请先撤下原行动');
+if(a.edictType==='格物')configureResearch(state,a);else buildIndustry(state,a);
+arrange(which,a);closeDialog();
+}catch(error){toast(error.message);}
+return;
+}
 if (e.target.id === "oral-form") {
 e.preventDefault();
 oral($("#oral").value.trim()).catch((err) => toast(err.message));
@@ -4017,104 +4035,206 @@ boot().catch((error) => {
 toast(error.message);
 render();
 });
+document.addEventListener('input',event=>{
+if(state&&event.target.closest('#research-plan,#industry-plan'))updateDevelopmentPreview(event.target.closest('form'),state);
+});
+document.addEventListener('change',event=>{
+if(state&&event.target.closest('#research-plan,#industry-plan'))updateDevelopmentPreview(event.target.closest('form'),state);
+});
 
 return {};
 },
-"src/ui/memories.js":function(__load){
-const {npcMemories} = __load("src/core/memory.js");
-const {socialNPCs,emperorKey} = __load("src/core/social-rules.js");
-const {esc,openDialog} = __load("src/ui/common.js");
-function memoryButton(id,name=''){return '<button data-person-memory="'+esc(id)+'">'+esc(name?name+'的往事':'记得的事')+'</button>';}
-function relationName(s,id){return socialNPCs(s).find(p=>p.id===id)?.name||'';}
-function socialChangesHTML(s,changes=[]){
-if(!changes.length)return '';
-return '<div class="scene-changes" aria-label="相处变化">'+changes.map(c=>'<span>'+esc(relationName(s,c.personId))+' · '+esc(c.field==='relation'?'与'+relationName(s,c.withId)+'的关系':s.foreign.some(f=>f.id===c.personId)?'态度':'好感')+' '+(c.delta>0?'+':'')+Number(c.delta.toFixed(2))+'（'+esc(c.reason)+'）</span>').join('')+'</div>';
+"src/ui/technology.js":function(__load){
+const { TECHS,TECH_LINES,INDUSTRIES,RESEARCH_CAP,researchLead,defaultResearchLead,techById } = __load("src/core/tech-rules.js");
+const { researchBlock,researchQuote } = __load("src/core/tech.js");
+const { industryQuote } = __load("src/core/industries.js");
+const { esc } = __load("src/ui/common.js");
+const n=x=>Number(x||0).toLocaleString('zh-CN',{maximumFractionDigits:2});
+const options=(rows,selected)=>rows.map(([id,label,disabled])=>'<option value="'+esc(id)+'" '+(id===selected?'selected ':'')+(disabled?'disabled':'')+'>'+esc(label)+'</option>').join('');
+function slotField(s,id){return '<label for="'+id+'">安排时辰</label><select id="'+id+'" name="development-slot">'+options(['朝','午','夜'].map(k=>[k,k+'间',!!s.schedule[k]]),['朝','午','夜'].find(k=>!s.schedule[k]))+'</select>';}
+function planButton(s,label,enabled=true){
+const available=enabled&&!s.regency&&!s.pending&&!s.ending&&['朝','午','夜'].some(k=>!s.schedule[k]);
+return '<div class="dialog-actions"><button class="primary" type="submit" '+(available?'':'disabled')+'>'+label+'</button></div>';
 }
-function npcMemoryHTML(s,id){
-const p=socialNPCs(s).find(p=>p.id===id);if(!p)return '<p>名册中没有此人。</p>';
-const memories=npcMemories(s,id).filter(m=>['scene','scene-summary'].includes(m?.type)).sort((a,b)=>b.turn-a.turn||b.order-a.order);
-const relationships=Object.entries(p.relations||{}).filter(([other])=>relationName(s,other)).sort((a,b)=>a[1]-b[1]);
-const affinity=p.favor??p.attitude??p.relations?.[emperorKey(s)]??50;
-return '<article class="person-memories"><h3>'+esc(p.name)+'</h3><p>对当今天子的'+(p.attitude!==undefined?'态度':'好感')+' '+Number(affinity.toFixed(2))+'</p><h4>与他人的关系</h4>'+
-(relationships.length?'<ul>'+relationships.map(([other,v])=>'<li>'+esc(relationName(s,other))+'：'+(v>=65?'亲近':v<=35?'不睦':'平常')+' · '+Number(v.toFixed(2))+'</li>').join('')+'</ul>':'<p class="muted">尚无特别的往来。</p>')+
-'<h4>记得的事</h4>'+(memories.length?memories.map(m=>'<section class="memory-entry"><p class="muted">'+esc(m.era?.name?m.era.name+m.era.year+'年'+m.era.month+'月':'第'+m.turn+'旬')+(m.type==='scene-summary'?' · 相似往事 '+m.count+'次':'')+'</p><p>'+esc(m.summary)+'</p><button data-memory-scene="'+esc(m.sceneId)+'">看这段经历</button></section>').join(''):'<p class="muted">还没有一起经历过值得记下的事情。</p>')+'</article>';
+function researchFields(s){
+const current=s.tech.current,selected=current?.id||TECHS.find(t=>!researchBlock(s,t.id))?.id;
+const lead=researchLead(s,s.tech.lead)?.id||defaultResearchLead(s,techById(selected))?.id;
+return '<label for="research-id">研究方向</label><select id="research-id">'+options(TECHS.map(t=>[t.id,t.name+(s.tech.done.includes(t.id)?' · 已研成':researchBlock(s,t.id)?' · '+researchBlock(s,t.id):''),!!researchBlock(s,t.id)||!!current&&current.id!==t.id]),selected)+'</select>'+
+'<label for="research-lead">主持官员</label><select id="research-lead">'+options(s.court.officials.filter(o=>researchLead(s,o.id)).map(o=>[o.id,o.name+' · 政务 '+o.abilities.政]),lead)+'</select>'+
+'<label for="research-funding">每月经费（万两）</label><input id="research-funding" type="range" min="0" max="'+RESEARCH_CAP+'" step="0.5" value="'+s.tech.funding+'"><output id="research-funding-value" for="research-funding">'+n(s.tech.funding)+' 万两／月</output>'+
+'<p class="muted">月结按国库余银拨付，上限20万两；调为0可暂停拨款，已研进度保留。更换主持不重置进度。</p>';
 }
-function openNPCMemory(s,id){openDialog('人物往事',npcMemoryHTML(s,id));}
+function industryFields(s,province=null){
+const selected=Object.entries(INDUSTRIES).find(([,r])=>s.tech.done.includes(r.tech))?.[0]||'farm';
+return '<label for="industry-province">主办州郡</label><select id="industry-province">'+options(s.nation.provinces.map(p=>[p.id,p.name+' · 繁荣 '+n(p.prosperity)]),province||s.nation.provinces[0].id)+'</select>'+
+'<label for="industry-type">产业</label><select id="industry-type">'+options(Object.entries(INDUSTRIES).map(([id,r])=>[id,r.name+(!s.tech.done.includes(r.tech)?' · 须研成'+techById(r.tech).name:''),!s.tech.done.includes(r.tech)]),selected)+'</select><p id="industry-quote" class="muted">每州三个产业槽，同类可升至三级。营建在月结推进，建成后按季产出并支付维护费。</p>';
+}
+function industryForm(s,province=null){return '<form id="industry-plan">'+industryFields(s,province)+slotField(s,'industry-slot')+planButton(s,'安排兴业旨意',Object.values(INDUSTRIES).some(r=>s.tech.done.includes(r.tech)))+'</form>';}
+function technologyHTML(s){
+const c=s.tech.current,q=researchQuote(s),title=c?(c.name||q.tech.name):'尚未立项';
+const status='<section class="card"><h3>'+esc(title)+'</h3>'+(c?'<progress aria-label="研究进度" max="'+q.tech.cost+'" value="'+c.progress+'"></progress><p>进度 '+n(c.progress)+'／'+q.tech.cost+' · 已研 '+c.elapsed+' 月／至少 '+q.tech.months+' 月</p>':'<p>委派官员并设经费，研成技艺后即可兴办产业。</p>')+
+'<p>主持：'+esc(q.lead?.name||'尚未委派或原主持已离任')+' · 月经费 '+n(s.tech.funding)+' 万两</p>'+(c?'<p class="muted">按当前条件，月拨 '+n(q.paid)+' 万两，约进 '+n(q.progress)+'；'+(q.opposed?'清议不满，研习受阻。':'主持能力与吏治影响进度。')+'</p>':'')+'</section>';
+const tree=TECH_LINES.map(line=>'<details class="section-spacer" open><summary>'+line+'</summary><div class="grid">'+TECHS.filter(t=>t.line===line).map(t=>{
+const done=s.tech.done.includes(t.id),reason=researchBlock(s,t.id);
+return '<article class="card"><h3>'+esc(t.name)+' · '+(done?'已研成':c?.id===t.id?'在研':reason?'待解锁':'可研习')+'</h3><p>基准经费 '+t.cost+' 万两 · 至少 '+t.months+' 月</p><p class="muted">'+esc(t.prereq.length?'前置：'+t.prereq.map(id=>techById(id).name).join('、'):'本线起点')+(t.openSea?' · 须先开海':'')+'</p><p>'+esc([techBenefit(t),...(t.unlocks.length?['解锁：'+t.unlocks.map(id=>INDUSTRIES[id].name).join('、')]:[])].join('；'))+'</p></article>';
+}).join('')+'</div></details>').join('');
+return status+'<h3 class="section-spacer">格物经费与主持</h3><form id="research-plan">'+researchFields(s)+slotField(s,'research-slot')+planButton(s,'安排格物旨意',!!s.tech.current||TECHS.some(t=>!researchBlock(s,t.id)))+'</form><h3 class="section-spacer">兴业营建</h3>'+industryForm(s)+tree;
+}
+function techBenefit(t){
+const labels={grain:'粮产',cropProtection:'灾年粮产减损',riverDiscount:'修河节费',disasterProtection:'灾情减缓',prosperity:'每季繁荣',governance:'吏治',readiness:'战备',trade:'互市收入',production:'产业产出'};
+return Object.entries(t.effects).map(([key,v])=>labels[key]+(v>0?' +':' ')+(key==='prosperity'||key==='governance'||key==='readiness'?n(v):n(v*100)+'%')).join('；')||'完善本线基础技艺';
+}
+function developmentAction(root,kind){
+const value=id=>root.querySelector('#'+id)?.value;
+return kind==='格物'?{kind:'下旨',edictType:kind,label:'格物 · '+(techById(value('research-id'))?.name||'经费调整'),techId:value('research-id'),lead:value('research-lead'),funding:Number(value('research-funding'))}:{kind:'下旨',edictType:kind,label:'兴业 · '+(INDUSTRIES[value('industry-type')]?.name||''),province:value('industry-province'),industry:value('industry-type')};
+}
+function updateDevelopmentPreview(root,s){
+const funding=root.querySelector('#research-funding'),out=root.querySelector('#research-funding-value');
+if(funding&&out)out.textContent=n(funding.value)+' 万两／月';
+const quote=root.querySelector('#industry-quote');
+if(quote){const type=root.querySelector('#industry-type').value,province=root.querySelector('#industry-province').value,q=industryQuote(s,province,type),r=INDUSTRIES[type];const yields=[r.grain?'粮 '+n(r.grain*q.level)+' 万石':'',r.tax?'税入基数 '+n(r.tax*q.level)+' 万两':'',r.cash?'收入基数 '+n(r.cash*q.level)+' 万两':'',r.trade?'互市增益 '+n(r.trade*q.level*100)+'%':'',r.grainTransport?'粮运增益 '+n(r.grainTransport*q.level*100)+'%':''].filter(Boolean).join('、');
+quote.textContent=q.blocked||r.name+' '+q.level+'级：需银 '+q.cost+' 万两，工期 '+q.months+' 月；每季维护 '+n(r.maintenance*q.level)+' 万两。季产：'+yields+'；繁荣基数 +'+n(r.prosperity*q.level)+'，实际受灾情、民心和吏治影响。'+(r.morale?'营建民心 '+r.morale+'。':'')+(r.governance?'盐课稽查承压。':'')+(r.threat?'海防边患增加。':'');}
+}
 
-return {memoryButton,relationName,socialChangesHTML,npcMemoryHTML,openNPCMemory};
+return {researchFields,industryFields,industryForm,technologyHTML,developmentAction,updateDevelopmentPreview};
 },
-"src/core/memory.js":function(__load){
-const {clone} = __load("src/core/state.js");
-const {socialNPCs} = __load("src/core/social-rules.js");
-const {textSentences} = __load("src/core/text.js");
-const PRIVATE=/心想|暗想|心中|心底|暗自|私下|背地|未说出口|不为人知|秘密|内心|故意欺骗|骗过/;
-function publicMemoryQuote(prose,name){
-return textSentences(prose).filter(t=>t.length>=8&&t.length<=160&&!PRIVATE.test(t)&&(t.includes(name)||/[「“]/.test(t))).at(-1)||'';
+"src/core/tech-rules.js":function(__load){
+const RESEARCH_CAP=20;
+const INDUSTRY_SLOTS=3;
+const TECH_LINES=['农政','水利','工商','盐铁','海贸'];
+const TECHS=Object.freeze([
+{id:'farming',name:'精耕细作',line:'农政',cost:60,months:3,office:'户部尚书',prereq:[],effects:{grain:0.1},unlocks:['farm'],aliases:['精耕','屯田','圩田']},
+{id:'rice',name:'占城稻推广',line:'农政',cost:100,months:6,office:'户部尚书',prereq:['farming'],effects:{grain:0.15,cropProtection:0.05},unlocks:[],aliases:['占城稻','稻种']},
+{id:'crops',name:'番薯玉米',line:'农政',cost:180,months:9,office:'户部尚书',prereq:['rice'],effects:{grain:0.2,cropProtection:0.1},unlocks:[],aliases:['番薯','玉米','甘薯']},
+{id:'farm-tools',name:'农具范式',line:'农政',cost:240,months:12,office:'工部尚书',prereq:['crops'],effects:{grain:0.05,cropProtection:0.05},unlocks:[],aliases:['农具','耕犁']},
+{id:'waterwheel',name:'水车改良',line:'水利',cost:60,months:3,office:'工部尚书',prereq:[],effects:{riverDiscount:0.1,disasterProtection:0.05},unlocks:[],aliases:['水车','提水']},
+{id:'river',name:'束水攻沙',line:'水利',cost:120,months:6,office:'工部尚书',prereq:['waterwheel'],effects:{riverDiscount:0.1,disasterProtection:0.1},unlocks:[],aliases:['束水','攻沙']},
+{id:'canal',name:'漕运疏浚',line:'水利',cost:180,months:9,office:'工部尚书',prereq:['river'],effects:{cropProtection:0.05},unlocks:['canal'],aliases:['漕运','疏浚']},
+{id:'water-map',name:'水利图籍',line:'水利',cost:240,months:12,office:'工部尚书',prereq:['canal'],effects:{disasterProtection:0.1},unlocks:[],aliases:['水利图','水文']},
+{id:'weaving',name:'织造改良',line:'工商',cost:70,months:4,office:'工部尚书',prereq:[],effects:{},unlocks:['weaving'],aliases:['织造','纺织','织机']},
+{id:'artisans',name:'匠籍松绑',line:'工商',cost:110,months:6,office:'工部尚书',prereq:['weaving'],effects:{prosperity:0.15,governance:0.5},unlocks:['kiln'],aliases:['匠籍','窑场','陶瓷']},
+{id:'silver-tax',name:'银钱折纳',line:'工商',cost:180,months:9,office:'户部尚书',prereq:['artisans'],effects:{prosperity:0.2,governance:-0.5},unlocks:[],aliases:['折纳','银钱']},
+{id:'guilds',name:'行会则例',line:'工商',cost:240,months:12,office:'户部尚书',prereq:['silver-tax'],effects:{prosperity:0.15},unlocks:[],aliases:['行会','商会']},
+{id:'salt',name:'晒盐法',line:'盐铁',cost:60,months:3,office:'工部尚书',prereq:[],effects:{},unlocks:['salt'],aliases:['晒盐','盐场','制盐']},
+{id:'iron',name:'冶铁鼓风',line:'盐铁',cost:100,months:6,office:'工部尚书',prereq:['salt'],effects:{},unlocks:['iron'],aliases:['冶铁','鼓风','铁冶']},
+{id:'firearms',name:'新式火器',line:'盐铁',cost:180,months:9,office:'兵部尚书',prereq:['iron'],effects:{readiness:3},unlocks:[],aliases:['火器','火炮','火铳']},
+{id:'furnace',name:'炉温准式',line:'盐铁',cost:260,months:12,office:'工部尚书',prereq:['firearms'],effects:{production:0.1,readiness:2},unlocks:[],aliases:['炉温','钢炉']},
+{id:'ships',name:'宝船图式',line:'海贸',cost:120,months:6,office:'工部尚书',prereq:[],openSea:true,effects:{trade:0.1},unlocks:[],aliases:['宝船','造船','航海']},
+{id:'customs',name:'市舶则例',line:'海贸',cost:220,months:10,office:'户部尚书',prereq:['ships'],openSea:true,effects:{trade:0.25},unlocks:['customs'],aliases:['市舶','海贸']},
+]);
+const INDUSTRIES=Object.freeze({
+farm:{name:'屯田／圩田',tech:'farming',cost:30,months:3,maintenance:0.3,grain:2.8,prosperity:0.45,aliases:['屯田','圩田']},
+weaving:{name:'织造局',tech:'weaving',cost:40,months:4,maintenance:0.7,tax:3,prosperity:0.65,morale:-0.8,aliases:['织造','纺织']},
+kiln:{name:'窑场',tech:'artisans',cost:30,months:3,maintenance:0.5,tax:2.4,prosperity:0.45,aliases:['窑场','陶瓷']},
+salt:{name:'盐场',tech:'salt',cost:35,months:3,maintenance:0.6,cash:3.5,prosperity:0.4,governance:-0.15,aliases:['盐场','晒盐']},
+iron:{name:'铁冶',tech:'iron',cost:45,months:4,maintenance:0.8,tax:2.5,prosperity:0.45,morale:-0.6,readiness:0.6,aliases:['铁冶','冶铁']},
+canal:{name:'漕运',tech:'canal',cost:60,months:5,maintenance:1.2,prosperity:0.6,grainTransport:0.03,aliases:['漕运','运河']},
+customs:{name:'市舶司',tech:'customs',openSea:true,cost:50,months:4,maintenance:1,cash:2,trade:0.08,prosperity:0.75,threat:0.35,aliases:['市舶','海贸']},
+});
+function techById(id){return TECHS.find(t=>t.id===id);}
+function seaOpen(s){return s.projects.some(p=>p.edictType==='开海'&&p.done);}
+function techEffects(s){
+const effects={};
+for(const id of s.tech?.done||[])for(const [key,value]of Object.entries(techById(id)?.effects||{}))effects[key]=(effects[key]||0)+value;
+return effects;
 }
-function memoryEntry(s,r,phase,owner,prose,notes=[],legacy=false,era=null){
-const events=(phase.social||[]).filter(e=>e.targetId===owner.id||e.otherId===owner.id);
-const event=events.find(e=>e.kind==='humiliate'||e.kind==='deceive'&&e.status!=='success')||events[0];
-const hard=(phase.results||[]).filter(x=>['success','partial'].includes(x.status)&&!x.reused);
-const quote=notes.find(n=>n.personId===owner.id)?.evidence||publicMemoryQuote(prose,owner.name);
-const secret=event?.kind==='deceive'&&event.status==='success';
-const place=r.place?'在'+r.place:'在御前',emperor=legacy?'当时的皇帝':r.emperorName||s.emperor.name;
-const peer=event?.otherId?socialNPCs(s).find(p=>p.id===(event.targetId===owner.id?event.otherId:event.targetId))?.name||'另一位当事人':'';
-const phrase=secret?'听过'+emperor+'的一番解释':event?.kind==='reconcile'?emperor+'曾从中调解与'+peer+'的误会':event?.kind==='quarrel'?'曾与'+peer+'起过争执':event?.kind==='cooperate'?'曾与'+peer+'一道办事':event?.kind==='apologize'?emperor+'曾向其赔礼':event?.kind==='humiliate'?'曾被'+emperor+'斥责':event?.kind==='comfort'?'曾受'+emperor+'安慰':event?.kind==='protect'?'曾得'+emperor+'维护':event?.kind==='deceive'?'曾对'+emperor+'的一番话起过疑心':'曾与'+emperor+'相处';
-const result=phase.outcome.status==='failed'?'，那回未能把话说开。':phase.outcome.status==='partial'?'，虽有转机，仍留了些难处。':'。';
-const detail=secret?'':quote||hard.map(x=>x.summary).join('；');
-return {type:'scene',id:phase.id+':'+owner.id,sceneId:r.id,turn:phase.turn??s.turn,order:phase.sequence||0,kind:secret?'shared':event?.kind||'shared',otherId:peer?(event.targetId===owner.id?event.otherId:event.targetId):'',emperorId:r.emperorId||'',emperorName:legacy?'当时的皇帝':r.emperorName||s.emperor.name,people:r.people.map(p=>p.id),summary:(place+'，'+phrase+result+(detail?' '+detail:'')).slice(0,500),importance:hard.length||/承诺|约定|答应|约好|许诺/.test(detail)?3:event?2:1,...(era?{era:structuredClone(era)}:{})};
+function researchLead(s,id){
+return s.court.officials.find(o=>o.id===id&&o.alive&&o.health>0&&!o.retired&&!o.jailed&&o.inCapital!==false&&s.court.posts.some(p=>p.holder===o.id&&p.id===o.post));
 }
-function compactMemories(entries){
-const legacy=entries.filter(m=>!['scene','scene-summary'].includes(m?.type));
-const summaries=new Map(entries.filter(m=>m?.type==='scene-summary').map(m=>[m.id,structuredClone(m)]));
-const recent=[...new Map(entries.filter(m=>m?.type==='scene').map(m=>[m.id,structuredClone(m)])).values()].sort((a,b)=>a.turn-b.turn||a.order-b.order);
-while(recent.length>16){
-// Consequential acts and witnessed promises retain their own summaries.
-const old=recent.shift(),key='mem:'+(old.importance>=3?old.id:old.kind+':'+old.otherId+':'+old.emperorId);
-const previous=summaries.get(key);
-const first=previous?.first||old.summary,last=old.summary;
-summaries.set(key,{...old,type:'scene-summary',id:key,firstTurn:previous?.firstTurn??old.turn,count:(previous?.count||0)+1,first,last,summary:(first+(first===last?'':'；后来还记得：'+last)).slice(0,1000)});
+function defaultResearchLead(s,tech){
+const post=s.court.posts.find(p=>p.title===(tech?.office||'工部尚书'));
+return researchLead(s,post?.holder)||s.court.officials.find(o=>researchLead(s,o.id));
 }
-return [...legacy,...summaries.values(),...recent];
+function identifyTech(s,text,line=null){
+const exact=TECHS.find(t=>text===t.id||text.includes(t.name)||t.aliases.some(a=>text.includes(a)));
+if(exact)return exact;
+const group=TECH_LINES.includes(line)?line:/海|船|航/.test(text)?'海贸':/盐|铁|火|炉/.test(text)?'盐铁':/水|河|渠/.test(text)?'水利':/农|粮|稻|田|种/.test(text)?'农政':'工商';
+return TECHS.find(t=>t.line===group&&!s.tech?.done.includes(t.id))||TECHS.find(t=>t.line===group);
 }
-function legacyEntries(s,id){
-const owner=socialNPCs(s).find(p=>p.id===id);if(!owner)return [];
-const out=[];
-for(const h of [...(s.volumes||[]).flatMap(v=>v.chapters),...(s.history||[])])for(const r of h.scenes||[]){
-if(!r.people.some(p=>p.id===id))continue;
-if(r.memoryVersion!==19)out.push(memoryEntry(s,r,{...r,turn:h.turn},owner,h.chapter?.[r.slot],r.memoryNotes||[],true,h.era));
-for(const t of r.steps||[])if(t.memoryVersion!==19)out.push(memoryEntry(s,r,{...t,turn:h.turn},owner,t.prose,t.memoryNotes||[],true,h.era));
+function identifyIndustry(text){return Object.entries(INDUSTRIES).find(([id,r])=>text===id||text.includes(r.name)||r.aliases.some(a=>text.includes(a)))?.[0]||null;}
+function activeIndustryLevels(s,type){
+const quarter=Math.max(0,Math.ceil(s.turn/9)-1);
+return s.nation.provinces.reduce((n,p)=>n+(!p.rebellion&&p.rebellionQuarter!==quarter&&p.morale>=15&&p.disaster<80?(p.industries||[]).filter(i=>i.type===type&&!i.paused).reduce((n,i)=>n+i.level,0):0),0);
 }
-return out;
+
+return {RESEARCH_CAP,INDUSTRY_SLOTS,TECH_LINES,TECHS,INDUSTRIES,techById,seaOpen,techEffects,researchLead,defaultResearchLead,identifyTech,identifyIndustry,activeIndustryLevels};
+},
+"src/core/tech.js":function(__load){
+const { clone } = __load("src/core/state.js");
+const { applyPackage,clamp } = __load("src/core/effects.js");
+const { INDUSTRIES,RESEARCH_CAP,techById,techEffects,seaOpen,researchLead,defaultResearchLead,identifyTech } = __load("src/core/tech-rules.js");
+function researchBlock(s,id){
+const t=techById(id);
+if(!t)return '请选择已有研究方向';
+if(s.tech?.done.includes(id))return '此法已经研成';
+if(t.prereq.some(id=>!s.tech?.done.includes(id)))return '须先研成：'+t.prereq.filter(id=>!s.tech?.done.includes(id)).map(id=>techById(id).name).join('、');
+if(t.openSea&&!seaOpen(s))return '须先完成开海';
+return '';
 }
-function npcMemories(s,id){
-const p=socialNPCs(s).find(p=>p.id===id);if(!p)return [];
-return compactMemories([...(p.memory||[]),...(p.memoryHydrated?[]:legacyEntries(s,id))]);
+function configureResearch(state,action){
+if(state.regency)throw new Error('摄政期间不可另立格物新政');
+const s=clone(state),prior=JSON.stringify(s.tech),funding=Number(action.funding??s.tech.funding);
+if(!Number.isFinite(funding)||funding<0)throw new Error('请填写有效月经费');
+const custom=action.name&&state.settings.freedom==='free';
+const t=techById(action.techId||action.id)||(custom?identifyTech(s,String(action.name),action.line):null);
+if(!t){if(!s.tech.current&&funding>0)throw new Error('请先选择研究方向');}
+else{
+const blocked=researchBlock(s,t.id);if(blocked)throw new Error(blocked);
+if(s.tech.current&&s.tech.current.id!==t.id)throw new Error('已有在研条目，请先完成或暂停经费');
+if(!s.tech.current)s.tech.current={id:t.id,progress:0,elapsed:0,spent:0,...(custom?{name:String(action.name).trim().slice(0,40)}:{})};
 }
-function memoryContext(s,ids,limit=8){
-return [...new Set(ids)].map(id=>{
-const p=socialNPCs(s).find(p=>p.id===id);if(!p)return null;
-const memories=npcMemories(s,id).filter(m=>['scene','scene-summary'].includes(m?.type));
-const important=memories.filter(m=>m.type==='scene-summary'||m.importance>=2).sort((a,b)=>(['humiliate','deceive'].includes(b.kind)?4:0)+b.importance-(['humiliate','deceive'].includes(a.kind)?4:0)-a.importance||b.turn-a.turn).slice(0,3);
-const recent=memories.filter(m=>m.type==='scene').sort((a,b)=>b.turn-a.turn||b.order-a.order).slice(0,limit);
-return {id,name:p.name,往事:[...new Map([...important,...recent].map(m=>[m.id,m])).values()].slice(0,limit).map(m=>({经过:m.summary.slice(0,360),当时皇帝:m.emperorName,旬次:m.turn})),人物关系:Object.entries(p.relations||{}).filter(([other])=>socialNPCs(s).some(q=>q.id===other)).sort((a,b)=>Math.abs(b[1]-50)-Math.abs(a[1]-50)).slice(0,6).map(([other,value])=>({人物:socialNPCs(s).find(q=>q.id===other).name,亲近:value}))};
-}).filter(Boolean);
+const lead=action.lead===undefined?(researchLead(s,s.tech.lead)?.id||defaultResearchLead(s,t)?.id):action.lead;
+if(lead&&!researchLead(s,lead))throw new Error('主持须为在朝任职的官员');
+if(funding>0&&!lead)throw new Error('请先委派主持官员');
+s.tech.funding=Math.min(RESEARCH_CAP,funding);s.tech.lead=lead||null;
+if(JSON.stringify(s.tech)!==prior)s.stats.edicts++;
+return {state:s,note:(s.tech.current?.name||t?.name||'格物')+' · 月经费 '+s.tech.funding+' 万两'+(funding>RESEARCH_CAP?'（按上限缩减）':'')};
 }
-function rememberNPCScene(state,r,phase,prose,notes=[],era=null){
-const s=clone(state);
-for(const cast of r.people){
-const p=socialNPCs(s).find(p=>p.id===cast.id);if(!p||p.alive===false||p.health<=0)continue;
-const complete=!s.recoveryOnly&&!s.volumeIndex?.length;
-const old=[...(p.memory||[]),...(!p.memoryHydrated&&complete?legacyEntries(s,p.id):[])];
-p.memory=compactMemories([...old,memoryEntry(s,r,phase,p,prose,notes,false,era)]);
-if(complete)p.memoryHydrated=true;
+function researchQuote(s){
+const current=s.tech?.current,t=techById(current?.id),lead=researchLead(s,s.tech?.lead);
+const faction=s.court.factions.find(f=>/清流|清议|儒生|台谏/.test(f.name)&&f.power>=60&&f.attitude<40);
+const ability=lead?0.6+clamp(lead.abilities.政)*0.008:0;
+const factor=ability*(0.6+clamp(s.nation.governance)*0.004)*(faction?0.8:1);
+const paid=t&&lead&&current.progress<t.cost?Math.min(RESEARCH_CAP,s.tech.funding,s.nation.treasury):0;
+return {tech:t,lead,factor,paid,progress:paid*factor,opposed:!!faction};
+}
+function researchMonth(state){
+if(!state.tech?.current)return clone(state);
+let s=clone(state);const q=researchQuote(s),c=s.tech.current;
+if(!q.tech||!q.lead)return s;
+if(q.paid>0){
+s=applyPackage(s,{treasury:-q.paid},'月结：格物经费 · '+(c.name||q.tech.name));
+s.stats.expense+=q.paid;s.tech.current.progress=Math.min(q.tech.cost,c.progress+q.progress);s.tech.current.spent+=q.paid;
+}
+if(q.paid>0||c.progress>=q.tech.cost)s.tech.current.elapsed++;
+if(s.tech.current.progress>=q.tech.cost&&s.tech.current.elapsed>=q.tech.months){
+s.tech.done.push(q.tech.id);
+if(c.name)s.tech.custom.push({id:q.tech.id,name:c.name,line:q.tech.line});
+s.tech.current=null;
+const e=q.tech.effects;
+if(e.governance)s=applyPackage(s,{governance:e.governance},'格物突破：'+(c.name||q.tech.name));
+if(e.readiness){s.nation.army.capital.readiness=clamp(s.nation.army.capital.readiness+e.readiness);for(const b of s.nation.army.frontiers)b.readiness=clamp(b.readiness+e.readiness);}
 }
 return s;
 }
+function developmentNotes(before,after){
+const notes=(after.tech?.done||[]).filter(id=>!before.tech?.done.includes(id)).map(id=>'格物突破：'+(after.tech.custom.find(c=>c.id===id)?.name||techById(id).name));
+for(const p of after.nation.provinces){
+const old=before.nation.provinces.find(x=>x.id===p.id);
+for(const i of p.industries||[]){
+const prior=old?.industries?.find(x=>x.type===i.type);
+if(!prior||i.level>prior.level)notes.push(p.name+'产业建成：'+INDUSTRIES[i.type].name+' '+i.level+'级');
+if(i.paused!==prior?.paused&&i.paused)notes.push(p.name+'产业停产：'+INDUSTRIES[i.type].name+'（'+i.paused+'）');
+if(prior?.paused&&!i.paused)notes.push(p.name+'产业复产：'+INDUSTRIES[i.type].name);
+}
+}
+return notes;
+}
 
-return {publicMemoryQuote,compactMemories,npcMemories,memoryContext,rememberNPCScene};
+return {researchBlock,configureResearch,researchQuote,researchMonth,developmentNotes};
 },
 "src/core/state.js":function(__load){
+const {validateDevelopment} = __load("src/core/tech-schema.js");
 const {validateSocialState} = __load("src/core/social-schema.js");
 const { validateSceneState } = __load("src/core/scene-schema.js");
 const { normalizeMemorialAction } = __load("src/core/memorial-decisions.js");
@@ -4125,7 +4245,7 @@ const { seedNumber, random, DRAFT } = __load("src/core/rng.js");
 const { uniqueName } = __load("src/core/names.js");
 const { chooseRegent } = __load("src/core/regency-info.js");
 const {factionPowers} = __load("src/core/politics.js");
-const VERSION = 20;
+const VERSION = 21;
 const TALENTS = ["政略", "权谋", "武略", "文采", "魅力"];
 const SLOTS = ["朝", "午", "夜"];
 const POST_NAMES = [
@@ -4365,6 +4485,8 @@ pop: n(180, 480),
 tax: n(7, 13),
 morale: 62,
 disaster: 0,
+prosperity:0,
+industries:[],
 rebellion: false,
 rebellionQuarter: -1,
 garrison: n(8000, 18000),
@@ -4411,6 +4533,7 @@ month: 1,
 xun: 0,
 startTurn: 0,
 },
+tech:{funding:0,current:null,done:[],lead:null,custom:[]},
 intentResults: [],
 settings: {
 freedom: options.freedom || "mid",
@@ -4613,6 +4736,10 @@ if(input.v<15)for(const a of s.ambitions)if(a.scenarioId&&a.holdTurns){a.stableT
 // v19 reuses optional NPC memory/relations; old scenes are read as memories without recalculating effects.
 // v20 adds optional memorial.textStatus only on newly generated texts.
 // Missing means legacy prose; never replace old texts or pending forecasts.
+if(input.v<21){
+s.tech={funding:0,current:null,done:[],lead:null,custom:[]};
+for(const p of s.nation.provinces){p.prosperity=0;p.industries=[];}
+}
 s.settings.freedom ??= "mid";
 s.v = VERSION;
 s.volumeIndex ??= [];
@@ -4700,6 +4827,7 @@ assertState(s);
 return s;
 }
 function assertState(s) {
+validateDevelopment(s);
 if (
 !Number.isSafeInteger(s.turn) ||
 s.turn < 0 ||
@@ -4799,6 +4927,31 @@ return (s.reign?.number || 1) === 1
 }
 
 return {VERSION,TALENTS,SLOTS,POST_NAMES,withDraft,clone,createState,migrate,assertState,reignId};
+},
+"src/core/tech-schema.js":function(__load){
+const { TECHS,INDUSTRIES,TECH_LINES,INDUSTRY_SLOTS,RESEARCH_CAP } = __load("src/core/tech-rules.js");
+const finite=(v,min=0,max=Infinity)=>Number.isFinite(v)&&v>=min&&v<=max;
+function validateDevelopment(s){
+if(s.v<21)return;
+const t=s.tech,ids=new Set(TECHS.map(t=>t.id));
+if(!t||!finite(t.funding,0,RESEARCH_CAP)||!Array.isArray(t.done)||t.done.some(id=>!ids.has(id))||new Set(t.done).size!==t.done.length||!(t.lead===null||typeof t.lead==='string'&&s.court.officials.some(o=>o.id===t.lead))||!Array.isArray(t.custom))throw new Error('格物存档损坏');
+if(t.done.some(id=>TECHS.find(r=>r.id===id).prereq.some(pre=>!t.done.includes(pre))))throw new Error('科技前置记录损坏');
+if(t.current){const c=t.current,r=TECHS.find(t=>t.id===c.id);if(!r||t.done.includes(c.id)||!finite(c.progress,0,r.cost)||!Number.isSafeInteger(c.elapsed)||c.elapsed<0||!finite(c.spent)||(c.name!==undefined&&(typeof c.name!=='string'||!c.name.trim()||c.name.length>40)))throw new Error('在研记录损坏');}
+else if(t.current!==null)throw new Error('在研记录损坏');
+if(t.custom.some(c=>!c||!t.done.includes(c.id)||!TECH_LINES.includes(c.line)||typeof c.name!=='string'||!c.name.trim()||c.name.length>40)||new Set(t.custom.map(c=>c.id)).size!==t.custom.length)throw new Error('自拟技艺记录损坏');
+for(const p of s.nation.provinces){
+if(!finite(p.prosperity,0,100)||!Array.isArray(p.industries)||p.industries.length>INDUSTRY_SLOTS||new Set(p.industries.map(i=>i?.type)).size!==p.industries.length||p.industries.some(i=>!i||!Object.hasOwn(INDUSTRIES,i.type)||!Number.isInteger(i.level)||i.level<1||i.level>3||!Number.isSafeInteger(i.builtTurn)||i.builtTurn<0||i.builtTurn>s.turn||(i.paused!==undefined&&typeof i.paused!=='string')))throw new Error('州郡产业或繁荣损坏');
+}
+for(const p of s.projects.filter(p=>p.edictType==='兴业'))if(!Object.hasOwn(INDUSTRIES,p.industry)||!s.nation.provinces.some(z=>z.id===p.province)||!Number.isInteger(p.level)||p.level<1||p.level>3||!finite(p.cost)||!finite(p.progress,0,100)||!Number.isSafeInteger(p.start)||p.start<0||p.start>s.turn||!Number.isSafeInteger(p.end)||p.end<=p.start)throw new Error('产业工程损坏');
+for(const m of s.memorials)for(const o of m.options||[]){
+const a=o.development;if(!a)continue;
+if(a.kind==='research'){
+if(!ids.has(a.techId)||!finite(a.funding,0,RESEARCH_CAP))throw new Error('请研方案损坏');
+}else if(a.kind!=='industry'||!Object.hasOwn(INDUSTRIES,a.industry)||!s.nation.provinces.some(p=>p.id===a.province)||!Number.isInteger(a.level)||a.level<1||a.level>3)throw new Error('兴业方案损坏');
+}
+}
+
+return {validateDevelopment};
 },
 "src/core/social-schema.js":function(__load){
 const {socialNPCs,SOCIAL_RULES} = __load("src/core/social-rules.js");
@@ -5408,6 +5561,248 @@ return {...f,power:Math.min(100,Math.max(0,offices/20+(f.powerModifier||0)))};
 
 return {factionPowers};
 },
+"src/core/effects.js":function(__load){
+const { clone } = __load("src/core/state.js");
+function clamp(n, low = 0, high = 100) {
+return Math.min(high, Math.max(low, Number.isFinite(n) ? n : 0));
+}
+function populationMorale(state) {
+const pop=state.nation.provinces.reduce((n,p)=>n+p.pop,0);
+return pop?state.nation.provinces.reduce((n,p)=>n+p.pop*p.morale,0)/pop:0;
+}
+function diminishing(value,delta){return delta>0?delta*(value>=90?0.25:value>=80?0.5:1):delta;}
+function applyEffects(state, effects = {}, source = "引擎结算") {
+const s = clone(state),
+entries = [];
+const set = (obj, key, delta, path, max = 100, min = 0) => {
+if (typeof delta !== "number" || !Number.isFinite(delta)) return;
+const old = obj[key];
+obj[key] = clamp(old + delta, min, max);
+if (obj[key] !== old)
+entries.push({
+path,
+before: old,
+after: obj[key],
+delta: Math.round((obj[key] - old) * 100) / 100 || 0,
+source,
+});
+};
+for (const [f,debt] of [['treasury','arrears'],['privy','privyArrears'],['grain','grainArrears']]) {
+const delta=effects[f];
+if(Number.isFinite(delta)&&delta<0&&-delta>s.nation[f]){
+s.nation[debt]??=0;
+set(s.nation,debt,-delta-s.nation[f],'nation.'+debt,Number.MAX_SAFE_INTEGER);
+}
+set(s.nation,f,delta,'nation.'+f,1000000);
+}
+for(const f of ['arrears','privyArrears','grainArrears'])if(Number.isFinite(effects[f])){s.nation[f]??=0;set(s.nation,f,effects[f],'nation.'+f,Number.MAX_SAFE_INTEGER);}
+if(Number.isFinite(effects.morale))for(const p of s.nation.provinces)
+set(p,'morale',diminishing(p.morale,effects.morale)*0.3,'province.'+p.id+'.morale');
+set(s.nation,'governance',diminishing(s.nation.governance,effects.governance),'nation.governance');
+for (const f of ["health", "mood", "prestige", "virtue"])
+set(s.emperor, f, ['prestige','virtue'].includes(f)?diminishing(s.emperor[f],effects[f]):effects[f], "emperor." + f);
+if(s.emperor.mood>=20)s.emperor.depressedMonths=0;
+if (effects.province) {
+const p = s.nation.provinces.find((p) => p.id === effects.province.id);
+if (p)
+for (const f of ["morale", "disaster"])
+set(p, f, f==='morale'?diminishing(p[f],effects.province[f]):effects.province[f], "province." + p.id + "." + f);
+}
+set(s.nation,'morale',populationMorale(s)-s.nation.morale,'nation.morale');
+if (effects.faction)
+for (const [id, n] of Object.entries(effects.faction)) {
+const f = s.court.factions.find((f) => f.id === id);
+if (f) {set(f, "attitude", n, "faction." + id + ".attitude");f.powerModifier??=0;set(f,'powerModifier',n*0.25,'faction.'+id+'.powerModifier',30,-30);set(f,'power',n*0.25,'faction.'+id+'.power');}
+}
+if (effects.official) {
+const o = s.court.officials.find(
+(o) => o.id === effects.official.id && o.alive,
+);
+if (o)
+set(o, "favor", effects.official.favor, "official." + o.id + ".favor");
+}
+if(effects.army){
+const a=effects.army,id=a.id,b=id==='capital'?s.nation.army.capital:s.nation.army.frontiers.find(x=>x.dir===id);
+const path=id==='capital'?'nation.army.capital':'nation.army.frontiers.'+s.nation.army.frontiers.indexOf(b);
+if(b){set(b,'readiness',a.readiness,path+'.readiness');if(id!=='capital')set(b,'threat',a.threat,path+'.threat');}
+}
+if(effects.foreign){const f=s.foreign.find(f=>f.id===effects.foreign.id);if(f)set(f,'attitude',effects.foreign.attitude,'foreign.'+f.id+'.attitude');}
+if (effects.thread) {
+const t = s.threads.find((t) => t.id === effects.thread.id);
+if (t && t.stage !== "结束") {
+t.stage = effects.thread.stage;
+t.result = String(effects.thread.result || "");
+t.updated = s.turn;
+}
+}
+s.ledger.push(...entries.map((e) => ({ ...e, turn: s.turn })));
+return { state: s, entries };
+}
+function applyPackage(state, effects, source) {
+return applyEffects(state, effects, source).state;
+}
+function growTalent(state, talent, amount = 1) {
+const s = clone(state),
+left = 3 - (s.emperor.growth[talent] || 0);
+if (left > 0) {
+const inc = Math.min(left, amount, 100 - s.emperor.talents[talent]);
+s.emperor.talents[talent] += inc;
+s.emperor.growth[talent] = (s.emperor.growth[talent] || 0) + inc;
+s.ledger.push({
+turn: s.turn,
+path: "emperor.talents." + talent,
+delta: inc,
+before: s.emperor.talents[talent] - inc,
+after: s.emperor.talents[talent],
+source: "经世历练（每年每才最多 +3）",
+});
+}
+return s;
+}
+
+return {clamp,populationMorale,diminishing,applyEffects,applyPackage,growTalent};
+},
+"src/core/industries.js":function(__load){
+const { clone,withDraft } = __load("src/core/state.js");
+const { applyPackage,clamp } = __load("src/core/effects.js");
+const { provinceTaxFactor } = __load("src/core/finance.js");
+const { INDUSTRIES,INDUSTRY_SLOTS,seaOpen,techEffects } = __load("src/core/tech-rules.js");
+function industryBlock(s,province,type){
+const p=s.nation.provinces.find(p=>p.id===province),r=INDUSTRIES[type];
+if(!p||!Object.hasOwn(INDUSTRIES,type))return '请选择州郡与产业';
+if(!s.tech?.done.includes(r.tech))return '尚未研成所需技艺';
+if(r.openSea&&!seaOpen(s))return '须先完成开海';
+if(!provinceTaxFactor(p,s.turn))return '地方民变未平，暂不能兴业';
+const old=p.industries?.find(i=>i.type===type);
+if(old?.level>=3)return '此产业已达三级';
+const kinds=new Set([...(p.industries||[]).map(i=>i.type),...s.projects.filter(x=>!x.done&&x.edictType==='兴业'&&x.province===province).map(x=>x.industry)]);
+if(!kinds.has(type)&&kinds.size>=INDUSTRY_SLOTS)return '本州三个产业槽已满';
+return '';
+}
+function industryQuote(s,province,type){
+const r=INDUSTRIES[type],p=s.nation.provinces.find(p=>p.id===province),level=(p?.industries?.find(i=>i.type===type)?.level||0)+1;
+return {cost:r?.cost||0,months:(r?.months||0)+level-1,level,blocked:industryBlock(s,province,type)};
+}
+function buildIndustry(state,action){
+if(state.regency)throw new Error('摄政期间不可另立兴业新政');
+const {province,industry:type}=action,q=industryQuote(state,province,type),r=INDUSTRIES[type];
+if(q.blocked)throw new Error(q.blocked);
+const ongoing=state.projects.find(p=>!p.done&&p.edictType==='兴业'&&p.province===province&&p.industry===type);
+if(ongoing)return {state:clone(state),note:r.name+'仍在营建，重申原旨，未重复支出'};
+if(action.level&&action.level!==q.level)throw new Error('此产业进度已变，请重新选择');
+if(state.nation.treasury<q.cost)throw new Error('国库不足，无法营建此产业');
+let s=applyPackage(state,{treasury:-q.cost,...(r.morale?{province:{id:province,morale:r.morale}}:{})},'兴业：'+r.name+'营建');
+s.stats.expense+=q.cost;s.stats.edicts++;
+s.projects.push({id:'industry-'+s.turn+'-'+s.projects.length,edictType:'兴业',name:s.nation.provinces.find(p=>p.id===province).name+' '+r.name,industry:type,level:q.level,start:s.turn,end:s.turn+q.months*3,progress:0,execRate:1,cost:q.cost,office:'工部尚书',effects:{},province,done:false});
+return {state:s,note:s.nation.provinces.find(p=>p.id===province).name+'兴建'+r.name+' '+q.level+'级，银 '+q.cost+' 万两，工期 '+q.months+' 月'};
+}
+function completeIndustry(s,project){
+const p=s.nation.provinces.find(p=>p.id===project.province);
+if(!p||!Object.hasOwn(INDUSTRIES,project.industry))throw new Error('产业工程资料损坏');
+p.industries??=[];
+const existing=p.industries.find(i=>i.type===project.industry);
+if(existing){if(existing.level<project.level){existing.level=project.level;existing.builtTurn=s.turn;}}
+else p.industries.push({type:project.industry,level:project.level,builtTurn:s.turn,paused:''});
+return s;
+}
+function industrialGrainFactor(s){
+const levels=s.nation.provinces.reduce((n,p)=>n+(provinceTaxFactor(p,s.turn)>0?(p.industries||[]).filter(i=>i.type==='canal'&&!i.paused).reduce((n,i)=>n+i.level,0):0),0);
+return 1+Math.min(0.18,levels*INDUSTRIES.canal.grainTransport);
+}
+function industryTradeFactor(s){
+const levels=s.nation.provinces.reduce((n,p)=>n+(provinceTaxFactor(p,s.turn)>0?(p.industries||[]).filter(i=>i.type==='customs'&&!i.paused).reduce((n,i)=>n+i.level,0):0),0);
+return 1+(techEffects(s).trade||0)+Math.min(0.5,levels*INDUSTRIES.customs.trade);
+}
+function industriesQuarter(state){
+return withDraft(()=>settleIndustryQuarter(state));
+}
+function settleIndustryQuarter(state){
+let s=clone(state);const effects=techEffects(s),bonus=1+(effects.production||0);
+const bill=s.nation.provinces.reduce((sum,p)=>sum+(p.industries||[]).reduce((n,i)=>n+INDUSTRIES[i.type].maintenance*i.level,0),0);
+const covered=s.nation.treasury+1e-8>=bill,paid=Math.min(s.nation.treasury,bill);
+if(paid){s=applyPackage(s,{treasury:-paid},'季结：产业维护');s.stats.expense+=paid;}
+const snapshot=s.nation.provinces.map(p=>({...p,industries:(p.industries||[]).map(i=>({...i}))}));
+for(let index=0;index<s.nation.provinces.length;index++){
+const p=s.nation.provinces[index],factor=provinceTaxFactor(p,s.turn),old=snapshot[index];
+let contribution=0;
+for(const i of p.industries||[]){
+const r=INDUSTRIES[i.type];
+i.paused=!factor?'地方民变':p.disaster>=80?'重灾':p.morale<15?'民心低落':!covered?'维护费不足':'';
+if(i.paused)continue;
+const productivity=factor*(1-p.disaster/100)*bonus*i.level;
+const cash=((r.tax||0)*(0.5+s.nation.governance*0.0045)+(r.cash||0)*(i.type==='salt'?0.3+s.nation.governance*0.007:1))*productivity;
+if(cash||r.grain){s=applyPackage(s,{treasury:cash,grain:(r.grain||0)*productivity},'季结：'+p.name+ r.name+'产出');s.stats.income+=cash;}
+if(r.governance)s=applyPackage(s,{governance:r.governance*i.level},'季结：盐课稽查压力');
+if(r.readiness)for(const b of s.nation.army.frontiers)b.readiness=clamp(b.readiness+r.readiness*productivity);
+if(r.threat){const b=s.nation.army.frontiers.find(b=>b.dir==='东')||s.nation.army.frontiers[0];b.threat=clamp(b.threat+r.threat*i.level);}
+contribution+=r.prosperity*productivity;
+}
+const spread=[snapshot[index-1],snapshot[index+1]].filter(Boolean).reduce((n,z)=>n+(provinceTaxFactor(z,s.turn)>0?(z.industries||[]).filter(i=>i.type==='canal'&&!i.paused&&covered).reduce((n,i)=>n+i.level*0.15,0):0),0);
+const growth=(0.5+contribution+(effects.prosperity||0)+spread-p.disaster/15-(p.morale<30?2:0)-(factor===0?3:0))*(1-(old.prosperity||0)/120);
+// applyPackage clones outside a forecast, so reacquire the province by id.
+const target=s.nation.provinces.find(z=>z.id===p.id);
+target.prosperity=clamp((old.prosperity||0)+growth);
+}
+return s;
+}
+
+return {industryBlock,industryQuote,buildIndustry,completeIndustry,industrialGrainFactor,industryTradeFactor,industriesQuarter};
+},
+"src/core/finance.js":function(__load){
+const {techEffects,activeIndustryLevels,INDUSTRIES} = __load("src/core/tech-rules.js");
+const { applyPackage } = __load("src/core/effects.js");
+// Treasury uses 万两 and grain uses 万石. Budget covers twelve months of recurring treasury obligations.
+function monthlyBudget(state) {
+const troops =
+state.nation.army.capital.troops +
+state.nation.army.frontiers.reduce((sum, b) => sum + b.troops, 0);
+const salaries = 8 + state.court.posts.filter((p) => p.holder).length * 0.08;
+return { salaries, armyPay: troops / 12000, grain: troops / 22000 };
+}
+function annualBudget(state) {
+const b = monthlyBudget(state);
+return 12 * (b.salaries + b.armyPay);
+}
+function grainBudget(state){
+const military=monthlyBudget(state).grain,relief=state.nation.provinces.filter(p=>p.disaster>0).length*2;
+return {military,relief,monthly:military+relief,storageCapacity:(military+relief)*36};
+}
+// Grain is 万石; province population is 万人, not a grain yield. Scale
+// normal harvest to recurring military demand, then weight crop damage by people.
+function quarterlyGrain(state){
+const population=state.nation.provinces.reduce((n,p)=>n+p.pop,0);
+const effects=techEffects(state),protection=effects.cropProtection||0;
+const crop=population?state.nation.provinces.reduce((n,p)=>n+p.pop*(1-Math.max(0,Math.min(100,p.disaster))/100*(1-protection))*(1+(p.prosperity||0)/200),0)/population:0;
+return monthlyBudget(state).grain*3*1.2*crop*(1+(effects.grain||0))*(1+Math.min(0.18,activeIndustryLevels(state,'canal')*INDUSTRIES.canal.grainTransport));
+}
+function wasteQuote(state) {
+const budget = annualBudget(state),
+threshold = budget * 2,
+governance = Math.max(0, Math.min(100, state.nation.governance)),
+rate = 0.03 * (1 + 3 * Math.pow((100 - governance) / 100, 0.25)),
+excess = Math.max(0, state.nation.treasury - threshold);
+return { budget, threshold, rate, excess, amount: excess * rate };
+}
+function quarterIndex(turn) {
+return Math.max(0, Math.ceil(turn / 9) - 1);
+}
+function provinceTaxFactor(province, turn) {
+if (province.rebellion || province.rebellionQuarter === quarterIndex(turn))
+return 0;
+return province.morale < 15 ? 0.2 : province.morale < 30 ? 0.5 : 1;
+}
+function settleArrears(state) {
+let s=state;
+for(const [account,debt,label]of [['treasury','arrears','补付欠饷与积欠'],['privy','privyArrears','补付内帑积欠'],['grain','grainArrears','补付缺粮积欠']]){
+const amount=Math.min(s.nation[account],s.nation[debt]||0);if(amount<=0)continue;
+s=applyPackage(s,{[account]:-amount,[debt]:-amount},label);
+if(account==='treasury')s.stats.expense+=amount;
+}
+return s;
+}
+
+return {monthlyBudget,annualBudget,grainBudget,quarterlyGrain,wasteQuote,quarterIndex,provinceTaxFactor,settleArrears};
+},
 "src/ui/common.js":function(__load){
 const { initMobileViewport } = __load("src/ui/mobile.js");
 const $ = (selector) => document.querySelector(selector);
@@ -5675,6 +6070,100 @@ applyFontScale(storedFontScale());
 
 return {GUARDED_EVENTS,blockPinch,createViewportUpdater,FONT_SCALES,applyFontScale,storedFontScale,initMobileViewport};
 },
+"src/ui/memories.js":function(__load){
+const {npcMemories} = __load("src/core/memory.js");
+const {socialNPCs,emperorKey} = __load("src/core/social-rules.js");
+const {esc,openDialog} = __load("src/ui/common.js");
+function memoryButton(id,name=''){return '<button data-person-memory="'+esc(id)+'">'+esc(name?name+'的往事':'记得的事')+'</button>';}
+function relationName(s,id){return socialNPCs(s).find(p=>p.id===id)?.name||'';}
+function socialChangesHTML(s,changes=[]){
+if(!changes.length)return '';
+return '<div class="scene-changes" aria-label="相处变化">'+changes.map(c=>'<span>'+esc(relationName(s,c.personId))+' · '+esc(c.field==='relation'?'与'+relationName(s,c.withId)+'的关系':s.foreign.some(f=>f.id===c.personId)?'态度':'好感')+' '+(c.delta>0?'+':'')+Number(c.delta.toFixed(2))+'（'+esc(c.reason)+'）</span>').join('')+'</div>';
+}
+function npcMemoryHTML(s,id){
+const p=socialNPCs(s).find(p=>p.id===id);if(!p)return '<p>名册中没有此人。</p>';
+const memories=npcMemories(s,id).filter(m=>['scene','scene-summary'].includes(m?.type)).sort((a,b)=>b.turn-a.turn||b.order-a.order);
+const relationships=Object.entries(p.relations||{}).filter(([other])=>relationName(s,other)).sort((a,b)=>a[1]-b[1]);
+const affinity=p.favor??p.attitude??p.relations?.[emperorKey(s)]??50;
+return '<article class="person-memories"><h3>'+esc(p.name)+'</h3><p>对当今天子的'+(p.attitude!==undefined?'态度':'好感')+' '+Number(affinity.toFixed(2))+'</p><h4>与他人的关系</h4>'+
+(relationships.length?'<ul>'+relationships.map(([other,v])=>'<li>'+esc(relationName(s,other))+'：'+(v>=65?'亲近':v<=35?'不睦':'平常')+' · '+Number(v.toFixed(2))+'</li>').join('')+'</ul>':'<p class="muted">尚无特别的往来。</p>')+
+'<h4>记得的事</h4>'+(memories.length?memories.map(m=>'<section class="memory-entry"><p class="muted">'+esc(m.era?.name?m.era.name+m.era.year+'年'+m.era.month+'月':'第'+m.turn+'旬')+(m.type==='scene-summary'?' · 相似往事 '+m.count+'次':'')+'</p><p>'+esc(m.summary)+'</p><button data-memory-scene="'+esc(m.sceneId)+'">看这段经历</button></section>').join(''):'<p class="muted">还没有一起经历过值得记下的事情。</p>')+'</article>';
+}
+function openNPCMemory(s,id){openDialog('人物往事',npcMemoryHTML(s,id));}
+
+return {memoryButton,relationName,socialChangesHTML,npcMemoryHTML,openNPCMemory};
+},
+"src/core/memory.js":function(__load){
+const {clone} = __load("src/core/state.js");
+const {socialNPCs} = __load("src/core/social-rules.js");
+const {textSentences} = __load("src/core/text.js");
+const PRIVATE=/心想|暗想|心中|心底|暗自|私下|背地|未说出口|不为人知|秘密|内心|故意欺骗|骗过/;
+function publicMemoryQuote(prose,name){
+return textSentences(prose).filter(t=>t.length>=8&&t.length<=160&&!PRIVATE.test(t)&&(t.includes(name)||/[「“]/.test(t))).at(-1)||'';
+}
+function memoryEntry(s,r,phase,owner,prose,notes=[],legacy=false,era=null){
+const events=(phase.social||[]).filter(e=>e.targetId===owner.id||e.otherId===owner.id);
+const event=events.find(e=>e.kind==='humiliate'||e.kind==='deceive'&&e.status!=='success')||events[0];
+const hard=(phase.results||[]).filter(x=>['success','partial'].includes(x.status)&&!x.reused);
+const quote=notes.find(n=>n.personId===owner.id)?.evidence||publicMemoryQuote(prose,owner.name);
+const secret=event?.kind==='deceive'&&event.status==='success';
+const place=r.place?'在'+r.place:'在御前',emperor=legacy?'当时的皇帝':r.emperorName||s.emperor.name;
+const peer=event?.otherId?socialNPCs(s).find(p=>p.id===(event.targetId===owner.id?event.otherId:event.targetId))?.name||'另一位当事人':'';
+const phrase=secret?'听过'+emperor+'的一番解释':event?.kind==='reconcile'?emperor+'曾从中调解与'+peer+'的误会':event?.kind==='quarrel'?'曾与'+peer+'起过争执':event?.kind==='cooperate'?'曾与'+peer+'一道办事':event?.kind==='apologize'?emperor+'曾向其赔礼':event?.kind==='humiliate'?'曾被'+emperor+'斥责':event?.kind==='comfort'?'曾受'+emperor+'安慰':event?.kind==='protect'?'曾得'+emperor+'维护':event?.kind==='deceive'?'曾对'+emperor+'的一番话起过疑心':'曾与'+emperor+'相处';
+const result=phase.outcome.status==='failed'?'，那回未能把话说开。':phase.outcome.status==='partial'?'，虽有转机，仍留了些难处。':'。';
+const detail=secret?'':quote||hard.map(x=>x.summary).join('；');
+return {type:'scene',id:phase.id+':'+owner.id,sceneId:r.id,turn:phase.turn??s.turn,order:phase.sequence||0,kind:secret?'shared':event?.kind||'shared',otherId:peer?(event.targetId===owner.id?event.otherId:event.targetId):'',emperorId:r.emperorId||'',emperorName:legacy?'当时的皇帝':r.emperorName||s.emperor.name,people:r.people.map(p=>p.id),summary:(place+'，'+phrase+result+(detail?' '+detail:'')).slice(0,500),importance:hard.length||/承诺|约定|答应|约好|许诺/.test(detail)?3:event?2:1,...(era?{era:structuredClone(era)}:{})};
+}
+function compactMemories(entries){
+const legacy=entries.filter(m=>!['scene','scene-summary'].includes(m?.type));
+const summaries=new Map(entries.filter(m=>m?.type==='scene-summary').map(m=>[m.id,structuredClone(m)]));
+const recent=[...new Map(entries.filter(m=>m?.type==='scene').map(m=>[m.id,structuredClone(m)])).values()].sort((a,b)=>a.turn-b.turn||a.order-b.order);
+while(recent.length>16){
+// Consequential acts and witnessed promises retain their own summaries.
+const old=recent.shift(),key='mem:'+(old.importance>=3?old.id:old.kind+':'+old.otherId+':'+old.emperorId);
+const previous=summaries.get(key);
+const first=previous?.first||old.summary,last=old.summary;
+summaries.set(key,{...old,type:'scene-summary',id:key,firstTurn:previous?.firstTurn??old.turn,count:(previous?.count||0)+1,first,last,summary:(first+(first===last?'':'；后来还记得：'+last)).slice(0,1000)});
+}
+return [...legacy,...summaries.values(),...recent];
+}
+function legacyEntries(s,id){
+const owner=socialNPCs(s).find(p=>p.id===id);if(!owner)return [];
+const out=[];
+for(const h of [...(s.volumes||[]).flatMap(v=>v.chapters),...(s.history||[])])for(const r of h.scenes||[]){
+if(!r.people.some(p=>p.id===id))continue;
+if(r.memoryVersion!==19)out.push(memoryEntry(s,r,{...r,turn:h.turn},owner,h.chapter?.[r.slot],r.memoryNotes||[],true,h.era));
+for(const t of r.steps||[])if(t.memoryVersion!==19)out.push(memoryEntry(s,r,{...t,turn:h.turn},owner,t.prose,t.memoryNotes||[],true,h.era));
+}
+return out;
+}
+function npcMemories(s,id){
+const p=socialNPCs(s).find(p=>p.id===id);if(!p)return [];
+return compactMemories([...(p.memory||[]),...(p.memoryHydrated?[]:legacyEntries(s,id))]);
+}
+function memoryContext(s,ids,limit=8){
+return [...new Set(ids)].map(id=>{
+const p=socialNPCs(s).find(p=>p.id===id);if(!p)return null;
+const memories=npcMemories(s,id).filter(m=>['scene','scene-summary'].includes(m?.type));
+const important=memories.filter(m=>m.type==='scene-summary'||m.importance>=2).sort((a,b)=>(['humiliate','deceive'].includes(b.kind)?4:0)+b.importance-(['humiliate','deceive'].includes(a.kind)?4:0)-a.importance||b.turn-a.turn).slice(0,3);
+const recent=memories.filter(m=>m.type==='scene').sort((a,b)=>b.turn-a.turn||b.order-a.order).slice(0,limit);
+return {id,name:p.name,往事:[...new Map([...important,...recent].map(m=>[m.id,m])).values()].slice(0,limit).map(m=>({经过:m.summary.slice(0,360),当时皇帝:m.emperorName,旬次:m.turn})),人物关系:Object.entries(p.relations||{}).filter(([other])=>socialNPCs(s).some(q=>q.id===other)).sort((a,b)=>Math.abs(b[1]-50)-Math.abs(a[1]-50)).slice(0,6).map(([other,value])=>({人物:socialNPCs(s).find(q=>q.id===other).name,亲近:value}))};
+}).filter(Boolean);
+}
+function rememberNPCScene(state,r,phase,prose,notes=[],era=null){
+const s=clone(state);
+for(const cast of r.people){
+const p=socialNPCs(s).find(p=>p.id===cast.id);if(!p||p.alive===false||p.health<=0)continue;
+const complete=!s.recoveryOnly&&!s.volumeIndex?.length;
+const old=[...(p.memory||[]),...(!p.memoryHydrated&&complete?legacyEntries(s,p.id):[])];
+p.memory=compactMemories([...old,memoryEntry(s,r,phase,p,prose,notes,false,era)]);
+if(complete)p.memoryHydrated=true;
+}
+return s;
+}
+
+return {publicMemoryQuote,compactMemories,npcMemories,memoryContext,rememberNPCScene};
+},
 "src/core/scenes.js":function(__load){
 const {rememberNPCScene} = __load("src/core/memory.js");
 const {applySceneSocial} = __load("src/core/social.js");
@@ -5682,7 +6171,7 @@ const {localSocial,groupRelationModifier,emperorKey} = __load("src/core/social-r
 const {clone,assertState,migrate,VERSION} = __load("src/core/state.js");
 const {roll,check} = __load("src/core/rng.js");
 const {adjudicate} = __load("src/core/freedom.js");
-const {resolveIntents} = __load("src/core/intents.js");
+const {intentActionKey,resolveIntents} = __load("src/core/intents.js");
 const {auditChanges} = __load("src/core/audit.js");
 const {canVisit} = __load("src/core/harem.js");
 const SCENE_ENERGY=1;
@@ -5700,7 +6189,7 @@ function resolveScene(state,action,actions,slot,source,previous=null){
 const blocked=sceneBlock(state,action,!!previous);if(blocked)throw new Error(blocked);
 const people=action.people.map(id=>{const p=scenePeople(state,true).find(p=>p.id===id);return {id,name:p.name};});
 let s=clone(state),results=[],facts=[],outcome;
-const key=a=>JSON.stringify(['type','targetId','postId','countryId','operation','resource','amount','source','destination','edictType','province'].map(k=>a[k]??null));
+const key=intentActionKey;
 const real=actions.filter(a=>a.type!=='other');
 if(real.length){
 const priorResults=previous?[...(previous.results||[]),...previous.steps.flatMap(t=>t.results)]:[],reuse=new Map();
@@ -5811,107 +6300,6 @@ return {state:s,events,changes};
 
 return {applySceneSocial};
 },
-"src/core/effects.js":function(__load){
-const { clone } = __load("src/core/state.js");
-function clamp(n, low = 0, high = 100) {
-return Math.min(high, Math.max(low, Number.isFinite(n) ? n : 0));
-}
-function populationMorale(state) {
-const pop=state.nation.provinces.reduce((n,p)=>n+p.pop,0);
-return pop?state.nation.provinces.reduce((n,p)=>n+p.pop*p.morale,0)/pop:0;
-}
-function diminishing(value,delta){return delta>0?delta*(value>=90?0.25:value>=80?0.5:1):delta;}
-function applyEffects(state, effects = {}, source = "引擎结算") {
-const s = clone(state),
-entries = [];
-const set = (obj, key, delta, path, max = 100, min = 0) => {
-if (typeof delta !== "number" || !Number.isFinite(delta)) return;
-const old = obj[key];
-obj[key] = clamp(old + delta, min, max);
-if (obj[key] !== old)
-entries.push({
-path,
-before: old,
-after: obj[key],
-delta: Math.round((obj[key] - old) * 100) / 100 || 0,
-source,
-});
-};
-for (const [f,debt] of [['treasury','arrears'],['privy','privyArrears'],['grain','grainArrears']]) {
-const delta=effects[f];
-if(Number.isFinite(delta)&&delta<0&&-delta>s.nation[f]){
-s.nation[debt]??=0;
-set(s.nation,debt,-delta-s.nation[f],'nation.'+debt,Number.MAX_SAFE_INTEGER);
-}
-set(s.nation,f,delta,'nation.'+f,1000000);
-}
-for(const f of ['arrears','privyArrears','grainArrears'])if(Number.isFinite(effects[f])){s.nation[f]??=0;set(s.nation,f,effects[f],'nation.'+f,Number.MAX_SAFE_INTEGER);}
-if(Number.isFinite(effects.morale))for(const p of s.nation.provinces)
-set(p,'morale',diminishing(p.morale,effects.morale)*0.3,'province.'+p.id+'.morale');
-set(s.nation,'governance',diminishing(s.nation.governance,effects.governance),'nation.governance');
-for (const f of ["health", "mood", "prestige", "virtue"])
-set(s.emperor, f, ['prestige','virtue'].includes(f)?diminishing(s.emperor[f],effects[f]):effects[f], "emperor." + f);
-if(s.emperor.mood>=20)s.emperor.depressedMonths=0;
-if (effects.province) {
-const p = s.nation.provinces.find((p) => p.id === effects.province.id);
-if (p)
-for (const f of ["morale", "disaster"])
-set(p, f, f==='morale'?diminishing(p[f],effects.province[f]):effects.province[f], "province." + p.id + "." + f);
-}
-set(s.nation,'morale',populationMorale(s)-s.nation.morale,'nation.morale');
-if (effects.faction)
-for (const [id, n] of Object.entries(effects.faction)) {
-const f = s.court.factions.find((f) => f.id === id);
-if (f) {set(f, "attitude", n, "faction." + id + ".attitude");f.powerModifier??=0;set(f,'powerModifier',n*0.25,'faction.'+id+'.powerModifier',30,-30);set(f,'power',n*0.25,'faction.'+id+'.power');}
-}
-if (effects.official) {
-const o = s.court.officials.find(
-(o) => o.id === effects.official.id && o.alive,
-);
-if (o)
-set(o, "favor", effects.official.favor, "official." + o.id + ".favor");
-}
-if(effects.army){
-const a=effects.army,id=a.id,b=id==='capital'?s.nation.army.capital:s.nation.army.frontiers.find(x=>x.dir===id);
-const path=id==='capital'?'nation.army.capital':'nation.army.frontiers.'+s.nation.army.frontiers.indexOf(b);
-if(b){set(b,'readiness',a.readiness,path+'.readiness');if(id!=='capital')set(b,'threat',a.threat,path+'.threat');}
-}
-if(effects.foreign){const f=s.foreign.find(f=>f.id===effects.foreign.id);if(f)set(f,'attitude',effects.foreign.attitude,'foreign.'+f.id+'.attitude');}
-if (effects.thread) {
-const t = s.threads.find((t) => t.id === effects.thread.id);
-if (t && t.stage !== "结束") {
-t.stage = effects.thread.stage;
-t.result = String(effects.thread.result || "");
-t.updated = s.turn;
-}
-}
-s.ledger.push(...entries.map((e) => ({ ...e, turn: s.turn })));
-return { state: s, entries };
-}
-function applyPackage(state, effects, source) {
-return applyEffects(state, effects, source).state;
-}
-function growTalent(state, talent, amount = 1) {
-const s = clone(state),
-left = 3 - (s.emperor.growth[talent] || 0);
-if (left > 0) {
-const inc = Math.min(left, amount, 100 - s.emperor.talents[talent]);
-s.emperor.talents[talent] += inc;
-s.emperor.growth[talent] = (s.emperor.growth[talent] || 0) + inc;
-s.ledger.push({
-turn: s.turn,
-path: "emperor.talents." + talent,
-delta: inc,
-before: s.emperor.talents[talent] - inc,
-after: s.emperor.talents[talent],
-source: "经世历练（每年每才最多 +3）",
-});
-}
-return s;
-}
-
-return {clamp,populationMorale,diminishing,applyEffects,applyPackage,growTalent};
-},
 "src/core/freedom.js":function(__load){
 const { roll } = __load("src/core/rng.js");
 const { applyPackage } = __load("src/core/effects.js");
@@ -5943,6 +6331,8 @@ return {state:s,verdict:{...verdict,success:true,partial:true,cost:costLabel}};
 return {FREEDOM_RULES,freedomRules,successProbability,selectionYear,adjudicate};
 },
 "src/core/intents.js":function(__load){
+const {configureResearch} = __load("src/core/tech.js");
+const {techById,identifyTech,identifyIndustry} = __load("src/core/tech-rules.js");
 const {normalizeSocial,favorRecords} = __load("src/core/social-rules.js");
 const { TEXT_LIMITS } = __load("src/core/text.js");
 const { adjudicate } = __load("src/core/freedom.js");
@@ -5976,12 +6366,28 @@ if(type==='allocate'){
 a.resource=['treasury','privy','grain','troops'].includes(raw.resource)?raw.resource:'treasury';
 a.amount=Number.isFinite(raw.amount)?Math.max(0,raw.amount):0;
 a.source=a.resource==='grain'?'grain':(['treasury','privy',...(a.resource==='troops'?['capital',...state.nation.army.frontiers.map(b=>b.dir)]:[])].includes(raw.source)?raw.source:'treasury');
-a.destination=state.court.posts.find(p=>p.id===raw.destination)?.id||state.nation.provinces.find(p=>p.id===raw.destination)?.id||(['privy','treasury','grain','capital',...state.nation.army.frontiers.map(b=>b.dir),...Object.keys(EDICTS)].includes(raw.destination)?raw.destination:'政务');
+a.destination=state.court.posts.find(p=>p.id===raw.destination)?.id||state.nation.provinces.find(p=>p.id===raw.destination)?.id||(['privy','treasury','grain','capital',...state.nation.army.frontiers.map(b=>b.dir),...Object.keys(EDICTS),'tech'].includes(raw.destination)?raw.destination:'政务');
+}
+if(type==='allocate'&&a.destination==='tech'||type==='decree'&&['格物','兴业'].includes(raw.edictType)){
+const custom=state.settings.freedom==='free'&&typeof raw.customName==='string'&&raw.customName.trim();
+const tech=techById(raw.techId)||identifyTech(state,input.text,raw.techLine);
+if(tech)a.techId=tech.id;
+if(custom)a.name=raw.customName.slice(0,40);
+if(raw.techLine)a.line=raw.techLine;
+a.funding=Number.isFinite(raw.funding)?Math.max(0,raw.funding):a.amount??state.tech?.funding??0;
+const lead=state.court.officials.find(o=>o.id===raw.lead||o.name===raw.lead);if(lead)a.lead=lead.id;
+a.industry=identifyIndustry(String(raw.industry||input.text));
+a.province=state.nation.provinces.find(p=>p.id===raw.province||input.text.includes(p.name))?.id||null;
 }
 if(type==='favor'){a.requestedAmount=raw.amount;a.amount=Number.isFinite(raw.amount)?Math.max(-5,Math.min(5,raw.amount)):0;}
-if(type==='decree'){if(!EDICTS[raw.edictType])return {...a,type:'other',text:'拟议：'+a.text,reason:'普通叙事口谕'};a.edictType=raw.edictType;a.province=state.nation.provinces.find(p=>p.id===raw.province)?.id||null;}
+if(type==='decree'){if(!EDICTS[raw.edictType])return {...a,type:'other',text:'拟议：'+a.text,reason:'普通叙事口谕'};a.edictType=raw.edictType;a.province=state.nation.provinces.find(p=>p.id===raw.province)?.id||a.province||null;}
 return a;
 });
+}
+function intentActionKey(a){
+const keys=['type','targetId','postId','countryId','operation','resource','amount','source','destination','edictType','province'];
+if(a.destination==='tech'||['格物','兴业'].includes(a.edictType))keys.push('techId','funding','lead','industry','name','line');
+return JSON.stringify(keys.map(k=>a[k]??null));
 }
 function killPerson(s,id){
 const o=s.court.officials.find(o=>o.id===id);
@@ -6021,6 +6427,9 @@ const result=appoint(s,{post:post.id,person:target.id,operation,pardon:false});s
 const done=operation==='appoint'?s.court.posts.find(p=>p.id===post.id)?.holder===target.id:!s.court.posts.find(p=>p.holder===target.id);
 if(!done)r.status='failed';
 else{r.actual={targetId:target.id,postId:post.id};facts.push({kind:'appointment',actors:[actor],operation:operation==='jail'?'下狱':operation==='remove'?'罢免':'任命',post:post.title});}
+}else if(a.type==='allocate'&&a.destination==='tech'){
+const result=configureResearch(s,{techId:a.techId,name:a.name,line:a.line,funding:a.funding??a.amount,lead:a.lead});s=result.state;
+r.actual={destination:'tech',techId:s.tech.current?.id,funding:s.tech.funding};r.summary=result.note;facts.push({kind:'research_plan',...r.actual});
 }else if(a.type==='allocate'){
 const room=['treasury','privy','grain'].includes(a.destination)&&a.destination!==a.source?Math.max(0,1000000-s.nation[a.destination]):1000000;
 const origin=a.source==='capital'?s.nation.army.capital:s.nation.army.frontiers.find(b=>b.dir===a.source);
@@ -6054,7 +6463,7 @@ if(a.operation==='出兵'&&country.status==='交战'){r.summary='向'+country.na
 else{const operation=a.operation==='出兵'?'宣战':a.operation;const result=diplomacy(s,{country:country.id,operation,confirmBreach:true,intent:true},die.value);s=result.state;r.summary=result.note;if(result.check?.partial||result.partial||result.execution?.partial){r.status='partial';r.cost=result.check?.cost||result.cost||result.execution?.cost;}const done=operation==='议和'?s.foreign.find(f=>f.id===country.id).status!=='交战':true;if(!done)r.status='failed';else facts.push({kind:'war',actors:[country.name],outcome:operation});}
 r.actual={countryId:country.id,operation:a.operation};
 }else if(a.type==='decree'){
-const result=issueEdict(s,{edictType:a.edictType,province:a.province,intent:true},die.value);s=result.state;r.summary=result.note;if(result.check?.partial||result.partial||result.execution?.partial){r.status='partial';r.cost=result.check?.cost||result.cost||result.execution?.cost;}r.actual={edictType:a.edictType};
+const result=issueEdict(s,{edictType:a.edictType,province:a.province,techId:a.techId,funding:a.funding,lead:a.lead,industry:a.industry,name:a.name,line:a.line,intent:true},die.value);s=result.state;r.summary=result.note;if(result.check?.partial||result.partial||result.execution?.partial){r.status='partial';r.cost=result.check?.cost||result.cost||result.execution?.cost;}r.actual={edictType:a.edictType};
 const label=result.note.match(/雷厉风行|照办|敷衍|阳奉阴违|封驳/)?.[0];if(label)facts.push({kind:'execution',slot:r.slot,topic:a.edictType,label});if(label==='封驳')r.status='failed';
 }
 }catch(error){r.status='failed';r.summary='口谕未能落实：'+error.message;}
@@ -6065,7 +6474,7 @@ return {state:s,results,facts};
 }
 function resolveTalkIntents(state,result,actions){
 if(!actions.some(a=>a.type!=='other'))return {state,result};
-const key=a=>JSON.stringify(['type','targetId','postId','countryId','operation','resource','amount','source','destination','edictType','province'].map(k=>a[k]??null));
+const key=intentActionKey;
 const previous=state.talks.filter(t=>t.turn===state.turn&&t.person===result.person&&t.id!==result.id).flatMap(t=>t.intentResults||[]);
 const reused=new Map(),fresh=actions.filter(a=>{
 const prior=a.type!=='other'&&!/再拨|再赏|追加|另拨|另赏|再给/.test(a.text)&&previous.find(r=>r.actionKey===key(a));
@@ -6086,9 +6495,10 @@ const saved=s.talks.find(t=>t.id===result.id);if(saved)Object.assign(saved,resul
 return {state:s,result:saved||result};
 }
 
-return {INTENT_TYPES,normalizeIntents,resolveIntents,resolveTalkIntents};
+return {INTENT_TYPES,normalizeIntents,intentActionKey,resolveIntents,resolveTalkIntents};
 },
 "src/core/court.js":function(__load){
+const {developmentChoiceBlock} = __load("src/core/development-choices.js");
 const { freedomRules, adjudicate } = __load("src/core/freedom.js");
 const { resolveMemorial,addEvent } = __load("src/core/events.js");
 const { clone } = __load("src/core/state.js");
@@ -6556,7 +6966,7 @@ m.options
 .filter(
 (o) =>
 o.id !== "hold" &&
-!campaignChoiceBlock(state,m,o) &&
+!campaignChoiceBlock(state,m,o) && !developmentChoiceBlock(state,o) &&
 ["treasury","privy","grain"].every(k=>state.nation[k]>=Math.max(0,-(o.effects?.[k]||0))),
 )
 .map((o) => ({ m, o, score: factionOptionScore(faction, m, o) })),
@@ -6591,7 +7001,7 @@ const affordable = (o) => ["treasury", "privy", "grain"].every(
 (k) => (state.nation[k] || 0) >= Math.max(0, -(o.effects?.[k] || 0)));
 const ranked = memorial.options
 .map((o, i) => ({ o, i }))
-.filter(({ o }) => o.id !== "hold" && affordable(o) && !campaignChoiceBlock(state,memorial,o))
+.filter(({ o }) => o.id !== "hold" && affordable(o) && !campaignChoiceBlock(state,memorial,o)&&!developmentChoiceBlock(state,o))
 .map((x) => ({ ...x, score: faction ? factionOptionScore(faction, memorial, x.o) : 0 }))
 .sort((a, b) => b.score - a.score || a.i - b.i);
 if (!ranked.length) return null;
@@ -6600,7 +7010,31 @@ return { option: ranked[0].o.id, label: ranked[0].o.label, minister: minister.na
 
 return {strongmanCandidate,strongman,courtMonth,courtYear,officialDeathChance,appoint,talkAttempt,banquet,inCapital,factionOptionScore,courtDebate,accountability,proxyMemorial,cabinetDraft};
 },
+"src/core/development-choices.js":function(__load){
+const { researchBlock,configureResearch } = __load("src/core/tech.js");
+const { industryQuote,buildIndustry } = __load("src/core/industries.js");
+const { defaultResearchLead } = __load("src/core/tech-rules.js");
+function developmentChoiceBlock(s,option){
+const a=option?.development;if(!a)return '';
+if(s.regency)return '摄政期间暂缓另立新政';
+if(a.kind==='research'){
+if(s.tech?.current&&s.tech.current.id!==a.techId)return '已有其他条目在研';
+return researchBlock(s,a.techId)||(!defaultResearchLead(s)?'暂无可主持的官员':'');
+}
+const q=industryQuote(s,a.province,a.industry);
+return q.blocked||(q.level!==a.level?'产业进度已变':s.nation.treasury<q.cost?'国库不足':'');
+}
+function applyDevelopmentChoice(s,action){
+return action.kind==='research'?configureResearch(s,action):buildIndustry(s,action);
+}
+
+return {developmentChoiceBlock,applyDevelopmentChoice};
+},
 "src/core/events.js":function(__load){
+const {techEffects,TECHS,INDUSTRIES,techById,defaultResearchLead} = __load("src/core/tech-rules.js");
+const {researchBlock} = __load("src/core/tech.js");
+const {industryQuote} = __load("src/core/industries.js");
+const {developmentChoiceBlock,applyDevelopmentChoice} = __load("src/core/development-choices.js");
 const { freedomRules } = __load("src/core/freedom.js");
 const { remarkCategory, REMARK_KINDS } = __load("src/core/memorial-decisions.js");
 const { routineTemplate, routineOptions, memorialText } = __load("src/core/memorial-templates.js");
@@ -6721,15 +7155,13 @@ const chosen =
 m.options.find((o) => o.id === option) ||
 m.options.find((o) => o.id === (option === "reject" ? "opt1" : "opt0"));
 if (!chosen) throw new Error("无此处置选项");
-const blocked=campaignChoiceBlock(state,m,chosen);if(blocked)throw new Error(blocked);
+const blocked=campaignChoiceBlock(state,m,chosen)||developmentChoiceBlock(state,chosen);if(blocked)throw new Error(blocked);
 for(const [key,label]of [['treasury','国库'],['privy','内帑'],['grain','粮储']])
 if(chosen.effects[key]<0&&state.nation[key]<-chosen.effects[key])throw new Error(label+'不足以办理此事');
 const regional=m.provinceId&&state.nation.provinces.some(p=>p.id===m.provinceId)&&Number.isFinite(chosen.effects.morale);
 const effects=regional?{...chosen.effects,morale:undefined,province:{...chosen.effects.province,id:m.provinceId,morale:(chosen.effects.province?.morale||0)+chosen.effects.morale}}:chosen.effects;
-let s = applyPackage(
-state,
-effects,
-sourcePrefix + "：" + m.title + " / " + chosen.label,
+let s = chosen.development?applyDevelopmentChoice(state,chosen.development).state:applyPackage(
+state,effects,sourcePrefix + "：" + m.title + " / " + chosen.label,
 );
 s.memorials = s.memorials.filter((x) => x.id !== id);
 if(m.campaignOrder)s=applyCampaignDecision(s,m,chosen);
@@ -6825,7 +7257,7 @@ effects: { morale: -3, province: { id: z.id, disaster: 10 } },
 ], [z.name], z.id);
 s = applyPackage(
 s,
-{ province: { id: z.id, disaster: 25,morale:-4 } },
+{ province: { id: z.id, disaster: 25*(1-(techEffects(s).disasterProtection||0)),morale:-4 } },
 kind + "发生",
 );
 }
@@ -6871,8 +7303,33 @@ effects: { prestige: 2, faction: { [f.id]: -3 } },
 }
 return s;
 }
+function seedDevelopmentMemorials(state,before){
+let s=clone(state);
+const append=(id,title,type,request,options,provinceId=null)=>{
+if(s.memorials.some(m=>m.id===id))return;
+const m={id,title,type,...pickMemorialist(s,type,provinceId),provinceId,request,options,due:s.turn+9,threadId:null,urgent:false,secret:false,text:''};
+m.text=memorialText(m,s.settings.prose==='modern');s.memorials.push(m);
+};
+for(const id of s.tech.done.filter(id=>!before.tech?.done.includes(id)))append('tech-done-'+id+'-'+s.turn,'工部报捷：'+techById(id).name,'工务','此法已研成，谨报御前。',[{id:'approve',label:'知道了',effects:{}}]);
+if(s.turn===0||s.turn%18||s.regency)return s;
+const kinds=['industry','research'],kind=kinds[Math.floor(s.turn/18)%2];
+if(kind==='research'&&!s.tech.current){
+const t=TECHS.find(t=>!researchBlock(s,t.id));
+if(t&&defaultResearchLead(s,t))append('tech-request-'+s.turn,'工部请研'+t.name,'工务','请委派主持，每月拨五万两研习'+t.name,[
+{id:'approve',label:'每月拨五万两',effects:{},development:{kind:'research',techId:t.id,funding:5},consequence:'按国库余额月结拨付，研究须耗时；不在此刻一次扣款'},
+{id:'reject',label:'暂缓研习',effects:{},consequence:'暂不新增经费'},
+]);
+}else if(kind==='industry'){
+const proposal=s.nation.provinces.flatMap(p=>Object.keys(INDUSTRIES).map(industry=>({p,industry,q:industryQuote(s,p.id,industry)}))).find(x=>!x.q.blocked&&x.q.level===1&&!s.projects.some(p=>!p.done&&p.edictType==='兴业'&&p.province===x.p.id&&p.industry===x.industry));
+if(proposal){const {p,industry,q}=proposal,r=INDUSTRIES[industry];append('industry-request-'+s.turn,p.name+'请设'+r.name,'工务','请拨银营建'+r.name,[
+{id:'approve',label:'准建'+r.name,effects:{treasury:-q.cost,...(r.morale?{province:{id:p.id,morale:r.morale}}:{})},development:{kind:'industry',province:p.id,industry,level:q.level},consequence:'支银'+q.cost+'万两，工期'+q.months+'月，建成后按季产出并支付维护费'},
+{id:'reject',label:'暂缓营建',effects:{},consequence:'不支银、不营建'},
+],p.id);}
+}
+return s;
+}
 
-return {pickMemorialist,addEvent,seedMemorials,resolveMemorial,expireMemorials,eventsMonth};
+return {pickMemorialist,addEvent,seedMemorials,resolveMemorial,expireMemorials,eventsMonth,seedDevelopmentMemorials};
 },
 "src/core/memorial-templates.js":function(__load){
 const { seedNumber, random } = __load("src/core/rng.js");
@@ -7366,59 +7823,6 @@ return {id:['approve','reject','alternative'][i],label,consequence,effects};
 
 return {MEMORIAL_CHOICES,memorialChoices};
 },
-"src/core/finance.js":function(__load){
-const { applyPackage } = __load("src/core/effects.js");
-// Treasury uses 万两 and grain uses 万石. Budget covers twelve months of recurring treasury obligations.
-function monthlyBudget(state) {
-const troops =
-state.nation.army.capital.troops +
-state.nation.army.frontiers.reduce((sum, b) => sum + b.troops, 0);
-const salaries = 8 + state.court.posts.filter((p) => p.holder).length * 0.08;
-return { salaries, armyPay: troops / 12000, grain: troops / 22000 };
-}
-function annualBudget(state) {
-const b = monthlyBudget(state);
-return 12 * (b.salaries + b.armyPay);
-}
-function grainBudget(state){
-const military=monthlyBudget(state).grain,relief=state.nation.provinces.filter(p=>p.disaster>0).length*2;
-return {military,relief,monthly:military+relief,storageCapacity:(military+relief)*36};
-}
-// Grain is 万石; province population is 万人, not a grain yield. Scale
-// normal harvest to recurring military demand, then weight crop damage by people.
-function quarterlyGrain(state){
-const population=state.nation.provinces.reduce((n,p)=>n+p.pop,0);
-const crop=population?state.nation.provinces.reduce((n,p)=>n+p.pop*(1-Math.max(0,Math.min(100,p.disaster))/100),0)/population:0;
-return monthlyBudget(state).grain*3*1.2*crop;
-}
-function wasteQuote(state) {
-const budget = annualBudget(state),
-threshold = budget * 2,
-governance = Math.max(0, Math.min(100, state.nation.governance)),
-rate = 0.03 * (1 + 3 * Math.pow((100 - governance) / 100, 0.25)),
-excess = Math.max(0, state.nation.treasury - threshold);
-return { budget, threshold, rate, excess, amount: excess * rate };
-}
-function quarterIndex(turn) {
-return Math.max(0, Math.ceil(turn / 9) - 1);
-}
-function provinceTaxFactor(province, turn) {
-if (province.rebellion || province.rebellionQuarter === quarterIndex(turn))
-return 0;
-return province.morale < 15 ? 0.2 : province.morale < 30 ? 0.5 : 1;
-}
-function settleArrears(state) {
-let s=state;
-for(const [account,debt,label]of [['treasury','arrears','补付欠饷与积欠'],['privy','privyArrears','补付内帑积欠'],['grain','grainArrears','补付缺粮积欠']]){
-const amount=Math.min(s.nation[account],s.nation[debt]||0);if(amount<=0)continue;
-s=applyPackage(s,{[account]:-amount,[debt]:-amount},label);
-if(account==='treasury')s.stats.expense+=amount;
-}
-return s;
-}
-
-return {monthlyBudget,annualBudget,grainBudget,quarterlyGrain,wasteQuote,quarterIndex,provinceTaxFactor,settleArrears};
-},
 "src/core/campaigns.js":function(__load){
 const { clone } = __load("src/core/state.js");
 const { applyPackage, clamp } = __load("src/core/effects.js");
@@ -7890,6 +8294,9 @@ return s;
 return {foreignMonth,foreignYear,diplomacyBlock,diplomacy,borderInvasions,advanceCampaigns,checkCollapse};
 },
 "src/core/edicts.js":function(__load){
+const {configureResearch} = __load("src/core/tech.js");
+const {buildIndustry,completeIndustry} = __load("src/core/industries.js");
+const {techEffects} = __load("src/core/tech-rules.js");
 const { freedomRules, adjudicate } = __load("src/core/freedom.js");
 const { quarterIndex } = __load("src/core/finance.js");
 const { clone } = __load("src/core/state.js");
@@ -7998,7 +8405,10 @@ difficulty: 3,
 office: "刑部尚书",
 effects: { governance: 2, morale: -1 },
 },
+格物:{cost:0,months:0,difficulty:0,office:'工部尚书',effects:{}},
+兴业:{cost:0,months:0,difficulty:0,office:'工部尚书',effects:{}},
 };
+function edictCost(state,type){return EDICTS[type]?.cost*(type==='修河'?1-(techEffects(state).riverDiscount||0):1);}
 function execution(state, type, die) {
 const edict = EDICTS[type];
 if (!edict) throw new Error("未知旨意类型");
@@ -8047,8 +8457,10 @@ return {label,rate:p.execRate,official:p.office};
 }
 function issueEdict(state, action, die) {
 const type = action.edictType || "禁令",
-rule = EDICTS[type];
+rule = EDICTS[type]&&{...EDICTS[type],cost:edictCost(state,type)};
 if (!rule) throw new Error("无法识别此旨意，请选择模板");
+if(type==='格物')return configureResearch(state,action);
+if(type==='兴业')return buildIndustry(state,action);
 const blocked=edictBlock(state,type,action.province);if(blocked)throw new Error(blocked);
 if(action.province&&!state.nation.provinces.some(p=>p.id===action.province))throw new Error("请选择有效州郡");
 const armyTarget=action.armyTarget||'capital';
@@ -8174,6 +8586,7 @@ project.progress = clamp(
 );
 if (s.turn >= project.end) {
 project.done = true;
+if(project.edictType==='兴业'){s=completeIndustry(s,project);project.progress=100;continue;}
 finishInstant(s,project.edictType,project.province);
 if(["减赋","加税"].includes(project.edictType)) {
 for(const p of s.nation.provinces.filter(p=>!project.province||project.province===p.id)) {
@@ -8209,7 +8622,7 @@ readiness: clamp(f.readiness + 5),
 return s;
 }
 
-return {EDICTS,execution,edictBlock,issueEdict,advanceProjects};
+return {EDICTS,edictCost,execution,edictBlock,issueEdict,advanceProjects};
 },
 "src/core/audit.js":function(__load){
 function numericSnapshot(s) {
@@ -8239,7 +8652,7 @@ continue;
 walk(v, path + "." + k);
 }
 };
-for (const root of ["emperor", "nation"]) walk(s[root], root);
+for (const root of ["emperor", "nation", "tech"]) walk(s[root], root);
 const list = (items, prefix) => {
 for (const x of items) {
 for (const [k, v] of Object.entries(x)) {
@@ -8329,6 +8742,7 @@ visit(old?.[key], value, path + "." + key);
 }
 };
 visit(before.emperor, after.emperor, "emperor");
+visit(before.tech,after.tech,"tech");
 const { provinces, ...nation } = after.nation;
 visit(before.nation, nation, "nation");
 for (const [old, rows, prefix] of [
@@ -8716,6 +9130,7 @@ const SCENE_RULES='【自拟情节】玩家提供的是情节梗概与尝试，�
 return {SCENE_RULES};
 },
 "src/llm/prompts.js":function(__load){
+const {techById} = __load("src/core/tech-rules.js");
 const {memoryContext} = __load("src/core/memory.js");
 const { SCENE_RULES } = __load("src/llm/scene-rules.js");
 const { TEXT_LIMITS } = __load("src/core/text.js");
@@ -8939,6 +9354,7 @@ function turnMessages(state, forecast) {
     ["treasury", "privy", "grain", "morale", "governance"].map((k) => [k, r1(s.nation[k])]));
   const oldRoster = roster(before).split("\n"), newRoster = roster(state).split("\n");
   const dynamic = {
+    格物:{在研:state.tech?.current?(state.tech.current.name||techById(state.tech.current.id)?.name):'无',进度百分比:state.tech?.current?Math.floor(state.tech.current.progress/techById(state.tech.current.id).cost*100):0,本旬突破:(state.tech?.done||[]).filter(id=>!before.tech?.done.includes(id)).map(id=>techById(id).name)},
     国势: nationSummary(state),
     流水账: (state.history || before.history || []).slice(-3).map((h) => h.summary),
     新近事实: factWindow(state).recent.map(({ subject, key, value }) => ({ subject, key, value })),
@@ -9029,7 +9445,7 @@ function classifyMessages(text,mode='oral') {
     {
       role: "system",
       content:
-        '你是旨意分类员。只归类不写剧情，输出 JSON {"kind":"","edictType":null,"params":{},"risky":false,"attr":"","level":"","why":"十字内"}。kind 从上朝、批折、召见、宴请、下旨、任命、外交、后宫、出巡、私下行事、闲谈中选。edictType 从赈灾、减赋、加税、修河、整饬吏治、征兵、大赦、修园、编修大典、开海、转内帑、转国库、立储、禅位、禁令中选。不得创造数值效果。',
+        '你是旨意分类员。只归类不写剧情，输出 JSON {"kind":"","edictType":null,"params":{},"risky":false,"attr":"","level":"","why":"十字内"}。kind 从上朝、批折、召见、宴请、下旨、任命、外交、后宫、出巡、私下行事、闲谈中选。edictType 从赈灾、减赋、加税、修河、整饬吏治、征兵、大赦、修园、编修大典、开海、转内帑、转国库、立储、禅位、禁令、格物、兴业中选。不得创造数值效果。',
     },
     { role: "user", content: text.slice(0, TEXT_LIMITS.decree) },
   ];
@@ -10339,20 +10755,34 @@ return [slot,pick(SEASONS[season])+pick(SCENES[kind]||SCENES.日常)+(sensitive?
 return {modernTalkFallback,sceneNarrative};
 },
 "src/llm/intents.js":function(__load){
+const {TECHS,INDUSTRIES,identifyTech,identifyIndustry} = __load("src/core/tech-rules.js");
 const {localSocial} = __load("src/core/social-rules.js");
 const { normalizeIntents } = __load("src/core/intents.js");
 const { parseNumber, NUMBER_SOURCE } = __load("src/llm/quantities.js");
 const { normalizeMemorialAction } = __load("src/core/memorial-decisions.js");
 function intentInputs(schedule){return ['朝','午','夜'].flatMap(slot=>{const a=normalizeMemorialAction(schedule[slot]),inputs=[];if(['下旨','自拟情节'].includes(a?.kind)&&a.text?.trim())inputs.push({id:slot,slot,text:a.text.trim(),...(a.kind==='自拟情节'?{people:a.people,place:a.place||'',scene:true}:{})});for(const [id,d]of Object.entries(a?.decisions||{}))if(d?.remark?.trim())inputs.push({id:slot+':remark:'+id,slot,text:d.remark.trim()});return inputs;});}
 function intentMessages(state,inputs){
+const relevant=inputs.filter(i=>/研制|研究|研习|格物|发明|改良|研新|兴业|兴建|建造|开设|设立/.test(i.text));
+const techNames=[...new Map(relevant.filter(i=>/研|格物|发明|改良/.test(i.text)).map(i=>identifyTech(state,i.text)).filter(Boolean).map(t=>[t.id,{id:t.id,name:t.name,line:t.line}])).values()];
+const industryNames=[...new Set(relevant.map(i=>identifyIndustry(i.text)).filter(Boolean))].map(id=>({id,name:INDUSTRIES[id].name}));
 const persons=[...state.court.officials.filter(o=>o.alive),...state.harem.consorts.filter(c=>c.health>0),...state.harem.children.filter(c=>c.health>0)].map(o=>({id:o.id,name:o.name}));
-return [{role:'system',content:'你是帝王游戏的意图解析员，只输出 JSON，不写剧情、不决定成败、不返回数值效果。将每条自由输入拆成动作。type 只选 kill/appoint/dismiss/promote/imprison/war/allocate/favor/decree/other。人物、官职、外邦只用名册已有ID，找不到则 other。怀孕、生育、小产只能 other，不得解析为玩家动作。allocate.amount 用游戏单位：银为万两、粮为万石、征兵为人；中文与阿拉伯混写也须准确换算。allocate.source 为 treasury/privy/grain 或调兵来源 capital/边境方向，destination 可为对应账户、军队capital/方向、州ID或政令名称。favor.amount 限-5至5。decree.edictType 使用普通政令名称。scene标记的输入是玩家尝试的情节梗概，不能把希望或NPC反应当作已成事实。people列出本场人物ID；无姓名的指代只在唯一人物时绑定，多人不明则other；地点和情感描写可other。scene内有明确的相处行为时，另给一个type:other的动作并附interaction:{kind,targetId,otherId}。kind仅选accompany陪伴、comfort安慰、apologize道歉、protect维护、humiliate羞辱、deceive欺瞒、reconcile调解、quarrel争执、cooperate合作；targetId必须在people中，后三种须明确两个不同人物，并用otherId给出另一人。闲聊不必附interaction，不生成数值，不把未发生的事当已发生。每个动作必须带原输入的inputId，保留愿望的真实意图，不增加动作。每条 :remark: 输入同时在 remarks 中返回 {inputId,remarkKind}，remarkKind 仅选嘉奖/申饬/附旨/无；识别否定，责成核查为附旨，不必嘉奖为无。嘉奖申饬已有朱批结算，不再生成重复的favor动作；实质拨款、任免等仍解析为动作。输出 {"remarks":[{"inputId":"","remarkKind":"无"}],"actions":[{"inputId":"","type":"other","targetId":"","postId":"","countryId":"","operation":"","resource":"","amount":0,"source":"","destination":"","edictType":"","text":""}]}。'}, {role:'user',content:JSON.stringify({persons,posts:state.court.posts.map(p=>({id:p.id,name:state.postNames?.[p.id]||p.title})),countries:state.foreign.map(f=>({id:f.id,name:f.name})),provinces:state.nation.provinces.map(p=>({id:p.id,name:p.name})),inputs})}];
+return [{role:'system',content:'你是帝王游戏的意图解析员，只输出 JSON，不写剧情、不决定成败、不返回数值效果。将每条自由输入拆成动作。type 只选 kill/appoint/dismiss/promote/imprison/war/allocate/favor/decree/other。人物、官职、外邦只用名册已有ID，找不到则 other。怀孕、生育、小产只能 other，不得解析为玩家动作。allocate.amount 用游戏单位：银为万两、粮为万石、征兵为人；中文与阿拉伯混写也须准确换算。allocate.source 为 treasury/privy/grain 或调兵来源 capital/边境方向，destination 可为对应账户、军队capital/方向、州ID或政令名称。favor.amount 限-5至5。decree.edictType 使用普通政令名称，也可格物/兴业。研究经费使用allocate，destination="tech"，amount为每月万两，techId从技艺名册选；lead为主持官员ID，可省略。兴业使用decree.edictType="兴业"，industry为产业ID，province为州ID。不拆成第二次普通拨款。自拟新发明仅在自由度free时附customName和techLine（农政/水利/工商/盐铁/海贸），techId映射最近技艺；不得自造效果。scene标记的输入是玩家尝试的情节梗概，不能把希望或NPC反应当作已成事实。people列出本场人物ID；无姓名的指代只在唯一人物时绑定，多人不明则other；地点和情感描写可other。scene内有明确的相处行为时，另给一个type:other的动作并附interaction:{kind,targetId,otherId}。kind仅选accompany陪伴、comfort安慰、apologize道歉、protect维护、humiliate羞辱、deceive欺瞒、reconcile调解、quarrel争执、cooperate合作；targetId必须在people中，后三种须明确两个不同人物，并用otherId给出另一人。闲聊不必附interaction，不生成数值，不把未发生的事当已发生。每个动作必须带原输入的inputId，保留愿望的真实意图，不增加动作。每条 :remark: 输入同时在 remarks 中返回 {inputId,remarkKind}，remarkKind 仅选嘉奖/申饬/附旨/无；识别否定，责成核查为附旨，不必嘉奖为无。嘉奖申饬已有朱批结算，不再生成重复的favor动作；实质拨款、任免等仍解析为动作。输出 {"remarks":[{"inputId":"","remarkKind":"无"}],"actions":[{"inputId":"","type":"other","targetId":"","postId":"","countryId":"","operation":"","resource":"","amount":0,"source":"","destination":"","edictType":"","text":""}]}。'}, {role:'user',content:JSON.stringify({freedom:state.settings.freedom,technologies:techNames,industries:industryNames,persons,posts:state.court.posts.map(p=>({id:p.id,name:state.postNames?.[p.id]||p.title})),countries:state.foreign.map(f=>({id:f.id,name:f.name})),provinces:state.nation.provinces.map(p=>({id:p.id,name:p.name})),inputs})}];
 }
 function validateIntents(data,state,inputs){if(!Array.isArray(data?.actions))throw new Error('口谕动作列表缺失');return normalizeIntents(state,data.actions,inputs);}
 // Offline trial parser resolves only explicit existing names; unknown wishes stay narrative.
 function localIntents(state,inputs){
 const actions=[];
 for(const input of inputs){
+const research=/研制|研究|研习|格物|发明|改良|研新/.test(input.text),industrial=/兴建|兴业|建造|设立|开设/.test(input.text)&&identifyIndustry(input.text);
+if(research){
+const known=TECHS.find(t=>input.text.includes(t.name)||t.aliases.some(a=>input.text.includes(a))),tech=known||identifyTech(state,input.text);
+if(known||state.settings.freedom==='free'){
+const number=input.text.match(new RegExp('('+NUMBER_SOURCE+')(两)'));
+actions.push({inputId:input.id,type:'allocate',destination:'tech',resource:'treasury',source:'treasury',amount:number?parseNumber(number[1])/10000:state.tech?.funding||5,techId:tech.id,...(!known?{customName:input.text.replace(/^.*?(?:研制|研究|发明|改良|研习|格物)[：:\s]*/,'').replace(/[，,。；;].*$/,'').replace(/每月.*|拨.*|花.*$/,'').trim().slice(0,40)||input.text.slice(0,40),techLine:tech.line}:{})});
+continue;
+}
+}
+if(industrial){actions.push({inputId:input.id,type:'decree',edictType:'兴业',industry:industrial,province:state.nation.provinces.find(p=>input.text.includes(p.name))?.id,text:input.text});continue;}
 const roster=[...state.court.officials,...state.harem.consorts,...state.harem.children];
 const explicit=roster.filter(o=>input.text.includes(o.name));
 const people=explicit.length?explicit:input.scene&&input.people?.length===1?roster.filter(o=>o.id===input.people[0]):[];
@@ -10827,6 +11257,7 @@ return message || "开局未完成，请重试。";
 return {createGameSeed,createOpening,openingErrorMessage};
 },
 "src/core/turn.js":function(__load){
+const {developmentNotes} = __load("src/core/tech.js");
 const {resolveScene,sceneBlock,sceneOutcomeText,rememberScene,SCENE_ENERGY} = __load("src/core/scenes.js");
 const { freedomRules, selectionYear, adjudicate } = __load("src/core/freedom.js");
 const { resolveIntents } = __load("src/core/intents.js");
@@ -10885,6 +11316,7 @@ const { issueEdict, advanceProjects, edictBlock } = __load("src/core/edicts.js")
 const { talkPeople } = __load("src/core/text.js");
 const {
 seedMemorials,
+seedDevelopmentMemorials,
 resolveMemorial,
 expireMemorials,
 eventsMonth,
@@ -11206,7 +11638,8 @@ for (const o of s.court.officials.filter(
 !o.alive && state.court.officials.find((old) => old.id === o.id)?.alive,
 ))
 notes.push(o.name + " 寿终，原职出缺");
-s = seedMemorials(s);
+notes.push(...developmentNotes(state,s));
+s = seedDevelopmentMemorials(seedMemorials(s),state);
 // A month-end sender may leave office during the same year-end settlement.
 // Before exposing new memorials, bind them to the final eligible incumbent.
 for(const m of s.memorials.filter(m=>!state.memorials.some(old=>old.id===m.id))) {
@@ -12221,6 +12654,8 @@ return s;
 return {energyLimit,settleEnergy,emperorMonth,emperorYear};
 },
 "src/core/nation.js":function(__load){
+const {researchMonth} = __load("src/core/tech.js");
+const {industriesQuarter,industryTradeFactor} = __load("src/core/industries.js");
 const { clone } = __load("src/core/state.js");
 const { clamp, applyPackage } = __load("src/core/effects.js");
 const {
@@ -12278,13 +12713,13 @@ if(reinforcement>0&&s.nation.morale>=30&&s.nation.grain>=grainBudget(s).military
 s=applyPackage(s,{treasury:-pay},'月结：京营补员付饷');
 s.nation.army.capital.troops+=reinforcement;
 }
-return s;
+return researchMonth(s);
 }
 function nationQuarter(state) {
 const rate = clamp(0.5 + state.nation.governance * 0.0045, 0.5, 0.95),
 income =
 state.nation.provinces.reduce(
-(sum, p) => sum + p.tax * (1 - p.disaster / 150) * provinceTaxFactor(p, state.turn) *
+(sum, p) => sum + p.tax * (1+(p.prosperity||0)/100) * (1 - p.disaster / 150) * provinceTaxFactor(p, state.turn) *
 (p.taxRelief && quarterIndex(state.turn)<p.taxRelief.untilQuarter?p.taxRelief.factor:1) *
 (p.taxSurge && quarterIndex(state.turn)<p.taxSurge.untilQuarter?p.taxSurge.factor:1),
 0,
@@ -12297,7 +12732,8 @@ state,
 "季结：赋税实收 " + Math.round(rate * 100) + "% 与新粮入仓",
 );
 s.stats.income += income;
-const trade=s.foreign.filter(f=>f.status!=='交战'&&f.trade&&s.turn>f.trade.start&&s.turn<=f.trade.until).reduce((n,f)=>n+f.trade.income,0);
+s=industriesQuarter(s);
+const trade=s.foreign.filter(f=>f.status!=='交战'&&f.trade&&s.turn>f.trade.start&&s.turn<=f.trade.until).reduce((n,f)=>n+f.trade.income,0)*industryTradeFactor(s);
 if(trade){s=applyPackage(s,{treasury:trade},'季结：外邦互市岁入');s.stats.income+=trade;}
 const surging=s.nation.provinces.filter(p=>p.taxSurge&&quarterIndex(s.turn)<p.taxSurge.untilQuarter);
 for(const p of surging)s=applyPackage(s,{province:{id:p.id,morale:-2}},'季结：加税失民心');
@@ -12313,7 +12749,7 @@ const spoiled=Math.max(0,s.nation.grain-grainBudget(s).storageCapacity)*0.3;
 if(spoiled)s=applyPackage(s,{grain:-spoiled},'年结：超仓陈粮霉变三成');
 s.nation.provinces = s.nation.provinces.map((p) => ({
 ...p,
-pop: Math.round(p.pop * (p.morale > 40 ? 1.002 : 0.995)),
+pop: Math.round(p.pop * ((p.morale > 40 ? 1.002 : 0.995)+(p.prosperity||0)*0.00002)),
 }));
 return s;
 }
@@ -12540,6 +12976,7 @@ g.stats.map(draw).join("") +
 );
 }
 function ledgerLabel(path) {
+if(path.startsWith('tech.'))return ({funding:'格物月经费',progress:'研究进度',elapsed:'研究月数',spent:'研究累计支银'})[path.split('.').at(-1)]||'格物变化';
 const key = path.split(".").at(-1);
 return {
 treasury: "国库",
@@ -12571,6 +13008,9 @@ readiness: "军备",
 troops: "兵力",
 pop: "人口",
 tax: "赋税",
+prosperity:"繁荣",
+level:"产业等级",
+builtTurn:"产业建成旬",
 education: "教养",
 progress: "政务进度",
 enemyTroops: "敌军兵力",
@@ -13089,6 +13529,8 @@ return turn===currentTurn?'本旬新呈':'第 '+(turn+1)+' 旬呈入';
 return {memorialAssignments,availableMemorials,memorialCounts,memorialDecisionLabel,memorialReceivedLabel};
 },
 "src/ui/view-model.js":function(__load){
+const {industryQuote} = __load("src/core/industries.js");
+const {techEffects} = __load("src/core/tech-rules.js");
 const { freedomRules, selectionYear } = __load("src/core/freedom.js");
 const { memorialDecision } = __load("src/core/memorial-decisions.js");
 const { ACTIONS, scheduleCost, validateSchedule } = __load("src/core/turn.js");
@@ -13105,7 +13547,7 @@ const ACTION_GROUPS = [
 ["内廷", ["后宫", "选妃"]],
 ["出行", ["出巡", "亲征"]],
 ];
-const HALLS = ["朝堂", "后宫", "天下", "内库", "宗室", "史馆"];
+const HALLS = ["朝堂", "后宫", "天下", "格物", "内库", "宗室", "史馆"];
 const GLYPHS = {自拟情节:"叙",上朝:"朝",批折:"批",下旨:"旨",任命:"任",召见:"见",宴请:"宴",外交:"使",私下行事:"密",后宫:"宫",选妃:"选",出巡:"行",亲征:"征",歇息:"憩"};
 function selectionDescription(s){const period=freedomRules(s).selectionPeriod;return period?'每'+period+'年大选一次；平日可花内帑三万两举荐一人，已有候选人可随时留牌。':'可随时选秀，位分名额不限。';}
 function actionAvailability(s, kind) {
@@ -13154,7 +13596,12 @@ if (!s) return {totals,executions};
 for (const a of Object.values(s.schedule).filter(Boolean)) {
 if (a.kind === "下旨" && a.text?.trim()) continue;
 if (a.kind === "下旨" && EDICTS[a.edictType]) {
-const e=EDICTS[a.edictType];
+const base=EDICTS[a.edictType],e={...base,cost:base.cost*(a.edictType==='修河'?1-(techEffects(s).riverDiscount||0):1)};
+if(a.edictType==='格物')continue;
+if(a.edictType==='兴业'){
+if(!s.projects.some(p=>!p.done&&p.edictType==='兴业'&&p.province===a.province&&p.industry===a.industry))totals.treasury-=industryQuote(s,a.province,a.industry).cost;
+continue;
+}
 if (a.edictType === "转内帑" || a.edictType === "转国库") {
 const from=a.edictType==="转内帑"?"treasury":"privy",to=from==="treasury"?"privy":"treasury",amount=Math.min(Math.max(0,Number(a.amount??10)),s.nation[from],1000000-s.nation[to]);
 totals[from]-=amount;totals[from==="treasury"?"privy":"treasury"]+=amount;
@@ -13223,6 +13670,7 @@ return "";
 return {ACTION_GROUPS,HALLS,GLYPHS,selectionDescription,actionAvailability,actionMeta,energyView,metricGroups,scheduleEstimate,REPEATABLE,repeatSchedule,delegateSchedule,DELEGATE_STOPS,delegateStop};
 },
 "src/ui/memorials.js":function(__load){
+const {developmentChoiceBlock} = __load("src/core/development-choices.js");
 const { TEXT_LIMITS } = __load("src/core/text.js");
 const { memorialParagraphHTML, memorialAuthor, memorialSignature } = __load("src/ui/memorial-document.js");
 const { freedomRules } = __load("src/core/freedom.js");
@@ -13450,7 +13898,7 @@ faction.demand +
 }
 function memorialOptions(s, m) {
 const options = m.options.map((o) => ({ ...o,
-disabled: !!campaignChoiceBlock(s,m,o)||["treasury", "privy", "grain"].some(k => (s.nation[k] || 0) < -(o.effects?.[k] || 0))
+disabled: !!campaignChoiceBlock(s,m,o)||!!developmentChoiceBlock(s,o)||["treasury", "privy", "grain"].some(k => (s.nation[k] || 0) < -(o.effects?.[k] || 0))
 }));
 if (!options.some((o) => o.id === "hold"))
 options.push({ id: "hold", label: "留中", effects: {} });
@@ -14154,11 +14602,12 @@ return images;
 return {wrapMemorialText,memorialImageLayout,createMemorialImages};
 },
 "src/ui/actions.js":function(__load){
+const {researchFields,industryFields,developmentAction,updateDevelopmentPreview} = __load("src/ui/technology.js");
 const {sceneActionFields,sceneActionLabel} = __load("src/ui/scene-view.js");
 const { postTitle } = __load("src/core/scenarios.js");
 const { $, esc, openDialog, toast, closeDialog } = __load("src/ui/common.js");
 const { ACTIONS, scheduleCost } = __load("src/core/turn.js");
-const { EDICTS, execution } = __load("src/core/edicts.js");
+const { EDICTS, execution,edictCost } = __load("src/core/edicts.js");
 const { inCapital } = __load("src/core/court.js");
 const { edictBlock } = __load("src/core/edicts.js");
 const { energyLimit } = __load("src/core/emperor.js");
@@ -14189,11 +14638,12 @@ fields =
 Object.keys(EDICTS)
 .map((x) => "<option>" + x + "</option>")
 .join("") +
-'</select><label for="province">主办州郡</label><select id="province">' +
+'</select><div id="edict-province-field"><label for="province">主办州郡</label><select id="province">' +
 '<option value="">全国</option>' + opt(s.nation.provinces) +
-'</select><div id="edict-army-field"><label for="edict-army">补充军队</label><select id="edict-army"><option value="capital">京营</option>'+s.nation.army.frontiers.map(b=>'<option value="'+esc(b.dir)+'">'+esc(b.dir)+'境边军</option>').join('')+'</select></div><div id="edict-amount-field"><label for="edict-amount">拨转金额（万两）</label><input id="edict-amount" type="number" min="0.01" step="any" value="10"></div><div id="edict-child-field"><label for="edict-child">储君人选</label><select id="edict-child"><option value="">请选择在世皇子</option>' +
+'</select></div><div id="edict-army-field"><label for="edict-army">补充军队</label><select id="edict-army"><option value="capital">京营</option>'+s.nation.army.frontiers.map(b=>'<option value="'+esc(b.dir)+'">'+esc(b.dir)+'境边军</option>').join('')+'</select></div><div id="edict-amount-field"><label for="edict-amount">拨转金额（万两）</label><input id="edict-amount" type="number" min="0.01" step="any" value="10"></div><div id="edict-child-field"><label for="edict-child">储君人选</label><select id="edict-child"><option value="">请选择在世皇子</option>' +
 opt(s.harem.children.filter((c) => c.sex === "男" && c.health > 0)) +
-'</select></div><div id="edict-followup-field"><label for="edict-followup">同一事项尚未办结时</label><select id="edict-followup"><option value="重申">重申原旨，不另花钱</option><option value="督办">追加督办，再付一份钱粮，缩短工期、改善执行</option></select></div><label for="edict-text">御旨（选填）</label><textarea id="edict-text" maxlength="8000" placeholder="着有司依议施行。"></textarea><label class="check"><input id="force-edict" type="checkbox">遭封驳仍强推（可能引发党争）</label>';
+'</select></div><div id="edict-followup-field"><label for="edict-followup">同一事项尚未办结时</label><select id="edict-followup"><option value="重申">重申原旨，不另花钱</option><option value="督办">追加督办，再付一份钱粮，缩短工期、改善执行</option></select></div><div id="edict-text-field"><label for="edict-text">御旨（选填）</label><textarea id="edict-text" maxlength="8000" placeholder="着有司依议施行。"></textarea></div><label id="force-edict-field" class="check"><input id="force-edict" type="checkbox">遭封驳仍强推（可能引发党争）</label>';
+if(kind==='下旨')fields+='<div id="research-fields">'+researchFields(s)+'</div><div id="industry-fields">'+industryFields(s)+'</div>';
 if (kind === "任命")
 fields =
 '<label for="post">官职</label><select id="post">' +
@@ -14322,7 +14772,7 @@ scheduleCost(s.schedule) +
 energyLimit(s);
 if (kind === "下旨") {
 const type = $("#edict-type").value,
-e = EDICTS[type],
+e = {...EDICTS[type],cost:edictCost(s,type)},
 x = execution(s, type, 11);
 text +=
 "；" +
@@ -14340,6 +14790,8 @@ const type=$('#edict-type').value,province=$('#province').value||null;
 const ongoing=s.projects.find(p=>!p.done&&p.edictType===type&&(p.province||null)===province&&(type!=='征兵'||p.armyTarget===$('#edict-army').value));
 if(['转内帑','转国库'].includes(type))text='按实际余银拨转，超过余额或收款余量时只拨可用部分。';
 else if(ongoing)text=$('#edict-followup').value==='督办'?'追加一份钱粮，催办原来的事项；不会再另开一项。':'重申原旨，不另支钱粮，仍按原来的进度办理。';
+if(type==='格物')text='格物月经费 '+$('#research-funding').value+' 万两，月结按余银拨付；安排后起驾生效。';
+if(type==='兴业'){updateDevelopmentPreview($('#action-form'),s);text=$('#industry-quote').textContent;}
 const blocked=edictBlock(s,$('#edict-type').value,$('#province').value||null);if(blocked)text+='；'+blocked;}
 if(kind==='外交'){
 const country=s.foreign.find(f=>f.id===$('#country').value),operation=$('#operation');
@@ -14359,6 +14811,10 @@ if(kind==='选妃'&&$('#selection-operation')?.value==='举荐')text+='；查验
 if(kind==='外交'&&$('#operation')?.value==='互市')text+='；可重新议约，议成后替换原约，未成仍照旧约往来。';
 $("#action-estimate").textContent = text;
 const show=(id,visible)=>$("#"+id)?.classList.toggle("hidden",!visible);
+const development=['格物','兴业'].includes($('#edict-type')?.value);
+for(const id of ['edict-province-field','edict-followup-field','edict-text-field','force-edict-field'])show(id,!development);
+show('research-fields',$('#edict-type')?.value==='格物');
+show('industry-fields',$('#edict-type')?.value==='兴业');
 show("edict-amount-field",["转内帑","转国库"].includes($("#edict-type")?.value));
 show("edict-child-field",$("#edict-type")?.value==="立储");
 show('edict-army-field',$('#edict-type')?.value==='征兵');
@@ -14375,14 +14831,16 @@ const person=s.court.officials.find(o=>o.id===$('#person')?.value)||s.harem.cons
 let html='<div class="eyebrow">'+kind+' · 待定</div><h3>'+esc(person?.name||$('#edict-type')?.value||kind)+'</h3>';
 if(person)html+='<p>'+esc(person.family||person.personality||postTitle(s,s.court.posts.find(p=>p.holder===person.id))||person.status||'御前候命')+'</p><p>'+esc(person.age?person.age+' 岁':'')+(person.favor!==undefined?' · 好感 '+person.favor:'')+'</p>';
 if(kind==='下旨'){
-const r=EDICTS[$('#edict-type').value];
-html+='<p>主办　'+r.office+'</p><p>每次新办或追加督办需 '+r.cost+' 万两'+(r.grain?'、'+r.grain+' 万石':'')+'，预计 '+r.months+' 个月。</p><p>预计成算「'+execution(s,$('#edict-type').value,11).label+'」</p>';
+const r={...EDICTS[$('#edict-type').value],cost:edictCost(s,$('#edict-type').value)};
+if(['格物','兴业'].includes($('#edict-type').value))html+='<p>先定方向与经费，起驾后发往有司。</p>';
+else html+='<p>主办　'+r.office+'</p><p>每次新办或追加督办需 '+r.cost+' 万两'+(r.grain?'、'+r.grain+' 万石':'')+'，预计 '+r.months+' 个月。</p><p>预计成算「'+execution(s,$('#edict-type').value,11).label+'」</p>';
 }
 html+='<p class="muted action-preview-note">'+({自拟情节:'写下想经历的事情，人物会有自己的回应。',召见:'候见之人已至殿外。',宴请:'择宾客，定酒席。',后宫:'宫中诸事，待陛下裁定。',任命:'官职与人选，均在此列。',外交:'先定来往之国，再议国书。',选妃:'大选有定期，平日也可举荐；候选人须年满十八。',出巡:'出行占满一旬，奏报仍会呈来。',亲征:'御驾亲征，须留一臣守京。',私下行事:'择一人，定所行之事。',下旨:'旨意发至有司，须待回奏。'}[kind]||'安排时辰后，放入本旬日程。')+'</p>';
 $('#action-document').innerHTML=html;
 };
 paper();
 $("#action-form").onchange = ()=>{estimate();paper();};
+$("#action-form").oninput=()=>updateDevelopmentPreview($('#action-form'),s);
 $("#action-form").onsubmit = (e) => {
 e.preventDefault();
 try {
@@ -14403,6 +14861,7 @@ child: val("edict-child"),
 text: val("edict-text"),
 force: $("#force-edict").checked,
 });
+if(kind==='下旨'&&['格物','兴业'].includes(val('edict-type')))Object.assign(a,developmentAction($('#action-form'),val('edict-type')));
 if(kind==='下旨'&&val('edict-followup')==='督办')a.followup='督办';
 if (kind === "任命")
 Object.assign(a, {
@@ -14469,6 +14928,8 @@ toast(error.message);
 return {actionDialog};
 },
 "src/ui/panels.js":function(__load){
+const {technologyHTML} = __load("src/ui/technology.js");
+const {INDUSTRIES} = __load("src/core/tech-rules.js");
 const {memoryButton,relationName} = __load("src/ui/memories.js");
 const { postTitle } = __load("src/core/scenarios.js");
 const { selectionDescription } = __load("src/ui/view-model.js");
@@ -14484,6 +14945,7 @@ return;
 const official = (id) =>
 s.court.officials.find((o) => o.id === id)?.name || "空缺";
 let html = "";
+if(name==='格物')html=technologyHTML(s);
 if (name === "朝堂") {
 const total = s.court.factions.reduce((a, f) => a + f.power, 0);
 let angle = 0;
@@ -14660,7 +15122,9 @@ num(z.disaster) +
 num(z.pop) +
 " 万 · 驻军 " +
 num(z.garrison) +
-"<br>巡抚 " +
+'<br>繁荣 '+num(z.prosperity||0)+'<br>产业 '+
+esc((z.industries||[]).map(i=>INDUSTRIES[i.type].name+' '+i.level+'级'+(i.paused?'（'+i.paused+'）':'')).join('、')||'暂无')+
+'<br><button data-industry-province="'+z.id+'">兴办产业</button>'+"<br>巡抚 " +
 esc(official(z.governor)) +
 "</small></div>",
 )
@@ -14730,7 +15194,7 @@ s.projects
 .map(
 (p) =>
 '<div class="card"><h3>' +
-esc(p.edictType) +
+esc(p.edictType==='兴业'?(p.name||p.edictType):p.edictType) +
 " · " +
 (p.done ? "已结" : "在途") +
 "</h3><p>" +
@@ -14742,7 +15206,7 @@ p.cost +
 ' 万两</p><progress value="' +
 p.progress +
 '" max="100" aria-label="' +
-esc(p.edictType) +
+esc(p.edictType==='兴业'?(p.name||p.edictType):p.edictType) +
 '进度"></progress></div>',
 ),
 );
@@ -15372,6 +15836,7 @@ function sameEnvelope(a,b){return JSON.stringify(envelopeIdentity(a))===JSON.str
 return {storedLayout,recoveryState,envelopeIdentity,sameEnvelope};
 },
 "src/ui/nation-overview.js":function(__load){
+const {INDUSTRIES} = __load("src/core/tech-rules.js");
 const { esc, gameText, openDialog } = __load("src/ui/common.js");
 const { campaignsHTML, treatyHTML } = __load("src/ui/campaigns.js");
 const { metricGroups } = __load("src/ui/view-model.js");
@@ -15417,7 +15882,7 @@ const top='<p class="nation-dateline">'+esc(s.dynasty+' · '+dates+' · '+s.empe
 esc((FREEDOM_RULES[s.settings.freedom]||FREEDOM_RULES.mid).label)+' · 施政：'+esc((DIFFICULTIES[s.settings.difficulty]||DIFFICULTIES.normal).label)+'</p>'+cards+
 '<div class="nation-alerts">'+(d.alerts.length?d.alerts.map(a=>'<span>'+esc(a)+'</span>').join(''):'<span class="nation-calm">暂无紧急钱粮与边务警报</span>')+'</div>';
 const budget=figures([
-['每月俸禄',number(d.monthly.salaries),'万两'],['每月军饷',number(d.monthly.armyPay),'万两'],
+['格物月经费',number(s.tech?.current?s.tech.funding:0),'万两'],['每月俸禄',number(d.monthly.salaries),'万两'],['每月军饷',number(d.monthly.armyPay),'万两'],
 ['现银可付固定俸饷',number(d.months),'月'],['国库积欠',number(s.nation.arrears),'万两'],
 ['内帑积欠',number(s.nation.privyArrears),'万两'],['缺粮积欠',number(s.nation.grainArrears),'万石'],
 ['每月军粮',number(d.grain.military),'万石'],['每月赈济用粮',number(d.grain.relief),'万石'],
@@ -15429,8 +15894,8 @@ const budget=figures([
 const charts='<div class="nation-charts">'+[['nation.treasury','国库'],['nation.morale','民心'],['nation.governance','吏治'],['emperor.prestige','皇威']].map(([path,label])=>
 '<article><h4>'+label+'</h4>'+nationSparkline(nationSeries(s,path,span),label)+'</article>').join('')+'</div>';
 const period='<div class="nation-period" role="group" aria-label="查看时段">'+[3,12,36].map(n=>'<button data-nation-period="'+n+'" aria-pressed="'+(n===span)+'">近'+n+'旬</button>').join('')+'</div>';
-const provinces=table(['州郡','人口 / 万人','月税额 / 万两','民心','灾情','驻军 / 人','主官'],d.provinces.map(p=>
-[p.name,number(p.pop),number(p.tax),number(p.morale),number(p.disaster)+(p.rebellion?' · 民变':''),number(p.garrison),p.governor]));
+const provinces=table(['州郡','人口 / 万人','月税额 / 万两','民心','灾情','繁荣','产业','驻军 / 人','主官'],d.provinces.map(p=>
+[p.name,number(p.pop),number(p.tax),number(p.morale),number(p.disaster)+(p.rebellion?' · 民变':''),number(p.prosperity||0),(p.industries||[]).map(i=>INDUSTRIES[i.type].name+i.level+'级'+(i.paused?'（停产）':'')).join('、')||'暂无',number(p.garrison),p.governor]));
 const armies=table(['军镇','兵员 / 人','战备','边患','主将'],d.armies.map(b=>[b.name,number(b.troops),number(b.readiness),b.threat===undefined?'—':number(b.threat),b.commander]));
 const factions=figures([['在任职位',d.serving],['空缺职位',d.vacancies],['已批奏折',s.stats.petitions],['已颁圣旨',s.stats.edicts]])+
 table(['派系','势力','态度','在任席位'],d.factions.map(f=>[f.name,number(f.power),number(f.attitude),f.posts]));

@@ -1,3 +1,6 @@
+import {industryForm,developmentAction,updateDevelopmentPreview} from './technology.js';
+import {configureResearch} from '../core/tech.js';
+import {buildIndustry} from '../core/industries.js';
 import {openNPCMemory} from './memories.js';
 import {forecastScene,commitScene,latestScene,sceneInput,sceneOutcomeText,sceneBudget} from '../core/scenes.js';
 import {sceneMessages,mockSceneNarrative} from '../llm/scenes.js';
@@ -697,6 +700,8 @@ async function oral(text) {
       Object.keys(ACTIONS).find((k) => text.startsWith(k)) ||
       (/试探|离间|暗查|收买|闲谈/.test(text) ? "私下行事" : "下旨"),
     type = Object.keys({
+      格物:1,
+      兴业:1,
       赈灾: 1,
       减赋: 1,
       加税: 1,
@@ -711,6 +716,8 @@ async function oral(text) {
       禅位: 1,
     }).find((t) => text.includes(t));
   if (/赈济|救灾/.test(text)) type = "赈灾";
+  if(/研制|研究|研习|格物|发明|改良|研新/.test(text))type='格物';
+  else if(/兴业|兴建|建造|开设|设立/.test(text))type='兴业';
   if (!type && !state.settings.demo) {
     busy = true;
     render();
@@ -913,9 +920,9 @@ async function command(name) {
   }
   if (name === "palaces") {
     openDialog(
-      "六殿",
+      "殿阁",
       '<div class="grid">' +
-        ["朝堂", "后宫", "天下", "内库", "宗室", "史馆"]
+        ["朝堂", "后宫", "天下", "格物", "内库", "宗室", "史馆"]
           .map((p) => '<button data-panel="' + p + '">' + p + "</button>")
           .join("") +
         "</div>",
@@ -953,7 +960,8 @@ document.addEventListener("click", async (e) => {
   try {
     if (b.dataset.command) await command(b.dataset.command);
     else if (b.dataset.action) chooseAction(b.dataset.action);
-    else if (b.dataset.panel) palacePanel(state, b.dataset.panel);
+    else if (b.dataset.panel){palacePanel(state,b.dataset.panel);if(state&&b.dataset.panel==='格物')updateDevelopmentPreview($('#modal'),state);}
+    else if(b.dataset.industryProvince){guard();openDialog('兴业营建',industryForm(state,b.dataset.industryProvince));updateDevelopmentPreview($('#modal'),state);}
     else if (b.dataset.slot) {
       guard();
       preferred = b.dataset.slot;
@@ -1104,6 +1112,17 @@ document.addEventListener("click", async (e) => {
   }
 });
 document.addEventListener("submit", (e) => {
+  if(['research-plan','industry-plan'].includes(e.target.id)){
+    e.preventDefault();
+    try{
+      guard();const a=developmentAction(e.target,e.target.id==='research-plan'?'格物':'兴业'),which=e.target.querySelector('[name="development-slot"]').value;
+      if(!which||state.schedule[which])throw new Error('该时段已有安排，请先撤下原行动');
+      if(a.edictType==='格物')configureResearch(state,a);else buildIndustry(state,a);
+      arrange(which,a);closeDialog();
+    }catch(error){toast(error.message);}
+    return;
+  }
+
   if (e.target.id === "oral-form") {
     e.preventDefault();
     oral($("#oral").value.trim()).catch((err) => toast(err.message));
@@ -1144,4 +1163,11 @@ async function boot() {
 boot().catch((error) => {
   toast(error.message);
   render();
+});
+
+document.addEventListener('input',event=>{
+ if(state&&event.target.closest('#research-plan,#industry-plan'))updateDevelopmentPreview(event.target.closest('form'),state);
+});
+document.addEventListener('change',event=>{
+ if(state&&event.target.closest('#research-plan,#industry-plan'))updateDevelopmentPreview(event.target.closest('form'),state);
 });

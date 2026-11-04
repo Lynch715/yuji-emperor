@@ -1,3 +1,5 @@
+import {configureResearch} from './tech.js';
+import {techById,identifyTech,identifyIndustry} from './tech-rules.js';
 import {normalizeSocial,favorRecords} from './social-rules.js';
 import { TEXT_LIMITS } from './text.js';
 import { adjudicate } from "./freedom.js";
@@ -31,12 +33,28 @@ export function normalizeIntents(state,actions,inputs){
    a.resource=['treasury','privy','grain','troops'].includes(raw.resource)?raw.resource:'treasury';
    a.amount=Number.isFinite(raw.amount)?Math.max(0,raw.amount):0;
    a.source=a.resource==='grain'?'grain':(['treasury','privy',...(a.resource==='troops'?['capital',...state.nation.army.frontiers.map(b=>b.dir)]:[])].includes(raw.source)?raw.source:'treasury');
-   a.destination=state.court.posts.find(p=>p.id===raw.destination)?.id||state.nation.provinces.find(p=>p.id===raw.destination)?.id||(['privy','treasury','grain','capital',...state.nation.army.frontiers.map(b=>b.dir),...Object.keys(EDICTS)].includes(raw.destination)?raw.destination:'政务');
+   a.destination=state.court.posts.find(p=>p.id===raw.destination)?.id||state.nation.provinces.find(p=>p.id===raw.destination)?.id||(['privy','treasury','grain','capital',...state.nation.army.frontiers.map(b=>b.dir),...Object.keys(EDICTS),'tech'].includes(raw.destination)?raw.destination:'政务');
+  }
+  if(type==='allocate'&&a.destination==='tech'||type==='decree'&&['格物','兴业'].includes(raw.edictType)){
+   const custom=state.settings.freedom==='free'&&typeof raw.customName==='string'&&raw.customName.trim();
+   const tech=techById(raw.techId)||identifyTech(state,input.text,raw.techLine);
+   if(tech)a.techId=tech.id;
+   if(custom)a.name=raw.customName.slice(0,40);
+   if(raw.techLine)a.line=raw.techLine;
+   a.funding=Number.isFinite(raw.funding)?Math.max(0,raw.funding):a.amount??state.tech?.funding??0;
+   const lead=state.court.officials.find(o=>o.id===raw.lead||o.name===raw.lead);if(lead)a.lead=lead.id;
+   a.industry=identifyIndustry(String(raw.industry||input.text));
+   a.province=state.nation.provinces.find(p=>p.id===raw.province||input.text.includes(p.name))?.id||null;
   }
   if(type==='favor'){a.requestedAmount=raw.amount;a.amount=Number.isFinite(raw.amount)?Math.max(-5,Math.min(5,raw.amount)):0;}
-  if(type==='decree'){if(!EDICTS[raw.edictType])return {...a,type:'other',text:'拟议：'+a.text,reason:'普通叙事口谕'};a.edictType=raw.edictType;a.province=state.nation.provinces.find(p=>p.id===raw.province)?.id||null;}
+  if(type==='decree'){if(!EDICTS[raw.edictType])return {...a,type:'other',text:'拟议：'+a.text,reason:'普通叙事口谕'};a.edictType=raw.edictType;a.province=state.nation.provinces.find(p=>p.id===raw.province)?.id||a.province||null;}
   return a;
  });
+}
+export function intentActionKey(a){
+ const keys=['type','targetId','postId','countryId','operation','resource','amount','source','destination','edictType','province'];
+ if(a.destination==='tech'||['格物','兴业'].includes(a.edictType))keys.push('techId','funding','lead','industry','name','line');
+ return JSON.stringify(keys.map(k=>a[k]??null));
 }
 function killPerson(s,id){
  const o=s.court.officials.find(o=>o.id===id);
@@ -76,6 +94,9 @@ export function resolveIntents(state,actions,{slot='朝',source='decree',transfe
      const done=operation==='appoint'?s.court.posts.find(p=>p.id===post.id)?.holder===target.id:!s.court.posts.find(p=>p.holder===target.id);
      if(!done)r.status='failed';
      else{r.actual={targetId:target.id,postId:post.id};facts.push({kind:'appointment',actors:[actor],operation:operation==='jail'?'下狱':operation==='remove'?'罢免':'任命',post:post.title});}
+    }else if(a.type==='allocate'&&a.destination==='tech'){
+     const result=configureResearch(s,{techId:a.techId,name:a.name,line:a.line,funding:a.funding??a.amount,lead:a.lead});s=result.state;
+     r.actual={destination:'tech',techId:s.tech.current?.id,funding:s.tech.funding};r.summary=result.note;facts.push({kind:'research_plan',...r.actual});
     }else if(a.type==='allocate'){
      const room=['treasury','privy','grain'].includes(a.destination)&&a.destination!==a.source?Math.max(0,1000000-s.nation[a.destination]):1000000;
      const origin=a.source==='capital'?s.nation.army.capital:s.nation.army.frontiers.find(b=>b.dir===a.source);
@@ -109,7 +130,7 @@ export function resolveIntents(state,actions,{slot='朝',source='decree',transfe
      else{const operation=a.operation==='出兵'?'宣战':a.operation;const result=diplomacy(s,{country:country.id,operation,confirmBreach:true,intent:true},die.value);s=result.state;r.summary=result.note;if(result.check?.partial||result.partial||result.execution?.partial){r.status='partial';r.cost=result.check?.cost||result.cost||result.execution?.cost;}const done=operation==='议和'?s.foreign.find(f=>f.id===country.id).status!=='交战':true;if(!done)r.status='failed';else facts.push({kind:'war',actors:[country.name],outcome:operation});}
      r.actual={countryId:country.id,operation:a.operation};
     }else if(a.type==='decree'){
-     const result=issueEdict(s,{edictType:a.edictType,province:a.province,intent:true},die.value);s=result.state;r.summary=result.note;if(result.check?.partial||result.partial||result.execution?.partial){r.status='partial';r.cost=result.check?.cost||result.cost||result.execution?.cost;}r.actual={edictType:a.edictType};
+     const result=issueEdict(s,{edictType:a.edictType,province:a.province,techId:a.techId,funding:a.funding,lead:a.lead,industry:a.industry,name:a.name,line:a.line,intent:true},die.value);s=result.state;r.summary=result.note;if(result.check?.partial||result.partial||result.execution?.partial){r.status='partial';r.cost=result.check?.cost||result.cost||result.execution?.cost;}r.actual={edictType:a.edictType};
      const label=result.note.match(/雷厉风行|照办|敷衍|阳奉阴违|封驳/)?.[0];if(label)facts.push({kind:'execution',slot:r.slot,topic:a.edictType,label});if(label==='封驳')r.status='failed';
     }
    }catch(error){r.status='failed';r.summary='口谕未能落实：'+error.message;}
@@ -121,7 +142,7 @@ export function resolveIntents(state,actions,{slot='朝',source='decree',transfe
 
 export function resolveTalkIntents(state,result,actions){
  if(!actions.some(a=>a.type!=='other'))return {state,result};
- const key=a=>JSON.stringify(['type','targetId','postId','countryId','operation','resource','amount','source','destination','edictType','province'].map(k=>a[k]??null));
+ const key=intentActionKey;
  const previous=state.talks.filter(t=>t.turn===state.turn&&t.person===result.person&&t.id!==result.id).flatMap(t=>t.intentResults||[]);
  const reused=new Map(),fresh=actions.filter(a=>{
   const prior=a.type!=='other'&&!/再拨|再赏|追加|另拨|另赏|再给/.test(a.text)&&previous.find(r=>r.actionKey===key(a));
