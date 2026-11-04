@@ -101,6 +101,8 @@ export function turnFacts(before, after, schedule, slotResults) {
     if (!old) facts.push({ kind: "war", actors: [country], outcome: "宣战" });
     if (w.done && !old?.done)
       facts.push({ kind: "war", actors: [country], outcome: w.result });
+    if(w.settlement?.status==='signed'&&old?.settlement?.status!=='signed')
+      facts.push({kind:'war',actors:[country],outcome:'议约：'+w.settlement.label});
   }
   for (const t of after.threads)
     if (t.type === "边警" && !before.threads.some((o) => o.id === t.id))

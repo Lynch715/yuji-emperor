@@ -7,6 +7,7 @@ import { edictBlock } from "../core/edicts.js";
 import { energyLimit } from "../core/emperor.js";
 import { memorialDialog } from "./memorials.js";
 import { selectionDescription } from "./view-model.js";
+import { WAR_GOALS, treatyProtected } from '../core/campaign-rules.js';
 export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
   if (kind === "上朝" || kind === "批折") return memorialDialog(s,kind,preferred,onSchedule,null,{newBatch:true});
   if(s.regency&&!["批折","召见","私下行事","歇息"].includes(kind))throw new Error("摄政期间只能批折、召见、经筵或歇息");
@@ -87,7 +88,11 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
         .join("") +
       '</select><label for="envoy">正使</label><select id="envoy">' +
       opt(s.court.officials.filter((o) => o.alive)) +
-      '</select><div id="bride-field"><label for="bride">和亲人选</label><select id="bride"><option value="">请选择成年未婚宗室女</option>' +
+      '</select><div id="war-goal-field"><label for="war-goal">战争目标</label><select id="war-goal">'+
+      Object.entries(WAR_GOALS).map(([id,g])=>'<option value="'+id+'">'+esc(g.label)+'</option>').join('')+
+      '</select><p id="war-goal-hint" class="muted"></p><label for="war-province">筹粮州</label><select id="war-province">'+
+      opt(s.nation.provinces)+'</select><p class="muted">若在战中向地方征粮，将由此州承担。</p></div>'+
+      '<div id="bride-field"><label for="bride">和亲人选</label><select id="bride"><option value="">请选择成年未婚宗室女</option>' +
       opt([
         ...(s.harem.royalWomen || []).filter((w) => w.age >= 18 && !w.married),
         ...s.harem.children.filter(
@@ -174,11 +179,15 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
     if(kind==='下旨'){const blocked=edictBlock(s,$('#edict-type').value,$('#province').value||null);if(blocked)text+='；'+blocked;}
     if(kind==='外交'){
       const country=s.foreign.find(f=>f.id===$('#country').value),operation=$('#operation');
-      for(const option of operation.options)option.disabled=country.status==='交战'&&!['接见','议和'].includes(option.value);
+      for(const option of operation.options)option.disabled=country.status==='交战'&&!['接见','议和'].includes(option.value)||country.status==='停战待议'&&option.value!=='接见';
       if(operation.selectedOptions[0]?.disabled)operation.value='接见';
       const key=country.id+':'+operation.value;
       if(key!==breachTarget){$('#confirm-breach').checked=false;breachTarget=key;}
       text+='；'+country.frontier+'境 · '+country.status;
+      const goal=WAR_GOALS[$('#war-goal').value];
+      $('#war-goal-hint').textContent=goal.note+' 备军需银'+goal.silver+'万两、粮'+goal.grain+'万石；预计敌兵'+goal.enemy+'人，最长'+goal.rounds+'旬，行营钱粮另支。';
+      if(operation.value==='宣战')text+='；备军银'+goal.silver+'万两、粮'+goal.grain+'万石';
+      if(country.status==='停战待议')text+='；请先批复战后议约奏报';
     }
     if(kind==='下旨'&&$('#edict-text')?.value.trim())text='精力 '+rule.energy+'；御旨已拟，起驾后可查看办理结果与支出。';
     $("#action-estimate").textContent = text;
@@ -186,7 +195,9 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
     show("edict-amount-field",["转内帑","转国库"].includes($("#edict-type")?.value));
     show("edict-child-field",$("#edict-type")?.value==="立储");
     show('edict-army-field',$('#edict-type')?.value==='征兵');
-    show("breach-field",kind==="外交"&&$("#operation")?.value==="宣战"&&["婚盟","朝贡"].includes(s.foreign.find(f=>f.id===$("#country")?.value)?.status));
+    show('war-goal-field',kind==='外交'&&$('#operation')?.value==='宣战');
+    const other=s.foreign.find(f=>f.id===$('#country')?.value);
+    show("breach-field",kind==="外交"&&$("#operation")?.value==="宣战"&&(["婚盟","朝贡"].includes(other?.status)||treatyProtected(other,s.turn)));
     show("bride-field",$("#operation")?.value==="和亲");
     show("harem-amount-field",$("#operation")?.value==="赏赐");
   };
@@ -248,6 +259,7 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
           bride: val("bride"),
         });
       if(kind==="外交"&&$("#confirm-breach")?.checked)a.confirmBreach=true;
+      if(kind==='外交'&&val('operation')==='宣战')Object.assign(a,{warGoal:val('war-goal'),levyProvince:val('war-province')});
       if (kind === "后宫")
         Object.assign(a, {
           person: val("person"),

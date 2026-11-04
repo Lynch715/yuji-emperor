@@ -13,6 +13,7 @@ export function collectMemorialReviews(state, forecast) {
       const chosen = m.options.find(o => o.id === d.option) ||
         m.options.find(o => o.id === (d.option === 'reject' ? 'opt1' : 'opt0'));
       const labels = {hold:'留中', discuss:'发部再议', remark:'只作朱批'};
+      const canceled=forecast.canceledMemorials?.includes(id);
       records.push({
         id: forecast.turnId + ':' + slot + ':' + id,
         memorialId: id, turn: forecast.state.turn, slot,
@@ -20,8 +21,8 @@ export function collectMemorialReviews(state, forecast) {
         era: structuredClone(state.era), title: m.title,
         from: m.from || '通政司', type: m.type || '政务',
         text: typeof m.text === 'string' && m.text ? m.text : String(m.request || ''),
-        decision: labels[d.option] || chosen?.label || d.option,
-        consequence: labels[d.option] ? '' : chosen?.consequence || '',
+        decision: canceled?'战局已变，原拟军令收回':labels[d.option] || chosen?.label || d.option,
+        consequence: canceled?'原拟处置未再执行，口谕办理结果见本旬起居注。':labels[d.option] ? '' : chosen?.consequence || '',
         remark: d.remark,
       });
     }

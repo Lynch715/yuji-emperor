@@ -1,4 +1,5 @@
 import { esc, gameText, openDialog } from './common.js';
+import { campaignsHTML, treatyHTML } from './campaigns.js';
 import { metricGroups } from './view-model.js';
 import { nationData, nationFlow, nationSeries } from './nation-data.js';
 import { FREEDOM_RULES } from '../core/freedom.js';
@@ -71,7 +72,9 @@ export function nationOverviewHTML(s,span=12,expanded=false) {
     section('近旬走势',period+charts,'只绘已有的连续旬次记录，纵轴按本段最低、最高值显示。')+
     section('钱粮来去',flowHTML(s,span,expanded),'近'+span+'旬及本旬已办事项，包含库间调拨；同一事项合并展示净变化。')+
     section('各州民情',figures([['总人口',number(d.population),'万人'],['有灾州郡',d.disaster],['州郡总数',d.provinces.length]])+provinces,'月税额是各州原定税额，季结实收还受吏治、灾情、减赋和民变影响。')+
-    section('京营与四境',armies)+section('朝堂各派',factions)+section('外邦往来',foreign)+section('在途政务',projects)+section('当前战事',wars)+section('圣躬与储位',palace);
+    section('京营与四境',armies)+section('朝堂各派',factions)+section('外邦往来',foreign)+section('在途政务',projects)+section('当前战事',wars)+
+    section('战役与议约',campaignsHTML(s)+s.foreign.filter(f=>f.treaty).map(f=>'<h4>'+esc(f.name)+'</h4>'+treatyHTML(s,f)).join(''))+
+    section('圣躬与储位',palace);
 }
 export function openNationOverview(state) {
   let span=12,expanded=false;

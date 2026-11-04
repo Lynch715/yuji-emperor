@@ -7,6 +7,7 @@ import { EDICTS, execution } from "../core/edicts.js";
 import { globalYear } from "../core/calendar.js";
 import { availableMemorials } from "./memorial-state.js";
 import { cabinetDraft } from "../core/court.js";
+import { WAR_GOALS } from '../core/campaign-rules.js';
 export const ACTION_GROUPS = [
   ["朝政", ["上朝", "批折", "下旨", "任命"]],
   ["人事", ["召见", "宴请", "外交", "私下行事"]],
@@ -29,7 +30,7 @@ export function actionAvailability(s, kind) {
   }
   if (kind === "亲征" && !s.campaigns.some(w=>!w.done)) return "无战事";
   if (kind === "选妃" && (!selectionYear(s) || !s.harem.candidates.length)) return "非选秀年";
-  if (s.campaigns.some(w=>w.personal&&!w.done) && !["亲征","歇息"].includes(kind)) return "御驾在外";
+  if (s.campaigns.some(w=>w.personal&&!w.done) && !["亲征","歇息"].includes(kind)&&kind!=='批折') return "御驾在外";
   return "";
 }
 export function actionMeta(kind, s = null) {
@@ -83,7 +84,7 @@ export function scheduleEstimate(s) {
     if(a.kind==="出巡")totals.privy-=6;
     if(a.kind==="私下行事"&&a.operation==="收买")totals.privy-=5;
     if(a.kind==="后宫"&&a.operation==="赏赐")totals.privy-=Number(a.amount)||2;
-    if(a.kind==="外交"&&a.operation==="宣战"){totals.treasury-=25;totals.grain-=30;}
+    if(a.kind==="外交"&&a.operation==="宣战"){const goal=WAR_GOALS[a.warGoal||'repel'];totals.treasury-=goal?.silver||25;totals.grain-=goal?.grain||30;}
     if(a.kind==="外交"&&a.operation==="和亲")totals.privy-=10;
   }
   return {totals,executions};

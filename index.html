@@ -1687,6 +1687,15 @@ color:var(--text-muted);
 .goal-conditions p{
 margin:8px 0;
 }
+.treaty-note{
+border-left:2px solid var(--gold);
+padding:8px 12px;
+margin-top:12px;
+overflow-wrap:anywhere;
+}
+.campaign-card p{
+overflow-wrap:anywhere;
+}
 .paper .goal-conditions summary,
 .scroll .goal-conditions summary{
 color:var(--ink-muted);
@@ -4108,11 +4117,12 @@ return {clamp,populationMorale,diminishing,applyEffects,applyPackage,growTalent}
 const { normalizeMemorialAction } = __load("src/core/memorial-decisions.js");
 const { validateMemorialReviews } = __load("src/core/memorial-records.js");
 const { validateScenarioAmbitions } = __load("src/core/scenario-goals.js");
+const { validateCampaignState } = __load("src/core/campaign-rules.js");
 const { seedNumber, random, DRAFT } = __load("src/core/rng.js");
 const { uniqueName } = __load("src/core/names.js");
 const { chooseRegent } = __load("src/core/regency-info.js");
 const {factionPowers} = __load("src/core/politics.js");
-const VERSION = 15;
+const VERSION = 16;
 const TALENTS = ["政略", "权谋", "武略", "文采", "魅力"];
 const SLOTS = ["朝", "午", "夜"];
 const POST_NAMES = [
@@ -4592,6 +4602,8 @@ s.memorialVariety ??= s.memorials.filter(m=>m.templateId).slice(-72).map(m=>({id
 // v15 adds bound conditions and consecutive-turn progress only to newly
 // selected scenario goals. Never replace an old save's chosen objectives.
 if(input.v<15)for(const a of s.ambitions)if(a.scenarioId&&a.holdTurns){a.stableTurns??=0;a.checkedTurn??=s.turn;}
+// v16 campaignVersion and treaties are optional. Keep legacy wars and saved
+// forecasts untouched; only newly declared wars get the richer rules.
 s.settings.freedom ??= "mid";
 s.v = VERSION;
 s.volumeIndex ??= [];
@@ -4753,6 +4765,7 @@ if(s.v>=12&&s.turnBudget?.rewriteAttempted!==undefined&&typeof s.turnBudget.rewr
 if(s.v>=13&&s.memorials.some(m=>m.options?.some(o=>o.consequence!==undefined&&typeof o.consequence!=='string')))throw new Error('奏折后果说明损坏');
 if(s.v>=14)validateMemorialReviews([...(s.volumes||[]).flatMap(v=>v.chapters),...(s.history||[])]);
 if(s.v>=15)validateScenarioAmbitions(s,reignId(s));
+if(s.v>=16)validateCampaignState(s);
 const walk = (x) => {
 if (typeof x === "number" && !Number.isFinite(x))
 throw new Error("存档含 NaN/Infinity");
@@ -4811,6 +4824,7 @@ const d = memorialDecision(action, id);
 const chosen = m.options.find(o => o.id === d.option) ||
 m.options.find(o => o.id === (d.option === 'reject' ? 'opt1' : 'opt0'));
 const labels = {hold:'留中', discuss:'发部再议', remark:'只作朱批'};
+const canceled=forecast.canceledMemorials?.includes(id);
 records.push({
 id: forecast.turnId + ':' + slot + ':' + id,
 memorialId: id, turn: forecast.state.turn, slot,
@@ -4818,8 +4832,8 @@ dynasty: state.dynasty, emperor: state.emperor.name,
 era: structuredClone(state.era), title: m.title,
 from: m.from || '通政司', type: m.type || '政务',
 text: typeof m.text === 'string' && m.text ? m.text : String(m.request || ''),
-decision: labels[d.option] || chosen?.label || d.option,
-consequence: labels[d.option] ? '' : chosen?.consequence || '',
+decision: canceled?'战局已变，原拟军令收回':labels[d.option] || chosen?.label || d.option,
+consequence: canceled?'原拟处置未再执行，口谕办理结果见本旬起居注。':labels[d.option] ? '' : chosen?.consequence || '',
 remark: d.remark,
 });
 }
@@ -5033,7 +5047,8 @@ if(q.type==='child')return person.health>0?person[q.field]??null:null;
 if(q.type==='isHeir')return Number(person.health>0&&s.harem.heir===person.id);
 if(q.type==='childTutored')return Number(person.health>0&&s.court.officials.some(o=>o.id===person.tutor&&servingNow(s,o)));
 if(q.type==='countryWins')return wins(person.id);
-if(q.type==='settledCountry')return Number(person.status!=='交战'&&(['通好','朝贡','婚盟'].includes(person.status)||wins(person.id)>0));
+if(q.type==='settledCountry')return Number(!['交战','停战待议'].includes(person.status)&&
+(['通好','朝贡','婚盟'].includes(person.status)||wins(person.id)>0));
 return null;
 }
 function goalConditionLabel(o) {
@@ -5063,6 +5078,76 @@ fields[q.type]&&!fields[q.type].includes(q.field)||q.posts&&(!Array.isArray(q.po
 }
 
 return {SCENARIO_GOALS,scenarioGoals,bindScenarioGoal,scenarioRuleValue,goalConditionLabel,validateScenarioAmbitions};
+},
+"src/core/campaign-rules.js":function(__load){
+// Shared, data-only rules: safe to import from save validation and the UI.
+const WAR_GOALS={
+repel:{label:'安边退敌',silver:25,grain:30,rounds:6,score:1,enemy:50000,note:'击退敌军后争取停战，重在减少边患。'},
+market:{label:'打通商路',silver:30,grain:36,rounds:6,score:2,enemy:55000,note:'须取得更大优势，再议开放互市；通商也会帮助对方恢复实力。'},
+tribute:{label:'迫使称臣',silver:40,grain:48,rounds:8,score:3,enemy:65000,note:'须打出明显优势；战后驻军督贡还要长期支出钱粮。'},
+};
+const CAMPAIGN_TACTICS={
+attack:{power:1.18,loss:1.35,cost:1.15},defend:{power:0.95,loss:0.65,cost:1},
+reinforce:{power:1,loss:1,cost:1},supply:{power:1.12,loss:0.85,cost:1},
+levy:{power:1.03,loss:1,cost:0.9},contract:{power:0.85,loss:0.45,cost:0.5},
+press:{power:1.25,loss:1.5,cost:1.2},consolidate:{power:0.98,loss:0.7,cost:0.9},
+};
+const CAMPAIGN_CHOICES={
+maneuver:['attack','defend','reinforce'],supply:['supply','levy','contract'],
+finish:['press','consolidate','negotiate'],treaty:['peace','indemnity','market','tribute','silver','grain','retreat'],
+};
+function campaignChoiceBlock(s,m,o){
+if(!m.campaignOrder)return '';
+const q=m.campaignOrder,w=s.campaigns.find(w=>w.id===q.warId);
+if(!w||w.campaignVersion!==1||!CAMPAIGN_CHOICES[q.stage]?.includes(o.id))return '这份军报已失效';
+if(q.stage==='treaty'?!w.done||w.settlement?.status!=='pending':w.done)return '战局已变，请重新查看军报';
+if(o.id==='reinforce'){
+const donor=s.nation.army.frontiers.find(b=>b.dir===q.donor);
+if(!donor||donor.dir===w.dir||donor.troops<13000||s.campaigns.some(x=>!x.done&&x.dir===donor.dir))return '援军来源不足，或该境另有战事';
+if(s.nation.army.frontiers.find(b=>b.dir===w.dir).troops>992000)return '本线兵员已满，无法接收整队援军';
+}
+if(o.id==='tribute'&&(s.nation.army.frontiers.find(b=>b.dir===w.dir)?.troops||0)<8000)return '边军不足，无法另留3000人驻军';
+for(const [key,label] of [['treasury','国库'],['grain','粮储'],['privy','内帑']])if((o.effects?.[key]||0)<-s.nation[key])return label+'不足';
+return '';
+}
+function treatyActive(f,turn){return f?.treaty?.status==='active'&&turn<=f.treaty.until;}
+function treatyProtected(f,turn){return treatyActive(f,turn)&&f.treaty.truceUntil>f.treaty.start&&turn<=f.treaty.truceUntil;}
+function validateCampaignState(s){
+const ids=new Set();
+for(const w of s.campaigns){
+if(w.campaignVersion===undefined)continue;
+if(w.campaignVersion!==1||typeof w.id!=='string'||ids.has(w.id)||!Object.hasOwn(WAR_GOALS,w.warGoal)||
+!s.foreign.some(f=>f.id===w.country&&f.frontier===w.dir)||!s.nation.provinces.some(p=>p.id===w.levyProvince)||
+!Number.isSafeInteger(w.started)||w.started<0||w.started>s.turn||!Number.isSafeInteger(w.round)||w.round<0||w.round>8||
+!Number.isSafeInteger(w.reportsIssued)||w.reportsIssued<0||w.reportsIssued>3||!Array.isArray(w.orders)||w.orders.length>3||
+!Number.isSafeInteger(w.score)||Math.abs(w.score)>8||!Number.isSafeInteger(w.enemyTroops)||w.enemyTroops<0||w.enemyTroops>1000000||
+!Number.isFinite(w.enemyReadiness)||w.enemyReadiness<0||w.enemyReadiness>100||typeof w.done!=='boolean'||
+w.commander!==null&&!s.court.officials.some(o=>o.id===w.commander))throw new Error('战役资料损坏');
+ids.add(w.id);
+for(const o of w.orders)if(!Object.hasOwn(CAMPAIGN_TACTICS,o.id)&&o.id!=='negotiate'||
+!Number.isSafeInteger(o.round)||o.round<1||o.round>8||!Number.isSafeInteger(o.turn)||o.turn<w.started||o.turn>s.turn||typeof o.label!=='string')throw new Error('军令记录损坏');
+if(w.order&&(!Object.hasOwn(CAMPAIGN_TACTICS,w.order.id)||!Number.isSafeInteger(w.order.untilRound)||w.order.untilRound<w.round-2||w.order.untilRound>10))throw new Error('军令时限损坏');
+if(w.settlement!==null){const t=w.settlement;
+if(!w.done||!t||!['pending','signed'].includes(t.status)||!Number.isSafeInteger(t.turn)||t.turn<w.started||t.turn>s.turn||
+t.status==='signed'&&(!CAMPAIGN_CHOICES.treaty.includes(t.kind)||typeof t.label!=='string'||typeof w.goalAchieved!=='boolean'))throw new Error('议约结果损坏');
+}else if(w.done)throw new Error('战后议约资料缺失');
+}
+for(const m of s.memorials){if(!m.campaignOrder)continue;const q=m.campaignOrder;
+if(!ids.has(q.warId)||!CAMPAIGN_CHOICES[q.stage]||!CAMPAIGN_CHOICES[q.stage].includes(q.fallback)||
+!Array.isArray(m.options)||!m.options.length||new Set(m.options.map(o=>o.id)).size!==m.options.length||
+m.options.some(o=>!CAMPAIGN_CHOICES[q.stage].includes(o.id))||!m.options.some(o=>o.id===q.fallback)||
+!Number.isSafeInteger(m.due)||m.due<0||q.donor&&!s.nation.army.frontiers.some(b=>b.dir===q.donor))throw new Error('军报资料损坏');
+}
+for(const f of s.foreign){const t=f.treaty;if(t===undefined)continue;
+if(!t||!ids.has(t.warId)||!CAMPAIGN_CHOICES.treaty.includes(t.kind)||!['active','expired','breached'].includes(t.status)||
+typeof t.label!=='string'||!['start','until','truceUntil','lastPaid','garrison'].every(k=>Number.isSafeInteger(t[k])&&t[k]>=0)||
+t.start>s.turn||t.until<t.start||t.until-t.start>36||t.truceUntil<t.start||t.truceUntil>t.until||t.lastPaid>s.turn||
+t.garrison>3000||!s.nation.army.frontiers.some(b=>b.dir===t.dir)||
+!s.campaigns.some(w=>w.id===t.warId&&w.country===f.id&&w.dir===t.dir&&w.settlement?.status==='signed'))throw new Error('条约资料损坏');
+}
+}
+
+return {WAR_GOALS,CAMPAIGN_TACTICS,CAMPAIGN_CHOICES,campaignChoiceBlock,treatyActive,treatyProtected,validateCampaignState};
 },
 "src/core/names.js":function(__load){
 const { roll } = __load("src/core/rng.js");
@@ -5982,15 +6067,29 @@ const armyOwners=[{id:'capital',aliases:['京营','禁军'],values:[s.nation.arm
 s.nation.army.frontiers.forEach((b,i)=>armyOwners.push({id:b.dir,aliases:[b.dir+'境',b.dir+'边',b.dir+'军',b.name],values:[b.troops,...(f.entries||[]).filter(e=>e.path==='nation.army.frontiers.'+i+'.troops').flatMap(e=>[e.before,e.after])]}));
 for(const p of s.nation.provinces)armyOwners.push({aliases:[p.name],values:[p.garrison]});
 for(const w of s.campaigns||[]){const country=s.foreign.find(c=>c.id===w.country);armyOwners.push({aliases:[country?.name,w.title,...((s.campaigns||[]).filter(w=>!w.done).length===1?['敌军']:[])],values:[w.enemyTroops]});}
-for(const owner of armyOwners){owner.deltas=(s.intentResults||[]).filter(r=>['success','partial'].includes(r.status)&&r.type==='allocate'&&r.actual.resource==='troops'&&r.actual.destination===owner.id).map(r=>r.actual.amount);}
-return {sets,ageOwners,armyOwners,add};
+for(const owner of armyOwners){
+const path=owner.id==='capital'?'nation.army.capital.troops':'nation.army.frontiers.'+s.nation.army.frontiers.findIndex(b=>b.dir===owner.id)+'.troops';
+owner.deltas=[...(s.intentResults||[]).filter(r=>['success','partial'].includes(r.status)&&r.type==='allocate'&&r.actual.resource==='troops'&&r.actual.destination===owner.id).map(r=>r.actual.amount),
+...(owner.id?(f.entries||[]).filter(e=>e.path===path).map(e=>Math.abs(e.delta)):[])];
+}
+const garrisonOwners=[];
+for(const country of s.foreign){const t=country.treaty;if(!t)continue;
+const changes=(f.entries||[]).filter(e=>e.path==='foreign.'+country.id+'.treaty.garrison');
+const values=[t.garrison,...changes.flatMap(e=>[e.before,e.after])];
+if(values.some(v=>v>0))garrisonOwners.push({name:country.name,aliases:[country.name,'驻'+country.name],values});
+}
+return {sets,ageOwners,armyOwners,garrisonOwners,add};
 }
 function invalidQuantity(q,sentence,evidence){
 if(q.unit==='两'&&(/^[句声步眼行旁侧下回趟遍口天日个分笔字语言]/.test(sentence.slice(q.index+q.raw.length))||!/银|库|帑|款|饷|税|赏|拨|贿|俸|赋|钱粮|万两/.test(sentence)))return false;
 if(['人','名','位'].includes(q.unit)&&!/兵|丁|人口|户口|丁口|军|士卒|征发/.test(sentence))return false;
 // Historical ages are background; current object ages must match that object.
 if(q.kind==='age'&&/先帝|当年|昔年|那年|往年|早年|生前|追忆|曾经/.test(sentence))return false;
-const owners=q.kind==='age'?nearbyOwners(sentence,q.index,evidence.ageOwners):q.kind==='people'?nearbyOwners(sentence,q.index,evidence.armyOwners):null;
+const garrisons=evidence.garrisonOwners||[];
+const isGarrison=q.kind==='people'&&(/留驻|驻外|督贡|另留|留军/.test(sentence)||garrisons.some(o=>sentence.includes('驻'+o.name)||
+/驻军/.test(sentence)&&sentence.includes(o.name)));
+const owners=isGarrison?(nearbyOwners(sentence,q.index,garrisons).length?nearbyOwners(sentence,q.index,garrisons):garrisons.length===1?garrisons:[]):
+q.kind==='age'?nearbyOwners(sentence,q.index,evidence.ageOwners):q.kind==='people'?nearbyOwners(sentence,q.index,evidence.armyOwners):null;
 const values=owners?(owners.length?owners.flatMap(o=>[...o.values,...(/征|调|增|补|损/.test(sentence)?o.deltas||[]:[])]):[]):[...evidence.sets[q.kind]];
 return !Number.isFinite(q.value)||!values.some(v=>Number.isFinite(v)&&Math.abs(Math.abs(v)-q.value)<0.01);
 }
@@ -6697,6 +6796,7 @@ const { applyPackage, clamp } = __load("src/core/effects.js");
 const { uniqueName } = __load("src/core/names.js");
 const { roll, check } = __load("src/core/rng.js");
 const {factionPowers} = __load("src/core/politics.js");
+const { campaignChoiceBlock } = __load("src/core/campaign-rules.js");
 function strongmanCandidate(s){
 const candidates=s.court.officials.filter(o=>o.alive&&o.health>0&&!o.retired&&!o.jailed&&s.court.posts.some(p=>p.holder===o.id&&p.id===o.post));
 return candidates.map(o=>({o,power:s.court.factions.find(f=>f.id===o.faction)?.power||0}))
@@ -7156,6 +7256,7 @@ m.options
 .filter(
 (o) =>
 o.id !== "hold" &&
+!campaignChoiceBlock(state,m,o) &&
 ["treasury","privy","grain"].every(k=>state.nation[k]>=Math.max(0,-(o.effects?.[k]||0))),
 )
 .map((o) => ({ m, o, score: factionOptionScore(faction, m, o) })),
@@ -7190,7 +7291,7 @@ const affordable = (o) => ["treasury", "privy", "grain"].every(
 (k) => (state.nation[k] || 0) >= Math.max(0, -(o.effects?.[k] || 0)));
 const ranked = memorial.options
 .map((o, i) => ({ o, i }))
-.filter(({ o }) => o.id !== "hold" && affordable(o))
+.filter(({ o }) => o.id !== "hold" && affordable(o) && !campaignChoiceBlock(state,memorial,o))
 .map((x) => ({ ...x, score: faction ? factionOptionScore(faction, memorial, x.o) : 0 }))
 .sort((a, b) => b.score - a.score || a.i - b.i);
 if (!ranked.length) return null;
@@ -7208,6 +7309,8 @@ const { roll } = __load("src/core/rng.js");
 const { applyPackage } = __load("src/core/effects.js");
 const { quarterIndex } = __load("src/core/finance.js");
 const {factionPowers} = __load("src/core/politics.js");
+const { campaignChoiceBlock } = __load("src/core/campaign-rules.js");
+const { applyCampaignDecision, expireCampaignPetition } = __load("src/core/campaigns.js");
 function pickMemorialist(state, type, provinceId = null) {
 const eligible=state.court.posts.flatMap(post=>{
 const o=state.court.officials.find(o=>o.id===post.holder&&o.post===post.id&&o.alive&&o.health>0&&!o.jailed&&!o.retired);
@@ -7305,10 +7408,10 @@ mem = s.memorials.find((x) => x.id === id);
 if ((mem.referrals || 0) >= freedomRules(s).referrals)
 throw new Error("此折已发部再议"+freedomRules(s).referrals+"次，请准驳裁处");
 mem.referrals = (mem.referrals || 0) + 1;
-mem.due += 3;
+if(!mem.campaignOrder)mem.due += 3;
 const t = s.threads.find((t) => t.id === mem.threadId);
 if (t && t.stage !== "结束") t.stage = "搁置";
-return { state: applyMemorialRemark(s,m,remark,remarkKind), note: m.title + " · 发部再议" + brushNote };
+return { state: applyMemorialRemark(s,m,remark,remarkKind), note: m.title + " · 发部再议"+(mem.campaignOrder?'（军情期限不顺延）':'') + brushNote };
 }
 if (option === "remark") {
 return {state:applyMemorialRemark(state,m,remark,remarkKind),note:m.title+' · 朱批「'+String(remark).slice(0,100)+'」（原请款仍待准驳）'};
@@ -7317,6 +7420,7 @@ const chosen =
 m.options.find((o) => o.id === option) ||
 m.options.find((o) => o.id === (option === "reject" ? "opt1" : "opt0"));
 if (!chosen) throw new Error("无此处置选项");
+const blocked=campaignChoiceBlock(state,m,chosen);if(blocked)throw new Error(blocked);
 for(const [key,label]of [['treasury','国库'],['privy','内帑'],['grain','粮储']])
 if(chosen.effects[key]<0&&state.nation[key]<-chosen.effects[key])throw new Error(label+'不足以办理此事');
 const regional=m.provinceId&&state.nation.provinces.some(p=>p.id===m.provinceId)&&Number.isFinite(chosen.effects.morale);
@@ -7327,6 +7431,7 @@ effects,
 sourcePrefix + "：" + m.title + " / " + chosen.label,
 );
 s.memorials = s.memorials.filter((x) => x.id !== id);
+if(m.campaignOrder)s=applyCampaignDecision(s,m,chosen);
 s.stats.petitions++;
 const t = s.threads.find((x) => x.id === m.threadId);
 if(m.type==='致仕'&&chosen.id==='opt0'){
@@ -7356,6 +7461,7 @@ return favor?applyPackage(state,{official:{id:o.id,favor}},'朱批：'+text):clo
 function expireMemorials(state) {
 let s = clone(state);
 for (const m of s.memorials.filter((m) => m.due < s.turn)) {
+if(m.campaignOrder){s=expireCampaignPetition(s,m);continue;}
 if(m.type==='京畿民变' && !(s.nation.morale<18&&s.nation.treasury<10)) {
 s.threads=s.threads.map(t=>t.id===m.threadId?{...t,stage:'结束',updated:s.turn,result:'危机解除'}:t);
 continue;
@@ -7520,6 +7626,181 @@ return s;
 
 return {monthlyBudget,annualBudget,grainBudget,quarterlyGrain,wasteQuote,quarterIndex,provinceTaxFactor,settleArrears};
 },
+"src/core/campaigns.js":function(__load){
+const { clone } = __load("src/core/state.js");
+const { applyPackage, clamp } = __load("src/core/effects.js");
+const { WAR_GOALS, CAMPAIGN_TACTICS, campaignChoiceBlock } = __load("src/core/campaign-rules.js");
+const eligible=o=>o&&o.alive&&o.health>0&&!o.jailed&&!o.retired;
+const borderOf=(s,w)=>s.nation.army.frontiers.find(b=>b.dir===w.dir);
+function troopChange(s,b,delta,source){
+const before=b.troops;b.troops=clamp(before+delta,0,1000000);
+if(b.troops!==before)s.ledger.push({turn:s.turn,path:'nation.army.frontiers.'+s.nation.army.frontiers.indexOf(b)+'.troops',
+before,after:b.troops,delta:b.troops-before,source});
+}
+function campaignCommander(s,dir){
+const candidates=['兵部尚书',dir+'境总兵'].map(title=>{
+const p=s.court.posts.find(p=>p.title===title);return s.court.officials.find(o=>o.id===p?.holder&&o.post===p?.id&&eligible(o));
+}).filter(Boolean);
+return candidates.sort((a,b)=>b.abilities.军-a.abilities.军)[0]||null;
+}
+function newCampaign(s,country,action){
+if(!Object.hasOwn(WAR_GOALS,action.warGoal||'repel'))throw new Error('请选择有效的战争目标');
+const province=action.levyProvince?s.nation.provinces.find(p=>p.id===action.levyProvince):[...s.nation.provinces].sort((a,b)=>b.pop-a.pop)[0];
+if(!province)throw new Error('请选择现有筹粮州');
+return {campaignVersion:1,warGoal:action.warGoal||'repel',started:s.turn,levyProvince:province.id,
+commander:campaignCommander(s,country.frontier)?.id||null,reportsIssued:0,orders:[],order:null,settlement:null,goalAchieved:false};
+}
+function campaignTactic(w){return w.campaignVersion===1&&w.order&&w.round<w.order.untilRound?CAMPAIGN_TACTICS[w.order.id]:null;}
+function petition(s,w,stage,options,fallback,request,donor=null){
+const country=s.foreign.find(f=>f.id===w.country),author=campaignCommander(s,w.dir);
+const title=country.name+' · '+({maneuver:'前线请定进止',supply:'行营请议粮饷',finish:'战局请定攻守',treaty:'战后议约'}[stage]);
+const details={
+maneuver:'一线守军与后方留守各有职责。若调邻境兵马来援，原来的关防便要少一支力量；若令本部继续进军，粮饷与伤亡也须有接续的准备。行营请明确进击或固守的办法，免得军中一面催兵、一面等饷。臣不敢因一时争胜，擅将别处兵力尽数抽走，伏候圣裁。',
+supply:'行营的钱粮从何处筹措，牵动军中与地方。由国库拨付，可以免扰百姓，却要挤占其他用度；向地方征粮，眼前容易凑办，往后赋税与收成便须多加顾惜。若两头都难支应，只能收缩战线，减少军中消耗，但原定战期不会因此延长。请陛下权衡眼前战事与地方生计，定下筹办之法。',
+finish:'用兵至此，继续争胜与保全兵力，各有一番道理。增拨钱粮催军进击，可能争得更大优势，也须承担更多伤亡；让军中巩固现有战果，可以少损将士，却可能错过进取的机会。若以当前战果遣使交涉，须另议收兵条款，不能把一时停火当作诸事已定。军中请旨之后再行，不敢擅定朝廷的战和大计。',
+treaty:w.result==='胜利'?'战场获胜，收兵未必事事皆了。索取赔款能解眼前之急，却未必能换来长久安稳；开市有利于钱粮，也会让对方休养；若留兵督贡，日后饷粮仍须朝廷按月供给。行营请把停战期限与后续供养一并定下，免得战场上虽已停手，关外仍无可遵的约定。所议条款请候陛下裁可后，再发国书办理。':
+'此次未能以全胜收局，眼下先要决定如何收兵。付银与交粮，占用的是不同家底，须留够国内俸饷与赈济；若不议条件便径自撤军，虽可省下眼前钱粮，却不能指望对方守住停战之约。后续守边仍需可用兵马，不能只求一时息事。请陛下核看各项条件，定下可以承担的办法，再令行营与使臣照旨办理。',
+};
+const text=request+details[stage];
+s.memorials.unshift({id:'campaign-'+w.id+'-'+stage,title,type:stage==='treaty'?'战后议约':'战中军报',
+from:author?.name||'兵部',fromId:author?.id||null,provinceId:null,request,text,options,urgent:true,secret:false,
+threadId:null,due:s.turn+(stage==='treaty'?3:1),campaignOrder:{warId:w.id,stage,fallback,...(donor?{donor}:{})}});
+}
+const option=(id,label,consequence,effects={})=>({id,label,consequence,effects});
+function campaignReport(state,id){
+const s=clone(state),w=s.campaigns.find(w=>w.id===id);
+if(!w||w.campaignVersion!==1||w.done||w.reportsIssued>=3||w.round<1+w.reportsIssued*2||s.memorials.some(m=>m.campaignOrder?.warId===id))return s;
+const stage=['maneuver','supply','finish'][w.reportsIssued],province=s.nation.provinces.find(p=>p.id===w.levyProvince);
+let choices,donor;
+if(stage==='maneuver'){
+donor=[...s.nation.army.frontiers].filter(b=>b.dir!==w.dir&&b.troops>=13000&&!s.campaigns.some(x=>!x.done&&x.dir===b.dir)).sort((a,b)=>b.troops-a.troops)[0];
+choices=[option('attack','限期进击','拨粮6万石；随后两轮战力提高18%，伤亡增加35%，行营开销增加15%。',{grain:-6}),
+option('defend','据险稳守','支银4万两，战备提高3；随后两轮战力降低5%，伤亡减少35%。',{treasury:-4,army:{id:w.dir,readiness:3}})];
+if(donor)choices.push(option('reinforce','抽调'+donor.dir+'境援军','支银6万两、粮4万石；调来8000人，来源边境战备减4、边患加8。',{treasury:-6,grain:-4}));
+}else if(stage==='supply')choices=[
+option('supply','加拨行营钱粮','支银8万两、粮12万石；随后两轮战力提高12%，伤亡减少15%。',{treasury:-8,grain:-12}),
+option('levy','向'+province.name+'就地筹粮','得粮10万石；该州民心减6、灾情加3，影响之后赋税与收成；随后两轮战力提高3%，行营开销减少10%。',
+{grain:10,prestige:-1,province:{id:province.id,morale:-6,disaster:3}}),
+option('contract','收缩战线减耗','随后两轮战力降低15%，伤亡减少55%，行营开销减半；战期不延长。')];
+else choices=[option('press','追加攻势','支银6万两、粮8万石；随后两轮战力提高25%，伤亡增加50%，行营开销增加20%。',{treasury:-6,grain:-8}),
+option('consolidate','保住现有战果','随后两轮战力降低2%，伤亡减少30%，行营开销减少10%。'),
+option('negotiate','收兵遣使议和','停止本次战役，按现有战果议约；不算完整战役获胜，原定战争目标仍须看条款。',{prestige:-2})];
+w.reportsIssued++;
+petition(s,w,stage,choices,stage==='maneuver'?'defend':stage==='supply'?'contract':'consolidate',
+'本次以「'+WAR_GOALS[w.warGoal].label+'」为目标，已战'+w.round+'旬，胜负差为'+w.score+'。'+
+(stage==='supply'?'筹粮州为'+province.name+'。':'')+'请定下一步军令；及时批复的进退方略影响随后两轮交战。',donor?.dir);
+return s;
+}
+function treatyOptions(s,w){
+const win=w.result==='胜利',advantage=win||w.score>0;
+const choices=[];
+if(advantage){
+choices.push(option('peace','撤军定界，安抚军民','支银6万两；皇威加3、边患减18、对方态度加10，约定停战18旬。',{treasury:-6,prestige:3,army:{id:w.dir,threat:-18},foreign:{id:w.country,attitude:10}}));
+choices.push(option('market','以开市换停战','边患减8、对方态度加10；停战18旬、互市36旬，每季收入2万两；对方实力立增6，此后每月再增0.4。',
+{prestige:-1,army:{id:w.dir,threat:-8},foreign:{id:w.country,attitude:10}}));
+}
+if(win){
+choices.push(option('indemnity','索赔后撤军','收赔银30万两；皇威加2、边患减8，但对方态度减15，仅停战9旬。',
+{treasury:30,prestige:2,army:{id:w.dir,threat:-8},foreign:{id:w.country,attitude:-15}}));
+if(w.warGoal==='tribute'||w.score>=3)choices.push(option('tribute','留军督贡','先支银12万两、粮12万石，另留3000人；皇威加6、边患减12、对方态度减20。督贡36旬，每月再支银0.8万两、粮1万石；无力供养会撤军失约。',
+{treasury:-12,grain:-12,prestige:6,army:{id:w.dir,threat:-12},foreign:{id:w.country,attitude:-20}}));
+}else{
+choices.push(option('silver','赔银换撤兵','赔银18万两；皇威减5、边患减12、对方态度加4，约定停战9旬。',
+{treasury:-18,prestige:-5,army:{id:w.dir,threat:-12},foreign:{id:w.country,attitude:4}}));
+choices.push(option('grain','输粮议和','交粮18万石；皇威减6、边患减8，约定停战9旬。',{grain:-18,prestige:-6,army:{id:w.dir,threat:-8}}));
+}
+choices.push(option('retreat','不议条件，径自收兵','不付钱粮；皇威减'+(win?3:8)+'、边患加'+(win?6:12)+'、对方态度减8，没有停战保证。',
+{prestige:win?-3:-8,army:{id:w.dir,threat:win?6:12},foreign:{id:w.country,attitude:-8}}));
+return choices;
+}
+function openSettlement(state,id,result){
+let s=clone(state),w=s.campaigns.find(w=>w.id===id);if(w.settlement)return s;
+w.done=true;w.result=result;w.personal=false;w.order=null;w.settlement={status:'pending',turn:s.turn};
+s.memorials=s.memorials.filter(m=>m.campaignOrder?.warId!==id);
+s.foreign.find(f=>f.id===w.country).status='停战待议';
+petition(s,w,'treaty',treatyOptions(s,w),'retreat','本次目标为「'+WAR_GOALS[w.warGoal].label+'」，军事结果为'+result+'。'+
+'两军暂止交锋，条款尚未商定。'+(result==='胜利'?'请决定以什么代价换取停战，或是否承担驻军的长期供养。':'请权衡赔银、输粮与自行撤军的代价。'));
+return s;
+}
+function applyCampaignDecision(state,m,o){
+let s=clone(state),w=s.campaigns.find(w=>w.id===m.campaignOrder.warId),q=m.campaignOrder;
+// Callers check availability before charging the option's effect package.
+if(q.stage!=='treaty'){
+w.orders.push({id:o.id,label:o.label,round:w.round,turn:s.turn});
+if(o.id==='negotiate')return openSettlement(s,w.id,'议和');
+w.order={id:o.id,untilRound:w.round+2};
+if(o.id==='reinforce'){
+const donor=s.nation.army.frontiers.find(b=>b.dir===q.donor),home=borderOf(s,w);
+troopChange(s,donor,-8000,'抽调'+donor.dir+'境援军：8000人转赴'+home.dir+'境');
+troopChange(s,home,8000,'抽调'+donor.dir+'境援军：8000人转赴'+home.dir+'境');
+s=applyPackage(s,{army:{id:donor.dir,readiness:-4,threat:8}},'抽调'+donor.dir+'境援军：原防线减弱');
+}
+return s;
+}
+const country=s.foreign.find(f=>f.id===w.country),duration={peace:18,indemnity:9,market:36,tribute:36,silver:9,grain:9,retreat:0}[o.id];
+country.status=o.id==='tribute'?'朝贡':o.id==='retreat'?'冷淡':'通好';
+const truce=o.id==='market'?18:duration;
+country.treaty={warId:w.id,kind:o.id,label:o.label,status:'active',dir:w.dir,start:s.turn,until:s.turn+duration,
+truceUntil:s.turn+truce,lastPaid:s.turn,garrison:o.id==='tribute'?3000:0};
+if(o.id==='tribute')troopChange(s,borderOf(s,w),-3000,'战后留军：3000人驻守'+country.name+'，另支饷粮');
+if(o.id==='market'){
+country.trade={start:s.turn,until:s.turn+36,income:2};country.power=clamp(country.power+6);
+}
+const commander=s.court.officials.find(o=>o.id===w.commander&&eligible(o));
+if(w.result==='胜利'&&commander)s=applyPackage(s,{official:{id:commander.id,favor:3},faction:{[commander.faction]:2}},'战后论功：'+commander.name+'与军功同僚得势');
+w=s.campaigns.find(x=>x.id===w.id);w.settlement={status:'signed',turn:s.turn,kind:o.id,label:o.label};
+w.goalAchieved=o.id!=='retreat'&&(w.warGoal==='repel'&&w.result==='胜利'||w.warGoal==='market'&&o.id==='market'||w.warGoal==='tribute'&&o.id==='tribute');
+s.facts.push({subject:country.name,key:'战后议约',value:o.label+'；'+o.consequence,turn:s.turn});
+return s;
+}
+function expireCampaignPetition(state,m){
+let s=clone(state),w=s.campaigns.find(w=>w.id===m.campaignOrder.warId);if(!w)return s;
+if(m.campaignOrder.stage==='treaty'){
+const o=m.options.find(o=>o.id==='retreat');s=applyPackage(s,o.effects,'议约迟迟未决，行营自行收兵');
+return applyCampaignDecision(s,m,o);
+}
+if(!w.done){
+w.order={id:'contract',untilRound:w.round+1};
+s=applyPackage(s,{army:{id:w.dir,readiness:-2}},'军报逾期：行营收缩待命，战备受损');
+}
+return s;
+}
+function endTreaty(state,id,breach){
+let s=clone(state),f=s.foreign.find(f=>f.id===id),t=f.treaty;
+if(t.garrison){
+const home=s.nation.army.frontiers.find(b=>b.dir===t.dir),returned=Math.floor(t.garrison*(breach?0.9:1));
+const excess=Math.max(0,home.troops+returned-1000000);
+troopChange(s,home,returned,breach?'驻军断饷撤回：归建兵员减少一成':'驻军期满归建');t.garrison=0;
+if(excess)s.facts.push({subject:f.name,key:'驻军归建',value:'边营满额，归来的'+excess+'人就地复员。',turn:s.turn});
+}
+t.status=breach?'breached':'expired';t.ended=s.turn;
+if(t.kind==='tribute'&&f.status==='朝贡')f.status=breach?'冷淡':'通好';
+if(t.kind==='market'&&f.trade?.start===t.start)f.trade=null;
+if(breach){
+s=applyPackage(s,{prestige:-3,army:{id:t.dir,threat:8},foreign:{id:f.id,attitude:-10}},'驻军断饷，撤军失约');
+}
+s.facts.push({subject:f.name,key:'条约后续',value:breach?'驻军供养不足，撤回时兵员损失一成，边患回升。':'议约期满，驻军归建，后续来往另议。',turn:s.turn});
+return s;
+}
+function breakTreaty(state,id){return endTreaty(state,id,false);}
+function advanceTreaties(state){
+let s=clone(state);
+for(const id of s.foreign.filter(f=>f.treaty?.status==='active').map(f=>f.id)){
+let f=s.foreign.find(f=>f.id===id),t=f.treaty;
+if(s.turn>t.until){s=endTreaty(s,id,false);continue;}
+if(s.turn%3||s.turn<=t.start||t.lastPaid>=s.turn)continue;
+if(t.kind==='tribute'){
+if(s.nation.treasury<0.8||s.nation.grain<1){s=endTreaty(s,id,true);continue;}
+s=applyPackage(s,{treasury:-0.8,grain:-1,army:{id:t.dir,threat:-0.4}},'驻军督贡：本月饷粮');
+}
+f=s.foreign.find(f=>f.id===id);t=f.treaty;t.lastPaid=s.turn;
+if(t.kind==='market')f.power=clamp(f.power+0.4);
+}
+return s;
+}
+
+return {campaignCommander,newCampaign,campaignTactic,campaignReport,treatyOptions,openSettlement,applyCampaignDecision,expireCampaignPetition,breakTreaty,advanceTreaties};
+},
 "src/core/foreign.js":function(__load){
 const { freedomRules, adjudicate } = __load("src/core/freedom.js");
 const { clone } = __load("src/core/state.js");
@@ -7528,12 +7809,14 @@ const { roll, check } = __load("src/core/rng.js");
 const { proxyMemorial, inCapital } = __load("src/core/court.js");
 const { addEvent, pickMemorialist } = __load("src/core/events.js");
 const {monthlyBudget} = __load("src/core/finance.js");
+const { WAR_GOALS, treatyProtected } = __load("src/core/campaign-rules.js");
+const { newCampaign, campaignTactic, campaignReport, openSettlement, breakTreaty, advanceTreaties } = __load("src/core/campaigns.js");
 function foreignMonth(state) {
 let s = clone(state);
 for (const b of s.nation.army.frontiers) {
 const countries=s.foreign.filter(f=>f.frontier===b.dir);
 const force=b.troops*b.readiness/100/500;
-const delta=countries.length?countries.reduce((sum,f)=>sum+0.9+clamp((f.power-force)/250,-0.15,0.15)-(f.attitude-50)/250-(['婚盟','朝贡'].includes(f.status)?1.05:0),0)/countries.length:0;
+const delta=countries.length?countries.reduce((sum,f)=>sum+(treatyProtected(f,s.turn)?-0.5:0.9+clamp((f.power-force)/250,-0.15,0.15)-(f.attitude-50)/250-(['婚盟','朝贡'].includes(f.status)?1.05:0)),0)/countries.length:0;
 b.threat=clamp(b.threat+delta);
 }
 return s;
@@ -7547,12 +7830,15 @@ return applyPackage(state, { treasury: income }, "年终外邦朝贡");
 function diplomacyBlock(state, action) {
 const other=state.foreign.find(f=>f.id===action.country),operation=action.operation || '接见';
 if(!other)return '请选择外邦';
+if(other.status==='停战待议'&&operation!=='接见')return '请先批复战后议约奏报';
 if(other.status==='交战'&&!['议和','接见'].includes(operation))return '交战中只允许议和和接见';
 if(operation==='议和'&&other.status!=='交战')return '当前未交战';
 if(operation==='互市'&&other.trade&&state.turn-other.trade.start<freedomRules(state).tradeCooldown)return '同一外邦一年内只能议互市一次';
 if(operation==='宣战'){
+if(!Object.hasOwn(WAR_GOALS,action.warGoal||'repel'))return '请选择有效的战争目标';
+if(action.levyProvince&&!state.nation.provinces.some(p=>p.id===action.levyProvince))return '请选择现有筹粮州';
 if(!state.nation.army.frontiers.some(b=>b.dir===other.frontier))return '外邦未绑定有效边境';
-if(['婚盟','朝贡'].includes(other.status)&&!action.confirmBreach)return '宣战将撕毁盟约，请再次确认';
+if((['婚盟','朝贡'].includes(other.status)||treatyProtected(other,state.turn))&&!action.confirmBreach)return '宣战将撕毁盟约，请再次确认';
 }
 return '';
 }
@@ -7582,18 +7868,23 @@ other=s.foreign.find(f=>f.id===other.id);
 if (operation === "宣战") {
 const border=s.nation.army.frontiers.find(b=>b.dir===other.frontier);
 if(!border)throw new Error('外邦未绑定有效边境');
-const breach=['婚盟','朝贡'].includes(other.status);
+const protectedTreaty=treatyProtected(other,s.turn);
+const breach=['婚盟','朝贡'].includes(other.status)||protectedTreaty;
 if(breach&&!action.confirmBreach)throw new Error('宣战将撕毁盟约，请再次确认');
-if (!action.intent && (s.nation.treasury < 25 || s.nation.grain < 30))
-throw new Error("宣战需要国库 25 万两、军粮 30 万石");
+const goal=WAR_GOALS[action.warGoal||'repel'],modern=s.v>=16;
+const silver=modern?goal.silver:25,grain=modern?goal.grain:30;
+if (!action.intent && (s.nation.treasury < silver || s.nation.grain < grain))
+throw new Error('宣战需要国库 '+silver+' 万两、军粮 '+grain+' 万石');
 if (other.status === "交战") throw new Error("已经处于交战");
+if(modern&&other.treaty?.status==='active'){s=breakTreaty(s,other.id);other=s.foreign.find(f=>f.id===other.id);}
+if(modern)other.trade=null;
 other.status = "交战";
 s.campaigns.push({
 id: "war-" + s.turn + "-" + other.id,
 country: other.id,
 title: "征讨" + other.name,
 round: 0,
-enemyTroops: 50000,
+enemyTroops: modern?goal.enemy:50000,
 enemyReadiness: other.power,
 dir: other.frontier,
 score: 0,
@@ -7601,9 +7892,11 @@ done: false,
 result: null,
 personal: !!action.personal,
 regent: action.regent || s.court.posts.find((p) => p.id === "p0")?.holder,
+...(modern?newCampaign(s,other,action):{}),
 });
-s = applyPackage(s, { treasury: -Math.min(25,s.nation.treasury), grain: -Math.min(30,s.nation.grain), ...(breach?{prestige:-5,virtue:-5}:{}) }, breach?"背盟宣战：皇威圣德受损":"宣战备军");
-return { state: s, note: "向 " + other.name + " 宣战，战役开始" };
+s = applyPackage(s, { treasury: -Math.min(silver,s.nation.treasury), grain: -Math.min(grain,s.nation.grain), ...(breach?{prestige:-5,virtue:-5}:{}) }, breach?"背盟宣战：皇威圣德受损":"宣战备军");
+if(protectedTreaty)s=applyPackage(s,{foreign:{id:other.id,attitude:-15},army:{id:other.frontier,threat:6}},'撕毁停战条约，边境再起争端');
+return { state: s, note: "向 " + other.name + " 宣战，战役开始"+(modern?'；目标：'+goal.label:'') };
 }
 if (operation === "和亲") {
 const woman =
@@ -7631,6 +7924,7 @@ if (c.success) {
 other.status = "通好";
 for (const war of s.campaigns)
 if (war.country === other.id && !war.done) {
+if(war.campaignVersion===1){s=openSettlement(s,war.id,'议和');continue;}
 war.done = true;
 war.result = "议和";
 }
@@ -7657,6 +7951,8 @@ check: c,
 function borderInvasions(state) {
 let s = clone(state);
 for (const border of s.nation.army.frontiers.filter((f) => f.threat >= 100)) {
+const neighbors=s.foreign.filter(f=>f.frontier===border.dir);
+if(neighbors.length&&neighbors.every(f=>treatyProtected(f,s.turn)))continue;
 const b = s.nation.army.frontiers.find((f) => f.dir === border.dir);
 b.threat = 45;
 s = addEvent(
@@ -7683,7 +7979,7 @@ s.ending = { type: "亡国", cause: "边城失守，京城被攻破" };
 return s;
 }
 function advanceCampaigns(state) {
-let s = clone(state);
+let s = advanceTreaties(state);
 for (const original of state.campaigns.filter((w) => !w.done)) {
 let war = s.campaigns.find((w) => w.id === original.id),
 border = s.nation.army.frontiers.find((f) => f.dir === war.dir),
@@ -7693,19 +7989,22 @@ war = s.campaigns.find((w) => w.id === original.id);
 border = s.nation.army.frontiers.find((f) => f.dir === war.dir);
 const generals=['兵部尚书',war.dir+'境总兵'].map(title=>s.court.officials.find(o=>o.id===s.court.posts.find(p=>p.title===title)?.holder&&inCapital({...o,inCapital:true}))).filter(Boolean);
 const general=generals.sort((a,b)=>b.abilities.军-a.abilities.军)[0];
-const power=border.troops*border.readiness/100*(1+((general?.abilities.军 ?? 50)-50)/100)
+const modern=war.campaignVersion===1,tactic=campaignTactic(war);
+if(modern)war.commander=general?.id||null;
+const engaged=modern?border.troops/Math.max(1,s.campaigns.filter(w=>!w.done&&w.dir===war.dir).length):border.troops;
+const power=engaged*border.readiness/100*(1+((general?.abilities.军 ?? 50)-50)/100)*(tactic?.power||1)
 *(war.personal?1+s.emperor.talents.武略/200:1)*(s.nation.grain>=monthlyBudget(s).grain?1:0.7);
 if(s.nation.grain<monthlyBudget(s).grain)s.facts.push({subject:war.id,key:'缺粮战力',value:'粮储不足一月军粮，当旬战力为七成',turn:s.turn});
 const enemy=war.enemyTroops*war.enemyReadiness/100;
 const victory=power*(1+(r.value-10.5)*0.04)>=enemy;
 war.round++;war.score=(war.score||0)+(victory?1:-1);
 war.enemyTroops=Math.max(0,Math.round(war.enemyTroops*(victory?0.76:0.88)));
-border.troops=Math.max(0,Math.round(border.troops*(victory?0.88:0.76)));
+border.troops=modern?Math.max(0,border.troops-Math.round(engaged*(victory?0.12:0.24)*(tactic?.loss||1))):Math.max(0,Math.round(border.troops*(victory?0.88:0.76)));
 war.enemyReadiness=clamp(war.enemyReadiness+(victory?-2:2));
 border.readiness=clamp(border.readiness+(victory?2:-2));
 s = applyPackage(
 s,
-{ treasury: -4, grain: -6, mood: victory ? 1 : -2 },
+{ treasury: -4*(tactic?.cost||1), grain: -6*(tactic?.cost||1), mood: victory ? 1 : -2 },
 "战役第 " + war.round + " 旬：" + (victory ? "进军" : "受挫"),
 );
 war = s.campaigns.find((w) => w.id === original.id);
@@ -7722,10 +8021,21 @@ if(acting)for(let i=0;i<2;i++)s=proxyMemorial(s,{minister:acting,label:'留守�
 }
 if (war.personal && r.value <= 2)
 s = applyPackage(s, { health: -10 }, "亲征负伤");
-if (war.enemyTroops <= 0 || war.round >= 6 || border.troops <= 5000) {
+if(modern){
+war=s.campaigns.find(w=>w.id===original.id);border=s.nation.army.frontiers.find(b=>b.dir===war.dir);
+if(war.done)continue;
+}
+if(war.order&&war.round>=war.order.untilRound)war.order=null;
+if (war.enemyTroops <= 0 || war.round >= (modern?WAR_GOALS[war.warGoal].rounds:6) || border.troops <= 5000) {
 war = s.campaigns.find((w) => w.id === original.id);
-war.done = true;
-war.result = war.enemyTroops <= 0 || (border.troops>5000 && (war.score>0 || (war.score===0&&victory))) ? "胜利" : "失利";
+const result=war.enemyTroops <= 0 || (border.troops>5000 && (modern?war.score>=WAR_GOALS[war.warGoal].score:war.score>0 || (war.score===0&&victory))) ? '胜利':'失利';
+if(modern){
+if(result==='胜利')s.stats.warsWon++;
+s=openSettlement(s,war.id,result);
+s=applyPackage(s,{mood:result==='胜利'?3:-3},'战役'+result+'，条款待御前裁定');
+continue;
+}
+war.done = true;war.result=result;
 const other = s.foreign.find((f) => f.id === war.country);
 other.status = war.result === "胜利" ? "朝贡" : "冷淡";
 if (war.result === "胜利") {
@@ -7735,6 +8045,7 @@ s = applyPackage(s, { treasury: 20, prestige: 8, mood: 5 }, "战役获胜");
 s = applyPackage(s, { prestige: -8, morale: -4 }, "战役失利");
 }
 }
+if(modern)s=campaignReport(s,original.id);
 }
 return s;
 }
@@ -9144,6 +9455,7 @@ return {validateTurnNarrative,requestTurnNarrative};
 },
 "src/llm/prompts.js":function(__load){
 const { postTitle, scenarioById } = __load("src/core/scenarios.js");
+const { WAR_GOALS } = __load("src/core/campaign-rules.js");
 // 文风：规则 + 范文。范文只示范笔法，人物与事件不得照搬；它们位于系统提示，
 // 选定笔法后保持稳定，同时延长可缓存前缀。
 const STYLES = {
@@ -9359,6 +9671,12 @@ function turnMessages(state, forecast) {
       剧情目标: a.objectives.filter((o) => o.type === "story" && !o.done).map((o) => ({ objectiveId: o.id, keywords: o.keywords })),
     })),
     玩家口谕裁决: (state.intentResults||[]).map(({type,status,actual,summary})=>({type,status,actual,summary})),
+    ...(state.campaigns.some(w=>w.campaignVersion===1)?{军情:state.campaigns.filter(w=>w.campaignVersion===1&&
+      (!w.done||w.settlement?.status==='pending'||before.campaigns.find(x=>x.id===w.id)?.settlement?.status!==w.settlement?.status))
+      .map(w=>({对手:state.foreign.find(f=>f.id===w.country)?.name,目标:WAR_GOALS[w.warGoal].label,方向:w.dir,已战:w.round,胜负差:w.score,
+       军令:w.orders.at(-1)?.label,结果:w.result,议约:w.settlement,目标达成:w.goalAchieved})),
+     现有条约:state.foreign.filter(f=>f.treaty).map(f=>({外邦:f.name,条款:f.treaty})),
+     战后叙事:'军事获胜不等于已签条约。停战待议时不能写已朝贡、开市或赔款到账；议约、驻军、归建只按本旬结果写。'}:{}),
     本旬前后变化: {
       国势: { 之前: nationSummary(before), 之后: nationSummary(state) },
       人物旧况: oldRoster.filter((line) => !newRoster.includes(line)),
@@ -9671,7 +9989,8 @@ if (full && count > 1) throw new Error("出巡或亲征占满一旬，请清空�
 if (
 state.campaigns.some((w) => w.personal && !w.done) &&
 count &&
-Object.values(schedule).some((a) => a && !["亲征", "歇息"].includes(a.kind))
+Object.values(schedule).some((a) => a && !["亲征", "歇息"].includes(a.kind) &&
+!(a.kind==='批折'&&a.memorials?.length&&a.memorials.every(id=>state.memorials.find(m=>m.id===id)?.campaignOrder)))
 )
 throw new Error("亲征期间不能在京中安排其他行动");
 return true;
@@ -9706,6 +10025,7 @@ notes = [],
 slotResults = { 朝: [], 午: [], 夜: [] },
 cost = scheduleCost(schedule);
 let debate = [];
+const canceledMemorials=[];
 s = settleEnergy(s, cost);
 if (die <= 3)
 s = applyPackage(
@@ -9747,6 +10067,10 @@ o.opinions.map((v) => v.stance).join("、") +
 );
 }
 for (const id of ids) {
+const original=state.memorials.find(m=>m.id===id);
+if(!s.memorials.some(m=>m.id===id)&&original?.campaignOrder&&s.campaigns.find(w=>w.id===original.campaignOrder.warId)?.done){
+canceledMemorials.push(id);slotResults[slot].push(original.title+' · 战局已变，原拟军令收回');continue;
+}
 const decision = memorialDecision(action,id);
 const declared=s.memorials.find(m=>m.id===id)?.options.some(o=>o.consequence);
 result = resolveMemorial(s, id, decision.option, decision.remark, "处置奏报", intents.some(a=>a.inputId===slot+':remark:'+id&&a.type!=='other')?'无':decision.remarkKind);
@@ -9951,6 +10275,7 @@ entries: clone(s.ledger),
 notes,
 slotResults,
 debate,
+...(canceledMemorials.length?{canceledMemorials}:{}),
 facts: [...turnFacts(state, s, schedule, slotResults), ...s.intentResults.flatMap(r=>r.facts||[])],
 newMemorials: s.memorials.filter(
 (m) => !state.memorials.some((old) => old.id === m.id),
@@ -11060,6 +11385,8 @@ country = after.foreign.find((f) => f.id === w.country)?.name;
 if (!old) facts.push({ kind: "war", actors: [country], outcome: "宣战" });
 if (w.done && !old?.done)
 facts.push({ kind: "war", actors: [country], outcome: w.result });
+if(w.settlement?.status==='signed'&&old?.settlement?.status!=='signed')
+facts.push({kind:'war',actors:[country],outcome:'议约：'+w.settlement.label});
 }
 for (const t of after.threads)
 if (t.type === "边警" && !before.threads.some((o) => o.id === t.id))
@@ -12055,7 +12382,8 @@ return assigned;
 }
 function availableMemorials(s, editingSlot = null) {
 const assigned = memorialAssignments(s);
-return (s?.memorials || []).filter(m => !assigned.has(m.id) || assigned.get(m.id).slot === editingSlot);
+const personal=s?.campaigns.some(w=>w.personal&&!w.done);
+return (s?.memorials || []).filter(m => (!personal||m.campaignOrder)&&(!assigned.has(m.id) || assigned.get(m.id).slot === editingSlot));
 }
 function memorialCounts(s) {
 const pending = availableMemorials(s).length;
@@ -12088,6 +12416,7 @@ const { EDICTS, execution } = __load("src/core/edicts.js");
 const { globalYear } = __load("src/core/calendar.js");
 const { availableMemorials } = __load("src/ui/memorial-state.js");
 const { cabinetDraft } = __load("src/core/court.js");
+const { WAR_GOALS } = __load("src/core/campaign-rules.js");
 const ACTION_GROUPS = [
 ["朝政", ["上朝", "批折", "下旨", "任命"]],
 ["人事", ["召见", "宴请", "外交", "私下行事"]],
@@ -12110,7 +12439,7 @@ if (kind === "批折" && s.schedule.朝 && s.schedule.午) return "朝午已排�
 }
 if (kind === "亲征" && !s.campaigns.some(w=>!w.done)) return "无战事";
 if (kind === "选妃" && (!selectionYear(s) || !s.harem.candidates.length)) return "非选秀年";
-if (s.campaigns.some(w=>w.personal&&!w.done) && !["亲征","歇息"].includes(kind)) return "御驾在外";
+if (s.campaigns.some(w=>w.personal&&!w.done) && !["亲征","歇息"].includes(kind)&&kind!=='批折') return "御驾在外";
 return "";
 }
 function actionMeta(kind, s = null) {
@@ -12164,7 +12493,7 @@ if(a.kind==="宴请")totals.privy-=({俭:2,常:5,盛:12}[a.cost||"常"]||0);
 if(a.kind==="出巡")totals.privy-=6;
 if(a.kind==="私下行事"&&a.operation==="收买")totals.privy-=5;
 if(a.kind==="后宫"&&a.operation==="赏赐")totals.privy-=Number(a.amount)||2;
-if(a.kind==="外交"&&a.operation==="宣战"){totals.treasury-=25;totals.grain-=30;}
+if(a.kind==="外交"&&a.operation==="宣战"){const goal=WAR_GOALS[a.warGoal||'repel'];totals.treasury-=goal?.silver||25;totals.grain-=goal?.grain||30;}
 if(a.kind==="外交"&&a.operation==="和亲")totals.privy-=10;
 }
 return {totals,executions};
@@ -12216,6 +12545,7 @@ const { onDialogExit } = __load("src/ui/request-scope.js");
 const { $, esc, openDialog, closeDialog, toast } = __load("src/ui/common.js");
 const { forecastTurn, validateSchedule } = __load("src/core/turn.js");
 const { EDICTS, execution } = __load("src/core/edicts.js");
+const { campaignChoiceBlock } = __load("src/core/campaign-rules.js");
 const { cabinetDraft } = __load("src/core/court.js");
 const {
 memorialAssignments,
@@ -12433,7 +12763,7 @@ faction.demand +
 }
 function memorialOptions(s, m) {
 const options = m.options.map((o) => ({ ...o,
-disabled: ["treasury", "privy", "grain"].some(k => (s.nation[k] || 0) < -(o.effects?.[k] || 0))
+disabled: !!campaignChoiceBlock(s,m,o)||["treasury", "privy", "grain"].some(k => (s.nation[k] || 0) < -(o.effects?.[k] || 0))
 }));
 if (!options.some((o) => o.id === "hold"))
 options.push({ id: "hold", label: "留中", effects: {} });
@@ -12530,10 +12860,11 @@ o.id === "hold"
 : o.id === "discuss"
 ? o.disabled
 ? "已达再议次数，请裁处"
-: "发部再议，期限 +3 旬 · "+(freedomRules(s).referrals===Infinity?"次数不限":"最多"+freedomRules(s).referrals+"次")
+: (m.campaignOrder?'军情紧急，再议不延期限':'发部再议，期限 +3 旬')+' · '+
+(freedomRules(s).referrals===Infinity?'次数不限':'最多'+freedomRules(s).referrals+'次')
 : o.id === "remark"
 ? "识别嘉奖／申饬，原请款仍待准驳"
-: "无直接数值变化";
+: m.campaignOrder?'本旬不另支钱粮':'无直接数值变化';
 const tag =
 o.edictType && EDICTS[o.edictType]
 ? "执行度预估「" + execution(s, o.edictType, 11).label + "」"
@@ -13120,6 +13451,7 @@ const { edictBlock } = __load("src/core/edicts.js");
 const { energyLimit } = __load("src/core/emperor.js");
 const { memorialDialog } = __load("src/ui/memorials.js");
 const { selectionDescription } = __load("src/ui/view-model.js");
+const { WAR_GOALS, treatyProtected } = __load("src/core/campaign-rules.js");
 function actionDialog(s, kind, preferred, onSchedule, onTalk) {
 if (kind === "上朝" || kind === "批折") return memorialDialog(s,kind,preferred,onSchedule,null,{newBatch:true});
 if(s.regency&&!["批折","召见","私下行事","歇息"].includes(kind))throw new Error("摄政期间只能批折、召见、经筵或歇息");
@@ -13200,7 +13532,11 @@ opt(s.foreign) +
 .join("") +
 '</select><label for="envoy">正使</label><select id="envoy">' +
 opt(s.court.officials.filter((o) => o.alive)) +
-'</select><div id="bride-field"><label for="bride">和亲人选</label><select id="bride"><option value="">请选择成年未婚宗室女</option>' +
+'</select><div id="war-goal-field"><label for="war-goal">战争目标</label><select id="war-goal">'+
+Object.entries(WAR_GOALS).map(([id,g])=>'<option value="'+id+'">'+esc(g.label)+'</option>').join('')+
+'</select><p id="war-goal-hint" class="muted"></p><label for="war-province">筹粮州</label><select id="war-province">'+
+opt(s.nation.provinces)+'</select><p class="muted">若在战中向地方征粮，将由此州承担。</p></div>'+
+'<div id="bride-field"><label for="bride">和亲人选</label><select id="bride"><option value="">请选择成年未婚宗室女</option>' +
 opt([
 ...(s.harem.royalWomen || []).filter((w) => w.age >= 18 && !w.married),
 ...s.harem.children.filter(
@@ -13287,11 +13623,15 @@ x.label +
 if(kind==='下旨'){const blocked=edictBlock(s,$('#edict-type').value,$('#province').value||null);if(blocked)text+='；'+blocked;}
 if(kind==='外交'){
 const country=s.foreign.find(f=>f.id===$('#country').value),operation=$('#operation');
-for(const option of operation.options)option.disabled=country.status==='交战'&&!['接见','议和'].includes(option.value);
+for(const option of operation.options)option.disabled=country.status==='交战'&&!['接见','议和'].includes(option.value)||country.status==='停战待议'&&option.value!=='接见';
 if(operation.selectedOptions[0]?.disabled)operation.value='接见';
 const key=country.id+':'+operation.value;
 if(key!==breachTarget){$('#confirm-breach').checked=false;breachTarget=key;}
 text+='；'+country.frontier+'境 · '+country.status;
+const goal=WAR_GOALS[$('#war-goal').value];
+$('#war-goal-hint').textContent=goal.note+' 备军需银'+goal.silver+'万两、粮'+goal.grain+'万石；预计敌兵'+goal.enemy+'人，最长'+goal.rounds+'旬，行营钱粮另支。';
+if(operation.value==='宣战')text+='；备军银'+goal.silver+'万两、粮'+goal.grain+'万石';
+if(country.status==='停战待议')text+='；请先批复战后议约奏报';
 }
 if(kind==='下旨'&&$('#edict-text')?.value.trim())text='精力 '+rule.energy+'；御旨已拟，起驾后可查看办理结果与支出。';
 $("#action-estimate").textContent = text;
@@ -13299,7 +13639,9 @@ const show=(id,visible)=>$("#"+id)?.classList.toggle("hidden",!visible);
 show("edict-amount-field",["转内帑","转国库"].includes($("#edict-type")?.value));
 show("edict-child-field",$("#edict-type")?.value==="立储");
 show('edict-army-field',$('#edict-type')?.value==='征兵');
-show("breach-field",kind==="外交"&&$("#operation")?.value==="宣战"&&["婚盟","朝贡"].includes(s.foreign.find(f=>f.id===$("#country")?.value)?.status));
+show('war-goal-field',kind==='外交'&&$('#operation')?.value==='宣战');
+const other=s.foreign.find(f=>f.id===$('#country')?.value);
+show("breach-field",kind==="外交"&&$("#operation")?.value==="宣战"&&(["婚盟","朝贡"].includes(other?.status)||treatyProtected(other,s.turn)));
 show("bride-field",$("#operation")?.value==="和亲");
 show("harem-amount-field",$("#operation")?.value==="赏赐");
 };
@@ -13361,6 +13703,7 @@ envoy: val("envoy"),
 bride: val("bride"),
 });
 if(kind==="外交"&&$("#confirm-breach")?.checked)a.confirmBreach=true;
+if(kind==='外交'&&val('operation')==='宣战')Object.assign(a,{warGoal:val('war-goal'),levyProvince:val('war-province')});
 if (kind === "后宫")
 Object.assign(a, {
 person: val("person"),
@@ -13402,6 +13745,7 @@ const { selectionDescription } = __load("src/ui/view-model.js");
 const { annualBudget, wasteQuote,grainBudget } = __load("src/core/finance.js");
 const { esc, openDialog } = __load("src/ui/common.js");
 const { num, ledgerHTML, chapterHTML, chapterTitle, ambitionsHTML } = __load("src/ui/render.js");
+const { campaignsHTML, treatyHTML } = __load("src/ui/campaigns.js");
 function palacePanel(s, name) {
 if (!s) {
 openDialog(name, "<p>请先登基，方可进入殿阁。</p>");
@@ -13626,27 +13970,10 @@ num(f.power) +
 num(f.attitude) +
 "</p><small>" +
 esc(f.demand) +
-'</small>'+(f.trade&&f.trade.income>0&&f.trade.until>=s.turn?'<p>互市每季 '+num(f.trade.income)+' 万两 · 余 '+(f.trade.until-s.turn)+' 旬'+(f.status==='交战'?'（交战停收）':'')+'</p>':'')+'<p><button data-action="外交">遣使接见</button></p></div>',
+'</small>'+treatyHTML(s,f)+(f.trade&&f.trade.income>0&&f.trade.until>=s.turn?'<p>互市每季 '+num(f.trade.income)+' 万两 · 余 '+(f.trade.until-s.turn)+' 旬'+(f.status==='交战'?'（交战停收）':'')+'</p>':'')+'<p><button data-action="外交">遣使接见</button></p></div>',
 )
 .join("") +
-'</div><h3 class="section-spacer">在途战役</h3>' +
-s.campaigns
-.map(
-(w) =>
-'<div class="card"><h3>' +
-esc(w.title) +
-"</h3><p>第 " +
-w.round +
-" 旬 · " +
-esc(w.result || "交战中") +
-(w.personal ? " · 御驾亲征" : "") +
-"</p><p>敌兵 " +
-num(w.enemyTroops) +
-" · 留守 " +
-esc(official(w.regent)) +
-"</p></div>",
-)
-.join("");
+'</div><h3 class="section-spacer">战役与议约</h3>' +campaignsHTML(s);
 if (name === "内库") {
 const entries = [...s.volumes.flatMap((v) => v.chapters), ...s.history]
 .flatMap((h) => h.entries)
@@ -13840,6 +14167,41 @@ cards.slice(6).join("") +
 }
 
 return {palacePanel,fold};
+},
+"src/ui/campaigns.js":function(__load){
+const { esc } = __load("src/ui/common.js");
+const { WAR_GOALS } = __load("src/core/campaign-rules.js");
+const number=n=>Number(n).toLocaleString('zh-CN',{maximumFractionDigits:1});
+function treatyHTML(s,f){
+const t=f.treaty;if(!t)return '';
+const active=t.status==='active'&&s.turn<=t.until;
+const status=active?'履行中':t.status==='breached'?'失约撤军':'已结束';
+const protectedTurns=active?Math.max(0,t.truceUntil-s.turn):0;
+return '<div class="treaty-note"><strong>'+esc(t.label)+' · '+status+'</strong><p>'+
+(protectedTurns?'停战约定余 '+protectedTurns+' 旬':'当前没有停战保证')+
+(active?' · 约期余 '+Math.max(0,t.until-s.turn)+' 旬':'')+'</p>'+
+(active&&t.kind==='tribute'?'<p>驻军 '+number(t.garrison)+' 人 · 每月支银0.8万两、粮1万石；供养不足将撤军失约。</p>':'')+
+(active&&t.kind==='market'?'<p>互市每季收入2万两；对方实力每月恢复0.4。</p>':'')+'</div>';
+}
+function campaignsHTML(s){
+if(!s.campaigns.length)return '<p class="muted">暂无战役。宣战时可选择安边退敌、打通商路或迫使称臣。</p>';
+return '<div class="grid">'+s.campaigns.slice(-12).reverse().map(w=>{
+const pending=s.memorials.find(m=>m.campaignOrder?.warId===w.id);
+const goal=WAR_GOALS[w.warGoal],commander=s.court.officials.find(o=>o.id===w.commander)?.name||'随军将领';
+const order=w.orders?.at(-1),remaining=w.order?Math.max(0,w.order.untilRound-w.round):0;
+return '<article class="card campaign-card"><h3>'+esc(w.title)+'</h3><p>'+
+(goal?'目标：'+esc(goal.label)+' · ':'')+esc(w.result||'交战中')+
+(w.settlement?.status==='pending'?' · 条款待定':'')+(w.personal?' · 御驾在外':'')+'</p><p>已战 '+w.round+
+(goal?' / '+goal.rounds:'')+' 旬 · 胜负差 '+(w.score||0)+' · 敌兵 '+number(w.enemyTroops)+' 人</p>'+
+(goal?'<p>主将：'+esc(commander)+'</p>':'')+
+(order?'<p>最近军令：'+esc(order.label)+(remaining?'（还影响 '+remaining+' 轮交战）':'')+'</p>':'')+
+(w.settlement?.status==='signed'?'<p>议约：'+esc(w.settlement.label)+' · '+(w.goalAchieved?'原定目标已达成':'原定目标未达成')+'</p>':'')+
+(pending?'<button data-memorial="'+esc(pending.id)+'">批复'+(pending.campaignOrder.stage==='treaty'?'议约':'军报')+
+' · 余 '+Math.max(0,pending.due-s.turn)+' 旬</button>':'')+'</article>';
+}).join('')+'</div>';
+}
+
+return {treatyHTML,campaignsHTML};
 },
 "src/store/save.js":function(__load){
 const { restoreRecovery } = __load("src/store/preview-delta.js");
@@ -14278,6 +14640,7 @@ return {storedLayout,recoveryState,envelopeIdentity,sameEnvelope};
 },
 "src/ui/nation-overview.js":function(__load){
 const { esc, gameText, openDialog } = __load("src/ui/common.js");
+const { campaignsHTML, treatyHTML } = __load("src/ui/campaigns.js");
 const { metricGroups } = __load("src/ui/view-model.js");
 const { nationData, nationFlow, nationSeries } = __load("src/ui/nation-data.js");
 const { FREEDOM_RULES } = __load("src/core/freedom.js");
@@ -14348,7 +14711,9 @@ return top+section('钱粮底账与用度',budget,'按当前条件测算，不�
 section('近旬走势',period+charts,'只绘已有的连续旬次记录，纵轴按本段最低、最高值显示。')+
 section('钱粮来去',flowHTML(s,span,expanded),'近'+span+'旬及本旬已办事项，包含库间调拨；同一事项合并展示净变化。')+
 section('各州民情',figures([['总人口',number(d.population),'万人'],['有灾州郡',d.disaster],['州郡总数',d.provinces.length]])+provinces,'月税额是各州原定税额，季结实收还受吏治、灾情、减赋和民变影响。')+
-section('京营与四境',armies)+section('朝堂各派',factions)+section('外邦往来',foreign)+section('在途政务',projects)+section('当前战事',wars)+section('圣躬与储位',palace);
+section('京营与四境',armies)+section('朝堂各派',factions)+section('外邦往来',foreign)+section('在途政务',projects)+section('当前战事',wars)+
+section('战役与议约',campaignsHTML(s)+s.foreign.filter(f=>f.treaty).map(f=>'<h4>'+esc(f.name)+'</h4>'+treatyHTML(s,f)).join(''))+
+section('圣躬与储位',palace);
 }
 function openNationOverview(state) {
 let span=12,expanded=false;

@@ -12,7 +12,8 @@ export function memorialAssignments(s) {
 }
 export function availableMemorials(s, editingSlot = null) {
   const assigned = memorialAssignments(s);
-  return (s?.memorials || []).filter(m => !assigned.has(m.id) || assigned.get(m.id).slot === editingSlot);
+  const personal=s?.campaigns.some(w=>w.personal&&!w.done);
+  return (s?.memorials || []).filter(m => (!personal||m.campaignOrder)&&(!assigned.has(m.id) || assigned.get(m.id).slot === editingSlot));
 }
 export function memorialCounts(s) {
   const pending = availableMemorials(s).length;

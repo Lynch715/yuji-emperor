@@ -1,4 +1,5 @@
 import { postTitle, scenarioById } from "../core/scenarios.js";
+import { WAR_GOALS } from '../core/campaign-rules.js';
 // 文风：规则 + 范文。范文只示范笔法，人物与事件不得照搬；它们位于系统提示，
 // 选定笔法后保持稳定，同时延长可缓存前缀。
 export const STYLES = {
@@ -214,6 +215,12 @@ export function turnMessages(state, forecast) {
       剧情目标: a.objectives.filter((o) => o.type === "story" && !o.done).map((o) => ({ objectiveId: o.id, keywords: o.keywords })),
     })),
     玩家口谕裁决: (state.intentResults||[]).map(({type,status,actual,summary})=>({type,status,actual,summary})),
+    ...(state.campaigns.some(w=>w.campaignVersion===1)?{军情:state.campaigns.filter(w=>w.campaignVersion===1&&
+      (!w.done||w.settlement?.status==='pending'||before.campaigns.find(x=>x.id===w.id)?.settlement?.status!==w.settlement?.status))
+      .map(w=>({对手:state.foreign.find(f=>f.id===w.country)?.name,目标:WAR_GOALS[w.warGoal].label,方向:w.dir,已战:w.round,胜负差:w.score,
+       军令:w.orders.at(-1)?.label,结果:w.result,议约:w.settlement,目标达成:w.goalAchieved})),
+     现有条约:state.foreign.filter(f=>f.treaty).map(f=>({外邦:f.name,条款:f.treaty})),
+     战后叙事:'军事获胜不等于已签条约。停战待议时不能写已朝贡、开市或赔款到账；议约、驻军、归建只按本旬结果写。'}:{}),
     本旬前后变化: {
       国势: { 之前: nationSummary(before), 之后: nationSummary(state) },
       人物旧况: oldRoster.filter((line) => !newRoster.includes(line)),

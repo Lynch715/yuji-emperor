@@ -59,7 +59,9 @@ test('审计批次未涉及的核心、LLM、存储源码与阶段9前逐字一�
   // 第二轮审计 F3：用量指标记录缓存命中。
   'src/llm/client.js',
   // v13：补记小数变化时归一负零，保证 JSON 存档往返一致。
-  'src/core/audit.js']);
+  'src/core/audit.js',
+  // v16：将正式议约写为本旬战争事实，既有断言继续核验。
+  'src/core/facts.js']);
  for(const [file,sha]of Object.entries(protectedFiles))if(!hotfixFiles.has(file))assert.equal(createHash('sha256').update(readFileSync(file)).digest('hex'),sha,file);
  const css=readFileSync('src/ui/style.css','utf8'),end=css.indexOf('\n}');
  assert.ok(!/#[\da-fA-F]{3,8}\b|rgba?\(|hsla?\(/.test(css.slice(end+2)));
@@ -70,5 +72,7 @@ test('其余行动表单的日程序列化沿用改版前代码',()=>{
  const old=readFileSync('qa/stage9-legacy/actions.js','utf8'),fresh=readFileSync('src/ui/actions.js','utf8');
  const block=code=>{const a=code.indexOf('$("#action-form").onsubmit');return code.slice(code.indexOf('if (kind === "下旨")',a),code.indexOf('      onSchedule(val("action-slot"), a);',a));};
  const base=block(old),updated=block(fresh).replace(/      if\(kind==="任命"&&\$\("#pardon-person"\)\?\.checked\)a\.pardon=true;\n/,'').replace(/      if\(kind==="外交"&&\$\("#confirm-breach"\)\?\.checked\)a\.confirmBreach=true;\n/,'');
- assert.equal(updated.replace("          ...($('#edict-type').value==='征兵'?{armyTarget:val('edict-army')}:{}),\n",''),base);
+ const policies=updated.replace("          ...($('#edict-type').value==='征兵'?{armyTarget:val('edict-army')}:{}),\n",'')
+  .replace("      if(kind==='外交'&&val('operation')==='宣战')Object.assign(a,{warGoal:val('war-goal'),levyProvince:val('war-province')});\n",'');
+ assert.equal(policies,base);
 });

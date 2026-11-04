@@ -149,7 +149,8 @@ export function scenarioRuleValue(s,q) {
  if(q.type==='isHeir')return Number(person.health>0&&s.harem.heir===person.id);
  if(q.type==='childTutored')return Number(person.health>0&&s.court.officials.some(o=>o.id===person.tutor&&servingNow(s,o)));
  if(q.type==='countryWins')return wins(person.id);
- if(q.type==='settledCountry')return Number(person.status!=='交战'&&(['通好','朝贡','婚盟'].includes(person.status)||wins(person.id)>0));
+ if(q.type==='settledCountry')return Number(!['交战','停战待议'].includes(person.status)&&
+  (['通好','朝贡','婚盟'].includes(person.status)||wins(person.id)>0));
  return null;
 }
 export function goalConditionLabel(o) {

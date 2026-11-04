@@ -1672,6 +1672,15 @@ textarea.brush-input {
 .goal-conditions p {
   margin: 8px 0;
 }
+.treaty-note {
+  border-left: 2px solid var(--gold);
+  padding: 8px 12px;
+  margin-top: 12px;
+  overflow-wrap: anywhere;
+}
+.campaign-card p {
+  overflow-wrap: anywhere;
+}
 .paper .goal-conditions summary,
 .scroll .goal-conditions summary {
   color: var(--ink-muted);

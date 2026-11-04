@@ -42,15 +42,29 @@ export function quantityEvidence(f){
  s.nation.army.frontiers.forEach((b,i)=>armyOwners.push({id:b.dir,aliases:[b.dir+'境',b.dir+'边',b.dir+'军',b.name],values:[b.troops,...(f.entries||[]).filter(e=>e.path==='nation.army.frontiers.'+i+'.troops').flatMap(e=>[e.before,e.after])]}));
  for(const p of s.nation.provinces)armyOwners.push({aliases:[p.name],values:[p.garrison]});
  for(const w of s.campaigns||[]){const country=s.foreign.find(c=>c.id===w.country);armyOwners.push({aliases:[country?.name,w.title,...((s.campaigns||[]).filter(w=>!w.done).length===1?['敌军']:[])],values:[w.enemyTroops]});}
- for(const owner of armyOwners){owner.deltas=(s.intentResults||[]).filter(r=>['success','partial'].includes(r.status)&&r.type==='allocate'&&r.actual.resource==='troops'&&r.actual.destination===owner.id).map(r=>r.actual.amount);}
- return {sets,ageOwners,armyOwners,add};
+ for(const owner of armyOwners){
+  const path=owner.id==='capital'?'nation.army.capital.troops':'nation.army.frontiers.'+s.nation.army.frontiers.findIndex(b=>b.dir===owner.id)+'.troops';
+  owner.deltas=[...(s.intentResults||[]).filter(r=>['success','partial'].includes(r.status)&&r.type==='allocate'&&r.actual.resource==='troops'&&r.actual.destination===owner.id).map(r=>r.actual.amount),
+   ...(owner.id?(f.entries||[]).filter(e=>e.path===path).map(e=>Math.abs(e.delta)):[])];
+ }
+ const garrisonOwners=[];
+ for(const country of s.foreign){const t=country.treaty;if(!t)continue;
+  const changes=(f.entries||[]).filter(e=>e.path==='foreign.'+country.id+'.treaty.garrison');
+  const values=[t.garrison,...changes.flatMap(e=>[e.before,e.after])];
+  if(values.some(v=>v>0))garrisonOwners.push({name:country.name,aliases:[country.name,'驻'+country.name],values});
+ }
+ return {sets,ageOwners,armyOwners,garrisonOwners,add};
 }
 export function invalidQuantity(q,sentence,evidence){
  if(q.unit==='两'&&(/^[句声步眼行旁侧下回趟遍口天日个分笔字语言]/.test(sentence.slice(q.index+q.raw.length))||!/银|库|帑|款|饷|税|赏|拨|贿|俸|赋|钱粮|万两/.test(sentence)))return false;
  if(['人','名','位'].includes(q.unit)&&!/兵|丁|人口|户口|丁口|军|士卒|征发/.test(sentence))return false;
  // Historical ages are background; current object ages must match that object.
  if(q.kind==='age'&&/先帝|当年|昔年|那年|往年|早年|生前|追忆|曾经/.test(sentence))return false;
- const owners=q.kind==='age'?nearbyOwners(sentence,q.index,evidence.ageOwners):q.kind==='people'?nearbyOwners(sentence,q.index,evidence.armyOwners):null;
+ const garrisons=evidence.garrisonOwners||[];
+ const isGarrison=q.kind==='people'&&(/留驻|驻外|督贡|另留|留军/.test(sentence)||garrisons.some(o=>sentence.includes('驻'+o.name)||
+  /驻军/.test(sentence)&&sentence.includes(o.name)));
+ const owners=isGarrison?(nearbyOwners(sentence,q.index,garrisons).length?nearbyOwners(sentence,q.index,garrisons):garrisons.length===1?garrisons:[]):
+  q.kind==='age'?nearbyOwners(sentence,q.index,evidence.ageOwners):q.kind==='people'?nearbyOwners(sentence,q.index,evidence.armyOwners):null;
  const values=owners?(owners.length?owners.flatMap(o=>[...o.values,...(/征|调|增|补|损/.test(sentence)?o.deltas||[]:[])]):[]):[...evidence.sets[q.kind]];
  return !Number.isFinite(q.value)||!values.some(v=>Number.isFinite(v)&&Math.abs(Math.abs(v)-q.value)<0.01);
 }

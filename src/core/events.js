@@ -6,6 +6,8 @@ import { roll } from "./rng.js";
 import { applyPackage } from "./effects.js";
 import { quarterIndex } from "./finance.js";
 import {factionPowers} from './politics.js';
+import { campaignChoiceBlock } from './campaign-rules.js';
+import { applyCampaignDecision, expireCampaignPetition } from './campaigns.js';
 export function pickMemorialist(state, type, provinceId = null) {
   const eligible=state.court.posts.flatMap(post=>{
     const o=state.court.officials.find(o=>o.id===post.holder&&o.post===post.id&&o.alive&&o.health>0&&!o.jailed&&!o.retired);
@@ -103,10 +105,10 @@ export function resolveMemorial(
     if ((mem.referrals || 0) >= freedomRules(s).referrals)
       throw new Error("此折已发部再议"+freedomRules(s).referrals+"次，请准驳裁处");
     mem.referrals = (mem.referrals || 0) + 1;
-    mem.due += 3;
+    if(!mem.campaignOrder)mem.due += 3;
     const t = s.threads.find((t) => t.id === mem.threadId);
     if (t && t.stage !== "结束") t.stage = "搁置";
-    return { state: applyMemorialRemark(s,m,remark,remarkKind), note: m.title + " · 发部再议" + brushNote };
+    return { state: applyMemorialRemark(s,m,remark,remarkKind), note: m.title + " · 发部再议"+(mem.campaignOrder?'（军情期限不顺延）':'') + brushNote };
   }
   if (option === "remark") {
     return {state:applyMemorialRemark(state,m,remark,remarkKind),note:m.title+' · 朱批「'+String(remark).slice(0,100)+'」（原请款仍待准驳）'};
@@ -115,6 +117,7 @@ export function resolveMemorial(
     m.options.find((o) => o.id === option) ||
     m.options.find((o) => o.id === (option === "reject" ? "opt1" : "opt0"));
   if (!chosen) throw new Error("无此处置选项");
+  const blocked=campaignChoiceBlock(state,m,chosen);if(blocked)throw new Error(blocked);
   for(const [key,label]of [['treasury','国库'],['privy','内帑'],['grain','粮储']])
     if(chosen.effects[key]<0&&state.nation[key]<-chosen.effects[key])throw new Error(label+'不足以办理此事');
   const regional=m.provinceId&&state.nation.provinces.some(p=>p.id===m.provinceId)&&Number.isFinite(chosen.effects.morale);
@@ -125,6 +128,7 @@ export function resolveMemorial(
     sourcePrefix + "：" + m.title + " / " + chosen.label,
   );
   s.memorials = s.memorials.filter((x) => x.id !== id);
+  if(m.campaignOrder)s=applyCampaignDecision(s,m,chosen);
   s.stats.petitions++;
   const t = s.threads.find((x) => x.id === m.threadId);
   if(m.type==='致仕'&&chosen.id==='opt0'){
@@ -154,6 +158,7 @@ function applyMemorialRemark(state,memorial,remark,kind){
 export function expireMemorials(state) {
   let s = clone(state);
   for (const m of s.memorials.filter((m) => m.due < s.turn)) {
+    if(m.campaignOrder){s=expireCampaignPetition(s,m);continue;}
     if(m.type==='京畿民变' && !(s.nation.morale<18&&s.nation.treasury<10)) {
       s.threads=s.threads.map(t=>t.id===m.threadId?{...t,stage:'结束',updated:s.turn,result:'危机解除'}:t);
       continue;

@@ -7,6 +7,7 @@ import {selectAmbitions,evaluateAmbitions,goalsForScenario} from '../src/core/am
 import {scenarioGoals,scenarioRuleValue} from '../src/core/scenario-goals.js';
 import {initialTurn,forecastTurn,commitTurn} from '../src/core/turn.js';
 import {diplomacy,advanceCampaigns} from '../src/core/foreign.js';
+import {resolveMemorial} from '../src/core/events.js';
 import {succeedEmperor} from '../src/core/succession.js';
 import {grainBudget} from '../src/core/finance.js';
 import {turnMessages} from '../src/llm/prompts.js';
@@ -146,6 +147,7 @@ test('北击匈奴只认该外邦的完整胜仗，实际宣战及战役结算�
   s.turn++;const border=s.nation.army.frontiers.find(b=>b.dir==='北');border.troops=500000;border.readiness=100;border.threat=20;
   s.nation.treasury=1000;s.nation.grain=1000;s=diplomacy(s,{operation:'宣战',country:q.id,confirmBreach:true},20).state;
   for(let j=0;j<6;j++)s=advanceCampaigns(s);
+  s=resolveMemorial(s,s.memorials.find(m=>m.campaignOrder?.stage==='treaty').id,'peace').state;
  }
  assert.equal(scenarioRuleValue(s,q),2);assert.equal(evaluateAmbitions(s).ambitions[0].status,'达成');
 });

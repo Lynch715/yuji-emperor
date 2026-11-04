@@ -117,7 +117,8 @@ export function validateSchedule(state, schedule) {
   if (
     state.campaigns.some((w) => w.personal && !w.done) &&
     count &&
-    Object.values(schedule).some((a) => a && !["亲征", "歇息"].includes(a.kind))
+    Object.values(schedule).some((a) => a && !["亲征", "歇息"].includes(a.kind) &&
+      !(a.kind==='批折'&&a.memorials?.length&&a.memorials.every(id=>state.memorials.find(m=>m.id===id)?.campaignOrder)))
   )
     throw new Error("亲征期间不能在京中安排其他行动");
   return true;
@@ -152,6 +153,7 @@ function forecastDraft(state, schedule, intents = []) {
     slotResults = { 朝: [], 午: [], 夜: [] },
     cost = scheduleCost(schedule);
   let debate = [];
+  const canceledMemorials=[];
   s = settleEnergy(s, cost);
   if (die <= 3)
     s = applyPackage(
@@ -193,6 +195,10 @@ function forecastDraft(state, schedule, intents = []) {
         );
       }
       for (const id of ids) {
+        const original=state.memorials.find(m=>m.id===id);
+        if(!s.memorials.some(m=>m.id===id)&&original?.campaignOrder&&s.campaigns.find(w=>w.id===original.campaignOrder.warId)?.done){
+          canceledMemorials.push(id);slotResults[slot].push(original.title+' · 战局已变，原拟军令收回');continue;
+        }
         const decision = memorialDecision(action,id);
         const declared=s.memorials.find(m=>m.id===id)?.options.some(o=>o.consequence);
         result = resolveMemorial(s, id, decision.option, decision.remark, "处置奏报", intents.some(a=>a.inputId===slot+':remark:'+id&&a.type!=='other')?'无':decision.remarkKind);
@@ -398,6 +404,7 @@ function forecastDraft(state, schedule, intents = []) {
     notes,
     slotResults,
     debate,
+    ...(canceledMemorials.length?{canceledMemorials}:{}),
     facts: [...turnFacts(state, s, schedule, slotResults), ...s.intentResults.flatMap(r=>r.facts||[])],
     newMemorials: s.memorials.filter(
       (m) => !state.memorials.some((old) => old.id === m.id),

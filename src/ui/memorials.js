@@ -5,6 +5,7 @@ import { onDialogExit } from "./request-scope.js";
 import { $, esc, openDialog, closeDialog, toast } from "./common.js";
 import { forecastTurn, validateSchedule } from "../core/turn.js";
 import { EDICTS, execution } from "../core/edicts.js";
+import { campaignChoiceBlock } from '../core/campaign-rules.js';
 import { cabinetDraft } from "../core/court.js";
 import {
   memorialAssignments,
@@ -222,7 +223,7 @@ export function factionDemandReason(s, speaker, memorial) {
 }
 export function memorialOptions(s, m) {
   const options = m.options.map((o) => ({ ...o,
-    disabled: ["treasury", "privy", "grain"].some(k => (s.nation[k] || 0) < -(o.effects?.[k] || 0))
+    disabled: !!campaignChoiceBlock(s,m,o)||["treasury", "privy", "grain"].some(k => (s.nation[k] || 0) < -(o.effects?.[k] || 0))
   }));
   if (!options.some((o) => o.id === "hold"))
     options.push({ id: "hold", label: "留中", effects: {} });
@@ -319,10 +320,11 @@ export function memorialHTML(s, session) {
           : o.id === "discuss"
             ? o.disabled
               ? "已达再议次数，请裁处"
-              : "发部再议，期限 +3 旬 · "+(freedomRules(s).referrals===Infinity?"次数不限":"最多"+freedomRules(s).referrals+"次")
+              : (m.campaignOrder?'军情紧急，再议不延期限':'发部再议，期限 +3 旬')+' · '+
+                (freedomRules(s).referrals===Infinity?'次数不限':'最多'+freedomRules(s).referrals+'次')
             : o.id === "remark"
               ? "识别嘉奖／申饬，原请款仍待准驳"
-              : "无直接数值变化";
+              : m.campaignOrder?'本旬不另支钱粮':'无直接数值变化';
       const tag =
         o.edictType && EDICTS[o.edictType]
           ? "执行度预估「" + execution(s, o.edictType, 11).label + "」"

@@ -5,6 +5,7 @@ import { applyPackage, clamp } from "./effects.js";
 import { uniqueName } from "./names.js";
 import { roll, check } from "./rng.js";
 import {factionPowers} from './politics.js';
+import { campaignChoiceBlock } from './campaign-rules.js';
 export function strongmanCandidate(s){
  const candidates=s.court.officials.filter(o=>o.alive&&o.health>0&&!o.retired&&!o.jailed&&s.court.posts.some(p=>p.holder===o.id&&p.id===o.post));
  return candidates.map(o=>({o,power:s.court.factions.find(f=>f.id===o.faction)?.power||0}))
@@ -466,6 +467,7 @@ export function proxyMemorial(state, options = {}) {
         .filter(
           (o) =>
             o.id !== "hold" &&
+            !campaignChoiceBlock(state,m,o) &&
             ["treasury","privy","grain"].every(k=>state.nation[k]>=Math.max(0,-(o.effects?.[k]||0))),
         )
         .map((o) => ({ m, o, score: factionOptionScore(faction, m, o) })),
@@ -500,7 +502,7 @@ export function cabinetDraft(state, memorial) {
     (k) => (state.nation[k] || 0) >= Math.max(0, -(o.effects?.[k] || 0)));
   const ranked = memorial.options
     .map((o, i) => ({ o, i }))
-    .filter(({ o }) => o.id !== "hold" && affordable(o))
+    .filter(({ o }) => o.id !== "hold" && affordable(o) && !campaignChoiceBlock(state,memorial,o))
     .map((x) => ({ ...x, score: faction ? factionOptionScore(faction, memorial, x.o) : 0 }))
     .sort((a, b) => b.score - a.score || a.i - b.i);
   if (!ranked.length) return null;

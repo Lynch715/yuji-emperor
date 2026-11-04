@@ -3,6 +3,7 @@ import { selectionDescription } from "./view-model.js";
 import { annualBudget, wasteQuote,grainBudget } from "../core/finance.js";
 import { esc, openDialog } from "./common.js";
 import { num, ledgerHTML, chapterHTML, chapterTitle, ambitionsHTML } from "./render.js";
+import { campaignsHTML, treatyHTML } from './campaigns.js';
 export function palacePanel(s, name) {
   if (!s) {
     openDialog(name, "<p>请先登基，方可进入殿阁。</p>");
@@ -227,27 +228,10 @@ export function palacePanel(s, name) {
             num(f.attitude) +
             "</p><small>" +
             esc(f.demand) +
-            '</small>'+(f.trade&&f.trade.income>0&&f.trade.until>=s.turn?'<p>互市每季 '+num(f.trade.income)+' 万两 · 余 '+(f.trade.until-s.turn)+' 旬'+(f.status==='交战'?'（交战停收）':'')+'</p>':'')+'<p><button data-action="外交">遣使接见</button></p></div>',
+            '</small>'+treatyHTML(s,f)+(f.trade&&f.trade.income>0&&f.trade.until>=s.turn?'<p>互市每季 '+num(f.trade.income)+' 万两 · 余 '+(f.trade.until-s.turn)+' 旬'+(f.status==='交战'?'（交战停收）':'')+'</p>':'')+'<p><button data-action="外交">遣使接见</button></p></div>',
         )
         .join("") +
-      '</div><h3 class="section-spacer">在途战役</h3>' +
-      s.campaigns
-        .map(
-          (w) =>
-            '<div class="card"><h3>' +
-            esc(w.title) +
-            "</h3><p>第 " +
-            w.round +
-            " 旬 · " +
-            esc(w.result || "交战中") +
-            (w.personal ? " · 御驾亲征" : "") +
-            "</p><p>敌兵 " +
-            num(w.enemyTroops) +
-            " · 留守 " +
-            esc(official(w.regent)) +
-            "</p></div>",
-        )
-        .join("");
+      '</div><h3 class="section-spacer">战役与议约</h3>' +campaignsHTML(s);
   if (name === "内库") {
     const entries = [...s.volumes.flatMap((v) => v.chapters), ...s.history]
       .flatMap((h) => h.entries)
