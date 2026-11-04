@@ -2852,3 +2852,9 @@ button.primary:not(:disabled):active {
   .scene-dialog .action-document {display:none;}
   .scene-recap {max-height:17rem;}
 }
+
+.scene-changes,.scene-memory-links {display:flex;flex-wrap:wrap;gap:0.5rem;margin:0.7rem 0;}
+.scene-changes {font:var(--font-small)/1.8 var(--sans);color:var(--ink-muted);}
+.memory-entry {border-top:var(--hairline) solid var(--paper-line);padding:1rem 0;}
+.memory-entry p {white-space:pre-wrap;overflow-wrap:anywhere;}
+.scene-memory-links button,.memory-entry button {min-height:44px;}

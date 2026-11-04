@@ -40,3 +40,7 @@ qa/v17/*
 !qa/v18/
 qa/v18/*
 !qa/v18/summary.json
+
+!qa/v19/
+qa/v19/*
+!qa/v19/summary.json

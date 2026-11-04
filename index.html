@@ -2853,6 +2853,11 @@ text-indent:0;
 .scene-dialog .action-document {display:none;}
 .scene-recap {max-height:17rem;}
 }
+.scene-changes,.scene-memory-links {display:flex;flex-wrap:wrap;gap:0.5rem;margin:0.7rem 0;}
+.scene-changes {font:var(--font-small)/1.8 var(--sans);color:var(--ink-muted);}
+.memory-entry {border-top:var(--hairline) solid var(--paper-line);padding:1rem 0;}
+.memory-entry p {white-space:pre-wrap;overflow-wrap:anywhere;}
+.scene-memory-links button,.memory-entry button {min-height:44px;}
     </style>
   </head>
   <body>
@@ -2865,6 +2870,7 @@ text-indent:0;
     >
     <script>
       (() => { "use strict"; const __modules = {"src/ui/app.js":function(__load){
+const {openNPCMemory} = __load("src/ui/memories.js");
 const {forecastScene,commitScene,latestScene,sceneInput,sceneOutcomeText,sceneBudget} = __load("src/core/scenes.js");
 const {sceneMessages,mockSceneNarrative} = __load("src/llm/scenes.js");
 const { talkPeople } = __load("src/core/text.js");
@@ -3846,7 +3852,9 @@ guard();
 const sl=b.dataset.editReviewSlot,a=state.schedule[sl];
 if(!a||!['上朝','批折'].includes(a.kind))throw new Error('原拟批已撤下，请重新选择奏报。');
 memorialDialog(state,a.kind,sl,(which,next)=>arrange(which,next));
-} else if (b.dataset.scene) openScene(b.dataset.scene);
+} else if(b.dataset.personMemory)openNPCMemory(state,b.dataset.personMemory);
+else if(b.dataset.memoryScene){const h=[...state.volumes.flatMap(v=>v.chapters),...state.history].find(h=>h.scenes?.some(r=>r.id===b.dataset.memoryScene));if(h)openDialog('过往一幕','<article class="paper">'+chapterHTML(h,state.ambitions)+'</article>');else toast('这段经历的原文暂未载入，可以先看往事摘要。');}
+else if (b.dataset.scene) openScene(b.dataset.scene);
 else if (b.dataset.talk) startTalk(b.dataset.talk);
 else if (b.dataset.tutor) {
 guard();
@@ -3996,94 +4004,102 @@ render();
 
 return {};
 },
-"src/core/scenes.js":function(__load){
-const {clone,assertState,migrate,VERSION} = __load("src/core/state.js");
-const {roll,check} = __load("src/core/rng.js");
-const {adjudicate} = __load("src/core/freedom.js");
-const {resolveIntents} = __load("src/core/intents.js");
-const {auditChanges} = __load("src/core/audit.js");
-const {canVisit} = __load("src/core/harem.js");
-const SCENE_ENERGY=1;
-function scenePeople(s,inactive=false){return [...s.court.officials.filter(o=>inactive||o.alive&&o.health>0),...s.harem.consorts.filter(c=>inactive||c.health>0&&!c.retired),...s.harem.children.filter(c=>inactive||c.health>0),...s.foreign.map(f=>({...f,name:f.ruler||f.name}))];}
-function sceneBlock(s,a,historical=false){
-const recall=historical&&/^(?:接着写|继续)/.test(a.text||'')||historical&&/追忆|回忆|回想|善后|后事|收殓/.test(a.text||'');
-if(!Array.isArray(a.people)||new Set(a.people).size!==a.people.length||a.people.some(id=>!scenePeople(s,recall).some(p=>p.id===id)))return '请选择名册中仍可参与的人物';
-if(typeof a.text!=='string'||!a.text.trim()||a.text.length>8000)return '请写下八千字以内的情节梗概';
-if(a.place!==undefined&&(typeof a.place!=='string'||a.place.length>120))return '地点请写在一百二十字以内';
-const affirmative=a.text.split(/[，。；！？\n]/).filter(t=>!/(不必|不要|无需|无须|不得|不可|不宜|不想|不愿|不能|勿|毋|未曾|没有)/.test(t)).join('。');
-if(/侍寝|临幸|圆房|同寝|共枕|同房|行房|交欢|交合|性行为|性交|交媾|床笫|鱼水之欢|共赴云雨|巫山云雨|共度春宵/.test(affirmative)&&(a.people.length!==1||!canVisit(s,s.harem.consorts.find(c=>c.id===a.people[0]))))return '此时不能安排侍寝，可以改为探望或交谈';
-return '';
+"src/ui/memories.js":function(__load){
+const {npcMemories} = __load("src/core/memory.js");
+const {socialNPCs,emperorKey} = __load("src/core/social-rules.js");
+const {esc,openDialog} = __load("src/ui/common.js");
+function memoryButton(id,name=''){return '<button data-person-memory="'+esc(id)+'">'+esc(name?name+'的往事':'记得的事')+'</button>';}
+function relationName(s,id){return socialNPCs(s).find(p=>p.id===id)?.name||'';}
+function socialChangesHTML(s,changes=[]){
+if(!changes.length)return '';
+return '<div class="scene-changes" aria-label="相处变化">'+changes.map(c=>'<span>'+esc(relationName(s,c.personId))+' · '+esc(c.field==='relation'?'与'+relationName(s,c.withId)+'的关系':s.foreign.some(f=>f.id===c.personId)?'态度':'好感')+' '+(c.delta>0?'+':'')+Number(c.delta.toFixed(2))+'（'+esc(c.reason)+'）</span>').join('')+'</div>';
 }
-function resolveScene(state,action,actions,slot,source,previous=null){
-const blocked=sceneBlock(state,action,!!previous);if(blocked)throw new Error(blocked);
-const people=action.people.map(id=>{const p=scenePeople(state,true).find(p=>p.id===id);return {id,name:p.name};});
-let s=clone(state),results=[],facts=[],outcome;
-const key=a=>JSON.stringify(['type','targetId','postId','countryId','operation','resource','amount','source','destination','edictType','province'].map(k=>a[k]??null));
-const real=actions.filter(a=>a.type!=='other');
-if(real.length){
-const priorResults=previous?[...(previous.results||[]),...previous.steps.flatMap(t=>t.results)]:[],reuse=new Map();
-const fresh=real.filter(a=>{const r=!/再拨|再赏|追加|另拨|另赏|再给/.test(a.text)&&priorResults.find(r=>r.actionKey===key(a));if(r){reuse.set(a.id,r);return false;}return true;});
-const chapter=previous?state.history.at(-1):null;
-const favorHistory=chapter?[...(chapter.intentResults||[]),...chapter.entries.filter(e=>e.source==='模型人物反应建议：引擎限额采纳'&&/^official\..+\.favor$/.test(e.path)).map((e,i)=>({id:chapter.id+':reaction:'+i,type:'favor',status:'success',actual:{targetId:e.path.split('.')[1],amount:e.delta}}))]:[];
-const r=resolveIntents(s,fresh,{slot,source,favorHistory});s=r.state;r.results.forEach((r,i)=>r.actionKey=key(fresh[i]));
-results=real.map(a=>reuse.has(a.id)?{...reuse.get(a.id),reused:true}:r.results[fresh.findIndex(x=>x.id===a.id)]);facts=[...r.facts,...[...reuse.values()].flatMap(r=>r.facts||[])];
-const completed=results.filter(r=>['success','partial'].includes(r.status));
-outcome={status:!completed.length?'failed':completed.length<results.length||results.some(r=>r.status==='partial')?'partial':'success',die:results.find(r=>r.die)?.die??null,...(results.every(r=>r.reused)?{reused:true}:{}),...(results.some(r=>r.cost&&(!r.reused||results.every(x=>x.reused)))?{cost:results.filter(r=>r.cost&&(!r.reused||results.every(x=>x.reused))).map(r=>r.cost).join('；')}:{})};
-}else if(previous&&/^(?:接着写|继续|继续写|继续描写|继续这(?:一)?段(?:情节)?)[。！\s]*$/.test(action.text.trim())){outcome={...(previous.steps.at(-1)?.outcome||previous.outcome),reused:true};
-}else{
-const people=action.people.map(id=>scenePeople(s,true).find(p=>p.id===id));
-const opposition=people.length?people.reduce((n,p)=>n+(p.abilities?.权谋??p.scheming??30),0)/people.length:0;
-const favor=people.length?people.reduce((n,p)=>n+(p.favor??p.attitude??50),0)/people.length/5:10;
-const attr=/试探|调查|套话|揭穿|逼问/.test(action.text)?'权谋':/吟诗|作诗|赋诗|书画/.test(action.text)?'文采':'魅力';
-const r=roll(s);s=r.state;
-const judged=adjudicate(s,check(s.emperor.talents[attr],r.value,'一般',opposition,favor),action.people[0]);s=judged.state;
-outcome={status:judged.verdict.partial?'partial':judged.verdict.success?'success':'failed',die:r.value,...(judged.verdict.cost?{cost:judged.verdict.cost}:{})};
+function npcMemoryHTML(s,id){
+const p=socialNPCs(s).find(p=>p.id===id);if(!p)return '<p>名册中没有此人。</p>';
+const memories=npcMemories(s,id).filter(m=>['scene','scene-summary'].includes(m?.type)).sort((a,b)=>b.turn-a.turn||b.order-a.order);
+const relationships=Object.entries(p.relations||{}).filter(([other])=>relationName(s,other)).sort((a,b)=>a[1]-b[1]);
+const affinity=p.favor??p.attitude??p.relations?.[emperorKey(s)]??50;
+return '<article class="person-memories"><h3>'+esc(p.name)+'</h3><p>对当今天子的'+(p.attitude!==undefined?'态度':'好感')+' '+Number(affinity.toFixed(2))+'</p><h4>与他人的关系</h4>'+
+(relationships.length?'<ul>'+relationships.map(([other,v])=>'<li>'+esc(relationName(s,other))+'：'+(v>=65?'亲近':v<=35?'不睦':'平常')+' · '+Number(v.toFixed(2))+'</li>').join('')+'</ul>':'<p class="muted">尚无特别的往来。</p>')+
+'<h4>记得的事</h4>'+(memories.length?memories.map(m=>'<section class="memory-entry"><p class="muted">'+esc(m.era?.name?m.era.name+m.era.year+'年'+m.era.month+'月':'第'+m.turn+'旬')+(m.type==='scene-summary'?' · 相似往事 '+m.count+'次':'')+'</p><p>'+esc(m.summary)+'</p><button data-memory-scene="'+esc(m.sceneId)+'">看这段经历</button></section>').join(''):'<p class="muted">还没有一起经历过值得记下的事情。</p>')+'</article>';
 }
-facts.push({kind:'scene_result',slot,status:outcome.status});
-return {state:s,results,facts,record:{slot,people,place:action.place||'',text:action.text.trim(),outcome,results,steps:[]}};
+function openNPCMemory(s,id){openDialog('人物往事',npcMemoryHTML(s,id));}
+
+return {memoryButton,relationName,socialChangesHTML,npcMemoryHTML,openNPCMemory};
+},
+"src/core/memory.js":function(__load){
+const {clone} = __load("src/core/state.js");
+const {socialNPCs} = __load("src/core/social-rules.js");
+const {textSentences} = __load("src/core/text.js");
+const PRIVATE=/心想|暗想|心中|心底|暗自|私下|背地|未说出口|不为人知|秘密|内心|故意欺骗|骗过/;
+function publicMemoryQuote(prose,name){
+return textSentences(prose).filter(t=>t.length>=8&&t.length<=160&&!PRIVATE.test(t)&&(t.includes(name)||/[「“]/.test(t))).at(-1)||'';
 }
-function latestScene(s,id){const h=s.history.at(-1);return !s.talks.some(t=>t.turn===s.turn)&&h?.turn===s.turn?h.scenes?.find(r=>r.id===id):null;}
-function sceneInput(s,r,text){return {id:r.id+':'+(r.steps.length+1),slot:r.slot,text,people:r.people.map(p=>p.id),scene:true,place:r.place};}
-function sceneBudget(s){return {used:0,...(s.history.at(-1)?.rewriteAttempted?{rewriteAttempted:true}:{})};}
-function forecastScene(state,id,text,actions=[]){
-if(state.pending)throw new Error('请先续完正在进行的故事');
-if(state.ending)throw new Error('本朝已封卷');
-const record=latestScene(state,id);if(!record)throw new Error('这段情节已经过去，请另排新的情节');
-const input=sceneInput(state,record,text),turnId=record.id+':续'+(record.steps.length+1)+':'+state.revision;
-const r=resolveScene(state,{people:input.people,place:input.place,text},actions.filter(a=>a.inputId===input.id),record.slot,turnId,record);
-const entries=auditChanges(state,r.state,r.state.ledger.slice(state.ledger.length),'自拟情节：接着写');
-const s=r.state;s.revision++;s.pending=null;s.turnBudget=null;s.ledger=[...state.ledger,...entries];
-delete s.history;delete s.volumes;
-assertState(s);
-return {kind:'scene',historyDetached:true,turnId,runId:state.runId,baseTurn:state.turn,baseRevision:state.revision,baseFingerprint:JSON.stringify({rng:state.rng,turn:state.turn,revision:state.revision}),sceneId:id,chapterId:state.history.at(-1).id,slot:record.slot,request:text.trim(),sequence:record.steps.length+1,outcome:r.record.outcome,results:r.results,state:s,entries,die:r.record.outcome.die,fate:'情节续写',facts:r.facts,newMemorials:[],notes:[],slotResults:{朝:[],午:[],夜:[],[record.slot]:[sceneOutcomeText(r.record.outcome),...r.results.map(r=>r.summary)]},schedule:{}};
+function memoryEntry(s,r,phase,owner,prose,notes=[],legacy=false,era=null){
+const events=(phase.social||[]).filter(e=>e.targetId===owner.id||e.otherId===owner.id);
+const event=events.find(e=>e.kind==='humiliate'||e.kind==='deceive'&&e.status!=='success')||events[0];
+const hard=(phase.results||[]).filter(x=>['success','partial'].includes(x.status)&&!x.reused);
+const quote=notes.find(n=>n.personId===owner.id)?.evidence||publicMemoryQuote(prose,owner.name);
+const secret=event?.kind==='deceive'&&event.status==='success';
+const place=r.place?'在'+r.place:'在御前',emperor=legacy?'当时的皇帝':r.emperorName||s.emperor.name;
+const peer=event?.otherId?socialNPCs(s).find(p=>p.id===(event.targetId===owner.id?event.otherId:event.targetId))?.name||'另一位当事人':'';
+const phrase=secret?'听过'+emperor+'的一番解释':event?.kind==='reconcile'?emperor+'曾从中调解与'+peer+'的误会':event?.kind==='quarrel'?'曾与'+peer+'起过争执':event?.kind==='cooperate'?'曾与'+peer+'一道办事':event?.kind==='apologize'?emperor+'曾向其赔礼':event?.kind==='humiliate'?'曾被'+emperor+'斥责':event?.kind==='comfort'?'曾受'+emperor+'安慰':event?.kind==='protect'?'曾得'+emperor+'维护':event?.kind==='deceive'?'曾对'+emperor+'的一番话起过疑心':'曾与'+emperor+'相处';
+const result=phase.outcome.status==='failed'?'，那回未能把话说开。':phase.outcome.status==='partial'?'，虽有转机，仍留了些难处。':'。';
+const detail=secret?'':quote||hard.map(x=>x.summary).join('；');
+return {type:'scene',id:phase.id+':'+owner.id,sceneId:r.id,turn:phase.turn??s.turn,order:phase.sequence||0,kind:secret?'shared':event?.kind||'shared',otherId:peer?(event.targetId===owner.id?event.otherId:event.targetId):'',emperorId:r.emperorId||'',emperorName:legacy?'当时的皇帝':r.emperorName||s.emperor.name,people:r.people.map(p=>p.id),summary:(place+'，'+phrase+result+(detail?' '+detail:'')).slice(0,500),importance:hard.length||/承诺|约定|答应|约好|许诺/.test(detail)?3:event?2:1,...(era?{era:structuredClone(era)}:{})};
 }
-function sceneOutcomeText(o){return ({success:'如愿',partial:'有所进展，也有代价',failed:'未能如愿'}[o.status])+(o.cost?'：'+o.cost+(o.reused?'（此前已承担）':''):'');}
-function commitScene(state,f,narrative){
-if(state.receipts.includes(f.turnId))return clone(state);
-if(f.kind!=='scene'||state.runId!==f.runId||f.state.runId!==state.runId||f.state.turn!==state.turn||f.state.revision!==state.revision+1||state.turn!==f.baseTurn||state.revision!==f.baseRevision||f.baseFingerprint!==JSON.stringify({rng:state.rng,turn:state.turn,revision:state.revision})||!latestScene(state,f.sceneId)||state.history.at(-1).id!==f.chapterId)throw new Error('这段续写已经过期，不能写入此进度');
-const prose=narrative.chapter?.[f.slot]?.trim();if(!prose||prose.length>2400)throw new Error('情节尚未续完，请重试');
-const s=f.state.v<VERSION?migrate(f.state):clone(f.state);s.v=VERSION;
-if(f.historyDetached){s.history=clone(state.history);s.volumes=[...state.volumes];s.volumeIndex=[...(state.volumeIndex||[])];}
-const h=s.history.at(-1),r=h.scenes.find(r=>r.id===f.sceneId);r.steps.push({id:f.turnId,sequence:f.sequence,request:f.request,prose,outcome:clone(f.outcome),results:clone(f.results),entries:clone(f.entries)});
-if(state.turnBudget?.rewriteAttempted)h.rewriteAttempted=true;
-h.entries.push(...clone(f.entries));h.settlement??={slotResults:{}};h.settlement.slotResults[f.slot]??=[];h.settlement.slotResults[f.slot].push('接着写 · '+sceneOutcomeText(f.outcome),...f.results.map(r=>r.summary));
-rememberScene(s,r,prose);
-h.settlement.facts=[...(h.settlement.facts||[]),...clone(f.facts)];
-for(const result of s.intentResults)if(result.turn===s.turn&&f.results.some(r=>r.id===result.id))result.sceneCommitted=true;
-s.receipts.push(f.turnId);s.pending=null;s.turnBudget=null;
-// Scene edits must survive the next turn without being applied again.
-s.interimEntries=[...(state.interimEntries||[])];
-assertState(s);return s;
+function compactMemories(entries){
+const legacy=entries.filter(m=>!['scene','scene-summary'].includes(m?.type));
+const summaries=new Map(entries.filter(m=>m?.type==='scene-summary').map(m=>[m.id,structuredClone(m)]));
+const recent=[...new Map(entries.filter(m=>m?.type==='scene').map(m=>[m.id,structuredClone(m)])).values()].sort((a,b)=>a.turn-b.turn||a.order-b.order);
+while(recent.length>16){
+// Consequential acts and witnessed promises retain their own summaries.
+const old=recent.shift(),key='mem:'+(old.importance>=3?old.id:old.kind+':'+old.otherId+':'+old.emperorId);
+const previous=summaries.get(key);
+const first=previous?.first||old.summary,last=old.summary;
+summaries.set(key,{...old,type:'scene-summary',id:key,firstTurn:previous?.firstTurn??old.turn,count:(previous?.count||0)+1,first,last,summary:(first+(first===last?'':'；后来还记得：'+last)).slice(0,1000)});
 }
-function rememberScene(s,r,prose){
-if(!prose)return;
-const key='共同经历:'+r.id;s.facts=s.facts.filter(f=>f.key!==key);
-s.facts.push({subject:r.people.map(p=>p.name).join('、')||s.emperor.name,key,value:String(prose).slice(0,350),turn:s.turn});s.facts=s.facts.slice(-100);
+return [...legacy,...summaries.values(),...recent];
+}
+function legacyEntries(s,id){
+const owner=socialNPCs(s).find(p=>p.id===id);if(!owner)return [];
+const out=[];
+for(const h of [...(s.volumes||[]).flatMap(v=>v.chapters),...(s.history||[])])for(const r of h.scenes||[]){
+if(!r.people.some(p=>p.id===id))continue;
+if(r.memoryVersion!==19)out.push(memoryEntry(s,r,{...r,turn:h.turn},owner,h.chapter?.[r.slot],r.memoryNotes||[],true,h.era));
+for(const t of r.steps||[])if(t.memoryVersion!==19)out.push(memoryEntry(s,r,{...t,turn:h.turn},owner,t.prose,t.memoryNotes||[],true,h.era));
+}
+return out;
+}
+function npcMemories(s,id){
+const p=socialNPCs(s).find(p=>p.id===id);if(!p)return [];
+return compactMemories([...(p.memory||[]),...(p.memoryHydrated?[]:legacyEntries(s,id))]);
+}
+function memoryContext(s,ids,limit=8){
+return [...new Set(ids)].map(id=>{
+const p=socialNPCs(s).find(p=>p.id===id);if(!p)return null;
+const memories=npcMemories(s,id).filter(m=>['scene','scene-summary'].includes(m?.type));
+const important=memories.filter(m=>m.type==='scene-summary'||m.importance>=2).sort((a,b)=>(['humiliate','deceive'].includes(b.kind)?4:0)+b.importance-(['humiliate','deceive'].includes(a.kind)?4:0)-a.importance||b.turn-a.turn).slice(0,3);
+const recent=memories.filter(m=>m.type==='scene').sort((a,b)=>b.turn-a.turn||b.order-a.order).slice(0,limit);
+return {id,name:p.name,往事:[...new Map([...important,...recent].map(m=>[m.id,m])).values()].slice(0,limit).map(m=>({经过:m.summary.slice(0,360),当时皇帝:m.emperorName,旬次:m.turn})),人物关系:Object.entries(p.relations||{}).filter(([other])=>socialNPCs(s).some(q=>q.id===other)).sort((a,b)=>Math.abs(b[1]-50)-Math.abs(a[1]-50)).slice(0,6).map(([other,value])=>({人物:socialNPCs(s).find(q=>q.id===other).name,亲近:value}))};
+}).filter(Boolean);
+}
+function rememberNPCScene(state,r,phase,prose,notes=[],era=null){
+const s=clone(state);
+for(const cast of r.people){
+const p=socialNPCs(s).find(p=>p.id===cast.id);if(!p||p.alive===false||p.health<=0)continue;
+const complete=!s.recoveryOnly&&!s.volumeIndex?.length;
+const old=[...(p.memory||[]),...(!p.memoryHydrated&&complete?legacyEntries(s,p.id):[])];
+p.memory=compactMemories([...old,memoryEntry(s,r,phase,p,prose,notes,false,era)]);
+if(complete)p.memoryHydrated=true;
+}
+return s;
 }
 
-return {SCENE_ENERGY,scenePeople,sceneBlock,resolveScene,latestScene,sceneInput,sceneBudget,forecastScene,sceneOutcomeText,commitScene,rememberScene};
+return {publicMemoryQuote,compactMemories,npcMemories,memoryContext,rememberNPCScene};
 },
 "src/core/state.js":function(__load){
+const {validateSocialState} = __load("src/core/social-schema.js");
 const { validateSceneState } = __load("src/core/scene-schema.js");
 const { normalizeMemorialAction } = __load("src/core/memorial-decisions.js");
 const { validateMemorialReviews } = __load("src/core/memorial-records.js");
@@ -4093,7 +4109,7 @@ const { seedNumber, random, DRAFT } = __load("src/core/rng.js");
 const { uniqueName } = __load("src/core/names.js");
 const { chooseRegent } = __load("src/core/regency-info.js");
 const {factionPowers} = __load("src/core/politics.js");
-const VERSION = 18;
+const VERSION = 19;
 const TALENTS = ["政略", "权谋", "武略", "文采", "魅力"];
 const SLOTS = ["朝", "午", "夜"];
 const POST_NAMES = [
@@ -4578,6 +4594,7 @@ if(input.v<15)for(const a of s.ambitions)if(a.scenarioId&&a.holdTurns){a.stableT
 // v17 adds optional author snapshots and cumulative gifts. Missing fields
 // mean historical/unused; do not reconstruct old signatures or forecasts.
 // v18: scene records and pending.kind are optional; retain old forecasts byte for byte.
+// v19 reuses optional NPC memory/relations; old scenes are read as memories without recalculating effects.
 s.settings.freedom ??= "mid";
 s.v = VERSION;
 s.volumeIndex ??= [];
@@ -4741,6 +4758,7 @@ if(s.v>=14)validateMemorialReviews([...(s.volumes||[]).flatMap(v=>v.chapters),..
 if(s.v>=15)validateScenarioAmbitions(s,reignId(s));
 if(s.v>=16)validateCampaignState(s);
 if(s.v>=18)validateSceneState(s);
+if(s.v>=19)validateSocialState(s);
 if(s.v>=17){
 for(const m of s.memorials)for(const k of ['fromPost','fromRole'])if(m[k]!==undefined&&(typeof m[k]!=='string'||m[k].length>120))throw new Error('上奏人资料损坏');
 for(const c of s.harem.consorts)if(c.gifts!==undefined&&(!c.gifts||!Number.isSafeInteger(c.gifts.turn)||c.gifts.turn<0||c.gifts.turn>s.turn||!Number.isFinite(c.gifts.amount)||c.gifts.amount<0))throw new Error('赏赐记录损坏');
@@ -4763,14 +4781,89 @@ return (s.reign?.number || 1) === 1
 
 return {VERSION,TALENTS,SLOTS,POST_NAMES,withDraft,clone,createState,migrate,assertState,reignId};
 },
+"src/core/social-schema.js":function(__load){
+const {socialNPCs,SOCIAL_RULES} = __load("src/core/social-rules.js");
+function validateSocialState(s){
+for(const p of socialNPCs(s)){
+if(p.memoryHydrated!==undefined&&typeof p.memoryHydrated!=='boolean')throw new Error('人物记忆状态损坏');
+if(p.memory!==undefined&&!Array.isArray(p.memory))throw new Error('人物记忆损坏');
+const seen=new Set();for(const m of p.memory||[]){
+if(!['scene','scene-summary'].includes(m?.type))continue;
+if(typeof m.id!=='string'||!m.id||seen.has(m.id)||typeof m.summary!=='string'||m.summary.length>1000||typeof m.sceneId!=='string'||!Number.isSafeInteger(m.turn)||m.turn<0||m.turn>s.turn||!Number.isSafeInteger(m.order)||m.order<0||!Array.isArray(m.people)||m.people.some(id=>typeof id!=='string')||!['shared',...Object.keys(SOCIAL_RULES)].includes(m.kind)||![1,2,3].includes(m.importance))throw new Error('人物记忆损坏');
+if(m.type==='scene-summary'&&(!Number.isSafeInteger(m.count)||m.count<1||!Number.isSafeInteger(m.firstTurn)||m.firstTurn<0||m.firstTurn>m.turn||typeof m.first!=='string'||typeof m.last!=='string'))throw new Error('人物往事摘要损坏');
+seen.add(m.id);
+}
+if(p.relations!==undefined&&(!p.relations||typeof p.relations!=='object'||Array.isArray(p.relations)||Object.values(p.relations).some(v=>!Number.isFinite(v)||v<0||v>100)))throw new Error('人物关系损坏');
+}
+}
+
+return {validateSocialState};
+},
+"src/core/social-rules.js":function(__load){
+// Narrative labels are classified, but all numerical consequences live here.
+const SOCIAL_RULES={
+accompany:{label:'陪伴',success:1,partial:0,failed:0},
+comfort:{label:'安慰',success:2,partial:1,failed:0},
+apologize:{label:'道歉',success:2,partial:1,failed:-1},
+protect:{label:'维护',success:3,partial:1,failed:0},
+humiliate:{label:'羞辱',success:-3,partial:-2,failed:-2},
+deceive:{label:'欺瞒',success:0,partial:-1,failed:-3},
+reconcile:{label:'调解',pair:true,success:4,partial:1,failed:-1},
+quarrel:{label:'争执',pair:true,success:-3,partial:-2,failed:-1},
+cooperate:{label:'合作',pair:true,success:2,partial:1,failed:0},
+};
+function socialNPCs(s){return [...s.court.officials,...s.harem.consorts,...s.harem.children,...s.foreign];}
+function emperorKey(s){return (s.reign?.number||1)===1?s.runId:s.runId+':reign:'+s.reign.number;}
+function favorRecords(s,history=[],all=false){
+const records=[...s.intentResults.filter(r=>all||r.turn===s.turn),...history];
+for(const [i,e]of s.ledger.entries()){
+if(e.social&&e.socialKind==='favor')records.push({id:e.eventId+':'+e.path,type:'favor',status:'success',actual:{targetId:e.personId,amount:e.delta}});
+else if(e.source==='模型人物反应建议：引擎限额采纳'&&/^official\..+\.favor$/.test(e.path))records.push({id:'reaction:'+i+':'+e.path,type:'favor',status:'success',actual:{targetId:e.path.split('.')[1],amount:e.delta}});
+}
+return [...new Map(records.map(r=>[r.id,r])).values()].filter(r=>r.type==='favor'&&['success','partial'].includes(r.status));
+}
+function normalizeSocial(s,raw,input){
+if(!input?.scene||!raw||!SOCIAL_RULES[raw.kind]||!Array.isArray(input.people))return null;
+const allowed=new Set(input.people),p=socialNPCs(s),target=p.find(p=>p.id===raw.targetId);
+if(!target||!allowed.has(target.id))return null;
+const out={kind:raw.kind,targetId:target.id};
+if(SOCIAL_RULES[raw.kind].pair){if(raw.otherId===target.id||!allowed.has(raw.otherId)||!p.some(p=>p.id===raw.otherId))return null;out.otherId=raw.otherId;}
+return out;
+}
+function localSocial(s,input){
+if(!input.scene)return null;
+const clauses=String(input.text).split(/[，。；！？\n]/).filter(t=>!/(不必|不要|无须|无需|不得|不可|不宜|不想|不愿|不能|未曾|没有|勿|毋)/.test(t)).join('。');
+let kind=/调解|和解|冰释|化解.*(?:矛盾|误会)/.test(clauses)?'reconcile':/争吵|争执|吵架|反目/.test(clauses)?'quarrel':/联手|合作|协力/.test(clauses)?'cooperate':/羞辱|侮辱|当众斥|威胁|恐吓/.test(clauses)?'humiliate':/欺骗|欺瞒|骗她|骗他/.test(clauses)?'deceive':/道歉|赔不是|赔礼|认错/.test(clauses)?'apologize':/安慰|宽慰|关怀|谈心|敞开心扉/.test(clauses)?'comfort':/救助|救下|庇护|维护|撑腰/.test(clauses)?'protect':/陪伴|陪她|陪他|陪.*(?:散步|游园|赏|读书|下棋)|一起.*(?:散步|游园|读书|下棋)/.test(clauses)?'accompany':null;
+if(!kind)return null;
+const named=socialNPCs(s).filter(p=>input.people?.includes(p.id)&&clauses.includes(p.name)),ids=named.length?named.map(p=>p.id):input.people||[];
+if(SOCIAL_RULES[kind].pair)return ids.length===2?normalizeSocial(s,{kind,targetId:ids[0],otherId:ids[1]},input):null;
+return ids.length===1?normalizeSocial(s,{kind,targetId:ids[0]},input):null;
+}
+function socialKey(e){return [e.kind,...(e.otherId?[e.targetId,e.otherId].sort():[e.targetId])].join(':');}
+function socialRelation(s,a,b){return socialNPCs(s).find(p=>p.id===a)?.relations?.[b]??50;}
+function groupRelationModifier(s,ids){
+if(ids.length<2)return 0;let sum=0,n=0;
+for(let i=0;i<ids.length;i++)for(let j=i+1;j<ids.length;j++){sum+=socialRelation(s,ids[i],ids[j])+socialRelation(s,ids[j],ids[i]);n+=2;}
+return Math.max(-8,Math.min(8,(sum/n-50)/5));
+}
+
+return {SOCIAL_RULES,socialNPCs,emperorKey,favorRecords,normalizeSocial,localSocial,socialKey,socialRelation,groupRelationModifier};
+},
 "src/core/scene-schema.js":function(__load){
+const {SOCIAL_RULES} = __load("src/core/social-rules.js");
 const slots=['朝','午','夜'];
 const statuses=['success','partial','failed'];
 function outcome(v){return v&&statuses.includes(v.status)&&(v.die===null||Number.isInteger(v.die)&&v.die>=1&&v.die<=20)&&(v.cost===undefined||typeof v.cost==='string');}
 function text(v,max,empty=true){return typeof v==='string'&&v.length<=max&&(empty||v.trim().length>0);}
 function result(r){return r&&text(r.id,1000,false)&&text(r.actionKey,2400,false)&&typeof r.type==='string'&&['success','partial','failed','narrative'].includes(r.status)&&r.actual&&typeof r.actual==='object'&&!Array.isArray(r.actual)&&Array.isArray(r.facts);}
+function socialData(r){
+const change=c=>c&&text(c.personId,160,false)&&text(c.withId,240,false)&&['favor','relation'].includes(c.field)&&[c.before,c.after,c.delta].every(Number.isFinite)&&c.before>=0&&c.before<=100&&c.after>=0&&c.after<=100&&Math.abs(c.after-c.before-c.delta)<1e-6&&text(c.reason,30,false);
+return (r.memoryVersion===undefined||r.memoryVersion===19)&&(r.memoryNotes===undefined||Array.isArray(r.memoryNotes)&&r.memoryNotes.every(m=>m&&slots.includes(m.slot)&&text(m.personId,160,false)&&text(m.evidence,160,false)))&&
+(r.socialChanges===undefined||Array.isArray(r.socialChanges)&&r.socialChanges.every(change))&&
+(r.social===undefined||Array.isArray(r.social)&&r.social.every(e=>e&&SOCIAL_RULES[e.kind]&&text(e.targetId,160,false)&&(!SOCIAL_RULES[e.kind].pair||text(e.otherId,160,false)&&e.otherId!==e.targetId)&&statuses.includes(e.status)&&Array.isArray(e.changes)&&e.changes.every(change)));
+}
 function validSceneRecord(r){
-return r&&text(r.id,240,false)&&slots.includes(r.slot)&&Array.isArray(r.people)&&r.people.every(p=>p&&text(p.id,160,false)&&text(p.name,80,false))&&new Set(r.people.map(p=>p.id)).size===r.people.length&&text(r.place,120)&&text(r.text,8000,false)&&outcome(r.outcome)&&Array.isArray(r.results)&&r.results.every(result)&&Array.isArray(r.steps)&&r.steps.every((t,i)=>t&&text(t.id,300,false)&&text(t.request,8000,false)&&text(t.prose,2400,false)&&outcome(t.outcome)&&Array.isArray(t.results)&&t.results.every(result)&&Array.isArray(t.entries)&&t.sequence===i+1)&&new Set(r.steps.map(t=>t.id)).size===r.steps.length;
+return r&&socialData(r)&&text(r.id,240,false)&&slots.includes(r.slot)&&Array.isArray(r.people)&&r.people.every(p=>p&&text(p.id,160,false)&&text(p.name,80,false))&&new Set(r.people.map(p=>p.id)).size===r.people.length&&text(r.place,120)&&text(r.text,8000,false)&&outcome(r.outcome)&&Array.isArray(r.results)&&r.results.every(result)&&Array.isArray(r.steps)&&r.steps.every((t,i)=>t&&socialData(t)&&text(t.id,300,false)&&text(t.request,8000,false)&&text(t.prose,2400,false)&&outcome(t.outcome)&&Array.isArray(t.results)&&t.results.every(result)&&Array.isArray(t.entries)&&t.sequence===i+1)&&new Set(r.steps.map(t=>t.id)).size===r.steps.length;
 }
 function validateSceneState(s){
 for(const h of [...(s.volumes||[]).flatMap(v=>v.chapters),...(s.history||[])]){
@@ -4781,7 +4874,7 @@ if(!Array.isArray(h.scenes)||h.scenes.some(r=>!validSceneRecord(r))||new Set(h.s
 for(const a of Object.values(s.schedule||{}))if(a?.kind==='自拟情节'&&(!Array.isArray(a.people)||a.people.some(id=>!text(id,160,false))||new Set(a.people).size!==a.people.length||!text(a.place??'',120)||!text(a.text,8000,false)))throw new Error('自拟情节安排损坏');
 if(s.pending?.kind==='scene'){
 const f=s.pending.forecast,last=s.history?.at(-1),r=last?.scenes?.find(r=>r.id===f?.sceneId);
-if(!f||f.kind!=='scene'||!r||last.id!==f.chapterId||last.turn!==s.turn||f.runId!==s.runId||f.state?.runId!==s.runId||f.state?.revision!==s.revision+1||!text(f.turnId,300,false)||!Array.isArray(f.facts)||f.baseTurn!==s.turn||f.baseRevision!==s.revision||!f.state||f.state.turn!==s.turn||!text(f.request,8000,false)||!outcome(f.outcome)||(!Array.isArray(f.results)||!f.results.every(result))||!Array.isArray(f.entries)||!slots.includes(f.slot)||f.slot!==r.slot||f.sequence!==r.steps.length+1||f.baseFingerprint!==JSON.stringify({rng:s.rng,turn:s.turn,revision:s.revision}))throw new Error('情节待续记录损坏');
+if(!f||!socialData(f)||f.kind!=='scene'||!r||last.id!==f.chapterId||last.turn!==s.turn||f.runId!==s.runId||f.state?.runId!==s.runId||f.state?.revision!==s.revision+1||!text(f.turnId,300,false)||!Array.isArray(f.facts)||f.baseTurn!==s.turn||f.baseRevision!==s.revision||!f.state||f.state.turn!==s.turn||!text(f.request,8000,false)||!outcome(f.outcome)||(!Array.isArray(f.results)||!f.results.every(result))||!Array.isArray(f.entries)||!slots.includes(f.slot)||f.slot!==r.slot||f.sequence!==r.steps.length+1||f.baseFingerprint!==JSON.stringify({rng:s.rng,turn:s.turn,revision:s.revision}))throw new Error('情节待续记录损坏');
 }
 }
 
@@ -4818,6 +4911,7 @@ return {REMARK_KINDS,memorialDecision,normalizeMemorialAction,remarkCategory};
 "src/core/text.js":function(__load){
 const TEXT_LIMITS={talk:8000,decree:8000,remark:2000};
 function textParagraphs(text){return String(text||'').replace(/\r\n?/g,'\n').split(/\n+/).map(p=>p.trim()).filter(Boolean);}
+function textSentences(text){return (String(text||'').match(/[^\n。！？]+[。！？]?[”’」』"]*/g)||[]).map(t=>t.trim()).filter(Boolean);}
 function talkPeople(action){return [...new Set(action?.persons||[action?.person].filter(Boolean))];}
 function talkMode(line,structured=false){
 if(structured)return '议事';
@@ -4829,7 +4923,7 @@ if(/(?:拨|挪|转|赏|借|给).{0,12}[0-9一二三四五六七八九十百千�
 return '闲谈';
 }
 
-return {TEXT_LIMITS,textParagraphs,talkPeople,talkMode};
+return {TEXT_LIMITS,textParagraphs,textSentences,talkPeople,talkMode};
 },
 "src/core/memorial-records.js":function(__load){
 const { memorialDecision } = __load("src/core/memorial-decisions.js");
@@ -5295,35 +5389,408 @@ return {...f,power:Math.min(100,Math.max(0,offices/20+(f.powerModifier||0)))};
 
 return {factionPowers};
 },
-"src/core/freedom.js":function(__load){
-const { roll } = __load("src/core/rng.js");
-const { applyPackage } = __load("src/core/effects.js");
-const FREEDOM_RULES=Object.freeze({
-free:Object.freeze({label:'想做就成',note:'口谕必成，行动限制更少；钱粮仍以现有家底为限。',k:1,collapseImmune:true,courtLimit:Infinity,referrals:Infinity,talkRounds:Infinity,talkMultiplier:Infinity,appointmentAge:18,firstRankTalent:0,otherTalent:0,edictCooldown:0,selectionPeriod:0,rankCaps:false,tradeCooldown:0,energyPenalty:0.5}),
-mid:Object.freeze({label:'多数能成',note:'办事较容易，难事有时要多花钱、做让步或承担损失。',k:0.5,collapseImmune:false,partialCosts:Object.freeze({treasury:1,favor:3,morale:0.5}),courtLimit:Infinity,referrals:Infinity,talkRounds:Infinity,talkMultiplier:2,appointmentAge:20,firstRankTalent:30,otherTalent:15,edictCooldown:0,selectionPeriod:2,rankCaps:true,tradeCooldown:0,energyPenalty:1}),
-real:Object.freeze({label:'成败看实力',note:'按人物能力、朝局和天命判断，办事门槛也更严格。',k:0,collapseImmune:false,courtLimit:Infinity,referrals:Infinity,talkRounds:Infinity,talkMultiplier:1,appointmentAge:25,firstRankTalent:40,otherTalent:25,edictCooldown:0,selectionPeriod:3,rankCaps:true,tradeCooldown:0,energyPenalty:1}),
+"src/ui/common.js":function(__load){
+const { initMobileViewport } = __load("src/ui/mobile.js");
+const $ = (selector) => document.querySelector(selector);
+// Display labels only; saves stay intact.
+function gameText(text) {
+return String(text ?? "")
+.replace(/^本旬引擎结算：人物、政务与岁时变化$/, "本旬变化")
+.replace(/^模型人物反应建议：引擎限额采纳$/, "人物态度变化")
+.replace(/^引擎结算$/, "本旬变化")
+.replace(/宫闱事件：引擎判定小产/g, "宫中小产")
+.replace(/；面谈结果已落账/g, "；已在面谈中议定")
+.replace(/^本旬面谈已落账，午槽须保留对应人物的召见$/, "午间已召见此人，请先过完本旬。")
+.replace(/^预演已过期，不能提交到此存档$/, "这次安排已过期，请刷新后重试。")
+.replace(/^本回合请求已达 240 秒预算，请保留预演结果后重试$/, "故事续写超时，请重试本旬。")
+.replace(/^模型回复未完成或格式有误，原有进度已保留$/, "这次没能续完故事，请重试本旬。")
+.replace(/^存档处于只读保护模式$/, "此存档暂时无法保存，请先导出备份。");
+}
+function esc(text) {
+return String(text ?? "").replace(
+/[&<>"']/g,
+(c) =>
+({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[
+c
+],
+);
+}
+// Full re-renders replace the DOM. Keep inner scroll positions (the phone
+// layout scrolls inside fixed-height containers) and the focused control.
+function nodePath(node, root) {
+const path = [];
+while (node && node !== root) {
+const parent = node.parentElement;
+if (!parent) return null;
+path.unshift([...parent.children].indexOf(node));
+node = parent;
+}
+return node === root ? path : null;
+}
+function nodeAt(root, path) {
+let node = root;
+for (const i of path) { node = node?.children?.[i]; if (!node) return null; }
+return node;
+}
+function keyOf(el, root) {
+if (el.id) return { id: el.id };
+for (const name of ["scrollKey", "command", "action", "slot", "panel", "clear"])
+if (el.dataset?.[name]) return { data: name, value: el.dataset[name] };
+return { path: nodePath(el, root) };
+}
+function find(root, key) {
+if (key.id) return root.querySelector("#" + CSS.escape(key.id));
+if (key.data) return root.querySelector("[data-" + key.data.replace(/[A-Z]/g, (c) => "-" + c.toLowerCase()) + '="' + CSS.escape(key.value) + '"]');
+return key.path ? nodeAt(root, key.path) : null;
+}
+function captureView(root) {
+if (!root) return { scrolls: [], focus: null };
+const scrolls = [];
+for (const el of root.querySelectorAll("*"))
+if (el.scrollTop > 0 || el.scrollLeft > 0)
+scrolls.push({ key: keyOf(el, root), top: el.scrollTop, left: el.scrollLeft });
+const active = document.activeElement;
+const focus = active && active !== document.body && root.contains(active)
+? { key: keyOf(active, root), start: active.selectionStart ?? null, end: active.selectionEnd ?? null }
+: null;
+return { scrolls, focus };
+}
+function restoreView(root, view) {
+if (!root || !view) return;
+for (const s of view.scrolls) {
+const el = find(root, s.key);
+if (el) { el.scrollTop = s.top; el.scrollLeft = s.left; }
+}
+if (view.focus) {
+const el = find(root, view.focus.key);
+if (el && !el.disabled) {
+el.focus({ preventScroll: true });
+if (view.focus.start !== null && typeof el.setSelectionRange === "function")
+try { el.setSelectionRange(view.focus.start, view.focus.end); } catch {}
+}
+}
+}
+function throttleFrame(fn, schedule = (f) => requestAnimationFrame(f)) {
+let queued = false, latest;
+return (...args) => {
+latest = args;
+if (queued) return;
+queued = true;
+schedule(() => { queued = false; fn(...latest); });
+};
+}
+// Back gestures close the open dialog instead of leaving the game. One history
+// entry is pushed per dialog session; replacing the dialog content reuses it.
+let modalEntry = false, closingFromHistory = false, pendingBack = 0, leaveGuard = () => false;
+function setLeaveGuard(fn) { leaveGuard = fn; }
+function pushModalEntry() {
+if (modalEntry) return;
+try { history.pushState({ ...(history.state || {}), yujiModal: true }, ""); modalEntry = true; } catch {}
+}
+let toastTimer;
+function toast(text) {
+text = gameText(text);
+$("#notice").textContent = text;
+$("#notice").classList.add("show");
+const dialog=$("#modal");
+if(dialog?.open){
+let status=dialog.querySelector('.dialog-notice');
+if(!status){
+status=document.createElement('p');
+status.className='dialog-notice';
+status.setAttribute('role','status');
+status.setAttribute('aria-live','polite');
+const header=dialog.querySelector('.dialog-head');
+if(header)header.insertAdjacentElement('afterend',status);
+else dialog.prepend(status);
+}
+status.textContent=text;
+}
+clearTimeout(toastTimer);
+toastTimer = setTimeout(() => $("#notice").classList.remove("show"), 6000);
+}
+let returnFocus, returnSelector;
+function openDialog(title, body, className = "") {
+const d = $("#modal");
+const active=document.activeElement;
+if (d.open) d.close();
+if (!active?.closest?.('#modal')) {
+returnFocus=active;returnSelector=null;
+for (const key of ['command','action','slot','panel']) if(active?.dataset?.[key]) returnSelector='[data-'+key+'="'+CSS.escape(active.dataset[key])+'"]';
+}
+d.onkeydown=null;
+if (className === 'action-shell') body='<div class="dual-content"><article id="action-document" class="paper action-document"><h3>'+esc(title)+'</h3><p>御案上的事，请逐项裁定。</p></article><section class="action-options">'+body+'</section></div>';
+d.className = className;
+d.innerHTML =
+'<div class="dialog-head"><h2 id="modal-title">' +
+esc(title) +
+'</h2><button type="button" id="close-modal" aria-label="关闭窗口">×</button></div>' +
+body;
+$("#close-modal").onclick = () => d.close();
+d.showModal();
+pushModalEntry();
+document.documentElement.classList.add("modal-open");
+d.scrollTop = 0;
+}
+function closeDialog() {
+$("#modal").close();
+}
+function download(name, data, type = "application/json") {
+const url = URL.createObjectURL(new Blob([data], { type })),
+a = document.createElement("a");
+a.href = url;
+a.download = name;
+a.click();
+setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+function fitBrandText() {
+for(const date of document.querySelectorAll('.brand .date,.brand h1')) {
+date.style.removeProperty('font-size');
+const css=getComputedStyle(date),minimum=Number.parseFloat(css.getPropertyValue(date.matches('h1')?'--font-ui':'--font-minor'))||10;
+let size=Number.parseFloat(css.fontSize);
+while(date.scrollWidth>date.clientWidth&&size>minimum){size=Math.max(minimum,size-.5);date.style.fontSize=size+'px';}
+}
+}
+function initCommon() {
+initMobileViewport();
+// Refit after rendering, viewport changes and the optional web fonts settle.
+new MutationObserver(fitBrandText).observe($('#app'),{childList:true});
+window.addEventListener('resize',fitBrandText);
+document.fonts?.ready.then(fitBrandText);
+$("#modal").addEventListener("keydown", e => {
+if(e.key!=='Tab')return;
+const d=$("#modal"),items=[...d.querySelectorAll('button:not(:disabled),input:not(:disabled),select:not(:disabled),textarea:not(:disabled),summary,[tabindex="0"]')].filter(x=>x.tabIndex>=0&&x.getClientRects().length&&(!x.checkVisibility||x.checkVisibility()));
+if(!items.length){e.preventDefault();return;}
+const at=items.indexOf(document.activeElement);
+if((e.shiftKey&&at<=0)||(!e.shiftKey&&(at===items.length-1||at<0))){e.preventDefault();items[e.shiftKey?items.length-1:0].focus();}
 });
-function freedomRules(state){return FREEDOM_RULES[state?.settings?.freedom]||FREEDOM_RULES.mid;}
-function successProbability(p,state){return p+(1-p)*freedomRules(state).k;}
-function selectionYear(state){const period=freedomRules(state).selectionPeriod;return !period||(Math.floor(state.turn/36)+1)%period===1;}
-// Strict consumes no additional dice. Mid first upgrades failures, then offers a costly partial success.
-function adjudicate(state,verdict,personId=null){
-const mode=freedomRules(state);if(!mode.k)return {state,verdict};
-if(verdict.success||mode.k===1)return {state,verdict:{...verdict,success:true,partial:false}};
-let r=roll(state,1,100),s=r.state;
-if(r.value<=mode.k*100)return {state:s,verdict:{...verdict,success:true,partial:false}};
-r=roll(s,1,100);s=r.state;
-if(r.value>50)return {state:s,verdict:{...verdict,success:false,partial:false}};
-r=roll(s,1,3);s=r.state;
-const person=s.court.officials.find(o=>o.id===personId&&o.alive&&o.favor>0);
-let costKind=r.value;if(costKind===2&&!person)costKind=3;if(costKind===3&&s.nation.morale<=0)costKind=1;
-const cost=costKind===1?{treasury:-mode.partialCosts.treasury}:costKind===2?{official:{id:person.id,favor:-mode.partialCosts.favor}}:{morale:-mode.partialCosts.morale};
-const costLabel=costKind===1?'额外支出'+mode.partialCosts.treasury+'万两':costKind===2?person.name+'好感下降':'民心小降';
-s=applyPackage(s,cost,'办成此事的代价：'+costLabel);
-return {state:s,verdict:{...verdict,success:true,partial:true,cost:costLabel}};
+window.addEventListener("popstate", () => {
+if (pendingBack > 0) {
+// Our own history.back() after a close. If a new dialog opened before the
+// traversal landed, the entry we arrived on still belongs to a dialog.
+pendingBack--;
+modalEntry = $("#modal").open;
+return;
+}
+if (!modalEntry) return;
+modalEntry = false;
+if ($("#modal").open) { closingFromHistory = true; $("#modal").close(); }
+});
+window.addEventListener("beforeunload", (e) => {
+if (!leaveGuard()) return;
+e.preventDefault();
+e.returnValue = "";
+});
+$("#modal").addEventListener("close", () => {
+if($("#modal").open)return;
+if (closingFromHistory) closingFromHistory = false;
+else if (modalEntry) { modalEntry = false; pendingBack++; try { history.back(); } catch { pendingBack--; } }
+document.documentElement.classList.remove("modal-open");
+if (returnFocus?.isConnected) returnFocus.focus();
+else if(returnSelector) document.querySelector(returnSelector)?.focus();
+});
 }
 
-return {FREEDOM_RULES,freedomRules,successProbability,selectionYear,adjudicate};
+return {$,gameText,esc,captureView,restoreView,throttleFrame,setLeaveGuard,toast,openDialog,closeDialog,download,initCommon};
+},
+"src/ui/mobile.js":function(__load){
+// Keep the game at its intended scale without delaying ordinary scrolling.
+// Android pinch is stopped by touch-action: pan-x pan-y; only iOS gesture
+// events need a non-passive listener, and they fire for pinches alone.
+const GUARDED_EVENTS = ["gesturestart", "gesturechange"];
+function blockPinch(event) {
+if ((event.touches?.length || 0) > 1 || GUARDED_EVENTS.includes(event.type)) {
+if (event.cancelable) event.preventDefault();
+}
+}
+// Coalesce viewport writes to one per frame and skip unchanged values, so a
+// visualViewport scroll does not restyle the whole document on every event.
+function createViewportUpdater(read, write, schedule = (f) => requestAnimationFrame(f)) {
+let queued = false, last = "";
+return () => {
+if (queued) return;
+queued = true;
+schedule(() => {
+queued = false;
+const { height, top } = read(), key = height + "|" + top;
+if (key === last) return;
+last = key;
+write(height, top);
+});
+};
+}
+const FONT_SCALES = { m: "标准", l: "较大", xl: "特大" };
+function applyFontScale(value, root = document.documentElement, storage = globalThis.localStorage) {
+const scale = FONT_SCALES[value] ? value : "m";
+if (scale === "m") root.removeAttribute("data-font");
+else root.setAttribute("data-font", scale);
+try { storage?.setItem("yuji:font", scale); } catch {}
+return scale;
+}
+function storedFontScale(storage = globalThis.localStorage) {
+try { return FONT_SCALES[storage?.getItem("yuji:font")] ? storage.getItem("yuji:font") : "m"; } catch { return "m"; }
+}
+let installed = false;
+function initMobileViewport() {
+if (installed) return;
+installed = true;
+for (const type of GUARDED_EVENTS)
+document.addEventListener(type, blockPinch, { passive: false });
+const root = document.documentElement;
+const update = createViewportUpdater(
+() => ({
+height: window.visualViewport?.height || window.innerHeight,
+top: window.visualViewport?.offsetTop || 0,
+}),
+(height, top) => {
+root.style.setProperty("--app-height", height + "px");
+root.style.setProperty("--viewport-top", top + "px");
+},
+);
+window.addEventListener("resize", update);
+window.visualViewport?.addEventListener("resize", update);
+window.visualViewport?.addEventListener("scroll", update);
+update();
+applyFontScale(storedFontScale());
+}
+
+return {GUARDED_EVENTS,blockPinch,createViewportUpdater,FONT_SCALES,applyFontScale,storedFontScale,initMobileViewport};
+},
+"src/core/scenes.js":function(__load){
+const {rememberNPCScene} = __load("src/core/memory.js");
+const {applySceneSocial} = __load("src/core/social.js");
+const {localSocial,groupRelationModifier,emperorKey} = __load("src/core/social-rules.js");
+const {clone,assertState,migrate,VERSION} = __load("src/core/state.js");
+const {roll,check} = __load("src/core/rng.js");
+const {adjudicate} = __load("src/core/freedom.js");
+const {resolveIntents} = __load("src/core/intents.js");
+const {auditChanges} = __load("src/core/audit.js");
+const {canVisit} = __load("src/core/harem.js");
+const SCENE_ENERGY=1;
+function scenePeople(s,inactive=false){return [...s.court.officials.filter(o=>inactive||o.alive&&o.health>0),...s.harem.consorts.filter(c=>inactive||c.health>0&&!c.retired),...s.harem.children.filter(c=>inactive||c.health>0),...s.foreign.map(f=>({...f,name:f.ruler||f.name}))];}
+function sceneBlock(s,a,historical=false){
+const recall=historical&&/^(?:接着写|继续)/.test(a.text||'')||historical&&/追忆|回忆|回想|善后|后事|收殓/.test(a.text||'');
+if(!Array.isArray(a.people)||new Set(a.people).size!==a.people.length||a.people.some(id=>!scenePeople(s,recall).some(p=>p.id===id)))return '请选择名册中仍可参与的人物';
+if(typeof a.text!=='string'||!a.text.trim()||a.text.length>8000)return '请写下八千字以内的情节梗概';
+if(a.place!==undefined&&(typeof a.place!=='string'||a.place.length>120))return '地点请写在一百二十字以内';
+const affirmative=a.text.split(/[，。；！？\n]/).filter(t=>!/(不必|不要|无需|无须|不得|不可|不宜|不想|不愿|不能|勿|毋|未曾|没有)/.test(t)).join('。');
+if(/侍寝|临幸|圆房|同寝|共枕|同房|行房|交欢|交合|性行为|性交|交媾|床笫|鱼水之欢|共赴云雨|巫山云雨|共度春宵/.test(affirmative)&&(a.people.length!==1||!canVisit(s,s.harem.consorts.find(c=>c.id===a.people[0]))))return '此时不能安排侍寝，可以改为探望或交谈';
+return '';
+}
+function resolveScene(state,action,actions,slot,source,previous=null){
+const blocked=sceneBlock(state,action,!!previous);if(blocked)throw new Error(blocked);
+const people=action.people.map(id=>{const p=scenePeople(state,true).find(p=>p.id===id);return {id,name:p.name};});
+let s=clone(state),results=[],facts=[],outcome;
+const key=a=>JSON.stringify(['type','targetId','postId','countryId','operation','resource','amount','source','destination','edictType','province'].map(k=>a[k]??null));
+const real=actions.filter(a=>a.type!=='other');
+if(real.length){
+const priorResults=previous?[...(previous.results||[]),...previous.steps.flatMap(t=>t.results)]:[],reuse=new Map();
+const fresh=real.filter(a=>{const r=!/再拨|再赏|追加|另拨|另赏|再给/.test(a.text)&&priorResults.find(r=>r.actionKey===key(a));if(r){reuse.set(a.id,r);return false;}return true;});
+const chapter=previous?state.history.at(-1):null;
+// Model reactions and scene effects already appear in the current ledger.
+const favorHistory=chapter?.intentResults||[];
+const r=resolveIntents(s,fresh,{slot,source,favorHistory});s=r.state;r.results.forEach((r,i)=>r.actionKey=key(fresh[i]));
+results=real.map(a=>reuse.has(a.id)?{...reuse.get(a.id),reused:true}:r.results[fresh.findIndex(x=>x.id===a.id)]);facts=[...r.facts,...[...reuse.values()].flatMap(r=>r.facts||[])];
+const completed=results.filter(r=>['success','partial'].includes(r.status));
+outcome={status:!completed.length?'failed':completed.length<results.length||results.some(r=>r.status==='partial')?'partial':'success',die:results.find(r=>r.die)?.die??null,...(results.every(r=>r.reused)?{reused:true}:{}),...(results.some(r=>r.cost&&(!r.reused||results.every(x=>x.reused)))?{cost:results.filter(r=>r.cost&&(!r.reused||results.every(x=>x.reused))).map(r=>r.cost).join('；')}:{})};
+}else if(previous&&/^(?:接着写|继续|继续写|继续描写|继续这(?:一)?段(?:情节)?)[。！\s]*$/.test(action.text.trim())){outcome={...(previous.steps.at(-1)?.outcome||previous.outcome),reused:true};
+}else{
+const people=action.people.map(id=>scenePeople(s,true).find(p=>p.id===id));
+const opposition=people.length?people.reduce((n,p)=>n+(p.abilities?.权谋??p.scheming??30),0)/people.length:0;
+const favor=people.length?people.reduce((n,p)=>n+(p.favor??p.attitude??p.relations?.[emperorKey(s)]??50),0)/people.length/5:10;
+const attr=/试探|调查|套话|揭穿|逼问/.test(action.text)?'权谋':/吟诗|作诗|赋诗|书画/.test(action.text)?'文采':'魅力';
+const r=roll(s);s=r.state;
+const judged=adjudicate(s,check(s.emperor.talents[attr],r.value,'一般',opposition,favor+groupRelationModifier(s,action.people)),action.people[0]);s=judged.state;
+outcome={status:judged.verdict.partial?'partial':judged.verdict.success?'success':'failed',die:r.value,...(judged.verdict.cost?{cost:judged.verdict.cost}:{})};
+}
+const plans=actions.filter(a=>a.interaction).map(a=>a.interaction);
+const fallback=localSocial(state,{scene:true,people:action.people,text:action.text});if(!plans.length&&fallback)plans.push(fallback);
+const social=applySceneSocial(s,plans,outcome,source,previous);s=social.state;
+facts.push({kind:'scene_result',slot,status:outcome.status});
+return {state:s,results,facts,record:{slot,people,emperorId:emperorKey(state),emperorName:state.emperor.name,place:action.place||'',text:action.text.trim(),outcome,results,social:social.events,socialChanges:social.changes,steps:[]}};
+}
+function latestScene(s,id){const h=s.history.at(-1);return !s.talks.some(t=>t.turn===s.turn)&&h?.turn===s.turn?h.scenes?.find(r=>r.id===id):null;}
+function sceneInput(s,r,text){return {id:r.id+':'+(r.steps.length+1),slot:r.slot,text,people:r.people.map(p=>p.id),scene:true,place:r.place};}
+function sceneBudget(s){return {used:0,...(s.history.at(-1)?.rewriteAttempted?{rewriteAttempted:true}:{})};}
+function forecastScene(state,id,text,actions=[]){
+if(state.pending)throw new Error('请先续完正在进行的故事');
+if(state.ending)throw new Error('本朝已封卷');
+const record=latestScene(state,id);if(!record)throw new Error('这段情节已经过去，请另排新的情节');
+const input=sceneInput(state,record,text),turnId=record.id+':续'+(record.steps.length+1)+':'+state.revision;
+const r=resolveScene(state,{people:input.people,place:input.place,text},actions.filter(a=>a.inputId===input.id),record.slot,turnId,record);
+const entries=auditChanges(state,r.state,r.state.ledger.slice(state.ledger.length),'自拟情节：接着写');
+const s=r.state;s.revision++;s.pending=null;s.turnBudget=null;s.ledger=[...state.ledger,...entries];
+delete s.history;delete s.volumes;
+assertState(s);
+return {kind:'scene',historyDetached:true,turnId,runId:state.runId,baseTurn:state.turn,baseRevision:state.revision,baseFingerprint:JSON.stringify({rng:state.rng,turn:state.turn,revision:state.revision}),sceneId:id,chapterId:state.history.at(-1).id,slot:record.slot,request:text.trim(),sequence:record.steps.length+1,outcome:r.record.outcome,results:r.results,social:r.record.social,socialChanges:r.record.socialChanges,people:record.people,state:s,entries,die:r.record.outcome.die,fate:'情节续写',facts:r.facts,newMemorials:[],notes:[],slotResults:{朝:[],午:[],夜:[],[record.slot]:[sceneOutcomeText(r.record.outcome),...r.results.map(r=>r.summary)]},schedule:{}};
+}
+function sceneOutcomeText(o){return ({success:'如愿',partial:'有所进展，也有代价',failed:'未能如愿'}[o.status])+(o.cost?'：'+o.cost+(o.reused?'（此前已承担）':''):'');}
+function commitScene(state,f,narrative){
+if(state.receipts.includes(f.turnId))return clone(state);
+if(f.kind!=='scene'||state.runId!==f.runId||f.state.runId!==state.runId||f.state.turn!==state.turn||f.state.revision!==state.revision+1||state.turn!==f.baseTurn||state.revision!==f.baseRevision||f.baseFingerprint!==JSON.stringify({rng:state.rng,turn:state.turn,revision:state.revision})||!latestScene(state,f.sceneId)||state.history.at(-1).id!==f.chapterId)throw new Error('这段续写已经过期，不能写入此进度');
+const prose=narrative.chapter?.[f.slot]?.trim();if(!prose||prose.length>2400)throw new Error('情节尚未续完，请重试');
+let s=f.state.v<VERSION?migrate(f.state):clone(f.state);s.v=VERSION;
+if(f.historyDetached){s.history=clone(state.history);s.volumes=[...state.volumes];s.volumeIndex=[...(state.volumeIndex||[])];}
+const h=s.history.at(-1),r=h.scenes.find(r=>r.id===f.sceneId);r.steps.push({id:f.turnId,sequence:f.sequence,request:f.request,prose,outcome:clone(f.outcome),memoryVersion:19,memoryNotes:clone(narrative.sceneMemories||[]),results:clone(f.results),social:clone(f.social||[]),socialChanges:clone(f.socialChanges||[]),entries:clone(f.entries)});
+if(state.turnBudget?.rewriteAttempted)h.rewriteAttempted=true;
+h.entries.push(...clone(f.entries));h.settlement??={slotResults:{}};h.settlement.slotResults[f.slot]??=[];h.settlement.slotResults[f.slot].push('接着写 · '+sceneOutcomeText(f.outcome),...f.results.map(r=>r.summary));
+s=rememberScene(s,r,prose,{...r.steps.at(-1),turn:s.turn},narrative.sceneMemories||[],h.era);
+h.settlement.facts=[...(h.settlement.facts||[]),...clone(f.facts)];
+for(const result of s.intentResults)if(result.turn===s.turn&&f.results.some(r=>r.id===result.id))result.sceneCommitted=true;
+s.receipts.push(f.turnId);s.pending=null;s.turnBudget=null;
+// Scene edits must survive the next turn without being applied again.
+s.interimEntries=[...(state.interimEntries||[])];
+assertState(s);return s;
+}
+function rememberScene(s,r,prose,phase=r,notes=[],era=null){
+if(!prose)return s;
+s=rememberNPCScene(s,r,phase,prose,notes,era);
+const key='共同经历:'+r.id;s.facts=s.facts.filter(f=>f.key!==key);
+s.facts.push({subject:r.people.map(p=>p.name).join('、')||s.emperor.name,key,value:String(prose).slice(0,350),turn:s.turn,private:true,people:r.people.map(p=>p.id)});s.facts=s.facts.slice(-100);return s;
+}
+
+return {SCENE_ENERGY,scenePeople,sceneBlock,resolveScene,latestScene,sceneInput,sceneBudget,forecastScene,sceneOutcomeText,commitScene,rememberScene};
+},
+"src/core/social.js":function(__load){
+const {clone} = __load("src/core/state.js");
+const {diminishing,clamp} = __load("src/core/effects.js");
+const {SOCIAL_RULES,socialNPCs,socialKey,favorRecords,emperorKey} = __load("src/core/social-rules.js");
+function applySceneSocial(state,plans,outcome,eventId,previous=null){
+const s=clone(state),events=[],changes=[];
+const used=new Set([...(previous?.social||[]),...(previous?.steps||[]).flatMap(t=>t.social||[])].map(socialKey));
+for(const plan of plans){
+const rule=SOCIAL_RULES[plan.kind],key=socialKey(plan);if(!rule||used.has(key)||outcome.reused)continue;used.add(key);
+const p=socialNPCs(s).find(p=>p.id===plan.targetId),q=socialNPCs(s).find(p=>p.id===plan.otherId);
+if(!p||p.alive===false||p.health<=0||rule.pair&&(!q||q.alive===false||q.health<=0))continue;
+const event={...plan,key,status:outcome.status,changes:[]};
+const put=(owner,field,target,requested,category)=>{
+const isMap=field==='relations',before=isMap?(owner.relations?.[target]??50):owner[field];
+if(!Number.isFinite(before))return;
+let delta=requested;
+if(category==='favor'){
+const budget=favorRecords(s,previous?s.history.at(-1)?.intentResults||[]:[],true);
+const total=budget.reduce((n,r)=>n+Math.abs(r.actual.amount||0),0),personal=budget.filter(r=>r.actual.targetId===owner.id).reduce((n,r)=>n+Math.abs(r.actual.amount||0),0);
+delta=Math.sign(delta)*Math.min(Math.abs(delta),Math.max(0,10-total),Math.max(0,5-personal));
+}
+const after=clamp(before+diminishing(before,delta));if(after===before)return;
+if(isMap){owner.relations??={};owner.relations[target]=after;}else owner[field]=after;
+const prefix=owner.abilities?'official':s.foreign.some(f=>f.id===owner.id)?'foreign':s.harem.children.some(c=>c.id===owner.id)?'child':'consort';
+const path=prefix+'.'+owner.id+'.'+field+(isMap?'.'+target:'');
+const change={personId:owner.id,withId:target,field:category,before,after,delta:Math.round((after-before)*10000)/10000,reason:rule.label};
+event.changes.push(change);changes.push(change);
+s.ledger.push({turn:s.turn,path,before,after,delta:change.delta,source:'相处：'+rule.label,social:true,socialKind:category,personId:owner.id,eventId:eventId+':'+key});
+};
+const delta=rule[outcome.status]||0;
+if(rule.pair){put(p,'relations',q.id,delta,'relation');put(q,'relations',p.id,delta,'relation');}
+else if(s.foreign.some(f=>f.id===p.id))put(p,'attitude',emperorKey(s),delta,'favor');
+else if(Number.isFinite(p.favor))put(p,'favor',emperorKey(s),delta,'favor');
+else put(p,'relations',emperorKey(s),delta,'favor');
+events.push(event);
+}
+return {state:s,events,changes};
+}
+
+return {applySceneSocial};
 },
 "src/core/effects.js":function(__load){
 const { clone } = __load("src/core/state.js");
@@ -5426,7 +5893,38 @@ return s;
 
 return {clamp,populationMorale,diminishing,applyEffects,applyPackage,growTalent};
 },
+"src/core/freedom.js":function(__load){
+const { roll } = __load("src/core/rng.js");
+const { applyPackage } = __load("src/core/effects.js");
+const FREEDOM_RULES=Object.freeze({
+free:Object.freeze({label:'想做就成',note:'口谕必成，行动限制更少；钱粮仍以现有家底为限。',k:1,collapseImmune:true,courtLimit:Infinity,referrals:Infinity,talkRounds:Infinity,talkMultiplier:Infinity,appointmentAge:18,firstRankTalent:0,otherTalent:0,edictCooldown:0,selectionPeriod:0,rankCaps:false,tradeCooldown:0,energyPenalty:0.5}),
+mid:Object.freeze({label:'多数能成',note:'办事较容易，难事有时要多花钱、做让步或承担损失。',k:0.5,collapseImmune:false,partialCosts:Object.freeze({treasury:1,favor:3,morale:0.5}),courtLimit:Infinity,referrals:Infinity,talkRounds:Infinity,talkMultiplier:2,appointmentAge:20,firstRankTalent:30,otherTalent:15,edictCooldown:0,selectionPeriod:2,rankCaps:true,tradeCooldown:0,energyPenalty:1}),
+real:Object.freeze({label:'成败看实力',note:'按人物能力、朝局和天命判断，办事门槛也更严格。',k:0,collapseImmune:false,courtLimit:Infinity,referrals:Infinity,talkRounds:Infinity,talkMultiplier:1,appointmentAge:25,firstRankTalent:40,otherTalent:25,edictCooldown:0,selectionPeriod:3,rankCaps:true,tradeCooldown:0,energyPenalty:1}),
+});
+function freedomRules(state){return FREEDOM_RULES[state?.settings?.freedom]||FREEDOM_RULES.mid;}
+function successProbability(p,state){return p+(1-p)*freedomRules(state).k;}
+function selectionYear(state){const period=freedomRules(state).selectionPeriod;return !period||(Math.floor(state.turn/36)+1)%period===1;}
+// Strict consumes no additional dice. Mid first upgrades failures, then offers a costly partial success.
+function adjudicate(state,verdict,personId=null){
+const mode=freedomRules(state);if(!mode.k)return {state,verdict};
+if(verdict.success||mode.k===1)return {state,verdict:{...verdict,success:true,partial:false}};
+let r=roll(state,1,100),s=r.state;
+if(r.value<=mode.k*100)return {state:s,verdict:{...verdict,success:true,partial:false}};
+r=roll(s,1,100);s=r.state;
+if(r.value>50)return {state:s,verdict:{...verdict,success:false,partial:false}};
+r=roll(s,1,3);s=r.state;
+const person=s.court.officials.find(o=>o.id===personId&&o.alive&&o.favor>0);
+let costKind=r.value;if(costKind===2&&!person)costKind=3;if(costKind===3&&s.nation.morale<=0)costKind=1;
+const cost=costKind===1?{treasury:-mode.partialCosts.treasury}:costKind===2?{official:{id:person.id,favor:-mode.partialCosts.favor}}:{morale:-mode.partialCosts.morale};
+const costLabel=costKind===1?'额外支出'+mode.partialCosts.treasury+'万两':costKind===2?person.name+'好感下降':'民心小降';
+s=applyPackage(s,cost,'办成此事的代价：'+costLabel);
+return {state:s,verdict:{...verdict,success:true,partial:true,cost:costLabel}};
+}
+
+return {FREEDOM_RULES,freedomRules,successProbability,selectionYear,adjudicate};
+},
 "src/core/intents.js":function(__load){
+const {normalizeSocial,favorRecords} = __load("src/core/social-rules.js");
 const { TEXT_LIMITS } = __load("src/core/text.js");
 const { adjudicate } = __load("src/core/freedom.js");
 const { clone } = __load("src/core/state.js");
@@ -5445,6 +5943,7 @@ return (Array.isArray(actions)?actions:[]).map((raw,i)=>{
 const input=inputs.find(x=>x.id===raw?.inputId),type=INTENT_TYPES.includes(raw?.type)?raw.type:'other';
 const a={id:(input?.id||'unknown')+':'+i,inputId:input?.id||'',slot:input?.slot||'朝',type,text:String(raw?.text||input?.text||'').slice(0,TEXT_LIMITS.decree)};
 if(!input)return {...a,type:'other',text:'未能对应原口谕'};
+const social=normalizeSocial(state,raw.interaction,input);if(social&&type==='other')a.interaction=social;
 const person=byId(persons(state),raw.targetId||raw.target),country=byId(state.foreign,raw.countryId||raw.country);
 const post=state.court.posts.find(p=>p.id===raw.postId||p.title===raw.postId||state.postNames?.[p.id]===raw.postId);
 if(['kill','appoint','dismiss','promote','imprison','favor'].includes(type)){
@@ -5522,7 +6021,7 @@ r.actual={resource:a.resource,source:a.source,destination:a.destination,amount,t
 r.summary=(a.resource==='troops'?(a.destination==='capital'?'京营':a.destination+'境')+'征兵 '+Math.floor(amount)+' 人':(a.source==='grain'?'调粮 '+amount+' 万石':'拨银 '+amount+' 万两'))+(r.clamped?'（已按可用数量截断）':'');
 facts.push({kind:'allocation',...r.actual});
 }else if(a.type==='favor'){
-const budget=[...new Map([...s.intentResults.filter(r=>r.turn===s.turn),...favorHistory].map(r=>[r.id,r])).values()].filter(r=>r.type==='favor'&&['success','partial'].includes(r.status));
+const budget=favorRecords(s,favorHistory);
 const used=budget.reduce((n,r)=>n+Math.abs(r.actual.amount||0),0);
 const personal=budget.filter(r=>r.actual.targetId===target.id).reduce((n,r)=>n+Math.abs(r.actual.amount||0),0);
 const liveTarget=persons(s).find(o=>o.id===target.id);
@@ -7708,6 +8207,8 @@ if (
 "greed",
 "secret",
 "secretKnown",
+"memory",
+"memoryHydrated",
 "gifts",
 "growth",
 "born",
@@ -7730,6 +8231,8 @@ if (
 "greed",
 "secret",
 "secretKnown",
+"memory",
+"memoryHydrated",
 "gifts",
 "born",
 "due",
@@ -7773,6 +8276,8 @@ const excluded = new Set([
 "greed",
 "secret",
 "secretKnown",
+"memory",
+"memoryHydrated",
 "gifts",
 "growth",
 "born",
@@ -7786,7 +8291,7 @@ const adjust = parents.has(path);
 for (const [key, value] of Object.entries(current || {})) {
 if (excluded.has(key)) continue;
 if (typeof value === "number" && Number.isFinite(value)) {
-const prior = typeof old?.[key] === "number" ? old[key] : 0;
+const prior = typeof old?.[key] === "number" ? old[key] : path.endsWith(".relations") ? 50 : 0;
 if (value === prior && !adjust) continue;
 const full = path + "." + key,
 logged = totals.get(full) || 0,
@@ -8163,12 +8668,13 @@ year:1+Math.floor((s.turn-start)/36),month:1+Math.floor((s.turn%36)/3),xun:s.tur
 return {globalYear,calendarEra};
 },
 "src/llm/scenes.js":function(__load){
+const {memoryContext} = __load("src/core/memory.js");
 const { SCENE_RULES } = __load("src/llm/scene-rules.js");
 const {worldRules,dynastyBible,roster,settlementDigest} = __load("src/llm/prompts.js");
 function sceneMessages(state,f){
 const h=state.history.at(-1),r=h.scenes.find(r=>r.id===f.sceneId);
-return [{role:'system',content:worldRules(f.state)+'\n'+SCENE_RULES+'\n只续写本场的新一段，不重复旧段。写200至600字，用自然段。输出 {"chapter":{"朝":"","午":"","夜":""},"summary":"情节续写"}，只填写'+f.slot+'这一段，其余留空。'},
-{role:'user',content:dynastyBible(f.state)+'\n'+JSON.stringify({场景:{人物:r.people,地点:r.place,原梗概:r.text,原结果:r.outcome},先前经过:[h.chapter[r.slot],...r.steps.slice(-6).map(t=>t.prose)],玩家接着写:f.request,本次结果:f.outcome,实质行动:f.results,事实:f.facts,钱粮:settlementDigest(f.state,f.entries),当前名册:roster(f.state)})}];
+return [{role:'system',content:worldRules(f.state)+'\n'+SCENE_RULES+'\n只续写本场的新一段，不重复旧段。写200至600字，用自然段。输出 {"chapter":{"朝":"","午":"","夜":""},"summary":"情节续写","sceneMemories":[{"slot":"'+f.slot+'","personId":"","evidence":"正文完整原句"}]}，只填写'+f.slot+'这一段，其余留空。'},
+{role:'user',content:dynastyBible(f.state)+'\n'+JSON.stringify({人物往事:memoryContext(state,r.people.map(p=>p.id)),场景:{人物:r.people,地点:r.place,原梗概:r.text,原结果:r.outcome},先前经过:[h.chapter[r.slot],...r.steps.slice(-6).map(t=>t.prose)],玩家接着写:f.request,本次结果:f.outcome,相处变化:f.socialChanges||[],实质行动:f.results,事实:f.facts,钱粮:settlementDigest(f.state,f.entries),当前名册:roster(f.state)})}];
 }
 function mockSceneProse(r,results=[]){
 const names=r.people.slice(0,3).map(p=>p.name).join('、')+(r.people.length>3?'等人':''),where=r.place?'在'+r.place:'这一日';
@@ -8186,11 +8692,12 @@ return {chapter:{朝:'',午:'',夜:'',[f.slot]:opening+'\n\n'+prose.split('\n\n'
 return {sceneMessages,mockSceneProse,mockSceneNarrative};
 },
 "src/llm/scene-rules.js":function(__load){
-const SCENE_RULES='【自拟情节】玩家提供的是情节梗概与尝试，不是已成事实。围绕所选人物、地点和愿望展开动作、对白及人物反应，不把整段当作皇帝说的话，不抄判定表。身份、性格和已有关系前后一致，不替玩家决定接下来的行动。如愿时实现梗概里可成立的愿望；有所进展时写成部分成功，并表现已确定的代价；未能如愿时保留接触或尝试，写明阻碍，不许写成已经说服、已经获得承诺或愿望实现。reused标记表示此前已办理，只能承接其后续反应，不能写成又办了一次、再次付款或重新决定成败。各项实质行动以各自裁决为准；不能借整体如愿新增死亡、孕产、任免、拨款或战争结果。亲密场景含蓄处理，成人及侍寝条件仍有效。';
+const SCENE_RULES='【自拟情节】玩家提供的是情节梗概与尝试，不是已成事实。围绕所选人物、地点和愿望展开动作、对白及人物反应，不把整段当作皇帝说的话，不抄判定表。身份、性格和已有关系前后一致，不替玩家决定接下来的行动。如愿时实现梗概里可成立的愿望；有所进展时写成部分成功，并表现已确定的代价；未能如愿时保留接触或尝试，写明阻碍，不许写成已经说服、已经获得承诺或愿望实现。reused标记表示此前已办理，只能承接其后续反应，不能写成又办了一次、再次付款或重新决定成败。各项实质行动以各自裁决为准；不能借整体如愿新增死亡、孕产、任免、拨款或战争结果。人物应记得自己的往事，语气、亲疏和提及旧事须体现已有关系。只有在场者知道私下发生的事，不能泄露另一人的内心或未公开秘密。相处变化已由引擎决定，按实际增减表现，不另给数值。每位人物可返回一条sceneMemories:{slot,personId,evidence}，evidence须逐字引用本场正文中的完整一句，是此人目睹或听见的事，不能引用旁人的心声或玩家未实现的愿望。亲密场景含蓄处理，成人及侍寝条件仍有效。';
 
 return {SCENE_RULES};
 },
 "src/llm/prompts.js":function(__load){
+const {memoryContext} = __load("src/core/memory.js");
 const { SCENE_RULES } = __load("src/llm/scene-rules.js");
 const { TEXT_LIMITS } = __load("src/core/text.js");
 const { postTitle, scenarioById } = __load("src/core/scenarios.js");
@@ -8288,7 +8795,7 @@ function worldRules(state) {
   const frame = sc
     ? `你是「${state.dynasty}」朝的叙事引擎。本局以${sc.year}${sc.title.split(" · ")[0]}即位之初的史实开局，官职、地名用该朝称谓（见王朝设定）。史实只用于人物性格、关系与背景；本局自开局起已偏离史实，生死、成败、任免一律以引擎结算为准，不得按史书预言或补写结局，也不得写开局之后的史事。`
     : `你是架空王朝「${state.dynasty}」的叙事引擎，制度近似明清。`;
-  return `${frame}只输出一个 JSON 对象。\n铁律：引擎记账，模型叙事。所有钱粮、人物、派系、健康、受孕、生育、死亡、升迁、战争胜负、执行度由结算表决定，你不得追加或改写硬结果，不得另给数字。名册姓名一字不改，大臣称陛下、自称臣，妃嫔自称臣妾。人物各有利益。文风「${style.label}」：${style.rules}${pov.rules}\n【文风范文（只学笔法，不照搬人物与事件）】${style.sample}\n白描，禁用嘴角勾起、眼中闪过一丝${modern ? "" : "、现代词"}；对话用「」。亲密场面点到为止，禁止描写性行为或身体细节。人物各有立场，不替玩家决定；自由度只影响口谕裁决，不改变叙事一致性要求。`;
+  return `${frame}只输出一个 JSON 对象。\n铁律：引擎记账，模型叙事。所有钱粮、人物、派系、健康、受孕、生育、死亡、升迁、战争胜负、执行度由结算表决定，你不得追加或改写硬结果，不得另给数字。名册姓名一字不改，大臣称陛下、自称臣，妃嫔自称臣妾。人物各有利益。文风「${style.label}」：${style.rules}${pov.rules}\n【文风范文（只学笔法，不照搬人物与事件）】${style.sample}\n白描，禁用嘴角勾起、眼中闪过一丝${modern ? "" : "、现代词"}；对话用「」。亲密场面点到为止，禁止描写性行为或身体细节。共同经历摘要是旁白所知，NPC只知道自己参与、目睹或后来获知的部分；私下往事不得让未在场者无故知晓。人物各有立场，不替玩家决定；自由度只影响口谕裁决，不改变叙事一致性要求。`;
 }
 function roster(state) {
   return state.court.officials
@@ -8336,7 +8843,7 @@ const TASK_RULES = `【叙事守则】死亡、怀孕、生产、小产、任免
 【正文任务】把本旬写成「朝」「午」「夜」三段，每段{{LENGTH}}字，空槽可略写。必须表现结算表的执行度与成败。正文只写故事，不抄结算条目；起居注会另行展示结算。廷议按名单立场写。为新奏报写160–260字正文。风闻只写无关痛痒的市井传言。
 章末 hook 写一句 30 字内的下旬伏笔，只能取自未结奏报、在途政务或新近事实，用“恐”“将”“未知”等未定语气，不得断言结果。
 奏折正文分成三至五个自然段，用换行分隔，写明缘由、现状与所请，不另编上奏人。
-正文输出：{"chapter":{"朝":"","午":"","夜":""},"summary":"30字内","hook":"","memorialTexts":[{"id":"","text":""}],"reactions":[{"name":"官员全名","favorDelta":0,"mood":"","note":""}],"rumors":[],"ambitionEvidence":[{"id":"","objectiveId":"","evidence":""}],"factUpdates":[{"subject":"","key":"","value":"","reason":""}]}`;
+正文输出：{"chapter":{"朝":"","午":"","夜":""},"summary":"30字内","hook":"","memorialTexts":[{"id":"","text":""}],"reactions":[{"name":"官员全名","favorDelta":0,"mood":"","note":""}],"sceneMemories":[{"slot":"夜","personId":"","evidence":"正文中完整原句"}],"rumors":[],"ambitionEvidence":[{"id":"","objectiveId":"","evidence":""}],"factUpdates":[{"subject":"","key":"","value":"","reason":""}]}`;
 const TALK_RULES = `【面谈任务】扮演被召见者御前面谈。只写游戏中的人物言行，不解释生成或校验；成功才让步，失败不得让步，不得超过职权。未提供的秘密不得编造，未允时不得承诺拨款、调兵或落实请求。好感、让步与秘密是否揭露由引擎判定，照判定写即可。
 面谈输出 {"reply":"","innerThought":"","mood":"","summary":""}`;
 // L1：静态资料，按 id 排序，不含好感、势力等数值。
@@ -8428,7 +8935,7 @@ function turnMessages(state, forecast) {
     { role: "system", content: systemPrompt(state) },
     {
       role: "user",
-      content: (forecast.scenes?.length?SCENE_RULES+"\n【本旬自拟情节】"+stable(forecast.scenes)+"\n":"") + dynastyBible(state) + "\n" + historyBlock(state) + "\n" + situationBlock(state) +
+      content: (forecast.scenes?.length?SCENE_RULES+'\n【参与者记得的事】'+stable(memoryContext(before,forecast.scenes.flatMap(r=>r.people.map(p=>p.id))))+"\n【本旬自拟情节】"+stable(forecast.scenes)+"\n":"") + dynastyBible(state) + "\n" + historyBlock(state) + "\n" + situationBlock(state) +
         `\n【本旬状态】${stable(dynamic)}\n【玩家排程】${stable(forecast.schedule)}\n【本旬结算表（不可更改）】${stable({ die: forecast.die, fate: forecast.fate, slots: forecast.slotResults, 账目: settlementDigest(state, forecast.entries), notes: forecast.notes, facts: forecast.facts || [] })}\n【廷议名单】${stable(forecast.debate || [])}\n【新奏报】${stable(forecast.newMemorials.map((m) => ({ id: m.id, title: m.title, type:m.type, from: m.from, request:m.request, choices:m.options.map(o=>o.consequence?[o.label,o.consequence]:o.label) })))}\n每本奏折写160–260字，交代事情来由、眼前难处、各方顾虑与具体请求；各折围绕所列事务展开，不套用“事关地方生计”等空话，不靠重复寒暄凑字。方案效果仍是待选的取舍，不能把请办的事写成已经办成；不得补造人名或硬结果。按【正文任务】写本旬，输出正文 JSON。`,
     },
   ];
@@ -8471,9 +8978,9 @@ function talkMessages(state, result, log = []) {
   messages.push({
     role: "user",
     content: (prior.length ? "" : header) + talkTurnLine(result) +
-      "\n【此刻】" + stable({ favor: favor ?? attitude, mood, 拨款上限: result.cap + " 万两" }) +
+      "\n【此人记得的往事与关系】"+stable(memoryContext(state,[result.person]))+"\n【此刻】" + stable({ favor: favor ?? attitude, mood, 拨款上限: result.cap + " 万两" }) +
       (known ? "\n【已获准参考的秘密】" + secret : "") +
-      "\n按【面谈任务】作答，输出面谈 JSON。",
+      "\n按【面谈任务】作答，适时提起与本次话题相关的个人往事，保持当时留下的亲疏与顾虑，不机械罗列，不泄露别人的心事。输出面谈 JSON。",
   });
   return messages;
 }
@@ -9113,6 +9620,8 @@ throw lastError || new Error("本回合请求预算已用完（最多 4 次、24
 return {PRESETS,MODEL_OPTIONS,modelsFor,modelDescription,createBudget,endpoint,requestBody,readResponse,callJSON};
 },
 "src/llm/validate.js":function(__load){
+const {favorRecords} = __load("src/core/social-rules.js");
+const {textSentences} = __load("src/core/text.js");
 const {mockSceneProse} = __load("src/llm/scenes.js");
 const { NUMBER_SOURCE, parseNumber, quantityMatches, quantityEvidence, invalidQuantity } = __load("src/llm/quantities.js");
 const { sceneNarrative } = __load("src/llm/mock-narrative.js");
@@ -9471,16 +9980,19 @@ fixNotes.push(slot + "段经核对后无可保留文字，以平实叙述补足"
 }
 const whole = Object.values(chapter).join("\n"),
 reactions = [];
-let reactionTotal = (s.intentResults||[]).filter(r=>r.type==='favor'&&['success','partial'].includes(r.status)).reduce((n,r)=>n+Math.abs(r.actual.amount||0),0);
+const favorSpent=favorRecords(s,[],true);
+let reactionTotal = favorSpent.reduce((n,r)=>n+Math.abs(r.actual.amount||0),0);
 for (const r of Array.isArray(data.reactions)
 ? data.reactions.slice(0, 10)
 : []) {
 const npc = s.court.officials.find((o) => o.name === r.name && o.alive);
 if (!npc || !Number.isFinite(Number(r.favorDelta))) { fixNotes.push("未知人物反应未采用。"); continue; }
+if((forecast.scenes||[]).some(r=>(r.social||[]).some(e=>!e.otherId&&e.targetId===npc.id)))continue;
+const personal=favorSpent.filter(r=>r.actual.targetId===npc.id).reduce((n,r)=>n+Math.abs(r.actual.amount||0),0);if(personal>=5)continue;
 if ((s.intentResults||[]).some(r=>r.type==='favor'&&r.actual.targetId===npc.id&&['success','partial'].includes(r.status))) continue;
 if (reactions.some((x) => x.id === npc.id) || !whole.includes(npc.name)) continue;
 let delta = Math.max(-5, Math.min(5, Math.round(Number(r.favorDelta))));
-delta = Math.sign(delta) * Math.min(Math.abs(delta), 10 - reactionTotal);
+delta = Math.sign(delta) * Math.min(Math.abs(delta), 5-personal,10 - reactionTotal);
 if (!delta) continue;
 reactionTotal += Math.abs(delta);
 reactions.push({ id: npc.id, name: npc.name, favorDelta: delta, note: cleanText(r.note, 100) });
@@ -9504,6 +10016,7 @@ chapter,
 summary: scrutinize(cleanText(data.summary, 100), null, ['summary'],100) || fallback.summary,
 hook: scrutinize(cleanText(data.hook, 60), null, ['hook'],60),
 reactions,
+sceneMemories:validateSceneMemories(data.sceneMemories,forecast,chapter),
 memorialTexts: (Array.isArray(data.memorialTexts) ? data.memorialTexts : [])
 .filter((m) => forecast.newMemorials.some((n) => n.id === m.id))
 .map((m) => ({
@@ -9614,6 +10127,17 @@ if (/裸体|插入|抽插|性交/.test(value)) value = "宫帘垂下，夜色渐
 sections.push(key + "\n" + value);
 }
 return sections.join("\n\n");
+}
+function validateSceneMemories(raw,f,chapter){
+const scenes=f.scenes||((f.kind==='scene'&&f.people)?[{id:f.sceneId,slot:f.slot,people:f.people,social:f.social||[]}]:[]),out=[],seen=new Set();
+for(const m of Array.isArray(raw)?raw.slice(0,64):[]){
+const r=scenes.find(r=>r.slot===m?.slot&&r.people.some(p=>p.id===m.personId)),e=typeof m?.evidence==='string'?m.evidence.trim():'';
+if(!r||e.length<8||e.length>160||/心想|暗想|心中|心底|暗自|私下|背地|未说出口|不为人知|秘密|内心/.test(e))continue;
+if(!textSentences(chapter[r.slot]).includes(e))continue;
+if((r.social||[]).some(s=>s.kind==='deceive'&&s.targetId===m.personId&&s.status==='success')&&/骗|瞒|诈/.test(e))continue;
+const key=r.slot+':'+m.personId;if(seen.has(key))continue;seen.add(key);out.push({slot:r.slot,personId:m.personId,evidence:e});
+}
+return out;
 }
 
 return {parseJSONLoose,repairJSON,cleanText,validateProbe,mockHook,mockNarrative,chineseNumber,retrospective,validateTurn,validateWorld,validateTalk,extractPartialChapter};
@@ -9737,12 +10261,13 @@ return [slot,pick(SEASONS[season])+pick(SCENES[kind]||SCENES.日常)+(sensitive?
 return {modernTalkFallback,sceneNarrative};
 },
 "src/llm/intents.js":function(__load){
+const {localSocial} = __load("src/core/social-rules.js");
 const { normalizeIntents } = __load("src/core/intents.js");
 const { parseNumber, NUMBER_SOURCE } = __load("src/llm/quantities.js");
 function intentInputs(schedule){return ['朝','午','夜'].flatMap(slot=>{const a=schedule[slot],inputs=[];if(['下旨','自拟情节'].includes(a?.kind)&&a.text?.trim())inputs.push({id:slot,slot,text:a.text.trim(),...(a.kind==='自拟情节'?{people:a.people,place:a.place||'',scene:true}:{})});for(const [id,d]of Object.entries(a?.decisions||{}))if(d?.remark?.trim())inputs.push({id:slot+':remark:'+id,slot,text:d.remark.trim()});return inputs;});}
 function intentMessages(state,inputs){
 const persons=[...state.court.officials.filter(o=>o.alive),...state.harem.consorts.filter(c=>c.health>0),...state.harem.children.filter(c=>c.health>0)].map(o=>({id:o.id,name:o.name}));
-return [{role:'system',content:'你是帝王游戏的意图解析员，只输出 JSON，不写剧情、不决定成败、不返回数值效果。将每条自由输入拆成动作。type 只选 kill/appoint/dismiss/promote/imprison/war/allocate/favor/decree/other。人物、官职、外邦只用名册已有ID，找不到则 other。怀孕、生育、小产只能 other，不得解析为玩家动作。allocate.amount 用游戏单位：银为万两、粮为万石、征兵为人；中文与阿拉伯混写也须准确换算。allocate.source 为 treasury/privy/grain 或调兵来源 capital/边境方向，destination 可为对应账户、军队capital/方向、州ID或政令名称。favor.amount 限-5至5。decree.edictType 使用普通政令名称。scene标记的输入是玩家尝试的情节梗概，不能把希望或NPC反应当作已成事实。people列出本场人物ID；无姓名的指代只在唯一人物时绑定，多人不明则other；地点和情感描写可other。每个动作必须带原输入的inputId，保留愿望的真实意图，不增加动作。输出 {"actions":[{"inputId":"","type":"other","targetId":"","postId":"","countryId":"","operation":"","resource":"","amount":0,"source":"","destination":"","edictType":"","text":""}]}。'}, {role:'user',content:JSON.stringify({persons,posts:state.court.posts.map(p=>({id:p.id,name:state.postNames?.[p.id]||p.title})),countries:state.foreign.map(f=>({id:f.id,name:f.name})),provinces:state.nation.provinces.map(p=>({id:p.id,name:p.name})),inputs})}];
+return [{role:'system',content:'你是帝王游戏的意图解析员，只输出 JSON，不写剧情、不决定成败、不返回数值效果。将每条自由输入拆成动作。type 只选 kill/appoint/dismiss/promote/imprison/war/allocate/favor/decree/other。人物、官职、外邦只用名册已有ID，找不到则 other。怀孕、生育、小产只能 other，不得解析为玩家动作。allocate.amount 用游戏单位：银为万两、粮为万石、征兵为人；中文与阿拉伯混写也须准确换算。allocate.source 为 treasury/privy/grain 或调兵来源 capital/边境方向，destination 可为对应账户、军队capital/方向、州ID或政令名称。favor.amount 限-5至5。decree.edictType 使用普通政令名称。scene标记的输入是玩家尝试的情节梗概，不能把希望或NPC反应当作已成事实。people列出本场人物ID；无姓名的指代只在唯一人物时绑定，多人不明则other；地点和情感描写可other。scene内有明确的相处行为时，另给一个type:other的动作并附interaction:{kind,targetId,otherId}。kind仅选accompany陪伴、comfort安慰、apologize道歉、protect维护、humiliate羞辱、deceive欺瞒、reconcile调解、quarrel争执、cooperate合作；targetId必须在people中，后三种须明确两个不同人物，并用otherId给出另一人。闲聊不必附interaction，不生成数值，不把未发生的事当已发生。每个动作必须带原输入的inputId，保留愿望的真实意图，不增加动作。输出 {"actions":[{"inputId":"","type":"other","targetId":"","postId":"","countryId":"","operation":"","resource":"","amount":0,"source":"","destination":"","edictType":"","text":""}]}。'}, {role:'user',content:JSON.stringify({persons,posts:state.court.posts.map(p=>({id:p.id,name:state.postNames?.[p.id]||p.title})),countries:state.foreign.map(f=>({id:f.id,name:f.name})),provinces:state.nation.provinces.map(p=>({id:p.id,name:p.name})),inputs})}];
 }
 function validateIntents(data,state,inputs){if(!Array.isArray(data?.actions))throw new Error('口谕动作列表缺失');return normalizeIntents(state,data.actions,inputs);}
 // Offline trial parser resolves only explicit existing names; unknown wishes stay narrative.
@@ -9757,6 +10282,7 @@ for(const target of people){const type=/赐死|处死|斩首/.test(input.text)?'
 if(country&&/宣战|议和|出兵/.test(input.text))actions.push({inputId:input.id,type:'war',countryId:country.id,operation:input.text.match(/宣战|议和|出兵/)[0],text:input.text});
 const number=input.text.match(new RegExp('('+NUMBER_SOURCE+')(两|石|人)'));
 if(number&&/拨|调|征兵/.test(input.text))actions.push({inputId:input.id,type:'allocate',resource:number[2]==='石'?'grain':number[2]==='人'?'troops':'treasury',source:number[2]==='石'?'grain':'treasury',amount:parseNumber(number[1])/(number[2]==='人'?1:10000),destination:number[2]==='人'?'capital':/内帑/.test(input.text)?'privy':post?.id||(/修河/.test(input.text)?'修河':'政务'),text:input.text});
+const interaction=localSocial(state,input);if(interaction)actions.push({inputId:input.id,type:'other',text:input.text,interaction});
 if(!actions.some(a=>a.inputId===input.id))actions.push({inputId:input.id,type:'other',text:input.text});
 }
 return normalizeIntents(state,actions,inputs);
@@ -9812,273 +10338,6 @@ const theme=document.createElement('meta');theme.name='theme-color';theme.conten
 }
 
 return {APP_ICONS,createAppManifest,initAppIcon};
-},
-"src/ui/common.js":function(__load){
-const { initMobileViewport } = __load("src/ui/mobile.js");
-const $ = (selector) => document.querySelector(selector);
-// Display labels only; saves stay intact.
-function gameText(text) {
-return String(text ?? "")
-.replace(/^本旬引擎结算：人物、政务与岁时变化$/, "本旬变化")
-.replace(/^模型人物反应建议：引擎限额采纳$/, "人物态度变化")
-.replace(/^引擎结算$/, "本旬变化")
-.replace(/宫闱事件：引擎判定小产/g, "宫中小产")
-.replace(/；面谈结果已落账/g, "；已在面谈中议定")
-.replace(/^本旬面谈已落账，午槽须保留对应人物的召见$/, "午间已召见此人，请先过完本旬。")
-.replace(/^预演已过期，不能提交到此存档$/, "这次安排已过期，请刷新后重试。")
-.replace(/^本回合请求已达 240 秒预算，请保留预演结果后重试$/, "故事续写超时，请重试本旬。")
-.replace(/^模型回复未完成或格式有误，原有进度已保留$/, "这次没能续完故事，请重试本旬。")
-.replace(/^存档处于只读保护模式$/, "此存档暂时无法保存，请先导出备份。");
-}
-function esc(text) {
-return String(text ?? "").replace(
-/[&<>"']/g,
-(c) =>
-({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[
-c
-],
-);
-}
-// Full re-renders replace the DOM. Keep inner scroll positions (the phone
-// layout scrolls inside fixed-height containers) and the focused control.
-function nodePath(node, root) {
-const path = [];
-while (node && node !== root) {
-const parent = node.parentElement;
-if (!parent) return null;
-path.unshift([...parent.children].indexOf(node));
-node = parent;
-}
-return node === root ? path : null;
-}
-function nodeAt(root, path) {
-let node = root;
-for (const i of path) { node = node?.children?.[i]; if (!node) return null; }
-return node;
-}
-function keyOf(el, root) {
-if (el.id) return { id: el.id };
-for (const name of ["scrollKey", "command", "action", "slot", "panel", "clear"])
-if (el.dataset?.[name]) return { data: name, value: el.dataset[name] };
-return { path: nodePath(el, root) };
-}
-function find(root, key) {
-if (key.id) return root.querySelector("#" + CSS.escape(key.id));
-if (key.data) return root.querySelector("[data-" + key.data.replace(/[A-Z]/g, (c) => "-" + c.toLowerCase()) + '="' + CSS.escape(key.value) + '"]');
-return key.path ? nodeAt(root, key.path) : null;
-}
-function captureView(root) {
-if (!root) return { scrolls: [], focus: null };
-const scrolls = [];
-for (const el of root.querySelectorAll("*"))
-if (el.scrollTop > 0 || el.scrollLeft > 0)
-scrolls.push({ key: keyOf(el, root), top: el.scrollTop, left: el.scrollLeft });
-const active = document.activeElement;
-const focus = active && active !== document.body && root.contains(active)
-? { key: keyOf(active, root), start: active.selectionStart ?? null, end: active.selectionEnd ?? null }
-: null;
-return { scrolls, focus };
-}
-function restoreView(root, view) {
-if (!root || !view) return;
-for (const s of view.scrolls) {
-const el = find(root, s.key);
-if (el) { el.scrollTop = s.top; el.scrollLeft = s.left; }
-}
-if (view.focus) {
-const el = find(root, view.focus.key);
-if (el && !el.disabled) {
-el.focus({ preventScroll: true });
-if (view.focus.start !== null && typeof el.setSelectionRange === "function")
-try { el.setSelectionRange(view.focus.start, view.focus.end); } catch {}
-}
-}
-}
-function throttleFrame(fn, schedule = (f) => requestAnimationFrame(f)) {
-let queued = false, latest;
-return (...args) => {
-latest = args;
-if (queued) return;
-queued = true;
-schedule(() => { queued = false; fn(...latest); });
-};
-}
-// Back gestures close the open dialog instead of leaving the game. One history
-// entry is pushed per dialog session; replacing the dialog content reuses it.
-let modalEntry = false, closingFromHistory = false, pendingBack = 0, leaveGuard = () => false;
-function setLeaveGuard(fn) { leaveGuard = fn; }
-function pushModalEntry() {
-if (modalEntry) return;
-try { history.pushState({ ...(history.state || {}), yujiModal: true }, ""); modalEntry = true; } catch {}
-}
-let toastTimer;
-function toast(text) {
-text = gameText(text);
-$("#notice").textContent = text;
-$("#notice").classList.add("show");
-const dialog=$("#modal");
-if(dialog?.open){
-let status=dialog.querySelector('.dialog-notice');
-if(!status){
-status=document.createElement('p');
-status.className='dialog-notice';
-status.setAttribute('role','status');
-status.setAttribute('aria-live','polite');
-const header=dialog.querySelector('.dialog-head');
-if(header)header.insertAdjacentElement('afterend',status);
-else dialog.prepend(status);
-}
-status.textContent=text;
-}
-clearTimeout(toastTimer);
-toastTimer = setTimeout(() => $("#notice").classList.remove("show"), 6000);
-}
-let returnFocus, returnSelector;
-function openDialog(title, body, className = "") {
-const d = $("#modal");
-const active=document.activeElement;
-if (d.open) d.close();
-if (!active?.closest?.('#modal')) {
-returnFocus=active;returnSelector=null;
-for (const key of ['command','action','slot','panel']) if(active?.dataset?.[key]) returnSelector='[data-'+key+'="'+CSS.escape(active.dataset[key])+'"]';
-}
-d.onkeydown=null;
-if (className === 'action-shell') body='<div class="dual-content"><article id="action-document" class="paper action-document"><h3>'+esc(title)+'</h3><p>御案上的事，请逐项裁定。</p></article><section class="action-options">'+body+'</section></div>';
-d.className = className;
-d.innerHTML =
-'<div class="dialog-head"><h2 id="modal-title">' +
-esc(title) +
-'</h2><button type="button" id="close-modal" aria-label="关闭窗口">×</button></div>' +
-body;
-$("#close-modal").onclick = () => d.close();
-d.showModal();
-pushModalEntry();
-document.documentElement.classList.add("modal-open");
-d.scrollTop = 0;
-}
-function closeDialog() {
-$("#modal").close();
-}
-function download(name, data, type = "application/json") {
-const url = URL.createObjectURL(new Blob([data], { type })),
-a = document.createElement("a");
-a.href = url;
-a.download = name;
-a.click();
-setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
-function fitBrandText() {
-for(const date of document.querySelectorAll('.brand .date,.brand h1')) {
-date.style.removeProperty('font-size');
-const css=getComputedStyle(date),minimum=Number.parseFloat(css.getPropertyValue(date.matches('h1')?'--font-ui':'--font-minor'))||10;
-let size=Number.parseFloat(css.fontSize);
-while(date.scrollWidth>date.clientWidth&&size>minimum){size=Math.max(minimum,size-.5);date.style.fontSize=size+'px';}
-}
-}
-function initCommon() {
-initMobileViewport();
-// Refit after rendering, viewport changes and the optional web fonts settle.
-new MutationObserver(fitBrandText).observe($('#app'),{childList:true});
-window.addEventListener('resize',fitBrandText);
-document.fonts?.ready.then(fitBrandText);
-$("#modal").addEventListener("keydown", e => {
-if(e.key!=='Tab')return;
-const d=$("#modal"),items=[...d.querySelectorAll('button:not(:disabled),input:not(:disabled),select:not(:disabled),textarea:not(:disabled),summary,[tabindex="0"]')].filter(x=>x.tabIndex>=0&&x.getClientRects().length&&(!x.checkVisibility||x.checkVisibility()));
-if(!items.length){e.preventDefault();return;}
-const at=items.indexOf(document.activeElement);
-if((e.shiftKey&&at<=0)||(!e.shiftKey&&(at===items.length-1||at<0))){e.preventDefault();items[e.shiftKey?items.length-1:0].focus();}
-});
-window.addEventListener("popstate", () => {
-if (pendingBack > 0) {
-// Our own history.back() after a close. If a new dialog opened before the
-// traversal landed, the entry we arrived on still belongs to a dialog.
-pendingBack--;
-modalEntry = $("#modal").open;
-return;
-}
-if (!modalEntry) return;
-modalEntry = false;
-if ($("#modal").open) { closingFromHistory = true; $("#modal").close(); }
-});
-window.addEventListener("beforeunload", (e) => {
-if (!leaveGuard()) return;
-e.preventDefault();
-e.returnValue = "";
-});
-$("#modal").addEventListener("close", () => {
-if($("#modal").open)return;
-if (closingFromHistory) closingFromHistory = false;
-else if (modalEntry) { modalEntry = false; pendingBack++; try { history.back(); } catch { pendingBack--; } }
-document.documentElement.classList.remove("modal-open");
-if (returnFocus?.isConnected) returnFocus.focus();
-else if(returnSelector) document.querySelector(returnSelector)?.focus();
-});
-}
-
-return {$,gameText,esc,captureView,restoreView,throttleFrame,setLeaveGuard,toast,openDialog,closeDialog,download,initCommon};
-},
-"src/ui/mobile.js":function(__load){
-// Keep the game at its intended scale without delaying ordinary scrolling.
-// Android pinch is stopped by touch-action: pan-x pan-y; only iOS gesture
-// events need a non-passive listener, and they fire for pinches alone.
-const GUARDED_EVENTS = ["gesturestart", "gesturechange"];
-function blockPinch(event) {
-if ((event.touches?.length || 0) > 1 || GUARDED_EVENTS.includes(event.type)) {
-if (event.cancelable) event.preventDefault();
-}
-}
-// Coalesce viewport writes to one per frame and skip unchanged values, so a
-// visualViewport scroll does not restyle the whole document on every event.
-function createViewportUpdater(read, write, schedule = (f) => requestAnimationFrame(f)) {
-let queued = false, last = "";
-return () => {
-if (queued) return;
-queued = true;
-schedule(() => {
-queued = false;
-const { height, top } = read(), key = height + "|" + top;
-if (key === last) return;
-last = key;
-write(height, top);
-});
-};
-}
-const FONT_SCALES = { m: "标准", l: "较大", xl: "特大" };
-function applyFontScale(value, root = document.documentElement, storage = globalThis.localStorage) {
-const scale = FONT_SCALES[value] ? value : "m";
-if (scale === "m") root.removeAttribute("data-font");
-else root.setAttribute("data-font", scale);
-try { storage?.setItem("yuji:font", scale); } catch {}
-return scale;
-}
-function storedFontScale(storage = globalThis.localStorage) {
-try { return FONT_SCALES[storage?.getItem("yuji:font")] ? storage.getItem("yuji:font") : "m"; } catch { return "m"; }
-}
-let installed = false;
-function initMobileViewport() {
-if (installed) return;
-installed = true;
-for (const type of GUARDED_EVENTS)
-document.addEventListener(type, blockPinch, { passive: false });
-const root = document.documentElement;
-const update = createViewportUpdater(
-() => ({
-height: window.visualViewport?.height || window.innerHeight,
-top: window.visualViewport?.offsetTop || 0,
-}),
-(height, top) => {
-root.style.setProperty("--app-height", height + "px");
-root.style.setProperty("--viewport-top", top + "px");
-},
-);
-window.addEventListener("resize", update);
-window.visualViewport?.addEventListener("resize", update);
-window.visualViewport?.addEventListener("scroll", update);
-update();
-applyFontScale(storedFontScale());
-}
-
-return {GUARDED_EVENTS,blockPinch,createViewportUpdater,FONT_SCALES,applyFontScale,storedFontScale,initMobileViewport};
 },
 "src/ui/settings.js":function(__load){
 const { createDialogRequestScope, probeErrorMessage } = __load("src/ui/request-scope.js");
@@ -10962,7 +11221,7 @@ fact.reason.length >= 8
 )
 s.facts.push({ ...fact, turn: s.turn });
 }
-for(const r of forecast.scenes||[])rememberScene(s,r,narrative.chapter?.[r.slot]);
+for(const r of forecast.scenes||[])s=rememberScene(s,r,narrative.chapter?.[r.slot],{...r,turn:s.turn},(narrative.sceneMemories||[]).filter(m=>m.slot===r.slot),state.era);
 s.facts = s.facts.slice(-100);
 s.history.push({
 id: forecast.turnId,
@@ -10970,7 +11229,7 @@ turn: s.turn,
 era: clone(state.era),
 memorialReviews: collectMemorialReviews(state, forecast),
 ...(state.turnBudget?.rewriteAttempted?{rewriteAttempted:true}:{}),
-...(forecast.scenes?.length?{scenes:clone(forecast.scenes)}:{}),
+...(forecast.scenes?.length?{scenes:clone(forecast.scenes).map(r=>({...r,memoryVersion:19,memoryNotes:(narrative.sceneMemories||[]).filter(m=>m.slot===r.slot)}))}:{}),
 chapter: narrative.chapter || {},
 ...(s.intentResults.length ? {intentResults:clone(s.intentResults)} : {}),
 summary: String(narrative.summary || "本旬诸事已入起居注").slice(0, 100),
@@ -12266,7 +12525,7 @@ const diagnostic = new RegExp("^(?:(?:朝|午|夜|附文)(?:" +
 "亲密场景已收束为含蓄叙述。|未知人物反应未采用。)$");
 return (h.notes || []).filter((n) => !diagnostic.test(n)).map(gameText);
 }
-function chapterHTML(h, ambitions = [], sceneActive = false) {
+function chapterHTML(h, ambitions = [], sceneActive = false, sceneState = null) {
 return (
 '<div class="chapter-head"><span class="eyebrow">第 ' +
 h.turn +
@@ -12286,7 +12545,7 @@ h.era.month +
 ["朝", "午", "夜"]
 .map(
 (slot) =>
-"<h3>" + slot + "</h3><p>" + esc(h.chapter[slot] || "略。") + "</p>" + sceneChapterHTML(h,slot,sceneActive),
+"<h3>" + slot + "</h3><p>" + esc(h.chapter[slot] || "略。") + "</p>" + sceneChapterHTML(h,slot,sceneActive,sceneState),
 )
 .join("") +
 (h.hook ? '<p class="chapter-hook">' + esc(h.hook) + "</p>" : "") +
@@ -12649,7 +12908,7 @@ esc(s.ending.cause) +
 ? '<p class="onboarding">幼帝摄政 · 年满十六岁亲政；现可批折、召见、自拟情节、经筵、歇息。</p>'
 : "") +
 '<article class="scroll" id="scroll" tabindex="0" aria-label="本旬正文章节">' +
-(last ? chapterHTML(last, s.ambitions,!locked&&!s.talks.some(t=>t.turn===s.turn)) : opening) +
+(last ? chapterHTML(last, s.ambitions,!locked&&!s.talks.some(t=>t.turn===s.turn),s) : opening) +
 '<div id="stream" class="streaming" aria-live="polite"></div></article><div class="saved-status">' +
 esc(gameText(
 saveStatus ||
@@ -12681,13 +12940,14 @@ mobileNavHTML(s)
 return {num,date,actionButton,actionsHTML,energyHTML,metricsHTML,ledgerLabel,ledgerHTML,chapterTitle,chapterNotes,chapterHTML,memorialHTML,memorialListHTML,mobileNavHTML,goalConditionsHTML,ambitionsHTML,introHTML,renderApp};
 },
 "src/ui/scene-view.js":function(__load){
+const {memoryButton,socialChangesHTML} = __load("src/ui/memories.js");
 const {esc} = __load("src/ui/common.js");
 const {scenePeople,sceneOutcomeText} = __load("src/core/scenes.js");
 function sceneActionFields(s,old={}){
-return '<fieldset class="scene-people"><legend>一起经历的人（可多选，不选则独处）</legend><div class="scene-people-list">'+scenePeople(s).map(p=>'<label class="check"><input type="checkbox" name="scene-person" value="'+esc(p.id)+'" '+(old.people?.includes(p.id)?'checked':'')+'>'+esc(p.name)+'</label>').join('')+'</div></fieldset><label for="scene-place">地点（选填）</label><input id="scene-place" maxlength="120" value="'+esc(old.place||'')+'" placeholder="如：御花园、书房、城外驿站"><label for="scene-text">想发生怎样的故事</label><textarea id="scene-text" required maxlength="8000" rows="6" placeholder="如：陪她在御花园散步，聊聊近日心事，希望她说出自己的顾虑。">'+esc(old.text||'')+'</textarea><p class="muted">每场耗精力1。只需写大概，人物会依性格回应，成败按当前自由度判断。起驾后展开故事，还可接着写。</p>';
+return '<fieldset class="scene-people"><legend>一起经历的人（可多选，不选则独处）</legend><div class="scene-people-list">'+scenePeople(s).map(p=>'<label class="check"><input type="checkbox" name="scene-person" value="'+esc(p.id)+'" '+(old.people?.includes(p.id)?'checked':'')+'>'+esc(p.name)+'</label>').join('')+'</div></fieldset><label for="scene-place">地点（选填）</label><input id="scene-place" maxlength="120" value="'+esc(old.place||'')+'" placeholder="如：御花园、书房、城外驿站"><label for="scene-text">想发生怎样的故事</label><textarea id="scene-text" required maxlength="8000" rows="6" placeholder="如：陪她在御花园散步，聊聊近日心事，希望她说出自己的顾虑。">'+esc(old.text||'')+'</textarea><p class="muted">每场耗精力1。人物会记得共同经历，亲疏随相处变化；成败按当前自由度判断。起驾后展开故事，还可接着写。</p>';
 }
-function sceneChapterHTML(h,slot,active=false){
-return (h.scenes||[]).filter(r=>r.slot===slot).map(r=>'<section class="scene-story"><p class="muted">'+esc([r.people.map(p=>p.name).join('、')||'独处',r.place,sceneOutcomeText(r.outcome)].filter(Boolean).join(' · '))+'</p><details><summary>原定情节</summary><p>'+esc(r.text)+'</p></details>'+r.steps.map(t=>'<div class="scene-continuation"><p class="scene-request">接着写：'+esc(t.request)+'</p><p>'+esc(t.prose).replace(/\n+/g,'</p><p>')+'</p></div>').join('')+(active?'<button class="scene-continue" data-scene="'+esc(r.id)+'">接着写</button>':'')+'</section>').join('');
+function sceneChapterHTML(h,slot,active=false,state=null){
+return (h.scenes||[]).filter(r=>r.slot===slot).map(r=>'<section class="scene-story"><p class="muted">'+esc([r.people.map(p=>p.name).join('、')||'独处',r.place,sceneOutcomeText(r.outcome)].filter(Boolean).join(' · '))+'</p>'+(state?socialChangesHTML(state,r.socialChanges||[]):'')+'<div class="scene-memory-links">'+r.people.map(p=>memoryButton(p.id,p.name)).join('')+'</div><details><summary>原定情节</summary><p>'+esc(r.text)+'</p></details>'+r.steps.map(t=>'<div class="scene-continuation">'+(state?socialChangesHTML(state,t.socialChanges||[]):'')+'<p class="scene-request">接着写：'+esc(t.request)+'</p><p>'+esc(t.prose).replace(/\n+/g,'</p><p>')+'</p></div>').join('')+(active?'<button class="scene-continue" data-scene="'+esc(r.id)+'">接着写</button>':'')+'</section>').join('');
 }
 function sceneActionLabel(s,a){
 const names=a.people.map(id=>scenePeople(s).find(p=>p.id===id)?.name||id);
@@ -14109,6 +14369,7 @@ toast(error.message);
 return {actionDialog};
 },
 "src/ui/panels.js":function(__load){
+const {memoryButton,relationName} = __load("src/ui/memories.js");
 const { postTitle } = __load("src/core/scenarios.js");
 const { selectionDescription } = __load("src/ui/view-model.js");
 const { annualBudget, wasteQuote,grainBudget } = __load("src/core/finance.js");
@@ -14193,7 +14454,7 @@ num(o.favor) +
 (o.secretKnown ? "<p>" + esc(o.secret) + "</p>" : "") +
 '<button data-talk="' +
 o.id +
-'">召见</button></div>',
+'">召见</button>'+memoryButton(o.id)+'</div>',
 ),
 );
 }
@@ -14254,12 +14515,12 @@ Math.ceil((c.recoveryUntil - s.turn) / 3) +
 Object.entries(c.relations)
 .map(
 ([id, v]) =>
-esc(s.harem.consorts.find((x) => x.id === id)?.name) +
+esc(relationName(s,id)) +
 " " +
 num(v),
 )
 .join("；") +
-'</p><button data-action="后宫">安排内廷</button></div>',
+'</p><button data-action="后宫">安排内廷</button>'+memoryButton(c.id)+'</div>',
 )
 .join("") +
 '</div><h3 class="section-spacer">殿选秀女</h3><p class="muted">本届 ' +
@@ -14339,7 +14600,7 @@ num(f.power) +
 num(f.attitude) +
 "</p><small>" +
 esc(f.demand) +
-'</small>'+treatyHTML(s,f)+(f.trade&&f.trade.income>0&&f.trade.until>=s.turn?'<p>互市每季 '+num(f.trade.income)+' 万两 · 余 '+(f.trade.until-s.turn)+' 旬'+(f.status==='交战'?'（交战停收）':'')+'</p>':'')+'<p><button data-action="外交">遣使接见</button></p></div>',
+'</small>'+treatyHTML(s,f)+(f.trade&&f.trade.income>0&&f.trade.until>=s.turn?'<p>互市每季 '+num(f.trade.income)+' 万两 · 余 '+(f.trade.until-s.turn)+' 旬'+(f.status==='交战'?'（交战停收）':'')+'</p>':'')+'<p><button data-action="外交">遣使接见</button>'+memoryButton(f.id)+'</p></div>',
 )
 .join("") +
 '</div><h3 class="section-spacer">战役与议约</h3>' +campaignsHTML(s);
@@ -14418,7 +14679,7 @@ esc(official(c.tutor)) +
 num(c.education) +
 '</dd></dl><button data-tutor="' +
 c.id +
-'">择师教养</button></div>',
+'">择师教养</button>'+memoryButton(c.id)+'</div>',
 )
 .join("") +
 '</div><h3 class="section-spacer">宗室女</h3>' +

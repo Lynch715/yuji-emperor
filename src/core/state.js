@@ -1,3 +1,4 @@
+import {validateSocialState} from './social-schema.js';
 import { validateSceneState } from './scene-schema.js';
 import { normalizeMemorialAction } from "./memorial-decisions.js";
 import { validateMemorialReviews } from "./memorial-records.js";
@@ -7,7 +8,7 @@ import { seedNumber, random, DRAFT } from "./rng.js";
 import { uniqueName } from "./names.js";
 import { chooseRegent } from "./regency-info.js";
 import {factionPowers} from './politics.js';
-export const VERSION = 18;
+export const VERSION = 19;
 export const TALENTS = ["政略", "权谋", "武略", "文采", "魅力"];
 export const SLOTS = ["朝", "午", "夜"];
 export const POST_NAMES = [
@@ -492,6 +493,7 @@ export function migrate(input) {
   // v17 adds optional author snapshots and cumulative gifts. Missing fields
   // mean historical/unused; do not reconstruct old signatures or forecasts.
   // v18: scene records and pending.kind are optional; retain old forecasts byte for byte.
+  // v19 reuses optional NPC memory/relations; old scenes are read as memories without recalculating effects.
   s.settings.freedom ??= "mid";
   s.v = VERSION;
   s.volumeIndex ??= [];
@@ -655,6 +657,7 @@ export function assertState(s) {
   if(s.v>=15)validateScenarioAmbitions(s,reignId(s));
   if(s.v>=16)validateCampaignState(s);
   if(s.v>=18)validateSceneState(s);
+  if(s.v>=19)validateSocialState(s);
   if(s.v>=17){
     for(const m of s.memorials)for(const k of ['fromPost','fromRole'])if(m[k]!==undefined&&(typeof m[k]!=='string'||m[k].length>120))throw new Error('上奏人资料损坏');
     for(const c of s.harem.consorts)if(c.gifts!==undefined&&(!c.gifts||!Number.isSafeInteger(c.gifts.turn)||c.gifts.turn<0||c.gifts.turn>s.turn||!Number.isFinite(c.gifts.amount)||c.gifts.amount<0))throw new Error('赏赐记录损坏');

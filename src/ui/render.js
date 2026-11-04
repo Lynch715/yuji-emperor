@@ -227,7 +227,7 @@ export function chapterNotes(h) {
     "亲密场景已收束为含蓄叙述。|未知人物反应未采用。)$");
   return (h.notes || []).filter((n) => !diagnostic.test(n)).map(gameText);
 }
-export function chapterHTML(h, ambitions = [], sceneActive = false) {
+export function chapterHTML(h, ambitions = [], sceneActive = false, sceneState = null) {
   return (
     '<div class="chapter-head"><span class="eyebrow">第 ' +
     h.turn +
@@ -247,7 +247,7 @@ export function chapterHTML(h, ambitions = [], sceneActive = false) {
     ["朝", "午", "夜"]
       .map(
         (slot) =>
-          "<h3>" + slot + "</h3><p>" + esc(h.chapter[slot] || "略。") + "</p>" + sceneChapterHTML(h,slot,sceneActive),
+          "<h3>" + slot + "</h3><p>" + esc(h.chapter[slot] || "略。") + "</p>" + sceneChapterHTML(h,slot,sceneActive,sceneState),
       )
       .join("") +
     (h.hook ? '<p class="chapter-hook">' + esc(h.hook) + "</p>" : "") +
@@ -610,7 +610,7 @@ export function renderApp(
       ? '<p class="onboarding">幼帝摄政 · 年满十六岁亲政；现可批折、召见、自拟情节、经筵、歇息。</p>'
       : "") +
     '<article class="scroll" id="scroll" tabindex="0" aria-label="本旬正文章节">' +
-    (last ? chapterHTML(last, s.ambitions,!locked&&!s.talks.some(t=>t.turn===s.turn)) : opening) +
+    (last ? chapterHTML(last, s.ambitions,!locked&&!s.talks.some(t=>t.turn===s.turn),s) : opening) +
     '<div id="stream" class="streaming" aria-live="polite"></div></article><div class="saved-status">' +
     esc(gameText(
       saveStatus ||

@@ -483,7 +483,7 @@ function commitDraft(state, forecast, narrative = {}) {
     )
       s.facts.push({ ...fact, turn: s.turn });
   }
-  for(const r of forecast.scenes||[])rememberScene(s,r,narrative.chapter?.[r.slot]);
+  for(const r of forecast.scenes||[])s=rememberScene(s,r,narrative.chapter?.[r.slot],{...r,turn:s.turn},(narrative.sceneMemories||[]).filter(m=>m.slot===r.slot),state.era);
   s.facts = s.facts.slice(-100);
   s.history.push({
     id: forecast.turnId,
@@ -491,7 +491,7 @@ function commitDraft(state, forecast, narrative = {}) {
     era: clone(state.era),
     memorialReviews: collectMemorialReviews(state, forecast),
     ...(state.turnBudget?.rewriteAttempted?{rewriteAttempted:true}:{}),
-    ...(forecast.scenes?.length?{scenes:clone(forecast.scenes)}:{}),
+    ...(forecast.scenes?.length?{scenes:clone(forecast.scenes).map(r=>({...r,memoryVersion:19,memoryNotes:(narrative.sceneMemories||[]).filter(m=>m.slot===r.slot)}))}:{}),
     chapter: narrative.chapter || {},
     ...(s.intentResults.length ? {intentResults:clone(s.intentResults)} : {}),
     summary: String(narrative.summary || "本旬诸事已入起居注").slice(0, 100),

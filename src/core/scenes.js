@@ -1,3 +1,6 @@
+import {rememberNPCScene} from './memory.js';
+import {applySceneSocial} from './social.js';
+import {localSocial,groupRelationModifier,emperorKey} from './social-rules.js';
 import {clone,assertState,migrate,VERSION} from './state.js';
 import {roll,check} from './rng.js';
 import {adjudicate} from './freedom.js';
@@ -25,7 +28,8 @@ export function resolveScene(state,action,actions,slot,source,previous=null){
   const priorResults=previous?[...(previous.results||[]),...previous.steps.flatMap(t=>t.results)]:[],reuse=new Map();
   const fresh=real.filter(a=>{const r=!/再拨|再赏|追加|另拨|另赏|再给/.test(a.text)&&priorResults.find(r=>r.actionKey===key(a));if(r){reuse.set(a.id,r);return false;}return true;});
   const chapter=previous?state.history.at(-1):null;
-  const favorHistory=chapter?[...(chapter.intentResults||[]),...chapter.entries.filter(e=>e.source==='模型人物反应建议：引擎限额采纳'&&/^official\..+\.favor$/.test(e.path)).map((e,i)=>({id:chapter.id+':reaction:'+i,type:'favor',status:'success',actual:{targetId:e.path.split('.')[1],amount:e.delta}}))]:[];
+  // Model reactions and scene effects already appear in the current ledger.
+  const favorHistory=chapter?.intentResults||[];
   const r=resolveIntents(s,fresh,{slot,source,favorHistory});s=r.state;r.results.forEach((r,i)=>r.actionKey=key(fresh[i]));
   results=real.map(a=>reuse.has(a.id)?{...reuse.get(a.id),reused:true}:r.results[fresh.findIndex(x=>x.id===a.id)]);facts=[...r.facts,...[...reuse.values()].flatMap(r=>r.facts||[])];
   const completed=results.filter(r=>['success','partial'].includes(r.status));
@@ -34,14 +38,17 @@ export function resolveScene(state,action,actions,slot,source,previous=null){
  }else{
   const people=action.people.map(id=>scenePeople(s,true).find(p=>p.id===id));
   const opposition=people.length?people.reduce((n,p)=>n+(p.abilities?.权谋??p.scheming??30),0)/people.length:0;
-  const favor=people.length?people.reduce((n,p)=>n+(p.favor??p.attitude??50),0)/people.length/5:10;
+  const favor=people.length?people.reduce((n,p)=>n+(p.favor??p.attitude??p.relations?.[emperorKey(s)]??50),0)/people.length/5:10;
   const attr=/试探|调查|套话|揭穿|逼问/.test(action.text)?'权谋':/吟诗|作诗|赋诗|书画/.test(action.text)?'文采':'魅力';
   const r=roll(s);s=r.state;
-  const judged=adjudicate(s,check(s.emperor.talents[attr],r.value,'一般',opposition,favor),action.people[0]);s=judged.state;
+  const judged=adjudicate(s,check(s.emperor.talents[attr],r.value,'一般',opposition,favor+groupRelationModifier(s,action.people)),action.people[0]);s=judged.state;
   outcome={status:judged.verdict.partial?'partial':judged.verdict.success?'success':'failed',die:r.value,...(judged.verdict.cost?{cost:judged.verdict.cost}:{})};
  }
+ const plans=actions.filter(a=>a.interaction).map(a=>a.interaction);
+ const fallback=localSocial(state,{scene:true,people:action.people,text:action.text});if(!plans.length&&fallback)plans.push(fallback);
+ const social=applySceneSocial(s,plans,outcome,source,previous);s=social.state;
  facts.push({kind:'scene_result',slot,status:outcome.status});
- return {state:s,results,facts,record:{slot,people,place:action.place||'',text:action.text.trim(),outcome,results,steps:[]}};
+ return {state:s,results,facts,record:{slot,people,emperorId:emperorKey(state),emperorName:state.emperor.name,place:action.place||'',text:action.text.trim(),outcome,results,social:social.events,socialChanges:social.changes,steps:[]}};
 }
 export function latestScene(s,id){const h=s.history.at(-1);return !s.talks.some(t=>t.turn===s.turn)&&h?.turn===s.turn?h.scenes?.find(r=>r.id===id):null;}
 export function sceneInput(s,r,text){return {id:r.id+':'+(r.steps.length+1),slot:r.slot,text,people:r.people.map(p=>p.id),scene:true,place:r.place};}
@@ -56,19 +63,19 @@ export function forecastScene(state,id,text,actions=[]){
  const s=r.state;s.revision++;s.pending=null;s.turnBudget=null;s.ledger=[...state.ledger,...entries];
  delete s.history;delete s.volumes;
  assertState(s);
- return {kind:'scene',historyDetached:true,turnId,runId:state.runId,baseTurn:state.turn,baseRevision:state.revision,baseFingerprint:JSON.stringify({rng:state.rng,turn:state.turn,revision:state.revision}),sceneId:id,chapterId:state.history.at(-1).id,slot:record.slot,request:text.trim(),sequence:record.steps.length+1,outcome:r.record.outcome,results:r.results,state:s,entries,die:r.record.outcome.die,fate:'情节续写',facts:r.facts,newMemorials:[],notes:[],slotResults:{朝:[],午:[],夜:[],[record.slot]:[sceneOutcomeText(r.record.outcome),...r.results.map(r=>r.summary)]},schedule:{}};
+ return {kind:'scene',historyDetached:true,turnId,runId:state.runId,baseTurn:state.turn,baseRevision:state.revision,baseFingerprint:JSON.stringify({rng:state.rng,turn:state.turn,revision:state.revision}),sceneId:id,chapterId:state.history.at(-1).id,slot:record.slot,request:text.trim(),sequence:record.steps.length+1,outcome:r.record.outcome,results:r.results,social:r.record.social,socialChanges:r.record.socialChanges,people:record.people,state:s,entries,die:r.record.outcome.die,fate:'情节续写',facts:r.facts,newMemorials:[],notes:[],slotResults:{朝:[],午:[],夜:[],[record.slot]:[sceneOutcomeText(r.record.outcome),...r.results.map(r=>r.summary)]},schedule:{}};
 }
 export function sceneOutcomeText(o){return ({success:'如愿',partial:'有所进展，也有代价',failed:'未能如愿'}[o.status])+(o.cost?'：'+o.cost+(o.reused?'（此前已承担）':''):'');}
 export function commitScene(state,f,narrative){
  if(state.receipts.includes(f.turnId))return clone(state);
  if(f.kind!=='scene'||state.runId!==f.runId||f.state.runId!==state.runId||f.state.turn!==state.turn||f.state.revision!==state.revision+1||state.turn!==f.baseTurn||state.revision!==f.baseRevision||f.baseFingerprint!==JSON.stringify({rng:state.rng,turn:state.turn,revision:state.revision})||!latestScene(state,f.sceneId)||state.history.at(-1).id!==f.chapterId)throw new Error('这段续写已经过期，不能写入此进度');
  const prose=narrative.chapter?.[f.slot]?.trim();if(!prose||prose.length>2400)throw new Error('情节尚未续完，请重试');
- const s=f.state.v<VERSION?migrate(f.state):clone(f.state);s.v=VERSION;
+ let s=f.state.v<VERSION?migrate(f.state):clone(f.state);s.v=VERSION;
  if(f.historyDetached){s.history=clone(state.history);s.volumes=[...state.volumes];s.volumeIndex=[...(state.volumeIndex||[])];}
- const h=s.history.at(-1),r=h.scenes.find(r=>r.id===f.sceneId);r.steps.push({id:f.turnId,sequence:f.sequence,request:f.request,prose,outcome:clone(f.outcome),results:clone(f.results),entries:clone(f.entries)});
+ const h=s.history.at(-1),r=h.scenes.find(r=>r.id===f.sceneId);r.steps.push({id:f.turnId,sequence:f.sequence,request:f.request,prose,outcome:clone(f.outcome),memoryVersion:19,memoryNotes:clone(narrative.sceneMemories||[]),results:clone(f.results),social:clone(f.social||[]),socialChanges:clone(f.socialChanges||[]),entries:clone(f.entries)});
  if(state.turnBudget?.rewriteAttempted)h.rewriteAttempted=true;
  h.entries.push(...clone(f.entries));h.settlement??={slotResults:{}};h.settlement.slotResults[f.slot]??=[];h.settlement.slotResults[f.slot].push('接着写 · '+sceneOutcomeText(f.outcome),...f.results.map(r=>r.summary));
- rememberScene(s,r,prose);
+ s=rememberScene(s,r,prose,{...r.steps.at(-1),turn:s.turn},narrative.sceneMemories||[],h.era);
  h.settlement.facts=[...(h.settlement.facts||[]),...clone(f.facts)];
  for(const result of s.intentResults)if(result.turn===s.turn&&f.results.some(r=>r.id===result.id))result.sceneCommitted=true;
  s.receipts.push(f.turnId);s.pending=null;s.turnBudget=null;
@@ -77,8 +84,9 @@ export function commitScene(state,f,narrative){
  assertState(s);return s;
 }
 
-export function rememberScene(s,r,prose){
- if(!prose)return;
+export function rememberScene(s,r,prose,phase=r,notes=[],era=null){
+ if(!prose)return s;
+ s=rememberNPCScene(s,r,phase,prose,notes,era);
  const key='共同经历:'+r.id;s.facts=s.facts.filter(f=>f.key!==key);
- s.facts.push({subject:r.people.map(p=>p.name).join('、')||s.emperor.name,key,value:String(prose).slice(0,350),turn:s.turn});s.facts=s.facts.slice(-100);
+ s.facts.push({subject:r.people.map(p=>p.name).join('、')||s.emperor.name,key,value:String(prose).slice(0,350),turn:s.turn,private:true,people:r.people.map(p=>p.id)});s.facts=s.facts.slice(-100);return s;
 }

@@ -12,6 +12,8 @@ export function numericSnapshot(s) {
             "greed",
             "secret",
             "secretKnown",
+            "memory",
+            "memoryHydrated",
             "gifts",
             "growth",
             "born",
@@ -34,6 +36,8 @@ export function numericSnapshot(s) {
             "greed",
             "secret",
             "secretKnown",
+            "memory",
+            "memoryHydrated",
             "gifts",
             "born",
             "due",
@@ -77,6 +81,8 @@ export function auditChanges(
     "greed",
     "secret",
     "secretKnown",
+    "memory",
+    "memoryHydrated",
     "gifts",
     "growth",
     "born",
@@ -90,7 +96,7 @@ export function auditChanges(
     for (const [key, value] of Object.entries(current || {})) {
       if (excluded.has(key)) continue;
       if (typeof value === "number" && Number.isFinite(value)) {
-        const prior = typeof old?.[key] === "number" ? old[key] : 0;
+        const prior = typeof old?.[key] === "number" ? old[key] : path.endsWith(".relations") ? 50 : 0;
         if (value === prior && !adjust) continue;
         const full = path + "." + key,
           logged = totals.get(full) || 0,

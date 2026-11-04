@@ -1,0 +1,27 @@
+{
+  "turns": 7200,
+  "finalTreasury": 684,
+  "collapseRate": 20,
+  "invasionCount": 156,
+  "totalEvents": 1282,
+  "maxTreasury": 1146.6014822486734,
+  "saveVersion": 19,
+  "seed": "御极·两百年",
+  "years": 200,
+  "tests": 489,
+  "newMemoryTests": 20,
+  "browser": {
+    "mobileWidth": 360,
+    "desktopWidth": 1280,
+    "comfortFavorDelta": 2,
+    "apologyContinuationFavorDelta": 2,
+    "pairedRelationshipDelta": [
+      4,
+      4
+    ],
+    "memoryReloaded": true,
+    "noHorizontalOverflow": true,
+    "minimumTouchHeight": 44
+  },
+  "note": "默认尽职策略与mock LLM；另测42旬126场情节及42次续写。浏览器使用本地试读；记忆提示词与正文证据验证通过自动测试，未评测远程模型文学质量。"
+}

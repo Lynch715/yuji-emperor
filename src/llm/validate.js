@@ -1,3 +1,5 @@
+import {favorRecords} from '../core/social-rules.js';
+import {textSentences} from '../core/text.js';
 import {mockSceneProse} from './scenes.js';
 import { NUMBER_SOURCE, parseNumber, quantityMatches, quantityEvidence, invalidQuantity } from "./quantities.js";
 import { sceneNarrative } from "./mock-narrative.js";
@@ -356,16 +358,19 @@ export function validateTurn(data, forecast, options = {}) {
     }
   const whole = Object.values(chapter).join("\n"),
     reactions = [];
-  let reactionTotal = (s.intentResults||[]).filter(r=>r.type==='favor'&&['success','partial'].includes(r.status)).reduce((n,r)=>n+Math.abs(r.actual.amount||0),0);
+  const favorSpent=favorRecords(s,[],true);
+  let reactionTotal = favorSpent.reduce((n,r)=>n+Math.abs(r.actual.amount||0),0);
   for (const r of Array.isArray(data.reactions)
     ? data.reactions.slice(0, 10)
     : []) {
     const npc = s.court.officials.find((o) => o.name === r.name && o.alive);
     if (!npc || !Number.isFinite(Number(r.favorDelta))) { fixNotes.push("未知人物反应未采用。"); continue; }
+    if((forecast.scenes||[]).some(r=>(r.social||[]).some(e=>!e.otherId&&e.targetId===npc.id)))continue;
+    const personal=favorSpent.filter(r=>r.actual.targetId===npc.id).reduce((n,r)=>n+Math.abs(r.actual.amount||0),0);if(personal>=5)continue;
     if ((s.intentResults||[]).some(r=>r.type==='favor'&&r.actual.targetId===npc.id&&['success','partial'].includes(r.status))) continue;
     if (reactions.some((x) => x.id === npc.id) || !whole.includes(npc.name)) continue;
     let delta = Math.max(-5, Math.min(5, Math.round(Number(r.favorDelta))));
-    delta = Math.sign(delta) * Math.min(Math.abs(delta), 10 - reactionTotal);
+    delta = Math.sign(delta) * Math.min(Math.abs(delta), 5-personal,10 - reactionTotal);
     if (!delta) continue;
     reactionTotal += Math.abs(delta);
     reactions.push({ id: npc.id, name: npc.name, favorDelta: delta, note: cleanText(r.note, 100) });
@@ -389,6 +394,7 @@ export function validateTurn(data, forecast, options = {}) {
     summary: scrutinize(cleanText(data.summary, 100), null, ['summary'],100) || fallback.summary,
     hook: scrutinize(cleanText(data.hook, 60), null, ['hook'],60),
     reactions,
+    sceneMemories:validateSceneMemories(data.sceneMemories,forecast,chapter),
     memorialTexts: (Array.isArray(data.memorialTexts) ? data.memorialTexts : [])
       .filter((m) => forecast.newMemorials.some((n) => n.id === m.id))
       .map((m) => ({
@@ -500,4 +506,16 @@ export function extractPartialChapter(raw) {
     sections.push(key + "\n" + value);
   }
   return sections.join("\n\n");
+}
+
+function validateSceneMemories(raw,f,chapter){
+ const scenes=f.scenes||((f.kind==='scene'&&f.people)?[{id:f.sceneId,slot:f.slot,people:f.people,social:f.social||[]}]:[]),out=[],seen=new Set();
+ for(const m of Array.isArray(raw)?raw.slice(0,64):[]){
+  const r=scenes.find(r=>r.slot===m?.slot&&r.people.some(p=>p.id===m.personId)),e=typeof m?.evidence==='string'?m.evidence.trim():'';
+  if(!r||e.length<8||e.length>160||/心想|暗想|心中|心底|暗自|私下|背地|未说出口|不为人知|秘密|内心/.test(e))continue;
+  if(!textSentences(chapter[r.slot]).includes(e))continue;
+  if((r.social||[]).some(s=>s.kind==='deceive'&&s.targetId===m.personId&&s.status==='success')&&/骗|瞒|诈/.test(e))continue;
+  const key=r.slot+':'+m.personId;if(seen.has(key))continue;seen.add(key);out.push({slot:r.slot,personId:m.personId,evidence:e});
+ }
+ return out;
 }

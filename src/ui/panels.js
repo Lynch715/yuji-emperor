@@ -1,3 +1,4 @@
+import {memoryButton,relationName} from './memories.js';
 import { postTitle } from "../core/scenarios.js";
 import { selectionDescription } from "./view-model.js";
 import { annualBudget, wasteQuote,grainBudget } from "../core/finance.js";
@@ -82,7 +83,7 @@ export function palacePanel(s, name) {
             (o.secretKnown ? "<p>" + esc(o.secret) + "</p>" : "") +
             '<button data-talk="' +
             o.id +
-            '">召见</button></div>',
+            '">召见</button>'+memoryButton(o.id)+'</div>',
         ),
       );
   }
@@ -143,12 +144,12 @@ export function palacePanel(s, name) {
             Object.entries(c.relations)
               .map(
                 ([id, v]) =>
-                  esc(s.harem.consorts.find((x) => x.id === id)?.name) +
+                  esc(relationName(s,id)) +
                   " " +
                   num(v),
               )
               .join("；") +
-            '</p><button data-action="后宫">安排内廷</button></div>',
+            '</p><button data-action="后宫">安排内廷</button>'+memoryButton(c.id)+'</div>',
         )
         .join("") +
       '</div><h3 class="section-spacer">殿选秀女</h3><p class="muted">本届 ' +
@@ -228,7 +229,7 @@ export function palacePanel(s, name) {
             num(f.attitude) +
             "</p><small>" +
             esc(f.demand) +
-            '</small>'+treatyHTML(s,f)+(f.trade&&f.trade.income>0&&f.trade.until>=s.turn?'<p>互市每季 '+num(f.trade.income)+' 万两 · 余 '+(f.trade.until-s.turn)+' 旬'+(f.status==='交战'?'（交战停收）':'')+'</p>':'')+'<p><button data-action="外交">遣使接见</button></p></div>',
+            '</small>'+treatyHTML(s,f)+(f.trade&&f.trade.income>0&&f.trade.until>=s.turn?'<p>互市每季 '+num(f.trade.income)+' 万两 · 余 '+(f.trade.until-s.turn)+' 旬'+(f.status==='交战'?'（交战停收）':'')+'</p>':'')+'<p><button data-action="外交">遣使接见</button>'+memoryButton(f.id)+'</p></div>',
         )
         .join("") +
       '</div><h3 class="section-spacer">战役与议约</h3>' +campaignsHTML(s);
@@ -307,7 +308,7 @@ export function palacePanel(s, name) {
             num(c.education) +
             '</dd></dl><button data-tutor="' +
             c.id +
-            '">择师教养</button></div>',
+            '">择师教养</button>'+memoryButton(c.id)+'</div>',
         )
         .join("") +
       '</div><h3 class="section-spacer">宗室女</h3>' +

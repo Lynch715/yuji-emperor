@@ -1,5 +1,6 @@
 export const TEXT_LIMITS={talk:8000,decree:8000,remark:2000};
 export function textParagraphs(text){return String(text||'').replace(/\r\n?/g,'\n').split(/\n+/).map(p=>p.trim()).filter(Boolean);}
+export function textSentences(text){return (String(text||'').match(/[^\n。！？]+[。！？]?[”’」』"]*/g)||[]).map(t=>t.trim()).filter(Boolean);}
 export function talkPeople(action){return [...new Set(action?.persons||[action?.person].filter(Boolean))];}
 export function talkMode(line,structured=false){
  if(structured)return '议事';

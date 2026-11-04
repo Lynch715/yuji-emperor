@@ -1,3 +1,4 @@
+import {memoryContext} from '../core/memory.js';
 import { SCENE_RULES } from './scene-rules.js';
 import { TEXT_LIMITS } from '../core/text.js';
 import { postTitle, scenarioById } from "../core/scenarios.js";
@@ -95,7 +96,7 @@ export function worldRules(state) {
   const frame = sc
     ? `你是「${state.dynasty}」朝的叙事引擎。本局以${sc.year}${sc.title.split(" · ")[0]}即位之初的史实开局，官职、地名用该朝称谓（见王朝设定）。史实只用于人物性格、关系与背景；本局自开局起已偏离史实，生死、成败、任免一律以引擎结算为准，不得按史书预言或补写结局，也不得写开局之后的史事。`
     : `你是架空王朝「${state.dynasty}」的叙事引擎，制度近似明清。`;
-  return `${frame}只输出一个 JSON 对象。\n铁律：引擎记账，模型叙事。所有钱粮、人物、派系、健康、受孕、生育、死亡、升迁、战争胜负、执行度由结算表决定，你不得追加或改写硬结果，不得另给数字。名册姓名一字不改，大臣称陛下、自称臣，妃嫔自称臣妾。人物各有利益。文风「${style.label}」：${style.rules}${pov.rules}\n【文风范文（只学笔法，不照搬人物与事件）】${style.sample}\n白描，禁用嘴角勾起、眼中闪过一丝${modern ? "" : "、现代词"}；对话用「」。亲密场面点到为止，禁止描写性行为或身体细节。人物各有立场，不替玩家决定；自由度只影响口谕裁决，不改变叙事一致性要求。`;
+  return `${frame}只输出一个 JSON 对象。\n铁律：引擎记账，模型叙事。所有钱粮、人物、派系、健康、受孕、生育、死亡、升迁、战争胜负、执行度由结算表决定，你不得追加或改写硬结果，不得另给数字。名册姓名一字不改，大臣称陛下、自称臣，妃嫔自称臣妾。人物各有利益。文风「${style.label}」：${style.rules}${pov.rules}\n【文风范文（只学笔法，不照搬人物与事件）】${style.sample}\n白描，禁用嘴角勾起、眼中闪过一丝${modern ? "" : "、现代词"}；对话用「」。亲密场面点到为止，禁止描写性行为或身体细节。共同经历摘要是旁白所知，NPC只知道自己参与、目睹或后来获知的部分；私下往事不得让未在场者无故知晓。人物各有立场，不替玩家决定；自由度只影响口谕裁决，不改变叙事一致性要求。`;
 }
 export function roster(state) {
   return state.court.officials
@@ -143,7 +144,7 @@ const TASK_RULES = `【叙事守则】死亡、怀孕、生产、小产、任免
 【正文任务】把本旬写成「朝」「午」「夜」三段，每段{{LENGTH}}字，空槽可略写。必须表现结算表的执行度与成败。正文只写故事，不抄结算条目；起居注会另行展示结算。廷议按名单立场写。为新奏报写160–260字正文。风闻只写无关痛痒的市井传言。
 章末 hook 写一句 30 字内的下旬伏笔，只能取自未结奏报、在途政务或新近事实，用“恐”“将”“未知”等未定语气，不得断言结果。
 奏折正文分成三至五个自然段，用换行分隔，写明缘由、现状与所请，不另编上奏人。
-正文输出：{"chapter":{"朝":"","午":"","夜":""},"summary":"30字内","hook":"","memorialTexts":[{"id":"","text":""}],"reactions":[{"name":"官员全名","favorDelta":0,"mood":"","note":""}],"rumors":[],"ambitionEvidence":[{"id":"","objectiveId":"","evidence":""}],"factUpdates":[{"subject":"","key":"","value":"","reason":""}]}`;
+正文输出：{"chapter":{"朝":"","午":"","夜":""},"summary":"30字内","hook":"","memorialTexts":[{"id":"","text":""}],"reactions":[{"name":"官员全名","favorDelta":0,"mood":"","note":""}],"sceneMemories":[{"slot":"夜","personId":"","evidence":"正文中完整原句"}],"rumors":[],"ambitionEvidence":[{"id":"","objectiveId":"","evidence":""}],"factUpdates":[{"subject":"","key":"","value":"","reason":""}]}`;
 const TALK_RULES = `【面谈任务】扮演被召见者御前面谈。只写游戏中的人物言行，不解释生成或校验；成功才让步，失败不得让步，不得超过职权。未提供的秘密不得编造，未允时不得承诺拨款、调兵或落实请求。好感、让步与秘密是否揭露由引擎判定，照判定写即可。
 面谈输出 {"reply":"","innerThought":"","mood":"","summary":""}`;
 // L1：静态资料，按 id 排序，不含好感、势力等数值。
@@ -235,7 +236,7 @@ export function turnMessages(state, forecast) {
     { role: "system", content: systemPrompt(state) },
     {
       role: "user",
-      content: (forecast.scenes?.length?SCENE_RULES+"\n【本旬自拟情节】"+stable(forecast.scenes)+"\n":"") + dynastyBible(state) + "\n" + historyBlock(state) + "\n" + situationBlock(state) +
+      content: (forecast.scenes?.length?SCENE_RULES+'\n【参与者记得的事】'+stable(memoryContext(before,forecast.scenes.flatMap(r=>r.people.map(p=>p.id))))+"\n【本旬自拟情节】"+stable(forecast.scenes)+"\n":"") + dynastyBible(state) + "\n" + historyBlock(state) + "\n" + situationBlock(state) +
         `\n【本旬状态】${stable(dynamic)}\n【玩家排程】${stable(forecast.schedule)}\n【本旬结算表（不可更改）】${stable({ die: forecast.die, fate: forecast.fate, slots: forecast.slotResults, 账目: settlementDigest(state, forecast.entries), notes: forecast.notes, facts: forecast.facts || [] })}\n【廷议名单】${stable(forecast.debate || [])}\n【新奏报】${stable(forecast.newMemorials.map((m) => ({ id: m.id, title: m.title, type:m.type, from: m.from, request:m.request, choices:m.options.map(o=>o.consequence?[o.label,o.consequence]:o.label) })))}\n每本奏折写160–260字，交代事情来由、眼前难处、各方顾虑与具体请求；各折围绕所列事务展开，不套用“事关地方生计”等空话，不靠重复寒暄凑字。方案效果仍是待选的取舍，不能把请办的事写成已经办成；不得补造人名或硬结果。按【正文任务】写本旬，输出正文 JSON。`,
     },
   ];
@@ -278,9 +279,9 @@ export function talkMessages(state, result, log = []) {
   messages.push({
     role: "user",
     content: (prior.length ? "" : header) + talkTurnLine(result) +
-      "\n【此刻】" + stable({ favor: favor ?? attitude, mood, 拨款上限: result.cap + " 万两" }) +
+      "\n【此人记得的往事与关系】"+stable(memoryContext(state,[result.person]))+"\n【此刻】" + stable({ favor: favor ?? attitude, mood, 拨款上限: result.cap + " 万两" }) +
       (known ? "\n【已获准参考的秘密】" + secret : "") +
-      "\n按【面谈任务】作答，输出面谈 JSON。",
+      "\n按【面谈任务】作答，适时提起与本次话题相关的个人往事，保持当时留下的亲疏与顾虑，不机械罗列，不泄露别人的心事。输出面谈 JSON。",
   });
   return messages;
 }

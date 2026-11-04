@@ -1,3 +1,4 @@
+import {normalizeSocial,favorRecords} from './social-rules.js';
 import { TEXT_LIMITS } from './text.js';
 import { adjudicate } from "./freedom.js";
 import { clone } from './state.js';
@@ -16,6 +17,7 @@ export function normalizeIntents(state,actions,inputs){
   const input=inputs.find(x=>x.id===raw?.inputId),type=INTENT_TYPES.includes(raw?.type)?raw.type:'other';
   const a={id:(input?.id||'unknown')+':'+i,inputId:input?.id||'',slot:input?.slot||'朝',type,text:String(raw?.text||input?.text||'').slice(0,TEXT_LIMITS.decree)};
   if(!input)return {...a,type:'other',text:'未能对应原口谕'};
+  const social=normalizeSocial(state,raw.interaction,input);if(social&&type==='other')a.interaction=social;
   const person=byId(persons(state),raw.targetId||raw.target),country=byId(state.foreign,raw.countryId||raw.country);
   const post=state.court.posts.find(p=>p.id===raw.postId||p.title===raw.postId||state.postNames?.[p.id]===raw.postId);
   if(['kill','appoint','dismiss','promote','imprison','favor'].includes(type)){
@@ -93,7 +95,7 @@ export function resolveIntents(state,actions,{slot='朝',source='decree',transfe
      r.summary=(a.resource==='troops'?(a.destination==='capital'?'京营':a.destination+'境')+'征兵 '+Math.floor(amount)+' 人':(a.source==='grain'?'调粮 '+amount+' 万石':'拨银 '+amount+' 万两'))+(r.clamped?'（已按可用数量截断）':'');
      facts.push({kind:'allocation',...r.actual});
     }else if(a.type==='favor'){
-     const budget=[...new Map([...s.intentResults.filter(r=>r.turn===s.turn),...favorHistory].map(r=>[r.id,r])).values()].filter(r=>r.type==='favor'&&['success','partial'].includes(r.status));
+     const budget=favorRecords(s,favorHistory);
      const used=budget.reduce((n,r)=>n+Math.abs(r.actual.amount||0),0);
      const personal=budget.filter(r=>r.actual.targetId===target.id).reduce((n,r)=>n+Math.abs(r.actual.amount||0),0);
      const liveTarget=persons(s).find(o=>o.id===target.id);

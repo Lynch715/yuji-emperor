@@ -1,3 +1,4 @@
+import {openNPCMemory} from './memories.js';
 import {forecastScene,commitScene,latestScene,sceneInput,sceneOutcomeText,sceneBudget} from '../core/scenes.js';
 import {sceneMessages,mockSceneNarrative} from '../llm/scenes.js';
 import { talkPeople } from '../core/text.js';
@@ -979,7 +980,9 @@ document.addEventListener("click", async (e) => {
       const sl=b.dataset.editReviewSlot,a=state.schedule[sl];
       if(!a||!['上朝','批折'].includes(a.kind))throw new Error('原拟批已撤下，请重新选择奏报。');
       memorialDialog(state,a.kind,sl,(which,next)=>arrange(which,next));
-    } else if (b.dataset.scene) openScene(b.dataset.scene);
+    } else if(b.dataset.personMemory)openNPCMemory(state,b.dataset.personMemory);
+    else if(b.dataset.memoryScene){const h=[...state.volumes.flatMap(v=>v.chapters),...state.history].find(h=>h.scenes?.some(r=>r.id===b.dataset.memoryScene));if(h)openDialog('过往一幕','<article class="paper">'+chapterHTML(h,state.ambitions)+'</article>');else toast('这段经历的原文暂未载入，可以先看往事摘要。');}
+    else if (b.dataset.scene) openScene(b.dataset.scene);
     else if (b.dataset.talk) startTalk(b.dataset.talk);
     else if (b.dataset.tutor) {
       guard();
