@@ -6,7 +6,7 @@ import {seedMemorials,pickMemorialist} from '../src/core/events.js';
 import {MEMORIAL_TEMPLATES,memorialText,routineOptions} from '../src/core/memorial-templates.js';
 import {diplomacy} from '../src/core/foreign.js';
 import {mockNarrative} from '../src/llm/validate.js';
-import {turnMessages} from '../src/llm/prompts.js';
+import {turnMessages,memorialMessages} from '../src/llm/prompts.js';
 const fresh=()=>initialTurn(createState({seed:'奏折轮换验收',demo:true}));
 test('奏折：短期覆盖各类，单批不重复、未批同题不重发、正文不套同一模板',()=>{
  let s=fresh();const seen=new Set(),types=new Set(),texts=new Set();
@@ -33,7 +33,8 @@ test('奏折：抽取可复现、不改输入，饥荒与战事只在对应国�
 });
 test('奏折：试读及正文接口携带具体事务、选择与已有文本，旧档补轮换记录且旧预演不动',()=>{
  const s=fresh(),f=forecastTurn(s),n=mockNarrative(f);assert.ok(n.memorialTexts.every(m=>m.text===f.newMemorials.find(x=>x.id===m.id).text));
- const prompt=turnMessages(s,f)[1].content;assert.match(prompt,/160–260字/);for(const m of f.newMemorials){assert.ok(prompt.includes(m.request));assert.ok(prompt.includes(m.options[0].label));}
+ assert.doesNotMatch(turnMessages(s,f)[0].content,/memorialTexts/);
+ const prompt=memorialMessages(f.state,f.newMemorials).map(m=>m.content).join('\n');assert.match(prompt,/160–260字/);for(const m of f.newMemorials){assert.ok(prompt.includes(m.request));assert.ok(prompt.includes(m.options[0].label));}
  for(const t of MEMORIAL_TEMPLATES){const text=memorialText({...t,title:'江南 '+t.title,provinceId:'z2',options:routineOptions(t,{id:'z2'})},true);assert.ok(text.length>=160&&text.length<=260,t.id);}
  const old=structuredClone(s);old.v=11;delete old.memorialVariety;old.pending={forecast:structuredClone(f)};old.pending.forecast.state.v=11;delete old.pending.forecast.state.memorialVariety;
  const raw=JSON.stringify(old.pending.forecast),restored=migrate(old);assert.equal(restored.v,VERSION);assert.ok(Array.isArray(restored.memorialVariety));assert.equal(JSON.stringify(restored.pending.forecast),raw);

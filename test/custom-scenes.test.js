@@ -63,12 +63,12 @@ test('重复拨款不重掷不重复扣款，明确追加才另扣，并且下�
  run('再拨银五万两给内帑');assert.equal(s.nation.treasury,money-5);
  assert.ok(!forecastTurn(s).facts.some(f=>f.kind==='allocation'));assert.equal(record(s).steps.length,3);
 });
-test('失败续写先改写，重新校验后仍不通过才删句，整段只改一次',async()=>{
+test('失败续写本地删句且不额外请求',async()=>{
  const s=start('real'),f=step(s).f;f.outcome.status='failed';f.facts=[{kind:'scene_result',slot:f.slot,status:'failed'}];
  const bad={chapter:{朝:'',午:'',夜:'',[f.slot]:'她终于被成功说服。廊下的风声渐轻。'}},inspection=inspectNarrative(bad,f);assert.ok(inspection.violations.some(v=>v.reason.includes('未能如愿')));
  let calls=0;const budget={used:0},reply=x=>new Response(JSON.stringify({choices:[{message:{content:JSON.stringify(x)}}]}),{headers:{'Content-Type':'application/json'}});
  const n=await requestTurnNarrative({provider:'custom',base:'https://test.invalid',key:'x',model:'x'},s,f,{messages:sceneMessages(s,f),sceneSlot:f.slot,budget,fetcher:async()=>reply(++calls===1?bad:{rewrites:[{id:'v0',text:'她尚有顾虑，未被说服。'}]}),sleep:async()=>{}});
- assert.equal(calls,2);assert.equal(budget.rewriteAttempted,true);assert.ok(n.chapter[f.slot].includes('未被说服'));assert.ok(!n.chapter[f.slot].includes('成功说服'));
+ assert.equal(calls,1);assert.equal(budget.rewriteAttempted,undefined);assert.ok(n.chapter[f.slot].includes('廊下的风声渐轻')); assert.ok(!n.chapter[f.slot].includes('成功说服'));
 });
 test('孕产与未成年侍寝不由自拟情节放行，露骨句照常替换',()=>{
  const s=fresh();s.emperor.age=17;assert.match(sceneBlock(s,action('安排侍寝')),/不能/);assert.match(sceneBlock(s,action('不如今晚侍寝')),/不能/);assert.match(sceneBlock(s,action('发生性行为')),/不能/);assert.equal(sceneBlock(s,action('不要侍寝，只聊天')),'');
@@ -128,10 +128,10 @@ test('原场模型人物反应也计入续写好感额度，不借续写再次�
  const n=commitTurn(s,f,narrative),input=sceneInput(n,record(n),'嘉奖沈守正'),g=forecastScene(n,record(n).id,input.text,localIntents(n,[input]));assert.equal(g.results[0].actual.amount,0);
 });
 
-test('续写沿用本章的一次改写机会，不因开启新段落重置',async()=>{
+test('旧章改写标记保留，续写使用本地校验',async()=>{
  const base=fresh(),first=forecastTurn(base,{夜:action()}),s=commitTurn({...base,turnBudget:{used:2,rewriteAttempted:true}},first,mockNarrative(first));
  assert.equal(s.history.at(-1).rewriteAttempted,true);const budget=sceneBudget(s);assert.equal(budget.rewriteAttempted,true);
- const f=step(s).f;f.facts=[{kind:'scene_result',slot:f.slot,status:'failed'}];let calls=0;
+ const f=step(s).f;f.state.settings.freedom='real';f.facts=[{kind:'scene_result',slot:f.slot,status:'failed'}];let calls=0;
  const n=await requestTurnNarrative({provider:'custom',base:'https://test.invalid',key:'x',model:'x'},s,f,{messages:sceneMessages(s,f),sceneSlot:f.slot,budget,fetcher:async()=>{calls++;return new Response(JSON.stringify({choices:[{message:{content:JSON.stringify({chapter:{朝:'',午:'',夜:'她已成功说服众人。廊下的风渐渐停了。'}})}}]}),{headers:{'Content-Type':'application/json'}});},sleep:async()=>{}});
  assert.equal(calls,1);assert.equal(n.chapter.夜,'廊下的风渐渐停了。');
 });

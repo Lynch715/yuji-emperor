@@ -2880,7 +2880,8 @@ const { requestScheduleIntents, requestPlayerIntents } = __load("src/ui/intent-r
 const { resolveTalkIntents } = __load("src/core/intents.js");
 const { postTitle, SCENARIOS, scenarioPreview } = __load("src/core/scenarios.js");
 const { createDebouncedSave } = __load("src/store/debounce.js");
-const { classifyMemorialSchedule } = __load("src/llm/remark-classifier.js");
+const { requestMemorialTexts } = __load("src/ui/memorial-request.js");
+const { applyMemorialTexts } = __load("src/core/memorial-texts.js");
 const { modernTalkFallback } = __load("src/llm/mock-narrative.js");
 const { initAppIcon } = __load("src/ui/icon.js");
 const {
@@ -2898,7 +2899,7 @@ setLeaveGuard,
 download,
 } = __load("src/ui/common.js");
 const { loadSettings, openSettings } = __load("src/ui/settings.js");
-const { requestTurnNarrative, validateTurnNarrative } = __load("src/ui/turn-request.js");
+const { requestTurnContent, requestTurnNarrative, validateTurnNarrative } = __load("src/ui/turn-request.js");
 const { createGameSeed, createOpening, openingErrorMessage } = __load("src/ui/new-game.js");
 const { createDialogRequestScope } = __load("src/ui/request-scope.js");
 const {
@@ -3343,13 +3344,10 @@ if (!state || readOnly || busy || state.ending) return;
 if(state.pending?.kind==='scene')return openScene(state.pending.forecast.sceneId,local,local);
 busy = true;
 let ac = new AbortController();
+const deadline=Date.now()+90000;
 try {
 if (!state.pending) {
-const schedule=state.settings.demo||local?state.schedule:await classifyMemorialSchedule(state.schedule,text=>callJSON(config,classifyMessages(text,'remark'),{
-budget:createBudget(),signal:ac.signal,onMetric:markMetric,
-validate:data=>{if(!['嘉奖','申饬','附旨','无'].includes(data.kind))throw new Error('朱批分类无效');return {kind:data.kind};},
-}));
-const intents=await requestScheduleIntents(config,state,schedule,{local,signal:ac.signal,onMetric:markMetric});
+const {schedule,intents}=await requestScheduleIntents(config,state,state.schedule,{local,signal:ac.signal,onMetric:markMetric,deadline});
 const forecast = forecastTurn({ ...state, turnBudget: null }, schedule, intents);
 state = {
 ...state,
@@ -3362,17 +3360,17 @@ throw new Error("本旬尚未存妥，请先导出存档，再重试。");
 const f = state.pending.forecast;
 // v4 saves may contain an absolute planning-time deadline. Only the
 // attempt count belongs to a pending turn; the request owns its clock.
-state.turnBudget = { used: state.turnBudget?.used || 0, ...(state.turnBudget?.rewriteAttempted?{rewriteAttempted:true}:{}) };
+state.turnBudget = { used: (state.turnBudget?.used||0)>=2?0:(state.turnBudget?.used||0), ...(state.turnBudget?.rewriteAttempted?{rewriteAttempted:true}:{}) };
 render();
 let narrative;
 if (state.settings.demo || local) {narrative = mockNarrative(f);if(f.scenes?.length)narrative=validateTurnNarrative(narrative,f);}
 else {
-narrative = await requestTurnNarrative(config, state, f, {
+narrative = await requestTurnContent(config, state, f, {
+deadline,
 budget: state.turnBudget,
 signal: ac.signal,
 onMetric: markMetric,
 onPartial: streamDraft,
-onBeforeRewrite:async()=>{if(!(await persist()))throw new Error('本旬尚未存妥，请先导出存档，再重试。');},
 });
 }
 state = commitTurn(state, f, narrative);
@@ -3404,6 +3402,21 @@ busy = false;
 render();
 }
 }
+async function retryMemorialText(id){
+guard();
+const memorial=state.memorials.find(m=>m.id===id&&m.textStatus==='template');
+if(!memorial)return;
+const reviewRoot=$('#review-root');
+const base=state,activeSlot=slot;
+busy=true;
+try{
+const texts=await requestMemorialTexts(config,state,[memorial],{onMetric:markMetric});
+if(slot!==activeSlot||state.runId!==base.runId||state.revision!==base.revision)return;
+state=applyMemorialTexts(state,texts);await persist();
+if(reviewRoot?.isConnected)reviewRoot.dispatchEvent(new CustomEvent('memorial-text-updated',{detail:state}));
+toast(texts.some(t=>t.status==='ready')?'奏文已补齐。':'奏文暂未补齐，仍可阅览现有奏文。');
+}finally{busy=false;render();}
+}
 function openScene(id,local=false,auto=false){
 if(readOnly||busy)throw new Error('此时无法续写，请稍后再试');
 const r=latestScene(state,id);if(!r)throw new Error('这段情节已经过去，请另排新的情节');
@@ -3432,9 +3445,10 @@ state={...state,pending:{kind:'scene',forecast},turnBudget:sceneBudget(state)};
 if(!(await persist()))throw new Error('这段情节尚未存妥，请先导出存档再重试');
 }else forecast=state.pending.forecast;
 if(!current())return;
+if((state.turnBudget?.used||0)>=2)state.turnBudget.used=0;
 const narrative=state.settings.demo||local?validateTurnNarrative(mockSceneNarrative(state,forecast),forecast):await requestTurnNarrative(config,state,forecast,{
 messages:sceneMessages(state,forecast),sceneSlot:forecast.slot,budget:state.turnBudget,
-signal:request.signal,onMetric:markMetric,onBeforeRewrite:async()=>{if(!current()||!(await persist()))throw new Error('这段情节尚未存妥');},
+signal:request.signal,onMetric:markMetric,
 });
 if(!current())return;
 state=commitScene(state,forecast,narrative);await persist();closeDialog();
@@ -3839,6 +3853,8 @@ throw new Error("午间已经面谈，请先过完本旬。");
 state.schedule[b.dataset.clear] = null;
 scheduleSave.schedule();
 render();
+} else if (b.dataset.retryMemorialText) {
+await retryMemorialText(b.dataset.retryMemorialText);
 } else if (b.dataset.memorial) {
 guard();
 if(memorialAssignments(state).has(b.dataset.memorial)) {
@@ -4109,7 +4125,7 @@ const { seedNumber, random, DRAFT } = __load("src/core/rng.js");
 const { uniqueName } = __load("src/core/names.js");
 const { chooseRegent } = __load("src/core/regency-info.js");
 const {factionPowers} = __load("src/core/politics.js");
-const VERSION = 19;
+const VERSION = 20;
 const TALENTS = ["政略", "权谋", "武略", "文采", "魅力"];
 const SLOTS = ["朝", "午", "夜"];
 const POST_NAMES = [
@@ -4595,6 +4611,8 @@ if(input.v<15)for(const a of s.ambitions)if(a.scenarioId&&a.holdTurns){a.stableT
 // mean historical/unused; do not reconstruct old signatures or forecasts.
 // v18: scene records and pending.kind are optional; retain old forecasts byte for byte.
 // v19 reuses optional NPC memory/relations; old scenes are read as memories without recalculating effects.
+// v20 adds optional memorial.textStatus only on newly generated texts.
+// Missing means legacy prose; never replace old texts or pending forecasts.
 s.settings.freedom ??= "mid";
 s.v = VERSION;
 s.volumeIndex ??= [];
@@ -4752,6 +4770,7 @@ if(!Array.isArray(s.intentResults))throw new Error('口谕裁决记录损坏');
 for(const r of s.intentResults)if(!r||typeof r.id!=='string'||!Number.isSafeInteger(r.turn)||!['success','partial','failed','narrative'].includes(r.status)||!r.actual||typeof r.actual!=='object')throw new Error('口谕裁决记录损坏');
 }
 if(s.v>=12&&(!Array.isArray(s.memorialVariety)||s.memorialVariety.length>72||s.memorialVariety.some(r=>!r||typeof r.id!=='string'||typeof r.type!=='string'||!Number.isSafeInteger(r.turn)||r.turn<0||r.turn>s.turn)))throw new Error('奏折轮换记录损坏');
+if(s.memorials.some(m=>m.textStatus!==undefined&&!['template','ready'].includes(m.textStatus)))throw new Error('奏折正文状态损坏');
 if(s.v>=12&&s.turnBudget?.rewriteAttempted!==undefined&&typeof s.turnBudget.rewriteAttempted!=='boolean')throw new Error('剧情改写标记损坏');
 if(s.v>=13&&s.memorials.some(m=>m.options?.some(o=>o.consequence!==undefined&&typeof o.consequence!=='string')))throw new Error('奏折后果说明损坏');
 if(s.v>=14)validateMemorialReviews([...(s.volumes||[]).flatMap(v=>v.chapters),...(s.history||[])]);
@@ -5402,7 +5421,7 @@ return String(text ?? "")
 .replace(/；面谈结果已落账/g, "；已在面谈中议定")
 .replace(/^本旬面谈已落账，午槽须保留对应人物的召见$/, "午间已召见此人，请先过完本旬。")
 .replace(/^预演已过期，不能提交到此存档$/, "这次安排已过期，请刷新后重试。")
-.replace(/^本回合请求已达 240 秒预算，请保留预演结果后重试$/, "故事续写超时，请重试本旬。")
+.replace(/^本回合请求已达 (?:90|240) 秒预算，请保留预演结果后重试$/, "故事续写超时，请重试本旬。")
 .replace(/^模型回复未完成或格式有误，原有进度已保留$/, "这次没能续完故事，请重试本旬。")
 .replace(/^存档处于只读保护模式$/, "此存档暂时无法保存，请先导出备份。");
 }
@@ -8674,7 +8693,7 @@ const {worldRules,dynastyBible,roster,settlementDigest} = __load("src/llm/prompt
 function sceneMessages(state,f){
 const h=state.history.at(-1),r=h.scenes.find(r=>r.id===f.sceneId);
 return [{role:'system',content:worldRules(f.state)+'\n'+SCENE_RULES+'\n只续写本场的新一段，不重复旧段。写200至600字，用自然段。输出 {"chapter":{"朝":"","午":"","夜":""},"summary":"情节续写","sceneMemories":[{"slot":"'+f.slot+'","personId":"","evidence":"正文完整原句"}]}，只填写'+f.slot+'这一段，其余留空。'},
-{role:'user',content:dynastyBible(f.state)+'\n'+JSON.stringify({人物往事:memoryContext(state,r.people.map(p=>p.id)),场景:{人物:r.people,地点:r.place,原梗概:r.text,原结果:r.outcome},先前经过:[h.chapter[r.slot],...r.steps.slice(-6).map(t=>t.prose)],玩家接着写:f.request,本次结果:f.outcome,相处变化:f.socialChanges||[],实质行动:f.results,事实:f.facts,钱粮:settlementDigest(f.state,f.entries),当前名册:roster(f.state)})}];
+{role:'user',content:dynastyBible(f.state,{people:r.people,request:f.request,results:f.results})+'\n'+JSON.stringify({人物往事:memoryContext(state,r.people.map(p=>p.id)),场景:{人物:r.people,地点:r.place,原梗概:r.text,原结果:r.outcome},先前经过:[h.chapter[r.slot],...r.steps.slice(-6).map(t=>t.prose)],玩家接着写:f.request,本次结果:f.outcome,相处变化:f.socialChanges||[],实质行动:f.results,事实:f.facts,钱粮:settlementDigest(f.state,f.entries),当前名册:roster(f.state)})}];
 }
 function mockSceneProse(r,results=[]){
 const names=r.people.slice(0,3).map(p=>p.name).join('、')+(r.people.length>3?'等人':''),where=r.place?'在'+r.place:'这一日';
@@ -8724,7 +8743,7 @@ const STYLES = {
 // 篇幅：每段字数，同时决定正文的输出上限与费用。
 const LENGTHS = {
   brief: { label: "精简", words: "80–150", note: "每段 80–150 字，最省费用" },
-  standard: { label: "标准", words: "120–300", note: "每段 120–300 字" },
+  standard: { label: "标准", words: "100–220", note: "每段 100–220 字" },
   rich: { label: "详尽", words: "250–500", note: "每段 250–500 字，费用约为标准的 1.6 倍" },
 };
 // 视角：叙述人称。
@@ -8838,31 +8857,42 @@ function systemPrompt(state, task = "turn") {
   if(task === "talk")return worldRules(state) + "\n" + TALK_RULES;
   return worldRules(state) + "\n" + TASK_RULES.replace("{{LENGTH}}", (LENGTHS[state.settings.length] || LENGTHS.standard).words);
 }
-const TASK_RULES = `【叙事守则】死亡、怀孕、生产、小产、任免、战果、执行度只在结算表列出时才可写成本旬发生；其余只能作回忆或传闻，并用“曾”“昔”“当年”标明。不写结算表以外的金额、人数、年龄。人物反应仅限官员，须在本章出场，每人好感-5到5，合计绝对值不超过10。宏愿证据须逐字引用本章原句并含该目标全部关键词。长期事实只记本章写明、日后仍成立的事。
+const TASK_RULES = `【叙事守则】死亡、怀孕、生产、小产、任免、战果、执行度只在结算表列出时才可写成本旬发生；其余只能作回忆或传闻，并用“曾”“昔”“当年”标明。不写结算表以外的金额、人数、年龄。人物反应最多3条，仅限官员，须在本章出场，每人好感-5到5，合计绝对值不超过10。宏愿证据须逐字引用本章原句并含该目标全部关键词。长期事实最多3条，只记本章写明、日后仍成立的事。
 标题、正文、奏折、对白只写游戏中的人和事，禁用“据实落账”“引擎结算”“模型叙事”等开发说明，不向玩家解释生成或校验过程。
-【正文任务】把本旬写成「朝」「午」「夜」三段，每段{{LENGTH}}字，空槽可略写。必须表现结算表的执行度与成败。正文只写故事，不抄结算条目；起居注会另行展示结算。廷议按名单立场写。为新奏报写160–260字正文。风闻只写无关痛痒的市井传言。
+【正文任务】把本旬写成「朝」「午」「夜」三段，每段{{LENGTH}}字，空槽可略写。必须表现结算表的执行度与成败。正文只写故事，不抄结算条目；起居注会另行展示结算。廷议按名单立场写。风闻最多2条，只写无关痛痒的市井传言。
 章末 hook 写一句 30 字内的下旬伏笔，只能取自未结奏报、在途政务或新近事实，用“恐”“将”“未知”等未定语气，不得断言结果。
-奏折正文分成三至五个自然段，用换行分隔，写明缘由、现状与所请，不另编上奏人。
-正文输出：{"chapter":{"朝":"","午":"","夜":""},"summary":"30字内","hook":"","memorialTexts":[{"id":"","text":""}],"reactions":[{"name":"官员全名","favorDelta":0,"mood":"","note":""}],"sceneMemories":[{"slot":"夜","personId":"","evidence":"正文中完整原句"}],"rumors":[],"ambitionEvidence":[{"id":"","objectiveId":"","evidence":""}],"factUpdates":[{"subject":"","key":"","value":"","reason":""}]}`;
+正文输出：{"chapter":{"朝":"","午":"","夜":""},"summary":"30字内","hook":"","reactions":[{"name":"官员全名","favorDelta":0,"mood":"","note":""}],"sceneMemories":[{"slot":"夜","personId":"","evidence":"正文中完整原句"}],"rumors":[],"ambitionEvidence":[{"id":"","objectiveId":"","evidence":""}],"factUpdates":[{"subject":"","key":"","value":"","reason":""}]}`;
 const TALK_RULES = `【面谈任务】扮演被召见者御前面谈。只写游戏中的人物言行，不解释生成或校验；成功才让步，失败不得让步，不得超过职权。未提供的秘密不得编造，未允时不得承诺拨款、调兵或落实请求。好感、让步与秘密是否揭露由引擎判定，照判定写即可。
 面谈输出 {"reply":"","innerThought":"","mood":"","summary":""}`;
-// L1：静态资料，按 id 排序，不含好感、势力等数值。
-function dynastyBible(state) {
+// Only people present or referenced in this request receive a full card.
+function referencedPeople(state,context){
+  const text=JSON.stringify(context)||'',ids=new Set();
+  const people=[...state.court.officials,...state.harem.consorts,...state.harem.children,...state.foreign];
+  for(const o of people)if(text.includes(o.name)||text.includes(JSON.stringify(o.id)))ids.add(o.id);
+  for(const p of state.court.posts){const title=postTitle(state,p);if(p.holder&&title&&text.includes(title))ids.add(p.holder);}
+  return ids;
+}
+// L1: keep the remaining roster in id｜name｜post form.
+function dynastyBible(state,context=null) {
+  const full=referencedPeople(state,context);
   const post = (id) => postTitle(state, state.court.posts.find((p) => p.holder === id)) || "待任";
   const faction = (id) => state.court.factions.find((f) => f.id === id)?.name || "无党";
   const byId = (a, b) => String(a.id).localeCompare(String(b.id));
   return "【王朝设定】" + stable({
     王朝: state.dynasty, 皇帝: state.emperor.name, 年号: state.era?.name, 缘起: state.backstory || "",
     派系: state.court.factions.map((f) => ({ id: f.id, name: f.name, demand: f.demand })),
-    官员: state.court.officials.filter((o) => o.alive).slice().sort(byId)
-      .map((o) => [o.id, o.name, post(o.id), faction(o.faction), o.personality || ""].join("｜")),
-    后宫: state.harem.consorts.slice().sort(byId).map((c) => [c.id, c.name, c.rank, c.family].join("｜")),
+    官员: state.court.officials.filter((o) => o.alive).slice().sort(byId).map((o) => [o.id,o.name,post(o.id)].join("｜")),
+    后宫: state.harem.consorts.slice().sort(byId).map((c) => [c.id,c.name,c.rank].join("｜")),
     皇嗣: state.harem.children.filter((c) => c.health > 0 && c.id !== state.reign?.emperorId && c.name !== state.emperor.name)
       .slice().sort(byId).map((c) => [c.id, c.name, c.id === state.harem.heir ? "储君" : c.sex === "男" ? "皇子" : "公主"].join("｜")),
     太后: state.scenario && !state.dowager ? "无" : state.dowager || "慈宁太后",
     宗室女: (state.harem.royalWomen || []).map((w) => w.id + "｜" + w.name),
     外邦: state.foreign.map((f) => [f.id, f.name, f.ruler].join("｜")),
     州郡: state.nation.provinces.map((z) => z.name),
+    // Full cards follow the stable compact roster to preserve prefix caching.
+    出场人物: state.court.officials.filter(o=>o.alive&&full.has(o.id)).slice().sort(byId)
+      .map(o=>[o.id,o.name,post(o.id),faction(o.faction),o.personality||''].join('｜'))
+      .concat(state.harem.consorts.filter(c=>full.has(c.id)).slice().sort(byId).map(c=>[c.id,c.name,c.rank,c.family].join('｜'))),
   });
 }
 // L2：只追加的历史。长期事实按 FACT_WINDOW 旬一窗封存，当前窗内的新事实放到 L3。
@@ -8910,7 +8940,7 @@ function turnMessages(state, forecast) {
   const oldRoster = roster(before).split("\n"), newRoster = roster(state).split("\n");
   const dynamic = {
     国势: nationSummary(state),
-    流水账: (state.history || before.history || []).slice(-6).map((h) => h.summary),
+    流水账: (state.history || before.history || []).slice(-3).map((h) => h.summary),
     新近事实: factWindow(state).recent.map(({ subject, key, value }) => ({ subject, key, value })),
     在途政务: state.projects.filter((p) => !p.done).map((p) => ({ name: p.name || p.type, province: p.province, end: p.end })),
     宏愿: state.ambitions.filter((a) => a.status !== "达成").map((a) => ({
@@ -8935,9 +8965,15 @@ function turnMessages(state, forecast) {
     { role: "system", content: systemPrompt(state) },
     {
       role: "user",
-      content: (forecast.scenes?.length?SCENE_RULES+'\n【参与者记得的事】'+stable(memoryContext(before,forecast.scenes.flatMap(r=>r.people.map(p=>p.id))))+"\n【本旬自拟情节】"+stable(forecast.scenes)+"\n":"") + dynastyBible(state) + "\n" + historyBlock(state) + "\n" + situationBlock(state) +
-        `\n【本旬状态】${stable(dynamic)}\n【玩家排程】${stable(forecast.schedule)}\n【本旬结算表（不可更改）】${stable({ die: forecast.die, fate: forecast.fate, slots: forecast.slotResults, 账目: settlementDigest(state, forecast.entries), notes: forecast.notes, facts: forecast.facts || [] })}\n【廷议名单】${stable(forecast.debate || [])}\n【新奏报】${stable(forecast.newMemorials.map((m) => ({ id: m.id, title: m.title, type:m.type, from: m.from, request:m.request, choices:m.options.map(o=>o.consequence?[o.label,o.consequence]:o.label) })))}\n每本奏折写160–260字，交代事情来由、眼前难处、各方顾虑与具体请求；各折围绕所列事务展开，不套用“事关地方生计”等空话，不靠重复寒暄凑字。方案效果仍是待选的取舍，不能把请办的事写成已经办成；不得补造人名或硬结果。按【正文任务】写本旬，输出正文 JSON。`,
+      content: (forecast.scenes?.length?SCENE_RULES+'\n【参与者记得的事】'+stable(memoryContext(before,forecast.scenes.flatMap(r=>r.people.map(p=>p.id))))+"\n【本旬自拟情节】"+stable(forecast.scenes)+"\n":"") + dynastyBible(state,{schedule:forecast.schedule,scenes:forecast.scenes,results:forecast.slotResults,notes:forecast.notes,facts:forecast.facts,debate:forecast.debate,memorials:forecast.newMemorials,talks:(before.talks||[]).filter(t=>t.turn===before.turn)}) + "\n" + historyBlock(state) + "\n" + situationBlock(state) +
+        `\n【本旬状态】${stable(dynamic)}\n【玩家排程】${stable(forecast.schedule)}\n【本旬结算表（不可更改）】${stable({ die: forecast.die, fate: forecast.fate, slots: forecast.slotResults, 账目: settlementDigest(state, forecast.entries), notes: forecast.notes, facts: forecast.facts || [] })}\n【廷议名单】${stable(forecast.debate || [])}\n【新奏报摘要】${stable(forecast.newMemorials.map(m=>m.title))}\n按【正文任务】写本旬，输出正文 JSON。`,
     },
+  ];
+}
+function memorialMessages(state,memorials){
+  return [
+    {role:'system',content:worldRules(state)+'\n【奏折正文任务】只为所列奏报写正文，每本160–260字，三至五个自然段，以换行分隔。交代来由、现状、顾虑和具体请求，不套空话。只使用已提供的人名、事实和方案，不创造数值、成败或上奏人，不把请办写成已经办成。只输出 {"memorialTexts":[{"id":"","text":""}]}。'},
+    {role:'user',content:JSON.stringify({memorials:memorials.map(m=>({id:m.id,title:m.title,type:m.type,from:m.from,request:m.request,choices:m.options.map(o=>o.consequence?[o.label,o.consequence]:o.label)}))})},
   ];
 }
 function worldMessages(state) {
@@ -8963,7 +8999,7 @@ function talkMessages(state, result, log = []) {
   const { secret, secretKnown, memory, life, favor, attitude, mood, health, ...card } = npc;
   const known = secretKnown || (result.kind === "试探" && result.success);
   const post = postTitle(state, state.court.posts.find((p) => p.holder === npc.id));
-  const header = dynastyBible(state) + "\n【面谈对象】" + stable({ id: card.id, name: card.name, 职位: post || card.rank || card.status || "", personality: card.personality, family: card.family, faction: card.faction, ruler: card.ruler, demand: card.demand }) +
+  const header = dynastyBible(state,{person:result.person,line:result.line,log}) + "\n【面谈对象】" + stable({ id: card.id, name: card.name, 职位: post || card.rank || card.status || "", personality: card.personality, family: card.family, faction: card.faction, ruler: card.ruler, demand: card.demand }) +
     "\n【此人能做到什么】妃嫔不能给钱兵；其他职权外请求必须回去议。\n";
   const recent = (Array.isArray(log) ? log : [])
     .filter((t) => t && t.person === result.person && t.turn === result.turn && t.id !== result.id && t.reply)
@@ -9024,7 +9060,7 @@ function biographyMessages(state, record) {
   ];
 }
 
-return {STYLES,LENGTHS,POVS,settlementDigest,worldRules,roster,FACT_WINDOW,systemPrompt,dynastyBible,factWindow,historyBlock,situationBlock,turnMessages,worldMessages,talkMessages,classifyMessages,biographyMessages};
+return {STYLES,LENGTHS,POVS,settlementDigest,worldRules,roster,FACT_WINDOW,systemPrompt,referencedPeople,dynastyBible,factWindow,historyBlock,situationBlock,turnMessages,memorialMessages,worldMessages,talkMessages,classifyMessages,biographyMessages};
 },
 "src/core/scenarios.js":function(__load){
 // 历史剧本：只提供开局的人物、官制显示名与局势，一切数值变化仍由引擎结算。
@@ -9330,12 +9366,33 @@ return {SCENARIOS,scenarioById,scenarioPreview,postTitle,applyScenario};
 "src/ui/intent-request.js":function(__load){
 const { callJSON, createBudget } = __load("src/llm/client.js");
 const { intentInputs, intentMessages, validateIntents, localIntents } = __load("src/llm/intents.js");
+const { localRemarkKind, classifyMemorialSchedule } = __load("src/llm/remark-classifier.js");
+const { REMARK_KINDS } = __load("src/core/memorial-decisions.js");
 async function requestPlayerIntents(config,state,inputs,options={}){
 if(!inputs.length)return [];
 if(state.settings.demo||options.local)return localIntents(state,inputs);
 return callJSON(config,intentMessages(state,inputs),{...options,budget:createBudget(),validate:data=>validateIntents(data,state,inputs)});
 }
-async function requestScheduleIntents(config,state,schedule,options={}){return requestPlayerIntents(config,state,intentInputs(schedule),options);}
+async function requestScheduleIntents(config,state,schedule,options={}){
+const inputs=intentInputs(schedule).filter(i=>!i.id.includes(':remark:')||localRemarkKind(i.text)===null);
+let intents=[],remarks=[];
+if(inputs.length){
+if(state.settings.demo||options.local)intents=localIntents(state,inputs);
+else{
+const budget=createBudget((options.now||Date.now)());if(options.deadline)budget.deadline=Math.min(budget.deadline,options.deadline);
+const result=await callJSON(config,intentMessages(state,inputs),{...options,budget,maxAttempts:1,validate:data=>{
+const actions=validateIntents(data,state,inputs);
+const seen=new Set(),kinds=(Array.isArray(data.remarks)?data.remarks:[]).filter(r=>{
+if(!inputs.some(i=>i.id===r?.inputId&&i.id.includes(':remark:'))||!REMARK_KINDS.includes(r.remarkKind)||seen.has(r.inputId))return false;
+seen.add(r.inputId);return true;
+}).map(({inputId,remarkKind})=>({inputId,remarkKind}));
+return {actions,kinds};
+}});
+intents=result.actions;remarks=result.kinds;
+}
+}
+return {schedule:classifyMemorialSchedule(schedule,remarks),intents};
+}
 
 return {requestPlayerIntents,requestScheduleIntents};
 },
@@ -9394,7 +9451,7 @@ modelsFor(provider).find((m) => m.id === model)?.note ||
 );
 }
 function createBudget(now = Date.now()) {
-return { used: 0, started: now, deadline: now + 240000 };
+return { used: 0, started: now, deadline: now + 90000 };
 }
 function endpoint(base) {
 let u;
@@ -9517,7 +9574,7 @@ budget = options.budget || createBudget();
 const now = options.now || Date.now,
 sleep = options.sleep || ((ms) => new Promise((r) => setTimeout(r, ms)));
 const fetcher = options.fetcher || fetch;
-const attemptLimit=Math.min(4,budget.used+(options.maxAttempts??4));
+const attemptLimit=Math.min(2,budget.used+(options.maxAttempts??2));
 let lastError;
 while (budget.used < attemptLimit && now() < budget.deadline) {
 if (options.signal?.aborted) throw new Error("请求已取消");
@@ -9585,7 +9642,7 @@ throw new Error("请求已取消");
 }
 if (timedOut) {
 result = "timeout";
-throw new Error("本回合请求已达 240 秒预算，请保留预演结果后重试");
+throw new Error("本回合请求已达 90 秒预算，请保留预演结果后重试");
 }
 retryable ||= !status || status === 200;
 // Never propagate provider bodies, request text, URL, or credentials.
@@ -9614,7 +9671,7 @@ cachedTokens: Number(usage.prompt_tokens_details?.cached_tokens ?? usage.prompt_
 if (budget.used < attemptLimit && now() + waitMs < budget.deadline)
 await sleep(waitMs);
 }
-throw lastError || new Error("本回合请求预算已用完（最多 4 次、240 秒）");
+throw lastError || new Error("本回合请求预算已用完（最多 2 次、90 秒）");
 }
 
 return {PRESETS,MODEL_OPTIONS,modelsFor,modelDescription,createBudget,endpoint,requestBody,readResponse,callJSON};
@@ -9832,6 +9889,10 @@ return raw
 .split(/(?<=[。！？\n])/)
 .map((original, index) => {
 let sentence = original;
+if(options.skipAssertions){
+if (/性交|交媾|生殖器|阴茎|阴道|插入|抽插|乳房|裸体/.test(sentence)) {fixNotes.push("亲密场景已收束为含蓄叙述。");return "宫帘垂下，夜色渐深。";}
+return sentence;
+}
 const sceneFailed=(forecast.facts||[]).some(f=>f.kind==='scene_result'&&f.slot===slot&&f.status==='failed');
 if(sceneFailed&&[...sentence.matchAll(/如愿以偿|终于说服|成功说服|心愿达成|愿望实现|尽数答应|全部答应|坦白一切|吐露全部心声/g)].some(m=>!/不|未|难|无法|岂能/.test(sentence.slice(Math.max(0,m.index-5),m.index+m[0].length+5)))){
 if(path)options.onViolation?.({path,index,limit,sentence:original,reason:'本场未能如愿，不能写成愿望达成或对方完全答应'});
@@ -9972,10 +10033,10 @@ const original = cleanText(data.chapter[slot], 3500);
 chapter[slot] = scrutinize(original, slot, ['chapter',slot]);
 if (original.trim() && !chapter[slot].trim()) emptied.push(slot);
 }
-// 只有部分段落被删空时才补足；整章都没有可保留文字时仍交由重试处理。
-if (emptied.length && Object.values(chapter).some((t) => t.trim()))
+// 请求路径用未定叙述补足软校验删空的段落，不为断言问题额外请求。
+if (emptied.length && (options.repairEmpty || Object.values(chapter).some((t) => t.trim())))
 for (const slot of emptied) {
-chapter[slot] = fallback.chapter[slot];
+chapter[slot] = options.repairEmpty ? "此事尚待核问，未有定论。" : fallback.chapter[slot];
 fixNotes.push(slot + "段经核对后无可保留文字，以平实叙述补足");
 }
 const whole = Object.values(chapter).join("\n"),
@@ -9983,7 +10044,7 @@ reactions = [];
 const favorSpent=favorRecords(s,[],true);
 let reactionTotal = favorSpent.reduce((n,r)=>n+Math.abs(r.actual.amount||0),0);
 for (const r of Array.isArray(data.reactions)
-? data.reactions.slice(0, 10)
+? data.reactions.slice(0, 3)
 : []) {
 const npc = s.court.officials.find((o) => o.name === r.name && o.alive);
 if (!npc || !Number.isFinite(Number(r.favorDelta))) { fixNotes.push("未知人物反应未采用。"); continue; }
@@ -10026,7 +10087,7 @@ text: scrutinize(cleanText(m.text, 1000), null, ['memorialTexts',data.memorialTe
 rumors: (Array.isArray(data.rumors) ? data.rumors : [])
 .map((r,i) => scrutinize(cleanText(r, 150), null, ['rumors',i],150))
 .filter(Boolean)
-.slice(0, 3),
+.slice(0, 2),
 ambitionEvidence: evidence,
 factUpdates: (Array.isArray(data.factUpdates) ? data.factUpdates : [])
 .filter(
@@ -10036,7 +10097,7 @@ f.reason.length >= 8 &&
 whole.includes(f.reason) &&
 scrutinize(String(f.value), null) === String(f.value),
 )
-.slice(0, 5)
+.slice(0, 3)
 .map((f) => ({
 subject: cleanText(f.subject, 80),
 key: cleanText(f.key, 80),
@@ -10045,6 +10106,11 @@ reason: cleanText(f.reason, 300),
 })),
 fixNotes: [...new Set(fixNotes)],
 };
+}
+function inspectNarrative(data,forecast,options={}){
+const violations=[];
+const narrative=validateTurn(data,forecast,{skipAssertions:forecast.state.settings.freedom==='free',...options,onViolation:v=>violations.push({...v,id:'v'+violations.length})});
+return {narrative,violations};
 }
 function validateWorld(data) {
 for (const [key, min] of [
@@ -10101,6 +10167,18 @@ effects: null,
 }
 function extractPartialChapter(raw) {
 const sections = [];
+// Read chapter only; another JSON object may also contain a slot key.
+const start=/"chapter"\s*:\s*\{/.exec(raw);
+if(!start)return '';
+let depth=1,inString=false,escaped=false,end=raw.length;
+for(let i=start.index+start[0].length;i<raw.length;i++){
+const c=raw[i];
+if(inString){if(escaped)escaped=false;else if(c==='\\')escaped=true;else if(c==='"')inString=false;}
+else if(c==='"')inString=true;
+else if(c==='{')depth++;
+else if(c==='}'&&!--depth){end=i;break;}
+}
+raw=raw.slice(start.index+start[0].length,end);
 for (const key of ["朝", "午", "夜"]) {
 const match = new RegExp('"' + key + '"\\s*:\\s*"').exec(raw);
 if (!match) continue;
@@ -10140,7 +10218,7 @@ const key=r.slot+':'+m.personId;if(seen.has(key))continue;seen.add(key);out.push
 return out;
 }
 
-return {parseJSONLoose,repairJSON,cleanText,validateProbe,mockHook,mockNarrative,chineseNumber,retrospective,validateTurn,validateWorld,validateTalk,extractPartialChapter};
+return {parseJSONLoose,repairJSON,cleanText,validateProbe,mockHook,mockNarrative,chineseNumber,retrospective,validateTurn,inspectNarrative,validateWorld,validateTalk,extractPartialChapter};
 },
 "src/llm/quantities.js":function(__load){
 // Quantities use base units. A 斛 needs explicit evidence: do not assume a dynasty's conversion.
@@ -10264,10 +10342,11 @@ return {modernTalkFallback,sceneNarrative};
 const {localSocial} = __load("src/core/social-rules.js");
 const { normalizeIntents } = __load("src/core/intents.js");
 const { parseNumber, NUMBER_SOURCE } = __load("src/llm/quantities.js");
-function intentInputs(schedule){return ['朝','午','夜'].flatMap(slot=>{const a=schedule[slot],inputs=[];if(['下旨','自拟情节'].includes(a?.kind)&&a.text?.trim())inputs.push({id:slot,slot,text:a.text.trim(),...(a.kind==='自拟情节'?{people:a.people,place:a.place||'',scene:true}:{})});for(const [id,d]of Object.entries(a?.decisions||{}))if(d?.remark?.trim())inputs.push({id:slot+':remark:'+id,slot,text:d.remark.trim()});return inputs;});}
+const { normalizeMemorialAction } = __load("src/core/memorial-decisions.js");
+function intentInputs(schedule){return ['朝','午','夜'].flatMap(slot=>{const a=normalizeMemorialAction(schedule[slot]),inputs=[];if(['下旨','自拟情节'].includes(a?.kind)&&a.text?.trim())inputs.push({id:slot,slot,text:a.text.trim(),...(a.kind==='自拟情节'?{people:a.people,place:a.place||'',scene:true}:{})});for(const [id,d]of Object.entries(a?.decisions||{}))if(d?.remark?.trim())inputs.push({id:slot+':remark:'+id,slot,text:d.remark.trim()});return inputs;});}
 function intentMessages(state,inputs){
 const persons=[...state.court.officials.filter(o=>o.alive),...state.harem.consorts.filter(c=>c.health>0),...state.harem.children.filter(c=>c.health>0)].map(o=>({id:o.id,name:o.name}));
-return [{role:'system',content:'你是帝王游戏的意图解析员，只输出 JSON，不写剧情、不决定成败、不返回数值效果。将每条自由输入拆成动作。type 只选 kill/appoint/dismiss/promote/imprison/war/allocate/favor/decree/other。人物、官职、外邦只用名册已有ID，找不到则 other。怀孕、生育、小产只能 other，不得解析为玩家动作。allocate.amount 用游戏单位：银为万两、粮为万石、征兵为人；中文与阿拉伯混写也须准确换算。allocate.source 为 treasury/privy/grain 或调兵来源 capital/边境方向，destination 可为对应账户、军队capital/方向、州ID或政令名称。favor.amount 限-5至5。decree.edictType 使用普通政令名称。scene标记的输入是玩家尝试的情节梗概，不能把希望或NPC反应当作已成事实。people列出本场人物ID；无姓名的指代只在唯一人物时绑定，多人不明则other；地点和情感描写可other。scene内有明确的相处行为时，另给一个type:other的动作并附interaction:{kind,targetId,otherId}。kind仅选accompany陪伴、comfort安慰、apologize道歉、protect维护、humiliate羞辱、deceive欺瞒、reconcile调解、quarrel争执、cooperate合作；targetId必须在people中，后三种须明确两个不同人物，并用otherId给出另一人。闲聊不必附interaction，不生成数值，不把未发生的事当已发生。每个动作必须带原输入的inputId，保留愿望的真实意图，不增加动作。输出 {"actions":[{"inputId":"","type":"other","targetId":"","postId":"","countryId":"","operation":"","resource":"","amount":0,"source":"","destination":"","edictType":"","text":""}]}。'}, {role:'user',content:JSON.stringify({persons,posts:state.court.posts.map(p=>({id:p.id,name:state.postNames?.[p.id]||p.title})),countries:state.foreign.map(f=>({id:f.id,name:f.name})),provinces:state.nation.provinces.map(p=>({id:p.id,name:p.name})),inputs})}];
+return [{role:'system',content:'你是帝王游戏的意图解析员，只输出 JSON，不写剧情、不决定成败、不返回数值效果。将每条自由输入拆成动作。type 只选 kill/appoint/dismiss/promote/imprison/war/allocate/favor/decree/other。人物、官职、外邦只用名册已有ID，找不到则 other。怀孕、生育、小产只能 other，不得解析为玩家动作。allocate.amount 用游戏单位：银为万两、粮为万石、征兵为人；中文与阿拉伯混写也须准确换算。allocate.source 为 treasury/privy/grain 或调兵来源 capital/边境方向，destination 可为对应账户、军队capital/方向、州ID或政令名称。favor.amount 限-5至5。decree.edictType 使用普通政令名称。scene标记的输入是玩家尝试的情节梗概，不能把希望或NPC反应当作已成事实。people列出本场人物ID；无姓名的指代只在唯一人物时绑定，多人不明则other；地点和情感描写可other。scene内有明确的相处行为时，另给一个type:other的动作并附interaction:{kind,targetId,otherId}。kind仅选accompany陪伴、comfort安慰、apologize道歉、protect维护、humiliate羞辱、deceive欺瞒、reconcile调解、quarrel争执、cooperate合作；targetId必须在people中，后三种须明确两个不同人物，并用otherId给出另一人。闲聊不必附interaction，不生成数值，不把未发生的事当已发生。每个动作必须带原输入的inputId，保留愿望的真实意图，不增加动作。每条 :remark: 输入同时在 remarks 中返回 {inputId,remarkKind}，remarkKind 仅选嘉奖/申饬/附旨/无；识别否定，责成核查为附旨，不必嘉奖为无。嘉奖申饬已有朱批结算，不再生成重复的favor动作；实质拨款、任免等仍解析为动作。输出 {"remarks":[{"inputId":"","remarkKind":"无"}],"actions":[{"inputId":"","type":"other","targetId":"","postId":"","countryId":"","operation":"","resource":"","amount":0,"source":"","destination":"","edictType":"","text":""}]}。'}, {role:'user',content:JSON.stringify({persons,posts:state.court.posts.map(p=>({id:p.id,name:state.postNames?.[p.id]||p.title})),countries:state.foreign.map(f=>({id:f.id,name:f.name})),provinces:state.nation.provinces.map(p=>({id:p.id,name:p.name})),inputs})}];
 }
 function validateIntents(data,state,inputs){if(!Array.isArray(data?.actions))throw new Error('口谕动作列表缺失');return normalizeIntents(state,data.actions,inputs);}
 // Offline trial parser resolves only explicit existing names; unknown wishes stay narrative.
@@ -10290,6 +10369,34 @@ return normalizeIntents(state,actions,inputs);
 
 return {intentInputs,intentMessages,validateIntents,localIntents};
 },
+"src/llm/remark-classifier.js":function(__load){
+const { normalizeMemorialAction, remarkCategory, REMARK_KINDS } = __load("src/core/memorial-decisions.js");
+// Substantive orders still need intent parsing, even with praise or blame.
+function localRemarkKind(text){
+const value=String(text).trim();
+if(/赐死|处死|斩首|下狱|收监|罢免|革职|任命|出任|升任|晋升|拨|调兵|征兵|宣战|议和|出兵|赏银|赐银|修河|赈灾|减赋|加税|整饬吏治|大赦|修园|开海|立储|禅位|禁令/.test(value))return null;
+if(/申饬|斥责|责罚|严查|敷衍|懈怠|嘉奖|有功|可嘉|甚善|勤勉|责成|着令|令其|另拟|附旨|交.*核/.test(value))return remarkCategory(value);
+if(/^(知道了|已阅|阅|无|悉)[。！!\s]*$/.test(value))return '无';
+return null;
+}
+// No network here; persisted pending turns are never classified again.
+function classifyMemorialSchedule(schedule,remarks=[]){
+const next=structuredClone(schedule);
+for(const [slot,action]of Object.entries(next)){
+if(!action||!['上朝','批折'].includes(action.kind))continue;
+const normalized=normalizeMemorialAction(action);next[slot]=normalized;
+for(const [id,d]of Object.entries(normalized.decisions)){
+delete d.remarkKind;
+if(!d.remark.trim())continue;
+const kind=localRemarkKind(d.remark)??remarks.find(r=>r.inputId===slot+':remark:'+id)?.remarkKind;
+if(REMARK_KINDS.includes(kind))d.remarkKind=kind;
+}
+}
+return next;
+}
+
+return {localRemarkKind,classifyMemorialSchedule};
+},
 "src/store/debounce.js":function(__load){
 function createDebouncedSave(run,{schedule=setTimeout,cancel=clearTimeout}={}){
 let timer=null;
@@ -10300,27 +10407,52 @@ return {schedule(){clear();timer=schedule(()=>{timer=null;run();},800);},flush,c
 
 return {createDebouncedSave};
 },
-"src/llm/remark-classifier.js":function(__load){
-const { normalizeMemorialAction, memorialDecision, REMARK_KINDS } = __load("src/core/memorial-decisions.js");
-// Request injection keeps orchestration testable without network access. This
-// runs before forecast only; a saved pending forecast is never classified again.
-async function classifyMemorialSchedule(schedule,request){
-const next=structuredClone(schedule);
-for(const [slot,action]of Object.entries(next)){
-if(!action||!['上朝','批折'].includes(action.kind))continue;
-const normalized=normalizeMemorialAction(action);next[slot]=normalized;
-for(const id of normalized.memorials||[]){
-const d=memorialDecision(normalized,id);if(!d.remark)continue;
+"src/ui/memorial-request.js":function(__load){
+const { callJSON, createBudget } = __load("src/llm/client.js");
+const { memorialMessages } = __load("src/llm/prompts.js");
+const { validateTurn } = __load("src/llm/validate.js");
+const { memorialText } = __load("src/core/memorial-templates.js");
+function templateMemorialTexts(state,memorials){
+return memorials.map(m=>({id:m.id,text:m.text||memorialText(m,state.settings.prose==='modern'),status:'template'}));
+}
+function validateMemorialTexts(data,state,memorials){
+if(!Array.isArray(data?.memorialTexts))throw new Error('奏折正文缺失');
+const f={state,newMemorials:memorials,entries:[],facts:[],notes:[],slotResults:{}};
+const checked=validateTurn({chapter:{朝:'奏报尚待御览。',午:'',夜:''},memorialTexts:data.memorialTexts},f,{skipAssertions:state.settings.freedom==='free'}).memorialTexts;
+return templateMemorialTexts(state,memorials).map(fallback=>{
+const item=checked.find(t=>t.id===fallback.id&&t.text.trim());
+return item?{...item,status:'ready'}:fallback;
+});
+}
+async function requestMemorialTexts(config,state,memorials,options={}){
+if(!memorials.length)return [];
+const budget=createBudget((options.now||Date.now)());
+if(options.deadline)budget.deadline=Math.min(budget.deadline,options.deadline);
 try{
-const result=await request(d.remark);
-if(REMARK_KINDS.includes(result?.kind))normalized.decisions[id]={...d,remarkKind:result.kind};
-}catch{/* The engine's negation-aware fallback remains authoritative. */}
+return await callJSON(config,memorialMessages(state,memorials),{...options,budget,maxAttempts:1,onPartial:undefined,validate:data=>validateMemorialTexts(data,state,memorials)});
+}catch(error){
+if(options.signal?.aborted)throw error;
+return templateMemorialTexts(state,memorials);
 }
-}
-return next;
 }
 
-return {classifyMemorialSchedule};
+return {templateMemorialTexts,validateMemorialTexts,requestMemorialTexts};
+},
+"src/core/memorial-texts.js":function(__load){
+const { clone } = __load("src/core/state.js");
+// A prose retry cannot change the calendar, RNG, choices, accounts or history.
+function applyMemorialTexts(state,texts){
+const s=clone(state);let changed=false;
+for(const item of texts){
+const m=s.memorials.find(m=>m.id===item.id);
+if(!m||m.textStatus!=='template'||item.status!=='ready'||typeof item.text!=='string'||!item.text.trim())continue;
+m.text=item.text.slice(0,1000);m.textStatus='ready';changed=true;
+}
+if(changed)s.revision++;
+return s;
+}
+
+return {applyMemorialTexts};
 },
 "src/ui/icon.js":function(__load){
 const APP_ICONS = {"32":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAkFBMVEX3y3DvuWLprljkqFffnVDAiEjIgEKqgEPAej7DbDahcziWZi61WCyzRCOfTySAViixORymNxuoMhijIxGbLxaaHQ98KRMgFxIfFxIfFhIfFhEeFhIeFhEdFhGcFQoeFREdFRGeDwebCgWNDwePCgWZBQKOBAKFAwKFAABPCAcWEA8VDw8VDg4TDQ4SDA0RCwyeLUoYAAACKElEQVR42q2T25KjIBCGAVk8QQTFaAyj8UxpNO//dtOYZDK1N3uzLQJFf/V30wC6/cPQ/wKKS1WZCrrKjcaYqix+A+ax39flfl9X+Jd1WZZ1f5gPYJbEPyzyXxZFfnI3b6B4JFRKqXWq01SpVKUwEV6yFy+g2nwxtl0v6kkNU9t2Q9e2lvuPH+Duy7buckRrz8uGuq3rru2E/yh/AV07MYRzilTWjuOYptMHaABQ4xigP7VA1EMh4wzjVH5CXEBhYDTkHaWYSYEcxuUvhRVyUFagMK8RrzPMLEO59Pd3Ds0SpW1Xg3jKMEEBAQBnMnqFaJ4KY4i4wB5mKj2AWkSfEEucWomwyrIMiywnbAZARvvlvc3F15owHHIqCMHcAwXaA1D9KEQplx3mGT4R3uceldTrZbyXzVsh0vOUE54RAISmLMB0lvF2aW4NAAZy0N0AgCYB8XhPgp6erAM+SeoBgIARL+xt7bEp72cVf07zCKE9fmK5HYbaC6dxAGArfgoV5/OUEW6Hqe/HmgZz3886Wd/bNC4EVOo0990wDD0NrQPi7V2oyz1Wdhzn2Vo7TtYKbWEq4kdhXqe5npnI0uOuSamkUlorxc5r8WWel/a6nuMkieNn9xyT8/K6tI3bx7qv27bt0JxtzlbnbwAwV6hXVVyKsoBWgsErKsvKHcQBNPCOQMXcDq2/DADnd8DBmevtC77GocZ8mWcOsA7+5nq9uXAH3ByduYLjG0XhZePKL1XsAAAAAElFTkSuQmCC","180":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAMAAAAKE/YAAAAASFBMVEXzwWzrsVzjpFDSjkGqZS53JhSNFgweFhEeFhAdFhGdFQseFREdFRIdFREdFRAcFRGjEgmfDQWUEAiTCQSIDgeHBwN3CAQcEA6y7OzCAAAqV0lEQVR42r19iZbbOKysrI2RKEvW2v//pw9VBWqz3cnce+7zTJJut22BIFAoLFRnz2d8Pnv7q3/yMTzPDz7Z82E/Gobn0PfP5+0lPV9nP+iH5/7lM1w+Qz/jh12e7U9fnz6z50fwuZiejOlHz+x5fPr9raevTdoBbxjsuf3q/eXFA3/8/TF8+2549u+Xxgv0/UU8ftNndwF14ZPae8ncf73+/dnevx7epHh/87BfqME/zduHhiZ0V1WbbrLrpn142//ssYvWfV5ruO3nZ5kDJI0m+Ulme2QfrOJ4NJcPGP5F2vAvS2m+XbS5fh3ix4/JPjrCP+vxy8M37mQRdOTjfU2zy3h8VhPuK2j4kiY0H4TmR36TuRn+bSH9L4qmH9v/7qnhuxIuvgOJI/6+vSE7fLe/GPeHXQ//U+ugWw7DWbrhstzm+15C4hguxhOyYbgC5HdDCV/trx++uzGfksRnNZ6vOfwClQGXPT62oclkb8Gk93jx1Uner9AnUG2av9rP6ZMG6ahPAevzm+PlBw3g6Cb0czi28tN179grIIe99h+3I1ywO707HutgjB1+cZvuhpuQ+24eZxf/J6B4Pof/ADr99V3984iwv6HfTQvZoK2FrfTSHTZ7OK1v+Chhv8daLbO//uRbUHlbR//Fh/pbHLygR/9m1MOZnuz/3j4qnMT5G8APw/PGls5vGo4d+LC6Ln5QfnbiPeG/bfeuo4uy+g87Oxw85kqUhqSm4c0khhN6xDtOvwNz/xWsk+uF58fgH76+ZzhY2IXRDd9VtHO05pN59J9p6U2lzdWVug+W2X3fk6H/uIO73Qz+GQ7nw7O/WGJze/fVpuOXr39dVv8PxvwWUJJN9M93FBmuWxDfJMnc3oavcr5R9tMbLhIZJQvgkecN+ILA/TvTOIS+v6d7Q4rsRN2bEMK/QPHB8t9ArvnnXfh+lXfyFt803f+Hj+uPtHD4J3T51x/3bxH+A/0+UdP+V5SjD/RvkfYXt2/eZBn+S+LYfOCazfNKbDI5y/DOYtPXH6n28PxfPeIb1v/91WEXP17MY19KE/916/t/JQ3/Ql7+9s7gaJKdCWPi2uEqdH8N8M3/Ikn0z3g3of/isk121xCiZmz+88fF8yY1b8WLv29Y3/+23KsSs7OOwqdo9xv0pQJQ2GlV/PKua5rdv2m5/zWm3cS/aJpSB6J1vEeO/x+Pf7WP7KSFqK+C79OpsGAfOPz83z+6o84xXGWiEndPy26OFT+YAyUO1X9/lFX5ywM/9Nfx2yr8/Ayhv8CgO8gJLbrmxvI+4sIQmp9QFsXj8cgeWWZ/cn5hf+VZbo9Hjn8zPv0o7IuiKDJ+af/neIs9xwdehFc++Cb7Uzyyoiwe9h9e+ShM7sAy5nCmsfEsXiDL+xtE2vpLyGhXyKsyLzITxaSyRUDiElez69kVbWFFwacLvLrg8wXeaq8pIKA9gZeYWk10+4df47NyPGVKyfIKyhaX9gwqNMJiMLJwqeU1X3DWXvkTCqjNLmxXL6hryFAW1FRB1WVaCSUqIA+Exkqo5xxCU5VcKN6ZUcX5w4TVs9wTW1RW/vkJw04Pm3ApS7iFZ1fLiHerNplzGAMuBSOA9mgBUFFeaJtpNA+XGVZR5pKRC3rQdNISYGR4hpuTQ1rYm/0EdoIXFgFSD3c3i2+1vDcvjCeZS6kS+19yb8+edHoU/oBW8dq/P6rzW8sCl7ENKv4M8dRwCCeVNu/B5T1vCUOEGZpqHmVVL+umxzq92ro9vr88lrpels3+/y+Pdanbkr5uzlL+hBNeBKVb52Ji9h5VTzW68FMCLUwP1bZMU/tq2/aFRzvj23ZZlqleJvt+aqdpwbf45oUv28VeOrV13eJN9p+9tLXXtXiJPsTWxx+bDuy5aalyWtmjgoGcmgG3SHfR9AfgCESoR9GONYRreb3RRHhBvmWpp2WrX1gNRbbnJsg0TvbVttkrbE01hMcS7Xu+asTb+SJ7+4KXLljN1I4tneRR/AyedMVztNu9L/sNpU3RcL/sUY/1QoHn166lBRdszQqgWlM6BcJfLeUx+6gp6uR7k9SOFY74LLwIem9f2DV7p/2wkvtS1f3XoJf9Ro2GPwagJnS1TrtdvKhsCAnDhRlwu3VZqHKD0DDpmj+B4L7QhWYC4WFDI16sH3B/alxjLim0WfVvVcnsPVkbTtbxMOzIC9NZW+vS44gLTRQbep0gNBWqS8PAbSHji19N0rDe2NK48TLYk/0Lmxq5mqWF97ZmSy3QvzAA+S25yD5Q3N7LieGnetAvqLTkPvqiBX6YceAnLQQ0EeiA9LRWz70mN6fRbUru2uoNfB23od1g2TX1zZBuWH1nTt038+ivVSliByxsNh3wqjO1PFIIk860Y0hVtrMr2WxjW+ZpppXgqXFXs9Zry4J3Li4r39W+qHq6Yt0uFkwfEDq+5bYH8cvec4u9hmlCI9oVm326hJ5oztssAUzVcFSLlnNL/4dbVhZW6tV0+dr3xtY4ca0QmhgkjLFXjObKhMaJmLjUS0WjNk33R5kinHpFjSpMw3tWpLIawMM+otxcXxLVPnwGqGKzGcNN7HKGXcC2S0TpR7nQPoATSfZW/gszgP3admg1ghtsE3C7NaHBwP6Ypr+2UPoMXZrhnl6zGiNNW0TeXsn/X3R47DpxdSpILEzOGjtrFy7ELbJyM9mgThi6GUd7eIR5mz0OU8cH0iuxA+1aklv9+en3Tnv/ufn5pfMHoUF/tsWFHnWtGdHFjNOu4EQ5K1ai30z+QDbamiMYFOOdy2hy71JbRDE04p7N++YpjNrSt5JMMPw0/Yf5gGYvi/XfgNrQA1y02I7tdaFNRdjiqXaZzSCEGDVVzUc5U3/2so0xcHcKrGQ6Pm0kfsKqET5XEzqjIw7D14pdNuz28AYiJnRVJqH3y4zzbNeBZdbTrmmTER5q0qXvzURm2tCyLUd8Gd0mUljB7k0JYBBjsXkmNdDje3T5VIBMAyuK4mYezpNGfvwIPRvW2X9L4fJB18YcYJOFP4F1jKbnV23k5IQku4JfpE6Tr2iaZ3wqhAZjDz+ai/lYBTLC5N325/Gi6GFROP2gpidGAsdbBBFgANOwXdUmdFtTU54T5owX4Bs7XI/yPN85RnlnfiNWWOP9SA8g9Mcyp1py9vS3JjyEzjIJ3fqOTm6VkEWpYxI6J+otxWO36qzFM23SKHZqXsbXiYy8pslZFQkCzKOFTcM81FHtv45OvI097OZB0iVH9GuZsug6Zh6UDam4vgAfMug+hM5rxT7zxMmJy0vcm9+0fD0CK8ISwyzolgeX2N+6DcH/7j/ZdH9hpoQ82PQEbDXk4keDP7VFdnkUs4lDEHSh8xIZjCiHOOKIeDO6cZjmZXDzvLTOqxYIjZyLYXzwEa59GCEV4LL+txzAiEAGTTNn2VFLAaI4xCNDATCbopMfPvKKidfclvPILEGc271iJDuygGnJIR2xhgnCPFB3IOT1w7npilJdSsxPQt+nxhBcHsmmX64iaMuEaeuznhEF2xkcuUzmbJzYssVlXVFNILuiypf6yCHsU+aWry+Rs5GuGgv34BKH935zp2ygz46m8q3s2FNoeMU2utu4qoHQV9vIyxah/YiIttTatrpiJv8wYGkBHPOkJECcdMKK3GNnkijLHYx7ZCm43IA4HrW8S4310lAjeiBp2+bptXMmJnRLeUAdqEe1wjll0RnrZzmz67QRENW2veTKTD7GVFFEfoDloMQYoD8c8Z2aXozhqOXZOm4zJkAPJi5zAjsDWnghAHqHOktu6lnZ1khF59weZsRpVWYgXGYJZwZ1KUsV0PL0knJmYrBsFRadfxQ6JktIQqO0lFqjvSMLhAbnMk1PpJHLSFY/g6g/dplZXRDRTEJC6GLfCEaekkUNs6OSZbHMMT59ku0Cg+O0Q95HRTfNp5Zc3P9icHnQPFbjeQtI+sggXD6y/AiEy9wqNRznFMLzIqnwkZ6Z2z3en6IoVqdyGWkAbA+OWByO2D9j95aRg+Ud8buT3TQnm0bmwjTQcJpReD7bc16urAEAaOd23+z8cRIYfwpjUh51dpPQD49qIPBngqbz4mzTMew9Oblifw4u8QNO4zp5DZgjn5/NJkuvuqmIs25eVjK8K5J6ffcPlcITd4vSq7zczYLmw7nshHpNhhqrJQFHu79htSbQ5ziCnJ3meFRJjXtBx3PEvGaWDcmWei4lDSwPUQHEs5XMrWct/JOrwqr6uYHDaywk6MnQZR7kAQ/mbHX7Wk1oy8ZRg7yy/2hyNVGlgmz4YO6HTaPiXdQWUQyrmfqXXo5mqYzVTuGKrUkR3H9MrCwsU0/ccCzPQlMZVHSeLLtgeEK1RuYx7H0M1cYCR2XJ/D9M1jRNcAgxoQl5JJQMwYWwARVfBjvk4ooMTDmAamWykdL2hXAjWtomW3fXzNFaKJJl50jpp7HFh1oYr37+3EsIscFccrzgdHibCRlo0/Yh26Ra1mxxMIcyUSSYLSBLhAJMmKwDBS3PPfj1ytpjIi35ruqHrbkyKqCAqT5OWcPbBaco5h1N/UCJWJtupPXsbWbyaIsxjBeIiF4+KAhnZTtvKxL/SRBn+SG2lfLXK8xehm0JFwsJkxPaYm8Zldu6rts6bWVCG2AHI7m9uVBwGe6NonieFpOWo0J4tB3AbHh0R4RlLkql8XlFWdkFVWqsx+IIeC2LNqwSrQcmtoxzLnS5w6FtAfO10ysftfjIWKay6bkzF74lAYqJ4dK7QPB6FAyEs4Vfy2lXlUpVqthZU2HXKizMOAPZ/a1c2z1PmUunrCj/AHSMh1aHZzLnMqct2TS6ltW/ZC5BIpvM3RWnd01PTMNb1Klbceq5LXaTLC27Ay9ZJN3DNVgueh+SWKeh+MRqY4PDhN6pbcEyGmoO7D6Z0L+MEpwhz2RubiyPjHxJ1XS7eA3qa8kRFFgccFuoAmmJzbTMqbAA/ABBNQxawSrUCLXtF1tBZWZPIwqVig1G2dqr7tS0O5ON7MKhwhvLA/4Yu5gXr1qkOoYR5NbbbIrBUrNpdEt1JxTHtgUIYQYxmwkXbPGq1McWDGw6Vwe4sB0UnHupN3r74n4s4JhCaC4dRB8wZRKAXtl2YK09lpR4FUdMzrKauQmrkMIEMo6KnBqRCPvzIGBiB1YZMIocudhIgY7Z6N6eH8Hlzi7i2TwcCpvTvJAyF4t6u9CiqJ7lKRU7J95qYy2ej7A5niWaYS+ocw/xWbWpZYOnZDKWFsuiRzZ7C0ePT6OEb9n4m3mw4715mfA1bgjJ40yCmqt+oNhdobw+jbPBdC0+pWZsYkmEubQGc0Q2PrZFOPOg0CqYzTA6CN1fQLq5nEnIrt2Mi8+ehaZ1GKRNKnsoVKTGcVEbFgAiQEbU4mab/0SfH3n7SqUFy3lRGEYNjCbOjxiF5nPrfPrgy8/rwE88D6k0DeKLpNZEKwmTPbbWK3DtqSCX6Bz03Hqv+CGaeaKbDs3YkLbdyw0GJjUwD0I7d0KNlTbdgoeg57L39GPSZtxtetdwaM72w3NuEPpBTcPLxtfpUagpLzQucxkD+fzDN8Bpc+bPFjRgJyWz2qBb6SQK5sEaBdA89wrTlcrtfdtw6o13JnL3/AB5OXC6PRUQUWYqDz5sjl8XeUqbzonUqSqSI13wUQQUgdko3YDTuepoJYSel2nec8S30le82rR91zXvrkr0ADWddsOYHUiSuUKcbWP5Xk+daL7UymkEg01DuTwlLMjRAB80D424oLowju6IMo/vU5PZDiyB2W68l8Xyx9EJcLYP40j7n+c1euCFshQqNU8MNDf+uWJSYYUHt0uR+7hHubFvOjEi5motjaxhjWR5OSPirX1shhBvEREDhOfJrL0A+WASMKVelGOpXwzwtS5oAOjSj4yzN567GrQZh0VzcWNZhGsiQK7edaxc9eabs5SCiJifI6KUG0/HgO6l3nAmeQd6zD5boOxlZMbyID2G0pD1cleJGkhqHDQeNcY/jPaZ0OM01xwC4nzVyqTThBYLyIkeLGIh1zeYvWr6C8tDjEeUDzfz4NTPNoNZjOrAG+fg/ueZ2nVGIxZSPhFquFOZ7BvTKqBQ7cyGId9CRxS/rVFOSig4463MEbFsUNPT+P1taP0yWUO5454lsCxWguVZAjIvm1fGi4RmptWtZpvYFrPWlsVaQmLxoUyTS5bHqK052l6RYNFyUFC1LTCWV6Xw9EDTlyVMzhx5d+vb5HC25zSc2ox+3DKeNY2aMrmdaJiPjKUw8WIP3FZlEs9ErdJLCZa4oIFgNNxSiBa1nIeQEexvQhtdRDFjMmNr2xY1Pyn0odrhTj48sY17NTUSsePTgwvErtOkD6DvkJnOWNQzyqhG9GcYPKqLM0ZECCNm0yiTl6UxW5XLFUcrOsIG5u0ALxScIDTn4X6DvFupFxJb7tuppLM7ok/M4ELzKy92SqHxujSFYoY7MfrMhVwyL+iIJTffQLlOdbFHtbLMVrMIUTB5rtZXu42Ebkj93RH7Ux/xqPLG/Zwlc0Q6G0xTHfoi36tZUhvywJfU064jWyiFR7msMjsv1NsYl3V5iPTl5ogtmkcmdL5DzsqCIeIUPqr60An4nG6lskhzCF1i1HHTQJXlGpA5TZy6D6HswbIQEtYF6e9cZI7aReFfPArz4zpZB4SeN0ZEfkrhpZppNMxndRkDhd9PkDh6xGufIB4REWSoRrLF7aydYjxc30pDzPU0J4uineXsRar2QWjFDuB5K6FRtVvh1a2E1sim7dcCYraVnKLEFOS3MxMhZMMH+t+dOgHAaUAE6e/Ds6Pc51lZDzAJxtJjCzmEplCJiXkK77mt+JEWbOtk2X/lDskGCU7o6eVJ6P75vEJ1+G10IoRzH9GE3lBzMYCirXIz1xlsA7PGMJ4xJbkP1MbpiJQV5J6L4dpaZx5YAFNg5YgM2wUBZUQtj5cMP/eq6SecPnhf17xxD0Q1207MRavEOzMsFpABMRkKSkOv5by62lMfQyPJ6qao5ViuSJJHVki4K3jKBwKq/MgRjxNMiiB7z2VvsuiZ/gQkEtpYHjAVTWvNd5eAiMmtNXtUsyVgsmqG6BWYIGPOUgaAtBDmkSupURJAosG4Clpnmcs6kw6AzFLo4ZRvheNwyBthas5bIWpqcDstsj+OdqNAbprW5Lr9uB6htdLttagW7jAmTQhmmJsvUWWda6U2DH8tc81ZIwccHrf9WldsGQd8K7dpKRFBr4uHYWcX2I7NPXNB4WNjiQK+ZfCgEDJOmuk2yeoZU0otMZigvmKuGjhm4qap3dky9Zr5bq4JJwgNcPT2HdJ583RwgD2Mp8mCwHKd8+Ym3iFvHyTrT9QUNo0OAMvSM2gIYsiSJ7wAOTahZQUQeivporArMOkFVd0R1DRNfqPCNIOnlCRQTrGR6oLlYRJfwSXdOCGeEsEG3pfdqN/50EYiTDWrxqUB6YwJmFFM1KNebjzfsLktlLQw+dIuPPINbG4zHkWzb2VOjH+wgZadiofb/Iqa5AjzyBM1/XRiB82AmJ3HPNjoj5d0CxneNhvZNSoPfjmDyLVKmjNnP0oCeGrBsmAOfCmMVNtM22BmCZZH6zBH5KqIhp7C561PMq+aWnfIOwo2yXB5cOg2OnFPbGlg9cxZ8nFhkRBEzvgx9xVWWq0I3SlzAWy7jzKtApfjmATNwwGwbL028ti5h1FvztY6n66UjQ8Xo1USa0554x7x6BW40PxAlsBZqQD7NG2PtdALs9VmHpN4Z66kRAUFeBeyWvZyjbjOmo2mptkO8m91BKIGV11nEllqOlyE2pkFHuk8YkwHBi7WI5ZXsL+5pCHY0Wx0Gg9GX6+jGbvIsgUe2xMNEUFoyDyvGzAP1FSclZGfRd68cDfMgScLFjhXpdAj9OeM6mi4xLNNP0+yy7ojhQbksfnJAbRlMaXNqymExz0Yk7cZ8zOFpEYkKvw4CEY+VrR4ocl1raRmti9IRNzCH6S/GMrCrjDvuI5OWPp66l6F+M49/DBij8Ytbdoc0QfnJ34yIBdpiAph0PRs39fuZbvQLJjUVaHjRPgMH52n0NtaETcyp4fmzSPKTvOI1mVZpnQrwl4bE7RplLgycssRsRalAk1MRzROQs8MukbkJ07hmsK3OslMb1tSjDbIW7ZC6uNRKAVGEEWwCloEjGET22d0wjUYfyYkmSRM5Z+f+DyK6tB0CJ1J1/AGR9lef5Rt8MdP3bCJSYAB9DaqVYxRMYi9Li2FLnhJ+v1a7zZd75pOB8sMB1FoqjyEglxjGrHg0SgJzQA1A9ElNDU9pKMX2PXQNF3wkY/sCt1sI0ZvQytzMaFneiE7WqgH2N8an4PWTOhponlQv9CZ+1vhGi9aJN+2rkciH6x7OOBQ/ZZmCJYMp1H5M6F1c5jd/wIbzWYlMImMlB+mE/k8DAgpOXuKPyo7k3yaKU+YRYZZL6SiisES2oe8zDxqIo58TC3pClntSDfQcS00kNBJLJgO0uIxlGqR3bTBIFyeq6Z+hhn2Qa1b5kKcQPQ2/bLogTKCOucYRa4qS1gBD+y3zDpzo7YlCWjOpiBsXNigKjWP1GnCpgSAjDCP9pFQsmLZw3v3IlkG9hYDVmTjZeWE6TLsY3aL2gYP1WaOIvwb8qKKoOGJho5oGItU2h6sI0DNM4TOUwyuSDAqqTV3mR/pIF9rbjpizanugQ0wE17RlaOvmpca0JsTLiPNg3Qnocc51TKhAw043Ph0hOCp6C6crrC/E48sTfTICVDQFn528lFvVdtWql7QjPPcl2M+DNe16DKuRoVSpGdwmc2oVnRnLTtcUSQzT0HxbFOp5Tx45UlAAmMz62s2TmPG3E0qi9EraAAvFSFR0zMJAFgUG0MJhQ5MCuOoYh4HNXEMx2aAAoqXTG7YYClKMzN0wuYa6cGCmYaVH76pWEOc7ves5N5+k9CXQ6xQdrNrGgdUITSqEmDugGyLkCxPyIzbttiPdWod9ElocCZsgKqQUxVpF0xoY1FmMoBnDv0iNWIhU5lLGYZ43JTBs8ODf2apZBDPMVFl6h09eG3TBrtyOmlY7n3CElzDUwAWOig0Eiy+0nxrJseaa5oQSBbKlrP9D/ebwA1oc0BpZBAwjz9XwiSVx3uO2DBgah6rOYo1MI+CSdOoaQdtYg2ujpPLJmGFqOEHVxn9SIhXHMfwJGBGZjWp2aYw7suYkb/Yh6JEgewZy1Rne7dpt1fcngshpjnniMFbjOdOkbM82PTGzzT3NvubiHulYzHy7E1nZUmVmaTWIJlmpjwZukDo2YWW3CXiE2zdlItczL6bWWfflBUbtu+OSMAgt9PudyfCFOLR0k0hSKXeQprWNKGBF+SRQiRBta0to4QrmwNO2BkoG0XolQR8ThzaXlfOkxSNnxi2GP6vo1a4VS50SMwDwQ63QZNxMPRlH46/yEX75IhsZWOjRzJUDHHSEfMkNFRNZwRXNZFtz5FjTfQvg2j0ByC0tgK7T1Chg6qibfs3Yl9w9ssrTH/Srd14j4RwHN3q3oV+3pIAceF0zNd22gxkQ3GzyFOSaherdYQZOrIlrRAZ+jVh523kl/MqTfNFNa15Rp7G842L5ih5CQm9D6kEsdN4uQlJth9tDsd0bPDM3IdUjM5skroVfIF+UrMw5UpgwmuVhFzWDDjzxD8cfjL1l2mZZh6QeOWL7Ctm+CQDJrhF4HxPbGnPt/qoBT/miLF5MxKepjPuAdWkA9VoUyGQMdrmOnWfZxVNkVKXAC0LP7Ob6+h2q0dbpNwbEXFmhwb/G+VgXiFXrHiO/ihAhu799JYHl+56DF7lyERNa0aBzWVZV7TdydBYlSl1Whzld6gZwvAgJfUIyST7qKlreoK9EInbuHIADTu3GtSscBagRwWhjwOrtztAmj6Z2Mb7LWoOoUtPt3Aej3aI67eaNBKfltDrhkFOPgQWyK1hBOOYFF46SkvoVd2wEQSQYYV2BWcpGVzivbJx1BGa7NSwiPeDMD84+U9DlaLXTd41IpPzuzJA6AVCr24FEnpUCW9Nz5paGeuIH+3KmoLWsqT1reyjV4kw9Xvq8n7Hq7eFnO6f8pMmCFY62DxjgJN6ax3iiiQ0aIbUTFHkWGyFygYotN5A28cYpZYk80Z8QaDZ1AWsfm73OIhvdwcKzVt9Cfe4InqgLLayH2j62HwOchy118rvVLCT7QgtSJWoan3PHaDQpRos2DQkjsgtZhoG309NV6pPn5stxpbPU47Z8O0eSoMOUSahU5gga0JbwIU2U95kBGaedDiuakLcN+RbHZLt/zaFoAetn9SLZA9OaeJvNA/druJkHpCqu95b6Gtw0cFg1qggNMs0o3sZtFcW3gCEXWwJwKhWgsbmIZxLoeioHWmlpfsrXGEjUCMC8btD6OFqHOF2iJIZbfd+wzPTNJEeJbmZ9gm8w+6jSV7IOgqYhjwuIRiUBpY50XHpY/i7TrwKHHCbCRszckWkzSNsw4UujmJNuptVvN7AYfh+zyYKjenjlZT0BaHnl7DgNba630tJzjyTr83Stvvjyi9G3hkBJezSoyi4B0L4Jik1EkLrAH5USgLOjni6Q1Nsbned+HRKLhfLA0/HNPKKYyNmhQQRhW6sCM+skmClcXBXZkmOhWBVRBw9WjLSFataCDraKPxjQrum+88tOQTr7FqYDjdNF7lTU5JiMTOhHsz6UbJxjvYwshCa5TivDsC05sRBbRtqB0kITSyiIc/EJdk2/tmL6qcJN55S6BpjQyzphewac+J5be6I4tOb5Jg1k0x3q8GdYdII22xTbG7ZEEcWvsliuCYNGDCtAZOROazCOwYn/KuS+HXETeYRU6PoVkJ4Nt3VPDy4LEtVbS0mFEdA3ssDWA2ZtwmyTglswelHt4xxQukanouiJSutubsBIQ5/GcqsVLwEX3U3n9RmPsq7p/v8nfk0i0zhZh7ww5IzuJtOfc8OEasUi0qAAsOqaI9O1ij+NhFp1lmeySlNUrgaQEEnYEtGGY5MZDnM4zx70JEOwTaC7kx4qT6e0y7ZNFW90VUkMt3wxcEfFAJWqArWAIKHwAlTfnlcBIMDHG6+KN3rSKN687zfGmjVXyvmK9j7PAttttGh+oVMyw1XJQTWwToYezhFdROaIwEF5v2hLdfzKqMFZ0diRThWdjKvylYVFmEkm5BsHRnoW2iaihY74tkApjoEH5xuFb78GQ6WzDCCVkuns3ANg0t3HEdTxUNHA5owhNK9PaXOK+anU7ReYNtOMhM2Q7FkpPLVVTFc0Wdlrl1tsqbV6Ql2KiH2tnqP8WfwDlCHRDYeN9RzoU8DQCrkNG7a9lIlibhXiud5J8RbRpSUN/yZj5ioML96rKfhOiwwaq8lgxF8d6EPrGcT2ZS3sDW+FxAoHgr9csdG5hFS3hLSOTl9b2q3kKgbnbUSJREM7r1cXpHDr0w5lfjRqFfqkDJPHj0EEsuRKp9vfFXnumHXn8GFNkVDww3/1rCgJ7Yx+l2e+1TScXSJzZ/Sb3NWenfB+dKoecgJo43kmAszLQC4aDJ6pZOlAmowsUKM9tWGW1No8Gxj70bIsfitujxilj/7ND0qixZWZBzBOytZStPPvdz9rFQY/pSl39iubX2XFZ9lrB7t6P4jkdcdlWtcnV6kxETEC/WZ9XZbshV3etL4Uulu2CULQeWZHQCeozTVN1nnDQ2fy3v21wTXUA8pF3sKOF1Y1XVdVfiTHnWtO7G1bV3xVku6m9jH27b5s8eb95dpzJqIWFTH1BWoxn5rSrYoIH12Ihw31gqbD01fHZ+2a10jFbrPXMncT+vigEG53+2PnYH0UjWF+L27t96jGy9JNXyi+gm3xmZIogWN2V/vl9epDnwuszYKi34B13jax2SDDlTF+aGV5r6w/WlGK7nJ6R57uscin5LMjSb+ibyyWnRA0Xyzpy+n5MKFbftrIbXLnOd+6z7pLl2TLc20HiF7oYSwLNL3+rlKeUW6q19a51klSc8ogKJuFxsvMKIZh983wqrpfrtZzqofJ7CPJvnPnypJCU3sJlCe1btvOZfkZD9pN0+S50W6u2EyD23bbvWnanoTL7emjB2WwMf51nMhFajjadYN0DiY2PcbKFa793xwuKJ4e9ZXVZ1+9v6Zf36G8GH0hMAGwuR3a82UgHETIo+z7kWGc+cf94/9w0ew/8Of2yP8eXvq8+Pry/CZuBdrGL7coRfN2nicKCI/ih0PC5+PtBqMNyl7B7Z3w//88em9nQWN848bxukvE8gxjROmaTH0BiC0Jliao43UnE3bQxI5oh5RZ0VJVQIb1fik4PeT52SJXqYxB3zl72z0hT8Z9VHpt/9cfn3CfpJIJzw5hRA9IqZUi3HeCw2CmnDOKXfPuNwgdbj+lpjn+93O3UdOVYFGzEI73ny9XXTcD4T42CaPH6o+LdoKG+lQ9m1Si/RjZeHXO30f5129rBlv08LNfiYWiepxQ4BvFxGgRW4fQiIwkEMq9mVH9Ta0K9+qfWM+9jbih8vEe4UzpiHR8PwMCs9PbVlfR3/khxyO0Nnwo30BiNYtHXhsZAeU8Pzll/BcICbiN5Fhn+LHFzZnBwl/u//4OYZ3QWMRHcdrnJoOCcdDhxsQh0asjzuRjt7Gz2fO967pfnPaNJMD5WnWFul9c22dhb8a2sUuPZtibcn3N0tXDgQVOnJyTKGMwyM8vjkqr7JL9v7d6hCz4LxhV+l+o/rmmDlqzkKH2714j9HA4070voDo3kKdpqN9OptDfMJOx8RkmR/E/eSlo0rzTDvV6GRd2N25C3+5i/uNSSrXC1d3jd2lK9GJXZ9vT+6zTYJOeWlIyxO2egqGKWaHWFaqHBFjk2gWTt+F5lpOvvwej+Y0vH8yko6vOhCxu3SBYthzr3g5fXEkvAL71IWh2ZD8eYqpFe2opYV2PiuMSNvF5u13vx0gHo8hy/1FzTEeEa6HEo7t6OhmjfuXj7h1TTIPanw/OaeJuHTveGI5F+ZKptI7TAcjOQZ4BBYgul3J3THupe0KifN2x69Goqmn/Klz3zmlUNCRxRCf6YDQUE3UuJikMEV1QRGdlisDox1ohghvVeRjzJYLNJIZaziML95Ap4ld+o0Nb8T9ONrehAt0OwSHqHGEgEYRoTA4OwhRRAR2nNjEDrXR+4sKbJyQY6Tq/KnGp/5SbJQ3deGQIIQY7nd8Cqch+R1gu2OpnGzDpYMYVST3wPwgCjQNjcPpi9hMdLrDixNYnpfaDrUfHA93adNcUbjj8lOYGE9b0JxuZiWY2u97dukOkXuphsQkQLp/JjmjQpA8cO8c4EMx6qkpl30QO/3yB5ysi0I7UoouAXO3GyI351OxojlUrelAWYMKR43HXJVr/FKZBBZaCQsSb6QB0eC5waAb8KOu0biLyxyVB9OQnScmMfQEfjsgCZ5sMJ6JVTyX8L3Wojtc6RdxKPrQZTCq4htojsg5XlgLJZDlOOPtfB5S+8Bowz3yfJ3fSCAFxkb5Z7jdwwySNAQSWhFpVQzXroPACDaoAPf0F4YEkiIfymQzbTEIlOaRO8pEVGDuEhPVQ1kNF2+AxoEODizgL0ywVwbd+ssW0QWvq3mos9ROUbjjPGsHXoIsm1t3uAc3nAvEVaU/x12/YwqpfmR3KyacU72soWNiuR3ntEJIwyI6RRCEAT7QHCgzcwpeo9HwZ3LXHQGUdewHsOzjOp1J8D0jsYoeZhlwsTEin9xPais6E6EjBi+SyZRJglJ25PEwuicEYXnjUShFTy7BTQxmpRjicBk8ctoGN53EJFwFt7K4/x4bvCKo8s/bnzH48nqJlGnUJtvnwB3waNXRr+//Rr+DGj2SAYaL6kLK9LRtUGdyZv6c2mk0LaVg0KQR3eDGu6c6Er3ZpdAHcqd9vo12G11o8Uv+nMEnCPGCZ0a24I7X1jwnjLiRoL41IAWJvEQv2HdBRDUou437zRZ8fJiKD/zAENJtUiL3u5PxdUqohBHPLv1mWEKIszzwt/0MXddJCkpigQ3b2HDBAuoudF1zUKyGjh3i9Vf3dNohVeIamL6TKg4U+34mhuU/4DpkdN3Tc/gIqI87swppApL70T3jmedRIR3120FESKuZzif2/SSifuMVPLlJz9iinknv0F3nCd0+B629FcimLMP01uljfVYz2RpBlktMUT9jYEl0nO4lrwaKCe/APPX7Y2W38tgu8e8UHpsQY7poF1XE0neAmT3toc8z5HWsCMS0BSTiBAtuuvgP7ZAyCSt9Wqxzc/N0icbQMd42mvKkOEzWm+hRgR/jKcO5QpE0Iz4S3Oib/fdYOyaKYDi2xNS1YqGHTEnk5EhMxOOVuFGP2U63osOF4wHcsNuZh1w0hpiMaGdUe+Djd80ut4jYU4dqlLQ1Knv4NWKqdka32VQN0PkEGXcTTyays4fsGOUVYDB7Uuv2RJeC3y8tPHcG6FB4oQ6pSQmj1udKaD/QIYCIId2WIwicNb/dECJ0POGZsg+lJR4sOpR7cZ3/B5oyk2hn8leuAAAAAElFTkSuQmCC","192":"data:image/png;base64,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"};
@@ -10576,7 +10708,7 @@ if(status===404)return '接口或型号未找到，请核对地址和模型名�
 if(status===429)return '请求过于频繁，请稍后再试。';
 if(status>=500)return '服务商暂时不可用，请稍后再试。';
 if(/取消/.test(message))return '本次测试已取消，可以重新测试。';
-if(/240 秒|超时/.test(message))return '连接测试超时，请稍后再试。';
+if(/(?:90|240) 秒|超时/.test(message))return '连接测试超时，请稍后再试。';
 if(metric?.httpStatus===0&&metric.result==='failed')return '网页未能连接接口，请检查网络或接口是否允许浏览器访问。';
 if(status===200)return '接口已回应，但回复格式不符合要求，请重试。';
 return message||'连接未完成，请重试。';
@@ -10587,96 +10719,54 @@ return {onDialogExit,createDialogRequestScope,probeErrorMessage};
 "src/ui/turn-request.js":function(__load){
 const { callJSON, createBudget } = __load("src/llm/client.js");
 const { turnMessages } = __load("src/llm/prompts.js");
-const { validateTurn } = __load("src/llm/validate.js");
-const {inspectNarrative,rewriteMessages,validateRewrites,applySentenceRewrites} = __load("src/llm/rewrite.js");
-// Interface narration must contain prose after settlement checks. An empty
-// chapter is a failed response, never a reason to silently use trial text.
+const { inspectNarrative } = __load("src/llm/validate.js");
+const { requestMemorialTexts } = __load("src/ui/memorial-request.js");
 function validateTurnNarrative(data, forecast) {
-const narrative = validateTurn(data, forecast);
-if (!Object.values(narrative.chapter).some((text) => text.trim()))
-throw new Error("正文为空，请保留本旬结果后重试");
-return narrative;
+if (!data?.chapter || !['朝','午','夜'].every(k=>typeof data.chapter[k]==='string'))
+throw new Error('章节须包含朝、午、夜三段');
+if (!['朝','午','夜'].some(slot=>data.chapter[slot].trim()))
+throw new Error('正文为空，请保留本旬结果后重试');
+// Assertion repairs are local, including a paragraph emptied by deletion.
+return inspectNarrative(data,forecast,{repairEmpty:true}).narrative;
 }
 async function requestTurnNarrative(config, state, forecast, options = {}) {
-const validate=data=>{const n=validateTurnNarrative(data,forecast);if(options.sceneSlot&&(!n.chapter[options.sceneSlot]?.trim()||n.chapter[options.sceneSlot].length>2400))throw new Error('情节正文为空，请重试');return n;};
-const saved = options.budget;
-const tracker=saved||{};
-const budget = createBudget((options.now || Date.now)());
-budget.used = saved?.used || 0;
-const rememberAttempts = () => {
-if (saved) {
-saved.used = budget.used;
-delete saved.started;
-delete saved.deadline;
-}
+const budget=createBudget((options.now||Date.now)());
+budget.used=options.budget?.used||0;
+if(options.deadline)budget.deadline=Math.min(budget.deadline,options.deadline);
+const remember=()=>{
+if(!options.budget)return;
+options.budget.used=budget.used;
+delete options.budget.started;delete options.budget.deadline;
 };
-try {
-const requestOptions={...options,budget,onMetric:(metric)=>{
-rememberAttempts();
-options.onMetric?.(metric);
-}};
-while(budget.used<4){
-const candidate=await callJSON({...config},options.messages||turnMessages(state,forecast),{...requestOptions,validate:data=>{
-const inspected=inspectNarrative(data,forecast);
-if(!inspected.violations.length||tracker.rewriteAttempted)validate(data);
-return {data,...inspected};
-}});
-let data=candidate.data;
-if(candidate.violations.length&&!tracker.rewriteAttempted&&budget.used<4&&(options.now||Date.now)()<budget.deadline){
-tracker.rewriteAttempted=true;rememberAttempts();
-// Persist before sending: cancellation, reload and manual retry reuse this marker.
-await options.onBeforeRewrite?.();
 try{
-const rewrites=await callJSON({...config},rewriteMessages(forecast,candidate.violations),{...requestOptions,maxAttempts:1,onPartial:undefined,validate:validateRewrites});
-data=applySentenceRewrites(data,candidate.violations,rewrites);
-}catch(error){if(options.signal?.aborted)throw error;}
-}
-try{return validate(data);}catch(error){
-if(budget.used>=4||(options.now||Date.now)()>=budget.deadline)throw error;
-}
-}
-throw new Error('本回合请求预算已用完');
-} finally {
-rememberAttempts();
-}
-}
-
-return {validateTurnNarrative,requestTurnNarrative};
+return await callJSON(config,options.messages||turnMessages(state,forecast),{
+...options,budget,onMetric:metric=>{remember();options.onMetric?.(metric);},
+validate:data=>{
+// Only raw structure/empty prose can require another model request.
+if(options.sceneSlot&&(!data?.chapter?.[options.sceneSlot]?.trim()||data.chapter[options.sceneSlot].length>2400))throw new Error('情节正文为空，请重试');
+// Ignore stray legacy memorialTexts from the main response.
+return validateTurnNarrative({...data,memorialTexts:[]},forecast);
 },
-"src/llm/rewrite.js":function(__load){
-const {validateTurn,cleanText} = __load("src/llm/validate.js");
-const {worldRules,roster,settlementDigest} = __load("src/llm/prompts.js");
-const split=text=>text.split(/(?<=[。！？\n])/);
-function inspectNarrative(data,forecast){
-const violations=[];
-const narrative=validateTurn(data,forecast,{onViolation:v=>violations.push({...v,id:'v'+violations.length})});
-return {narrative,violations};
+});
+}finally{remember();}
 }
-function rewriteMessages(forecast,violations){
-const s=forecast.state;
-return [{role:'system',content:worldRules(s)+'\n【句子改写任务】只改列出的违规句，保留原有文风与原意中成立的部分；无依据的断言改为未然、疑问或人物反应，不虚构人物、数值或结果。不要改其他句子，不解释校验。每个ID只返回一条改写。仅输出 {"rewrites":[{"id":"v0","text":"改写后的句子"}]}。'},
-{role:'user',content:JSON.stringify({violations:violations.map(({id,sentence,reason})=>({id,sentence,reason})),results:{facts:forecast.facts||[],slots:forecast.slotResults,notes:forecast.notes,ledger:settlementDigest(s,forecast.entries),roster:roster(s),intents:s.intentResults||[]}})}];
-}
-function validateRewrites(data){
-if(!Array.isArray(data?.rewrites))throw new Error('改写列表缺失');
-return {rewrites:data.rewrites.filter(r=>r&&typeof r.id==='string'&&typeof r.text==='string')};
-}
-function applySentenceRewrites(data,violations,response){
-const out=structuredClone(data),patches=new Map(),fields=new Map();
-for(const r of response?.rewrites||[])if(!patches.has(r.id))patches.set(r.id,r.text);
-for(const v of violations){
-const text=patches.get(v.id);if(typeof text!=='string'||!text.trim()||text.length>Math.min(v.limit,v.sentence.length*2+100))continue;
-const key=JSON.stringify(v.path);if(!fields.has(key)){
-let parent=out;for(const p of v.path.slice(0,-1))parent=parent[p];const field=v.path.at(-1);
-fields.set(key,{parent,field,parts:split(cleanText(parent[field],v.limit))});
-}
-fields.get(key).parts[v.index]=text;
-}
-for(const {parent,field,parts}of fields.values())parent[field]=parts.join('');
-return out;
+async function requestTurnContent(config,state,forecast,options={}){
+const deadline=options.deadline??(options.now||Date.now)()+90000;
+const ac=new AbortController(),abort=()=>ac.abort();
+if(options.signal?.aborted)abort();
+options.signal?.addEventListener('abort',abort,{once:true});
+const parallel={...options,deadline,signal:ac.signal};
+try{
+const [narrative,memorialTexts]=await Promise.all([
+requestTurnNarrative(config,state,forecast,parallel),
+requestMemorialTexts(config,forecast.state,forecast.newMemorials,parallel),
+]);
+return {...narrative,memorialTexts};
+}catch(error){ac.abort();throw error;}
+finally{options.signal?.removeEventListener('abort',abort);}
 }
 
-return {inspectNarrative,rewriteMessages,validateRewrites,applySentenceRewrites};
+return {validateTurnNarrative,requestTurnNarrative,requestTurnContent};
 },
 "src/ui/new-game.js":function(__load){
 const { createState } = __load("src/core/state.js");
@@ -11246,7 +11336,10 @@ die: forecast.die,
 });
 for (const text of narrative.memorialTexts || []) {
 const m = s.memorials.find((m) => m.id === text.id);
-if (m) m.text = String(text.text).slice(0, 1000);
+if (m) {
+m.text = String(text.text).slice(0, 1000);
+if(['template','ready'].includes(text.status))m.textStatus=text.status;
+}
 }
 if (s.history.length > 36) {
 const archived = s.history.splice(0, 18).map(compactChapter);
@@ -13558,7 +13651,9 @@ Math.max(0, m.due - s.turn) +
 memorialParagraphHTML(
 m.text || "臣谨奏：" + m.title + "。" + (m.request || "伏乞陛下裁处。"),
 ) +
-'</div><p class="memorial-signature">'+esc(memorialSignature(m,postTitle(s,post)))+'</p><div class="memorial-foot">' +
+'</div>'+ (m.textStatus==='template'
+?'<p class="muted">奏文可先阅览。</p><button type="button" data-retry-memorial-text="'+esc(m.id)+'">补写奏文</button>':'') +
+'<p class="memorial-signature">'+esc(memorialSignature(m,postTitle(s,post)))+'</p><div class="memorial-foot">' +
 (region
 ? '<p class="memorial-region">' +
 esc(region.name) +
@@ -13740,6 +13835,7 @@ showError(error);
 const handleClick = (e) => {
 const b = e.target.closest("button");
 if (!b || b.disabled) return;
+if(b.dataset.retryMemorialText)return;
 e.stopPropagation();
 if (b.dataset.reviewOption) {
 session.choices[session.ids[session.index]] = b.dataset.reviewOption;
@@ -13808,6 +13904,10 @@ next();
 } else if (b.hasAttribute("data-review-next")) next();
 };
 root.onclick = handleClick;
+root.addEventListener('memorial-text-updated',event=>{
+s=event.detail;
+paint();
+});
 const resize = () => {
 alignPicker();
 fitBrush();

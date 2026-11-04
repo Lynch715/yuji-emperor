@@ -1,11 +1,7 @@
-import {validateTurn,cleanText} from './validate.js';
+import {cleanText,inspectNarrative as inspectLocal} from './validate.js';
 import {worldRules,roster,settlementDigest} from './prompts.js';
 const split=text=>text.split(/(?<=[。！？\n])/);
-export function inspectNarrative(data,forecast){
- const violations=[];
- const narrative=validateTurn(data,forecast,{onViolation:v=>violations.push({...v,id:'v'+violations.length})});
- return {narrative,violations};
-}
+export function inspectNarrative(data,forecast,options={}){return inspectLocal(data,forecast,options);}
 export function rewriteMessages(forecast,violations){
  const s=forecast.state;
  return [{role:'system',content:worldRules(s)+'\n【句子改写任务】只改列出的违规句，保留原有文风与原意中成立的部分；无依据的断言改为未然、疑问或人物反应，不虚构人物、数值或结果。不要改其他句子，不解释校验。每个ID只返回一条改写。仅输出 {"rewrites":[{"id":"v0","text":"改写后的句子"}]}。'},

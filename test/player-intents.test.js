@@ -35,7 +35,7 @@ test('第一步 未知ID降other，模型不能开放孕产小产，也不能创
 test('第一步 模型只解析JSON，动作解析发生在预演之前',async()=>{
  const s={...start(),settings:{...start().settings,demo:false}},name=s.court.officials[0].name,requests=[];
  const a=await requestScheduleIntents({key:'test',base:'https://test.invalid',model:'fixture'},s,{朝:{kind:'下旨',text:'将'+name+'赐死'}},{fetcher:async(url,options)=>{requests.push(JSON.parse(options.body));return new Response(JSON.stringify({choices:[{message:{content:JSON.stringify({actions:[{inputId:'朝',type:'kill',targetId:s.court.officials[0].id}]})}}]}),{headers:{'Content-Type':'application/json'}});}});
- assert.equal(a[0].targetId,s.court.officials[0].id);assert.equal(requests.length,1);assert.equal(s.court.officials[0].alive,true);
+ assert.equal(a.intents[0].targetId,s.court.officials[0].id);assert.equal(requests.length,1);assert.equal(s.court.officials[0].alive,true);
  assert.match(requests[0].messages[0].content,/只输出 JSON，不写剧情/);
 });
 test('第一步 待续保存裁决与原骰，重读提交不重新执行',()=>{

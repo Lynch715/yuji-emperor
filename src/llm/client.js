@@ -52,7 +52,7 @@ export function modelDescription(provider, model) {
   );
 }
 export function createBudget(now = Date.now()) {
-  return { used: 0, started: now, deadline: now + 240000 };
+  return { used: 0, started: now, deadline: now + 90000 };
 }
 export function endpoint(base) {
   let u;
@@ -175,7 +175,7 @@ export async function callJSON(config, messages, options = {}) {
   const now = options.now || Date.now,
     sleep = options.sleep || ((ms) => new Promise((r) => setTimeout(r, ms)));
   const fetcher = options.fetcher || fetch;
-  const attemptLimit=Math.min(4,budget.used+(options.maxAttempts??4));
+  const attemptLimit=Math.min(2,budget.used+(options.maxAttempts??2));
   let lastError;
   while (budget.used < attemptLimit && now() < budget.deadline) {
     if (options.signal?.aborted) throw new Error("请求已取消");
@@ -243,7 +243,7 @@ export async function callJSON(config, messages, options = {}) {
       }
       if (timedOut) {
         result = "timeout";
-        throw new Error("本回合请求已达 240 秒预算，请保留预演结果后重试");
+        throw new Error("本回合请求已达 90 秒预算，请保留预演结果后重试");
       }
       retryable ||= !status || status === 200;
       // Never propagate provider bodies, request text, URL, or credentials.
@@ -272,5 +272,5 @@ export async function callJSON(config, messages, options = {}) {
     if (budget.used < attemptLimit && now() + waitMs < budget.deadline)
       await sleep(waitMs);
   }
-  throw lastError || new Error("本回合请求预算已用完（最多 4 次、240 秒）");
+  throw lastError || new Error("本回合请求预算已用完（最多 2 次、90 秒）");
 }

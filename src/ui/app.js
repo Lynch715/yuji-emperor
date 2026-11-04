@@ -8,7 +8,8 @@ import { requestScheduleIntents, requestPlayerIntents } from "./intent-request.j
 import { resolveTalkIntents } from "../core/intents.js";
 import { postTitle, SCENARIOS, scenarioPreview } from "../core/scenarios.js";
 import { createDebouncedSave } from "../store/debounce.js";
-import { classifyMemorialSchedule } from "../llm/remark-classifier.js";
+import { requestMemorialTexts } from "./memorial-request.js";
+import { applyMemorialTexts } from "../core/memorial-texts.js";
 import { modernTalkFallback } from "../llm/mock-narrative.js";
 import { initAppIcon } from "./icon.js";
 import {
@@ -26,7 +27,7 @@ import {
   download,
 } from "./common.js";
 import { loadSettings, openSettings } from "./settings.js";
-import { requestTurnNarrative, validateTurnNarrative } from "./turn-request.js";
+import { requestTurnContent, requestTurnNarrative, validateTurnNarrative } from "./turn-request.js";
 import { createGameSeed, createOpening, openingErrorMessage } from "./new-game.js";
 import { createDialogRequestScope } from "./request-scope.js";
 import {
@@ -471,13 +472,10 @@ async function advance(local = false) {
   if(state.pending?.kind==='scene')return openScene(state.pending.forecast.sceneId,local,local);
   busy = true;
   let ac = new AbortController();
+  const deadline=Date.now()+90000;
   try {
     if (!state.pending) {
-      const schedule=state.settings.demo||local?state.schedule:await classifyMemorialSchedule(state.schedule,text=>callJSON(config,classifyMessages(text,'remark'),{
-        budget:createBudget(),signal:ac.signal,onMetric:markMetric,
-        validate:data=>{if(!['嘉奖','申饬','附旨','无'].includes(data.kind))throw new Error('朱批分类无效');return {kind:data.kind};},
-      }));
-      const intents=await requestScheduleIntents(config,state,schedule,{local,signal:ac.signal,onMetric:markMetric});
+      const {schedule,intents}=await requestScheduleIntents(config,state,state.schedule,{local,signal:ac.signal,onMetric:markMetric,deadline});
       const forecast = forecastTurn({ ...state, turnBudget: null }, schedule, intents);
       state = {
         ...state,
@@ -490,17 +488,17 @@ async function advance(local = false) {
     const f = state.pending.forecast;
     // v4 saves may contain an absolute planning-time deadline. Only the
     // attempt count belongs to a pending turn; the request owns its clock.
-    state.turnBudget = { used: state.turnBudget?.used || 0, ...(state.turnBudget?.rewriteAttempted?{rewriteAttempted:true}:{}) };
+    state.turnBudget = { used: (state.turnBudget?.used||0)>=2?0:(state.turnBudget?.used||0), ...(state.turnBudget?.rewriteAttempted?{rewriteAttempted:true}:{}) };
     render();
     let narrative;
     if (state.settings.demo || local) {narrative = mockNarrative(f);if(f.scenes?.length)narrative=validateTurnNarrative(narrative,f);}
     else {
-      narrative = await requestTurnNarrative(config, state, f, {
+      narrative = await requestTurnContent(config, state, f, {
+        deadline,
         budget: state.turnBudget,
         signal: ac.signal,
         onMetric: markMetric,
         onPartial: streamDraft,
-        onBeforeRewrite:async()=>{if(!(await persist()))throw new Error('本旬尚未存妥，请先导出存档，再重试。');},
       });
     }
     state = commitTurn(state, f, narrative);
@@ -532,6 +530,21 @@ async function advance(local = false) {
     render();
   }
 }
+async function retryMemorialText(id){
+  guard();
+  const memorial=state.memorials.find(m=>m.id===id&&m.textStatus==='template');
+  if(!memorial)return;
+  const reviewRoot=$('#review-root');
+  const base=state,activeSlot=slot;
+  busy=true;
+  try{
+    const texts=await requestMemorialTexts(config,state,[memorial],{onMetric:markMetric});
+    if(slot!==activeSlot||state.runId!==base.runId||state.revision!==base.revision)return;
+    state=applyMemorialTexts(state,texts);await persist();
+    if(reviewRoot?.isConnected)reviewRoot.dispatchEvent(new CustomEvent('memorial-text-updated',{detail:state}));
+    toast(texts.some(t=>t.status==='ready')?'奏文已补齐。':'奏文暂未补齐，仍可阅览现有奏文。');
+  }finally{busy=false;render();}
+}
 function openScene(id,local=false,auto=false){
   if(readOnly||busy)throw new Error('此时无法续写，请稍后再试');
   const r=latestScene(state,id);if(!r)throw new Error('这段情节已经过去，请另排新的情节');
@@ -560,9 +573,10 @@ function openScene(id,local=false,auto=false){
         if(!(await persist()))throw new Error('这段情节尚未存妥，请先导出存档再重试');
       }else forecast=state.pending.forecast;
       if(!current())return;
+      if((state.turnBudget?.used||0)>=2)state.turnBudget.used=0;
       const narrative=state.settings.demo||local?validateTurnNarrative(mockSceneNarrative(state,forecast),forecast):await requestTurnNarrative(config,state,forecast,{
         messages:sceneMessages(state,forecast),sceneSlot:forecast.slot,budget:state.turnBudget,
-        signal:request.signal,onMetric:markMetric,onBeforeRewrite:async()=>{if(!current()||!(await persist()))throw new Error('这段情节尚未存妥');},
+        signal:request.signal,onMetric:markMetric,
       });
       if(!current())return;
       state=commitScene(state,forecast,narrative);await persist();closeDialog();
@@ -967,6 +981,8 @@ document.addEventListener("click", async (e) => {
       state.schedule[b.dataset.clear] = null;
       scheduleSave.schedule();
       render();
+    } else if (b.dataset.retryMemorialText) {
+      await retryMemorialText(b.dataset.retryMemorialText);
     } else if (b.dataset.memorial) {
       guard();
       if(memorialAssignments(state).has(b.dataset.memorial)) {

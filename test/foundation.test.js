@@ -79,7 +79,8 @@ test("stream consumes split UTF-8, CRLF and ignores reasoning", async () => {
 test("missing stream termination does not commit a silently cut response", async () => {
   await assert.rejects(() => readResponse(sse("{}", "")), /STREAM_CUT/);
 });
-test("network errors and 429 retry within one shared four-request budget, metrics contain no content", async () => {
+test("network errors and 429 retry within one shared two-request budget, metrics contain no content", async () => {
+ for(const failure of ['network',429]){
   let count = 0;
   const metrics = [],
     budget = createBudget(),
@@ -95,18 +96,22 @@ test("network errors and 429 retry within one shared four-request budget, metric
       onPartial: (s) => partials.push(s),
       fetcher: async () => {
         count++;
-        if (count === 1) throw new Error("contains test-secret private正文");
-        if (count === 2) return new Response("", { status: 429 });
+        if(count===1){
+          if(failure===429)return new Response('',{status:429});
+          throw new Error("contains test-secret private正文");
+        }
+
         return sse('{"ok":true,"message":"好"}');
       },
     },
   );
   assert.equal(value.ok, true);
-  assert.equal(count, 3);
-  assert.equal(budget.used, 3);
+  assert.equal(count, 2);
+  assert.equal(budget.used, 2);
   assert.ok(!JSON.stringify(metrics).includes("test-secret"));
   assert.ok(!JSON.stringify(metrics).includes("private正文"));
   assert.equal(partials.at(-1), '{"ok":true,"message":"好"}');
+ }
 });
 test("401 does not retry and provider body cannot leak credentials", async () => {
   let count = 0;
@@ -135,7 +140,7 @@ test("format and network retries share total budget", async () => {
       },
     }),
   );
-  assert.equal(count, 4);
+  assert.equal(count, 2);
   await assert.rejects(
     () => callJSON(config, [], { budget: b, fetcher: () => assert.fail() }),
     /预算/,
@@ -146,7 +151,7 @@ test("absolute deadline stops a hanging request", async () => {
   await assert.rejects(
     () =>
       callJSON(config, [], { budget: b, fetcher: () => new Promise(() => {}) }),
-    /240 秒/,
+    /90 秒/,
   );
   assert.equal(b.used, 1);
 });

@@ -1,57 +1,51 @@
 import { callJSON, createBudget } from "../llm/client.js";
 import { turnMessages } from "../llm/prompts.js";
-import { validateTurn } from "../llm/validate.js";
-import {inspectNarrative,rewriteMessages,validateRewrites,applySentenceRewrites} from '../llm/rewrite.js';
+import { inspectNarrative } from '../llm/validate.js';
+import { requestMemorialTexts } from './memorial-request.js';
 
-// Interface narration must contain prose after settlement checks. An empty
-// chapter is a failed response, never a reason to silently use trial text.
 export function validateTurnNarrative(data, forecast) {
-  const narrative = validateTurn(data, forecast);
-  if (!Object.values(narrative.chapter).some((text) => text.trim()))
-    throw new Error("正文为空，请保留本旬结果后重试");
-  return narrative;
+  if (!data?.chapter || !['朝','午','夜'].every(k=>typeof data.chapter[k]==='string'))
+    throw new Error('章节须包含朝、午、夜三段');
+  if (!['朝','午','夜'].some(slot=>data.chapter[slot].trim()))
+    throw new Error('正文为空，请保留本旬结果后重试');
+  // Assertion repairs are local, including a paragraph emptied by deletion.
+  return inspectNarrative(data,forecast,{repairEmpty:true}).narrative;
 }
 
 export async function requestTurnNarrative(config, state, forecast, options = {}) {
-  const validate=data=>{const n=validateTurnNarrative(data,forecast);if(options.sceneSlot&&(!n.chapter[options.sceneSlot]?.trim()||n.chapter[options.sceneSlot].length>2400))throw new Error('情节正文为空，请重试');return n;};
-  const saved = options.budget;
-  const tracker=saved||{};
-  const budget = createBudget((options.now || Date.now)());
-  budget.used = saved?.used || 0;
-  const rememberAttempts = () => {
-    if (saved) {
-      saved.used = budget.used;
-      delete saved.started;
-      delete saved.deadline;
-    }
+  const budget=createBudget((options.now||Date.now)());
+  budget.used=options.budget?.used||0;
+  if(options.deadline)budget.deadline=Math.min(budget.deadline,options.deadline);
+  const remember=()=>{
+    if(!options.budget)return;
+    options.budget.used=budget.used;
+    delete options.budget.started;delete options.budget.deadline;
   };
-  try {
-    const requestOptions={...options,budget,onMetric:(metric)=>{
-        rememberAttempts();
-        options.onMetric?.(metric);
-    }};
-    while(budget.used<4){
-      const candidate=await callJSON({...config},options.messages||turnMessages(state,forecast),{...requestOptions,validate:data=>{
-        const inspected=inspectNarrative(data,forecast);
-        if(!inspected.violations.length||tracker.rewriteAttempted)validate(data);
-        return {data,...inspected};
-      }});
-      let data=candidate.data;
-      if(candidate.violations.length&&!tracker.rewriteAttempted&&budget.used<4&&(options.now||Date.now)()<budget.deadline){
-        tracker.rewriteAttempted=true;rememberAttempts();
-        // Persist before sending: cancellation, reload and manual retry reuse this marker.
-        await options.onBeforeRewrite?.();
-        try{
-          const rewrites=await callJSON({...config},rewriteMessages(forecast,candidate.violations),{...requestOptions,maxAttempts:1,onPartial:undefined,validate:validateRewrites});
-          data=applySentenceRewrites(data,candidate.violations,rewrites);
-        }catch(error){if(options.signal?.aborted)throw error;}
-      }
-      try{return validate(data);}catch(error){
-        if(budget.used>=4||(options.now||Date.now)()>=budget.deadline)throw error;
-      }
-    }
-    throw new Error('本回合请求预算已用完');
-  } finally {
-    rememberAttempts();
-  }
+  try{
+    return await callJSON(config,options.messages||turnMessages(state,forecast),{
+      ...options,budget,onMetric:metric=>{remember();options.onMetric?.(metric);},
+      validate:data=>{
+        // Only raw structure/empty prose can require another model request.
+        if(options.sceneSlot&&(!data?.chapter?.[options.sceneSlot]?.trim()||data.chapter[options.sceneSlot].length>2400))throw new Error('情节正文为空，请重试');
+        // Ignore stray legacy memorialTexts from the main response.
+        return validateTurnNarrative({...data,memorialTexts:[]},forecast);
+      },
+    });
+  }finally{remember();}
+}
+
+export async function requestTurnContent(config,state,forecast,options={}){
+  const deadline=options.deadline??(options.now||Date.now)()+90000;
+  const ac=new AbortController(),abort=()=>ac.abort();
+  if(options.signal?.aborted)abort();
+  options.signal?.addEventListener('abort',abort,{once:true});
+  const parallel={...options,deadline,signal:ac.signal};
+  try{
+    const [narrative,memorialTexts]=await Promise.all([
+      requestTurnNarrative(config,state,forecast,parallel),
+      requestMemorialTexts(config,forecast.state,forecast.newMemorials,parallel),
+    ]);
+    return {...narrative,memorialTexts};
+  }catch(error){ac.abort();throw error;}
+  finally{options.signal?.removeEventListener('abort',abort);}
 }

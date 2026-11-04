@@ -46,21 +46,25 @@ test(`连接测试后同配置生成正文：${provider} / 思考${thinking}`,as
   assert.equal(restored.pending,null);assert.equal(restored.lastTurn.die,forecast.die);
   assert.deepEqual(commitTurn(restored,forecast,result),restored,'同一回合只提交一次');
 });
-test('空白正文与校验后被全部删除的正文均拒绝提交',()=>{
+test('原始空白正文拒绝提交，软断言删空则本地改成未定语气',()=>{
   const {forecast}=fixture();
   assert.throws(()=>validateTurnNarrative({chapter:{朝:' \n ',午:'',夜:''}},forecast),/正文为空/);
-  assert.throws(()=>validateTurnNarrative({chapter:{朝:'拨银九亿两。',午:'',夜:''}},forecast),/正文为空/);
+  assert.match(validateTurnNarrative({chapter:{朝:'拨银九亿两。',午:'',夜:''}},forecast).chapter.朝,/未有定论/);
   assert.equal(validateTurnNarrative({...prose,chapter:{朝:prose.chapter.朝,午:'',夜:''}},forecast).chapter.朝,prose.chapter.朝,'空槽仍可略写');
 });
 test('空白或错误结构的回复重试，不能以试读文案冒充接口正文',async()=>{
+ for(const bad of [{chapter:{朝:'',午:'',夜:''}},{ok:true,message:'只有测试回音'}]){
   const {state,forecast}=fixture(),budget=createBudget(),before=structuredClone(state);let calls=0;
-  const r=await requestTurnNarrative(config,state,forecast,{budget,sleep:async()=>{},fetcher:async()=>stream(++calls===1?{chapter:{朝:'',午:'',夜:''}}:calls===2?{ok:true,message:'只有测试回音'}:prose)});
-  assert.equal(calls,3);assert.equal(budget.used,3);assert.deepEqual(r.chapter,prose.chapter);assert.deepEqual(state,before);
+  const r=await requestTurnNarrative(config,state,forecast,{budget,sleep:async()=>{},fetcher:async()=>stream(++calls===1?bad:prose)});
+  assert.equal(calls,2);assert.equal(budget.used,2);assert.deepEqual(r.chapter,prose.chapter);assert.deepEqual(state,before);
+ }
 });
 test('流式断流和截断回复复用原结算，完整回复才可提交',async()=>{
+ for(const failure of [{cut:true},{length:true}]){
   const {state,forecast}=fixture(),before=structuredClone(state);let calls=0;
-  const result=await requestTurnNarrative(config,state,forecast,{sleep:async()=>{},fetcher:async()=>stream(prose,++calls===1?{cut:true}:calls===2?{length:true}:{})});
-  assert.equal(calls,3);assert.deepEqual(state,before);assert.equal(commitTurn(state,forecast,result).lastTurn.die,forecast.die);
+  const result=await requestTurnNarrative(config,state,forecast,{sleep:async()=>{},fetcher:async()=>stream(prose,++calls===1?failure:{})});
+  assert.equal(calls,2);assert.deepEqual(state,before);assert.equal(commitTurn(state,forecast,result).lastTurn.die,forecast.die);
+ }
 });
 test('正文失败保留待续回合；读档后修正配置仍沿用相同天命和账目',async()=>{
   const {state,forecast}=fixture();state.turnBudget=createBudget();const before=structuredClone(state);let calls=0;
@@ -72,10 +76,10 @@ test('正文失败保留待续回合；读档后修正配置仍沿用相同天�
   const next=commitTurn(restored,restored.pending.forecast,result);
   assert.equal(next.turn,1);assert.equal(next.lastTurn.die,forecast.die);assert.deepEqual(next.history.at(-1).entries,forecast.entries);
 });
-test('正文无效的四次上限不提交或重掷，旧绝对时间不阻止下一次正文请求',async()=>{
+test('正文无效的两次上限不提交或重掷，旧绝对时间不阻止下一次正文请求',async()=>{
   const {state,forecast}=fixture(),before=structuredClone(state),budget=createBudget();let calls=0;
   await assert.rejects(()=>requestTurnNarrative(config,state,forecast,{budget,sleep:async()=>{},fetcher:async()=>{calls++;return stream({chapter:{朝:'',午:'',夜:''}});}}));
-  assert.equal(calls,4);assert.equal(budget.used,4);assert.deepEqual(state,before);
+  assert.equal(calls,2);assert.equal(budget.used,2);assert.deepEqual(state,before);
   const restoredBudget={used:1,deadline:Date.now()-1};
   await requestTurnNarrative(config,state,forecast,{budget:restoredBudget,fetcher:async()=>stream(prose)});
   assert.deepEqual(restoredBudget,{used:2});

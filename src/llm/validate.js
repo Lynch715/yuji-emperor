@@ -210,6 +210,10 @@ export function validateTurn(data, forecast, options = {}) {
       .split(/(?<=[。！？\n])/)
       .map((original, index) => {
         let sentence = original;
+        if(options.skipAssertions){
+          if (/性交|交媾|生殖器|阴茎|阴道|插入|抽插|乳房|裸体/.test(sentence)) {fixNotes.push("亲密场景已收束为含蓄叙述。");return "宫帘垂下，夜色渐深。";}
+          return sentence;
+        }
         const sceneFailed=(forecast.facts||[]).some(f=>f.kind==='scene_result'&&f.slot===slot&&f.status==='failed');
         if(sceneFailed&&[...sentence.matchAll(/如愿以偿|终于说服|成功说服|心愿达成|愿望实现|尽数答应|全部答应|坦白一切|吐露全部心声/g)].some(m=>!/不|未|难|无法|岂能/.test(sentence.slice(Math.max(0,m.index-5),m.index+m[0].length+5)))){
           if(path)options.onViolation?.({path,index,limit,sentence:original,reason:'本场未能如愿，不能写成愿望达成或对方完全答应'});
@@ -350,10 +354,10 @@ export function validateTurn(data, forecast, options = {}) {
     chapter[slot] = scrutinize(original, slot, ['chapter',slot]);
     if (original.trim() && !chapter[slot].trim()) emptied.push(slot);
   }
-  // 只有部分段落被删空时才补足；整章都没有可保留文字时仍交由重试处理。
-  if (emptied.length && Object.values(chapter).some((t) => t.trim()))
+  // 请求路径用未定叙述补足软校验删空的段落，不为断言问题额外请求。
+  if (emptied.length && (options.repairEmpty || Object.values(chapter).some((t) => t.trim())))
     for (const slot of emptied) {
-      chapter[slot] = fallback.chapter[slot];
+      chapter[slot] = options.repairEmpty ? "此事尚待核问，未有定论。" : fallback.chapter[slot];
       fixNotes.push(slot + "段经核对后无可保留文字，以平实叙述补足");
     }
   const whole = Object.values(chapter).join("\n"),
@@ -361,7 +365,7 @@ export function validateTurn(data, forecast, options = {}) {
   const favorSpent=favorRecords(s,[],true);
   let reactionTotal = favorSpent.reduce((n,r)=>n+Math.abs(r.actual.amount||0),0);
   for (const r of Array.isArray(data.reactions)
-    ? data.reactions.slice(0, 10)
+    ? data.reactions.slice(0, 3)
     : []) {
     const npc = s.court.officials.find((o) => o.name === r.name && o.alive);
     if (!npc || !Number.isFinite(Number(r.favorDelta))) { fixNotes.push("未知人物反应未采用。"); continue; }
@@ -404,7 +408,7 @@ export function validateTurn(data, forecast, options = {}) {
     rumors: (Array.isArray(data.rumors) ? data.rumors : [])
       .map((r,i) => scrutinize(cleanText(r, 150), null, ['rumors',i],150))
       .filter(Boolean)
-      .slice(0, 3),
+      .slice(0, 2),
     ambitionEvidence: evidence,
     factUpdates: (Array.isArray(data.factUpdates) ? data.factUpdates : [])
       .filter(
@@ -414,7 +418,7 @@ export function validateTurn(data, forecast, options = {}) {
           whole.includes(f.reason) &&
           scrutinize(String(f.value), null) === String(f.value),
       )
-      .slice(0, 5)
+      .slice(0, 3)
       .map((f) => ({
         subject: cleanText(f.subject, 80),
         key: cleanText(f.key, 80),
@@ -423,6 +427,11 @@ export function validateTurn(data, forecast, options = {}) {
       })),
     fixNotes: [...new Set(fixNotes)],
   };
+}
+export function inspectNarrative(data,forecast,options={}){
+ const violations=[];
+ const narrative=validateTurn(data,forecast,{skipAssertions:forecast.state.settings.freedom==='free',...options,onViolation:v=>violations.push({...v,id:'v'+violations.length})});
+ return {narrative,violations};
 }
 export function validateWorld(data) {
   for (const [key, min] of [
@@ -480,6 +489,18 @@ export function validateTalk(data, result, state) {
 
 export function extractPartialChapter(raw) {
   const sections = [];
+  // Read chapter only; another JSON object may also contain a slot key.
+  const start=/"chapter"\s*:\s*\{/.exec(raw);
+  if(!start)return '';
+  let depth=1,inString=false,escaped=false,end=raw.length;
+  for(let i=start.index+start[0].length;i<raw.length;i++){
+    const c=raw[i];
+    if(inString){if(escaped)escaped=false;else if(c==='\\')escaped=true;else if(c==='"')inString=false;}
+    else if(c==='"')inString=true;
+    else if(c==='{')depth++;
+    else if(c==='}'&&!--depth){end=i;break;}
+  }
+  raw=raw.slice(start.index+start[0].length,end);
   for (const key of ["朝", "午", "夜"]) {
     const match = new RegExp('"' + key + '"\\s*:\\s*"').exec(raw);
     if (!match) continue;

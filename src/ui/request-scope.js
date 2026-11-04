@@ -34,7 +34,7 @@ export function probeErrorMessage(error,metric) {
   if(status===429)return '请求过于频繁，请稍后再试。';
   if(status>=500)return '服务商暂时不可用，请稍后再试。';
   if(/取消/.test(message))return '本次测试已取消，可以重新测试。';
-  if(/240 秒|超时/.test(message))return '连接测试超时，请稍后再试。';
+  if(/(?:90|240) 秒|超时/.test(message))return '连接测试超时，请稍后再试。';
   if(metric?.httpStatus===0&&metric.result==='failed')return '网页未能连接接口，请检查网络或接口是否允许浏览器访问。';
   if(status===200)return '接口已回应，但回复格式不符合要求，请重试。';
   return message||'连接未完成，请重试。';

@@ -426,7 +426,9 @@ export function memorialHTML(s, session) {
     memorialParagraphHTML(
       m.text || "臣谨奏：" + m.title + "。" + (m.request || "伏乞陛下裁处。"),
     ) +
-    '</div><p class="memorial-signature">'+esc(memorialSignature(m,postTitle(s,post)))+'</p><div class="memorial-foot">' +
+    '</div>'+ (m.textStatus==='template'
+      ?'<p class="muted">奏文可先阅览。</p><button type="button" data-retry-memorial-text="'+esc(m.id)+'">补写奏文</button>':'') +
+    '<p class="memorial-signature">'+esc(memorialSignature(m,postTitle(s,post)))+'</p><div class="memorial-foot">' +
     (region
       ? '<p class="memorial-region">' +
         esc(region.name) +
@@ -608,6 +610,7 @@ export function memorialDialog(
   const handleClick = (e) => {
     const b = e.target.closest("button");
     if (!b || b.disabled) return;
+    if(b.dataset.retryMemorialText)return;
     e.stopPropagation();
     if (b.dataset.reviewOption) {
       session.choices[session.ids[session.index]] = b.dataset.reviewOption;
@@ -676,6 +679,10 @@ export function memorialDialog(
     } else if (b.hasAttribute("data-review-next")) next();
   };
   root.onclick = handleClick;
+  root.addEventListener('memorial-text-updated',event=>{
+    s=event.detail;
+    paint();
+  });
   const resize = () => {
     alignPicker();
     fitBrush();

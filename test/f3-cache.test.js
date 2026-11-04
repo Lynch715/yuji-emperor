@@ -36,8 +36,8 @@ test('F3 正文与面谈共享王朝规则前缀，各自只带本任务格式',
   const t=turnMessages(s,f),r=talkAttempt(s,s.court.officials[0].id,'问安'),k=talkMessages(r.state,r.result,r.state.talks);
   assert.ok(t[0].content.startsWith(worldRules(s)));assert.ok(k[0].content.startsWith(worldRules(s)));
   assert.ok(!t[0].content.includes('【面谈任务】'));assert.ok(!k[0].content.includes('【正文任务】'));
-  const bible=t[1].content.slice(0,t[1].content.indexOf('\n'));
-  assert.ok(k[1].content.startsWith(bible));
+  const bible=m=>JSON.parse(m[1].content.split('\n')[0].replace('【王朝设定】',''));
+  assert.deepEqual(bible(t).官员.map(line=>line.split('｜').slice(0,3)),bible(k).官员.map(line=>line.split('｜').slice(0,3)));
 });
 test('F3 用量指标记录缓存命中（千问 cached_tokens 与 DeepSeek prompt_cache_hit_tokens）',async()=>{
   for(const usage of [{prompt_tokens:1000,completion_tokens:10,prompt_tokens_details:{cached_tokens:800}},{prompt_tokens:1000,completion_tokens:10,prompt_cache_hit_tokens:800}]){

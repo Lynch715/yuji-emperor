@@ -5,7 +5,7 @@ import {worldRules,dynastyBible,roster,settlementDigest} from './prompts.js';
 export function sceneMessages(state,f){
  const h=state.history.at(-1),r=h.scenes.find(r=>r.id===f.sceneId);
  return [{role:'system',content:worldRules(f.state)+'\n'+SCENE_RULES+'\n只续写本场的新一段，不重复旧段。写200至600字，用自然段。输出 {"chapter":{"朝":"","午":"","夜":""},"summary":"情节续写","sceneMemories":[{"slot":"'+f.slot+'","personId":"","evidence":"正文完整原句"}]}，只填写'+f.slot+'这一段，其余留空。'},
- {role:'user',content:dynastyBible(f.state)+'\n'+JSON.stringify({人物往事:memoryContext(state,r.people.map(p=>p.id)),场景:{人物:r.people,地点:r.place,原梗概:r.text,原结果:r.outcome},先前经过:[h.chapter[r.slot],...r.steps.slice(-6).map(t=>t.prose)],玩家接着写:f.request,本次结果:f.outcome,相处变化:f.socialChanges||[],实质行动:f.results,事实:f.facts,钱粮:settlementDigest(f.state,f.entries),当前名册:roster(f.state)})}];
+ {role:'user',content:dynastyBible(f.state,{people:r.people,request:f.request,results:f.results})+'\n'+JSON.stringify({人物往事:memoryContext(state,r.people.map(p=>p.id)),场景:{人物:r.people,地点:r.place,原梗概:r.text,原结果:r.outcome},先前经过:[h.chapter[r.slot],...r.steps.slice(-6).map(t=>t.prose)],玩家接着写:f.request,本次结果:f.outcome,相处变化:f.socialChanges||[],实质行动:f.results,事实:f.facts,钱粮:settlementDigest(f.state,f.entries),当前名册:roster(f.state)})}];
 }
 export function mockSceneProse(r,results=[]){
  const names=r.people.slice(0,3).map(p=>p.name).join('、')+(r.people.length>3?'等人':''),where=r.place?'在'+r.place:'这一日';

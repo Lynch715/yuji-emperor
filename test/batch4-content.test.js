@@ -130,14 +130,13 @@ test('D3 朱批接口只分类嘉奖申饬附旨无，不复用口谕大分类',
 });
 
 import {classifyMemorialSchedule} from '../src/llm/remark-classifier.js';
-test('D3 逐本接口分类有独立请求，越权类别和接口失败回落正则且不接受数值',async()=>{
+test('D3 逐本朱批不再请求，采用本地分类与合并意图返回的类别',()=>{
  const {s}=remarkState(),ids=s.memorials.map(m=>m.id),schedule={朝:{kind:'上朝',memorials:ids,decisions:{[ids[0]]:{option:'approve',remark:'好'},[ids[1]]:{option:'reject',remark:'申饬'}}}};
- const original=JSON.stringify(schedule),calls=[];
- const classified=await classifyMemorialSchedule(schedule,async text=>{calls.push(text);return text==='好'?{kind:'嘉奖',effects:{treasury:99999}}:{kind:'越权'};});
- assert.deepEqual(calls,['好','申饬']);assert.deepEqual(classified.朝.decisions[ids[0]],{option:'approve',remark:'好',remarkKind:'嘉奖'});assert.equal(classified.朝.decisions[ids[1]].remarkKind,undefined);assert.equal(JSON.stringify(schedule),original);
- const fallback=await classifyMemorialSchedule(schedule,async()=>{throw new Error('挂起/断网');});assert.deepEqual(fallback,schedule);
+ const original=JSON.stringify(schedule),classified=classifyMemorialSchedule(schedule,[{inputId:'朝:remark:'+ids[0],remarkKind:'嘉奖',effects:{treasury:99999}}]);
+ assert.deepEqual(classified.朝.decisions[ids[0]],{option:'approve',remark:'好',remarkKind:'嘉奖'});assert.equal(classified.朝.decisions[ids[1]].remarkKind,'申饬');assert.equal(JSON.stringify(schedule),original);
+ const fallback=classifyMemorialSchedule(schedule,[{inputId:'朝:remark:'+ids[0],remarkKind:'越权'}]);assert.equal(fallback.朝.decisions[ids[0]].remarkKind,undefined);
  const n=forecastTurn(s,classified).state;close(n.court.officials.find(o=>o.id===s.memorials[0].fromId).favor,s.court.officials.find(o=>o.id===s.memorials[0].fromId).favor+2);
- const app=readFileSync(new URL('../src/ui/app.js',import.meta.url),'utf8');assert.match(app,/if \(!state.pending\) \{[\s\S]*?classifyMemorialSchedule[\s\S]*?forecastTurn/);
+ const app=readFileSync(new URL('../src/ui/app.js',import.meta.url),'utf8');assert.match(app,/if \(!state.pending\) \{[\s\S]*?requestScheduleIntents[\s\S]*?forecastTurn/);
 });
 
 import {sealChronicle} from '../src/core/chronicles.js';

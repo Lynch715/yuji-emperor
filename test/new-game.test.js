@@ -52,10 +52,10 @@ test('关闭中的接口开局立即取消，不生成半份世界或自动转�
   const pending=createOpening({...options,demo:false},[],config,{signal:ac.signal,fetcher:()=>{requests++;return new Promise(()=>{});}});
   ac.abort();await assert.rejects(()=>pending,/取消/);assert.equal(requests,1);
 });
-test('不完整铸世回复四次失败，不能误当作已开局',async()=>{
+test('不完整铸世回复两次失败，不能误当作已开局',async()=>{
   let requests=0;
   await assert.rejects(()=>createOpening({...options,demo:false},[],config,{sleep:async()=>{},fetcher:async()=>{requests++;return new Response(JSON.stringify({choices:[{message:{content:'{"ok":true,"message":"只有测试回音"}'}}]}),{headers:{'Content-Type':'application/json'}});}}),/格式|未完成/);
-  assert.equal(requests,4);
+  assert.equal(requests,2);
 });
 test('开局能力错误改为中文提示，存档保护原因保留',()=>{
   assert.match(openingErrorMessage(new TypeError('crypto.randomUUID is not a function')),/浏览器/);

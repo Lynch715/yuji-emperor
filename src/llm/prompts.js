@@ -25,7 +25,7 @@ export const STYLES = {
 // 篇幅：每段字数，同时决定正文的输出上限与费用。
 export const LENGTHS = {
   brief: { label: "精简", words: "80–150", note: "每段 80–150 字，最省费用" },
-  standard: { label: "标准", words: "120–300", note: "每段 120–300 字" },
+  standard: { label: "标准", words: "100–220", note: "每段 100–220 字" },
   rich: { label: "详尽", words: "250–500", note: "每段 250–500 字，费用约为标准的 1.6 倍" },
 };
 // 视角：叙述人称。
@@ -139,31 +139,42 @@ export function systemPrompt(state, task = "turn") {
   if(task === "talk")return worldRules(state) + "\n" + TALK_RULES;
   return worldRules(state) + "\n" + TASK_RULES.replace("{{LENGTH}}", (LENGTHS[state.settings.length] || LENGTHS.standard).words);
 }
-const TASK_RULES = `【叙事守则】死亡、怀孕、生产、小产、任免、战果、执行度只在结算表列出时才可写成本旬发生；其余只能作回忆或传闻，并用“曾”“昔”“当年”标明。不写结算表以外的金额、人数、年龄。人物反应仅限官员，须在本章出场，每人好感-5到5，合计绝对值不超过10。宏愿证据须逐字引用本章原句并含该目标全部关键词。长期事实只记本章写明、日后仍成立的事。
+const TASK_RULES = `【叙事守则】死亡、怀孕、生产、小产、任免、战果、执行度只在结算表列出时才可写成本旬发生；其余只能作回忆或传闻，并用“曾”“昔”“当年”标明。不写结算表以外的金额、人数、年龄。人物反应最多3条，仅限官员，须在本章出场，每人好感-5到5，合计绝对值不超过10。宏愿证据须逐字引用本章原句并含该目标全部关键词。长期事实最多3条，只记本章写明、日后仍成立的事。
 标题、正文、奏折、对白只写游戏中的人和事，禁用“据实落账”“引擎结算”“模型叙事”等开发说明，不向玩家解释生成或校验过程。
-【正文任务】把本旬写成「朝」「午」「夜」三段，每段{{LENGTH}}字，空槽可略写。必须表现结算表的执行度与成败。正文只写故事，不抄结算条目；起居注会另行展示结算。廷议按名单立场写。为新奏报写160–260字正文。风闻只写无关痛痒的市井传言。
+【正文任务】把本旬写成「朝」「午」「夜」三段，每段{{LENGTH}}字，空槽可略写。必须表现结算表的执行度与成败。正文只写故事，不抄结算条目；起居注会另行展示结算。廷议按名单立场写。风闻最多2条，只写无关痛痒的市井传言。
 章末 hook 写一句 30 字内的下旬伏笔，只能取自未结奏报、在途政务或新近事实，用“恐”“将”“未知”等未定语气，不得断言结果。
-奏折正文分成三至五个自然段，用换行分隔，写明缘由、现状与所请，不另编上奏人。
-正文输出：{"chapter":{"朝":"","午":"","夜":""},"summary":"30字内","hook":"","memorialTexts":[{"id":"","text":""}],"reactions":[{"name":"官员全名","favorDelta":0,"mood":"","note":""}],"sceneMemories":[{"slot":"夜","personId":"","evidence":"正文中完整原句"}],"rumors":[],"ambitionEvidence":[{"id":"","objectiveId":"","evidence":""}],"factUpdates":[{"subject":"","key":"","value":"","reason":""}]}`;
+正文输出：{"chapter":{"朝":"","午":"","夜":""},"summary":"30字内","hook":"","reactions":[{"name":"官员全名","favorDelta":0,"mood":"","note":""}],"sceneMemories":[{"slot":"夜","personId":"","evidence":"正文中完整原句"}],"rumors":[],"ambitionEvidence":[{"id":"","objectiveId":"","evidence":""}],"factUpdates":[{"subject":"","key":"","value":"","reason":""}]}`;
 const TALK_RULES = `【面谈任务】扮演被召见者御前面谈。只写游戏中的人物言行，不解释生成或校验；成功才让步，失败不得让步，不得超过职权。未提供的秘密不得编造，未允时不得承诺拨款、调兵或落实请求。好感、让步与秘密是否揭露由引擎判定，照判定写即可。
 面谈输出 {"reply":"","innerThought":"","mood":"","summary":""}`;
-// L1：静态资料，按 id 排序，不含好感、势力等数值。
-export function dynastyBible(state) {
+// Only people present or referenced in this request receive a full card.
+export function referencedPeople(state,context){
+  const text=JSON.stringify(context)||'',ids=new Set();
+  const people=[...state.court.officials,...state.harem.consorts,...state.harem.children,...state.foreign];
+  for(const o of people)if(text.includes(o.name)||text.includes(JSON.stringify(o.id)))ids.add(o.id);
+  for(const p of state.court.posts){const title=postTitle(state,p);if(p.holder&&title&&text.includes(title))ids.add(p.holder);}
+  return ids;
+}
+// L1: keep the remaining roster in id｜name｜post form.
+export function dynastyBible(state,context=null) {
+  const full=referencedPeople(state,context);
   const post = (id) => postTitle(state, state.court.posts.find((p) => p.holder === id)) || "待任";
   const faction = (id) => state.court.factions.find((f) => f.id === id)?.name || "无党";
   const byId = (a, b) => String(a.id).localeCompare(String(b.id));
   return "【王朝设定】" + stable({
     王朝: state.dynasty, 皇帝: state.emperor.name, 年号: state.era?.name, 缘起: state.backstory || "",
     派系: state.court.factions.map((f) => ({ id: f.id, name: f.name, demand: f.demand })),
-    官员: state.court.officials.filter((o) => o.alive).slice().sort(byId)
-      .map((o) => [o.id, o.name, post(o.id), faction(o.faction), o.personality || ""].join("｜")),
-    后宫: state.harem.consorts.slice().sort(byId).map((c) => [c.id, c.name, c.rank, c.family].join("｜")),
+    官员: state.court.officials.filter((o) => o.alive).slice().sort(byId).map((o) => [o.id,o.name,post(o.id)].join("｜")),
+    后宫: state.harem.consorts.slice().sort(byId).map((c) => [c.id,c.name,c.rank].join("｜")),
     皇嗣: state.harem.children.filter((c) => c.health > 0 && c.id !== state.reign?.emperorId && c.name !== state.emperor.name)
       .slice().sort(byId).map((c) => [c.id, c.name, c.id === state.harem.heir ? "储君" : c.sex === "男" ? "皇子" : "公主"].join("｜")),
     太后: state.scenario && !state.dowager ? "无" : state.dowager || "慈宁太后",
     宗室女: (state.harem.royalWomen || []).map((w) => w.id + "｜" + w.name),
     外邦: state.foreign.map((f) => [f.id, f.name, f.ruler].join("｜")),
     州郡: state.nation.provinces.map((z) => z.name),
+    // Full cards follow the stable compact roster to preserve prefix caching.
+    出场人物: state.court.officials.filter(o=>o.alive&&full.has(o.id)).slice().sort(byId)
+      .map(o=>[o.id,o.name,post(o.id),faction(o.faction),o.personality||''].join('｜'))
+      .concat(state.harem.consorts.filter(c=>full.has(c.id)).slice().sort(byId).map(c=>[c.id,c.name,c.rank,c.family].join('｜'))),
   });
 }
 // L2：只追加的历史。长期事实按 FACT_WINDOW 旬一窗封存，当前窗内的新事实放到 L3。
@@ -211,7 +222,7 @@ export function turnMessages(state, forecast) {
   const oldRoster = roster(before).split("\n"), newRoster = roster(state).split("\n");
   const dynamic = {
     国势: nationSummary(state),
-    流水账: (state.history || before.history || []).slice(-6).map((h) => h.summary),
+    流水账: (state.history || before.history || []).slice(-3).map((h) => h.summary),
     新近事实: factWindow(state).recent.map(({ subject, key, value }) => ({ subject, key, value })),
     在途政务: state.projects.filter((p) => !p.done).map((p) => ({ name: p.name || p.type, province: p.province, end: p.end })),
     宏愿: state.ambitions.filter((a) => a.status !== "达成").map((a) => ({
@@ -236,9 +247,15 @@ export function turnMessages(state, forecast) {
     { role: "system", content: systemPrompt(state) },
     {
       role: "user",
-      content: (forecast.scenes?.length?SCENE_RULES+'\n【参与者记得的事】'+stable(memoryContext(before,forecast.scenes.flatMap(r=>r.people.map(p=>p.id))))+"\n【本旬自拟情节】"+stable(forecast.scenes)+"\n":"") + dynastyBible(state) + "\n" + historyBlock(state) + "\n" + situationBlock(state) +
-        `\n【本旬状态】${stable(dynamic)}\n【玩家排程】${stable(forecast.schedule)}\n【本旬结算表（不可更改）】${stable({ die: forecast.die, fate: forecast.fate, slots: forecast.slotResults, 账目: settlementDigest(state, forecast.entries), notes: forecast.notes, facts: forecast.facts || [] })}\n【廷议名单】${stable(forecast.debate || [])}\n【新奏报】${stable(forecast.newMemorials.map((m) => ({ id: m.id, title: m.title, type:m.type, from: m.from, request:m.request, choices:m.options.map(o=>o.consequence?[o.label,o.consequence]:o.label) })))}\n每本奏折写160–260字，交代事情来由、眼前难处、各方顾虑与具体请求；各折围绕所列事务展开，不套用“事关地方生计”等空话，不靠重复寒暄凑字。方案效果仍是待选的取舍，不能把请办的事写成已经办成；不得补造人名或硬结果。按【正文任务】写本旬，输出正文 JSON。`,
+      content: (forecast.scenes?.length?SCENE_RULES+'\n【参与者记得的事】'+stable(memoryContext(before,forecast.scenes.flatMap(r=>r.people.map(p=>p.id))))+"\n【本旬自拟情节】"+stable(forecast.scenes)+"\n":"") + dynastyBible(state,{schedule:forecast.schedule,scenes:forecast.scenes,results:forecast.slotResults,notes:forecast.notes,facts:forecast.facts,debate:forecast.debate,memorials:forecast.newMemorials,talks:(before.talks||[]).filter(t=>t.turn===before.turn)}) + "\n" + historyBlock(state) + "\n" + situationBlock(state) +
+        `\n【本旬状态】${stable(dynamic)}\n【玩家排程】${stable(forecast.schedule)}\n【本旬结算表（不可更改）】${stable({ die: forecast.die, fate: forecast.fate, slots: forecast.slotResults, 账目: settlementDigest(state, forecast.entries), notes: forecast.notes, facts: forecast.facts || [] })}\n【廷议名单】${stable(forecast.debate || [])}\n【新奏报摘要】${stable(forecast.newMemorials.map(m=>m.title))}\n按【正文任务】写本旬，输出正文 JSON。`,
     },
+  ];
+}
+export function memorialMessages(state,memorials){
+  return [
+    {role:'system',content:worldRules(state)+'\n【奏折正文任务】只为所列奏报写正文，每本160–260字，三至五个自然段，以换行分隔。交代来由、现状、顾虑和具体请求，不套空话。只使用已提供的人名、事实和方案，不创造数值、成败或上奏人，不把请办写成已经办成。只输出 {"memorialTexts":[{"id":"","text":""}]}。'},
+    {role:'user',content:JSON.stringify({memorials:memorials.map(m=>({id:m.id,title:m.title,type:m.type,from:m.from,request:m.request,choices:m.options.map(o=>o.consequence?[o.label,o.consequence]:o.label)}))})},
   ];
 }
 export function worldMessages(state) {
@@ -264,7 +281,7 @@ export function talkMessages(state, result, log = []) {
   const { secret, secretKnown, memory, life, favor, attitude, mood, health, ...card } = npc;
   const known = secretKnown || (result.kind === "试探" && result.success);
   const post = postTitle(state, state.court.posts.find((p) => p.holder === npc.id));
-  const header = dynastyBible(state) + "\n【面谈对象】" + stable({ id: card.id, name: card.name, 职位: post || card.rank || card.status || "", personality: card.personality, family: card.family, faction: card.faction, ruler: card.ruler, demand: card.demand }) +
+  const header = dynastyBible(state,{person:result.person,line:result.line,log}) + "\n【面谈对象】" + stable({ id: card.id, name: card.name, 职位: post || card.rank || card.status || "", personality: card.personality, family: card.family, faction: card.faction, ruler: card.ruler, demand: card.demand }) +
     "\n【此人能做到什么】妃嫔不能给钱兵；其他职权外请求必须回去议。\n";
   const recent = (Array.isArray(log) ? log : [])
     .filter((t) => t && t.person === result.person && t.turn === result.turn && t.id !== result.id && t.reply)

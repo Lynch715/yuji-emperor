@@ -8,7 +8,7 @@ import { seedNumber, random, DRAFT } from "./rng.js";
 import { uniqueName } from "./names.js";
 import { chooseRegent } from "./regency-info.js";
 import {factionPowers} from './politics.js';
-export const VERSION = 19;
+export const VERSION = 20;
 export const TALENTS = ["政略", "权谋", "武略", "文采", "魅力"];
 export const SLOTS = ["朝", "午", "夜"];
 export const POST_NAMES = [
@@ -494,6 +494,8 @@ export function migrate(input) {
   // mean historical/unused; do not reconstruct old signatures or forecasts.
   // v18: scene records and pending.kind are optional; retain old forecasts byte for byte.
   // v19 reuses optional NPC memory/relations; old scenes are read as memories without recalculating effects.
+  // v20 adds optional memorial.textStatus only on newly generated texts.
+  // Missing means legacy prose; never replace old texts or pending forecasts.
   s.settings.freedom ??= "mid";
   s.v = VERSION;
   s.volumeIndex ??= [];
@@ -651,6 +653,7 @@ export function assertState(s) {
     for(const r of s.intentResults)if(!r||typeof r.id!=='string'||!Number.isSafeInteger(r.turn)||!['success','partial','failed','narrative'].includes(r.status)||!r.actual||typeof r.actual!=='object')throw new Error('口谕裁决记录损坏');
   }
   if(s.v>=12&&(!Array.isArray(s.memorialVariety)||s.memorialVariety.length>72||s.memorialVariety.some(r=>!r||typeof r.id!=='string'||typeof r.type!=='string'||!Number.isSafeInteger(r.turn)||r.turn<0||r.turn>s.turn)))throw new Error('奏折轮换记录损坏');
+  if(s.memorials.some(m=>m.textStatus!==undefined&&!['template','ready'].includes(m.textStatus)))throw new Error('奏折正文状态损坏');
   if(s.v>=12&&s.turnBudget?.rewriteAttempted!==undefined&&typeof s.turnBudget.rewriteAttempted!=='boolean')throw new Error('剧情改写标记损坏');
   if(s.v>=13&&s.memorials.some(m=>m.options?.some(o=>o.consequence!==undefined&&typeof o.consequence!=='string')))throw new Error('奏折后果说明损坏');
   if(s.v>=14)validateMemorialReviews([...(s.volumes||[]).flatMap(v=>v.chapters),...(s.history||[])]);

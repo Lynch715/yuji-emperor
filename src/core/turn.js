@@ -508,7 +508,10 @@ function commitDraft(state, forecast, narrative = {}) {
   });
   for (const text of narrative.memorialTexts || []) {
     const m = s.memorials.find((m) => m.id === text.id);
-    if (m) m.text = String(text.text).slice(0, 1000);
+    if (m) {
+      m.text = String(text.text).slice(0, 1000);
+      if(['template','ready'].includes(text.status))m.textStatus=text.status;
+    }
   }
   if (s.history.length > 36) {
     const archived = s.history.splice(0, 18).map(compactChapter);
