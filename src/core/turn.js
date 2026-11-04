@@ -193,9 +193,10 @@ function forecastDraft(state, schedule, intents = []) {
       }
       for (const id of ids) {
         const decision = memorialDecision(action,id);
+        const declared=s.memorials.find(m=>m.id===id)?.options.some(o=>o.consequence);
         result = resolveMemorial(s, id, decision.option, decision.remark, "处置奏报", intents.some(a=>a.inputId===slot+':remark:'+id&&a.type!=='other')?'无':decision.remarkKind);
         s = result.state;
-        if(action.kind==='上朝'&&decision.option==='reject')s=applyPackage(s,{prestige:2},'当廷驳回');
+        if(action.kind==='上朝'&&decision.option==='reject'&&!declared)s=applyPackage(s,{prestige:2},'当廷驳回');
         slotResults[slot].push(result.note);
       }
       if (action.stance === "当廷问责") {

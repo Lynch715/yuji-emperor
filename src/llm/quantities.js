@@ -26,10 +26,10 @@ function nearbyOwners(text,index,owners){
 export function quantityEvidence(f){
  const sets=Object.fromEntries(['money','grain','hu','area','ratio','households','horses','people','age'].map(k=>[k,new Set()]));
  const add=(kind,v)=>{if(!Number.isFinite(v))return;v=Math.abs(v);sets[kind].add(v);sets[kind].add(Math.round(v));if(kind==='money'||kind==='grain'){sets[kind].add(Math.round(v/1000)*1000);sets[kind].add(Math.round(v/10000)*10000);}};
- const keys={treasury:['money',1e4],privy:['money',1e4],arrears:['money',1e4],cost:['money',1e4],grain:['grain',1e4],grainArrears:['grain',1e4],troops:['people',1],garrison:['people',1],enemyTroops:['people',1],pop:['people',1e4],age:['age',1],area:['area',1],landArea:['area',1],households:['households',1],horses:['horses',1],execRate:['ratio',100],rate:['ratio',100],factor:['ratio',100],progress:['ratio',1]};
+ const keys={treasury:['money',1e4],privy:['money',1e4],arrears:['money',1e4],cost:['money',1e4],grain:['grain',1e4],grainArrears:['grain',1e4],troops:['people',1],garrison:['people',1],enemyTroops:['people',1],pop:['people',1e4],age:['age',1],area:['area',1],landArea:['area',1],households:['households',1],horses:['horses',1],execRate:['ratio',100],rate:['ratio',100],factor:['ratio',100],progress:['ratio',1],readiness:['ratio',1],threat:['ratio',1],attitude:['ratio',1]};
  const walk=v=>{if(!v||typeof v!=='object')return;for(const [k,x]of Object.entries(v)){if(['history','volumes','pending','ledger'].includes(k))continue;if(keys[k])add(keys[k][0],x*keys[k][1]);if(typeof x==='object')walk(x);}};
  walk(f.state);
- const pathKind=p=>/grain/.test(p)?['grain',1e4]:/treasury|privy|arrears/.test(p)?['money',1e4]:/troops|garrison/.test(p)?['people',1]:/\.age$/.test(p)?['age',1]:null;
+ const pathKind=p=>/grain/.test(p)?['grain',1e4]:/treasury|privy|arrears/.test(p)?['money',1e4]:/troops|garrison/.test(p)?['people',1]:/\.age$/.test(p)?['age',1]:/readiness|threat|attitude/.test(p)?['ratio',1]:null;
  for(const e of f.entries||[]){const spec=pathKind(e.path);if(spec)for(const v of [e.before,e.after,e.delta])add(spec[0],v*spec[1]);}
  for(const q of quantityMatches(JSON.stringify([f.slotResults,f.notes])))add(q.kind,q.value);
  const s=f.state,ageOwners=[];

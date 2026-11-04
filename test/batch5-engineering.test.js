@@ -3,11 +3,11 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {APP_ICONS,createAppManifest} from '../src/ui/icon.js';
-test('E2 图标只保留32、180、192且单文件小于520KB（自由度改造新增量值绑定与意图裁决，图标预算不变）',()=>{
+test('E2 图标只保留32、180、192且单文件小于550KB（新增95题独立取舍，图标预算不变）',()=>{
  assert.deepEqual(Object.keys(APP_ICONS),['32','180','192']);
  assert.ok(Buffer.byteLength(readFileSync('src/ui/icon.js'))<60000);
  execFileSync(process.execPath,['scripts/build.mjs']);
- assert.ok(readFileSync('index.html').length<520000);
+ assert.ok(readFileSync('index.html').length<550000);
  assert.deepEqual(createAppManifest('https://example.com/game/?x=1','#123').icons.map(i=>i.sizes),['192x192']);
 });
 
@@ -38,10 +38,10 @@ test('E4 私下行动复用传入骰子不改RNG、上朝批折必须显式选�
  const source=readFileSync('src/core/edicts.js','utf8');assert.doesNotMatch(source,/import \{ fateModifier \}/);
 });
 
-test('E3 三个界面文件无长单行且七路径预演符合v12奏折轮换基线',()=>{
+test('E3 三个界面文件无长单行且七路径预演符合v13独立选项基线',()=>{
  for(const file of ['src/ui/render.js','src/ui/memorials.js','src/ui/style.css'])assert.ok(Math.max(...readFileSync(file,'utf8').split('\n').map(l=>l.length))<200,file);
  const actual=JSON.parse(execFileSync(process.execPath,['scripts/batch5-format-proof.mjs','--stdout'],{encoding:'utf8'}));
- assert.deepEqual(actual,JSON.parse(readFileSync('qa/batch5/summary.json')).memorialVarietyForecastHashesV12);
+ assert.deepEqual(actual,JSON.parse(readFileSync('qa/batch5/summary.json')).memorialChoicesForecastHashesV13);
 });
 
 import {compactEntries} from '../src/core/archive.js';

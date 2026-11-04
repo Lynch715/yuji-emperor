@@ -159,6 +159,9 @@ export function effectItems(effects, s, prefix = "") {
     disaster: "灾情",
     stage: "阶段",
     result: "结果",
+    readiness: "战备",
+    threat: "边患",
+    attitude: "态度",
   };
   const result = [];
   for (const [key, value] of Object.entries(effects || {})) {
@@ -171,6 +174,9 @@ export function effectItems(effects, s, prefix = "") {
       if (key === "official")
         name = s.court.officials.find((p) => p.id === value.id)?.name || "官员";
       if (key === "thread") name = "事件";
+      if (key === "army") name = value.id === "capital" ? "京营" : value.id + "境";
+      if (key === "foreign")
+        name = s.foreign.find(f => f.id === value.id)?.name || "外邦";
       if (key === "faction") {
         for (const [id, n] of Object.entries(value))
           result.push({
@@ -196,10 +202,9 @@ export function effectItems(effects, s, prefix = "") {
 export function effectLabel(value, unit = "") {
   if (typeof value !== "number") return String(value ?? "");
   if (value === 0) return "0" + unit;
-  if (Math.abs(value) < 1) return value > 0 ? "微升" : "微降";
   return (
     (value > 0 ? "+" : "−") +
-    Math.round(Math.abs(value)).toLocaleString("zh-CN") +
+    Math.abs(value).toLocaleString("zh-CN", { maximumFractionDigits: 2 }) +
     unit
   );
 }
@@ -216,7 +221,9 @@ export function factionDemandReason(s, speaker, memorial) {
   );
 }
 export function memorialOptions(s, m) {
-  const options = m.options.map((o) => ({ ...o }));
+  const options = m.options.map((o) => ({ ...o,
+    disabled: ["treasury", "privy", "grain"].some(k => (s.nation[k] || 0) < -(o.effects?.[k] || 0))
+  }));
   if (!options.some((o) => o.id === "hold"))
     options.push({ id: "hold", label: "留中", effects: {} });
   options.push({
@@ -293,9 +300,9 @@ export function memorialHTML(s, session) {
           (f) =>
             '<span class="effect ' +
             (typeof f.value === "number"
-              ? f.value > 0
+              ? (/灾情|边患$/.test(f.label) ? -f.value : f.value) > 0
                 ? "positive"
-                : f.value < 0
+                : (/灾情|边患$/.test(f.label) ? -f.value : f.value) < 0
                   ? "negative"
                   : "neutral"
               : "neutral") +
@@ -323,7 +330,7 @@ export function memorialHTML(s, session) {
             ? "已选"
             : draft?.option === o.id
               ? "票拟"
-              : i < 4
+              : i < 9
               ? "按 " + (i + 1)
               : "";
       return (
@@ -343,7 +350,7 @@ export function memorialHTML(s, session) {
         esc(tag) +
         '</small></span><span class="effects">' +
         (fx || '<span class="effect neutral">' + note + "</span>") +
-        "</span></button>"
+        "</span>" + (o.consequence ? '<small class="option-consequence">' + esc(o.consequence) + '</small>' : '') + "</button>"
       );
     })
     .join("");
@@ -496,7 +503,8 @@ export function memorialHTML(s, session) {
           .join("") +
         "</section>"
       : "") +
-    ('<p class="review-help"><span class="keyboard-help">1–4 择批 · Enter 下一本 · Esc 暂退</span></p><p id="review-error" ' +
+    ('<p class="review-help"><span class="keyboard-help">1–' + Math.min(opts.length - 1, 9) +
+      ' 择批 · Enter 下一本 · Esc 暂退</span></p><p id="review-error" ' +
       'class="review-error" role="status" aria-live="polite"></p></section></div><footer class="review-footer"><butto' +
       'n type="button" data-review-hold>留中不发</button>') +
     (session.ids.some((id) => !session.choices[id] && !s.memorials.find((x) => x.id === id)?.urgent)
@@ -553,10 +561,17 @@ export function memorialDialog(
     }
     revealCurrent();
   };
+  const fitBrush = () => {
+    const field = root.querySelector("#review-remark");
+    if (!field) return;
+    field.style.height = "auto";
+    field.style.height = field.scrollHeight + "px";
+  };
   const paint = (focus = null) => {
     d.querySelector(".dialog-head .queue-picker")?.remove();
     root.innerHTML = memorialHTML(s, session);
     alignPicker();
+    fitBrush();
     requestAnimationFrame(revealCurrent);
     if (focus) d.querySelector(focus)?.focus({ preventScroll: true });
   };
@@ -661,16 +676,23 @@ export function memorialDialog(
   root.onclick = handleClick;
   const resize = () => {
     alignPicker();
+    fitBrush();
     requestAnimationFrame(revealCurrent);
   };
   mobile.addEventListener("change", resize);
-  onDialogExit(d, root, () => mobile.removeEventListener("change", resize));
+  window.addEventListener("resize", resize);
+  onDialogExit(d, root, () => {
+    mobile.removeEventListener("change", resize);
+    window.removeEventListener("resize", resize);
+  });
   document.fonts?.ready.then(() => {
-    if (d.open && root.isConnected) revealCurrent();
+    if (d.open && root.isConnected) { revealCurrent(); fitBrush(); }
   });
   root.oninput = (e) => {
-    if (e.target.id === "review-remark")
+    if (e.target.id === "review-remark") {
       session.remarks[session.ids[session.index]] = e.target.value;
+      fitBrush();
+    }
   };
   d.onkeydown = (e) => {
     if (e.target.matches("input,textarea,select")) return;
@@ -678,7 +700,7 @@ export function memorialDialog(
         ...root.querySelectorAll(".review-options [data-review-option]"),
       ],
       opts = all.filter((b) => !b.disabled);
-    if (/^[1-4]$/.test(e.key)) {
+    if (/^[1-9]$/.test(e.key)) {
       e.preventDefault();
       if (!all[Number(e.key) - 1]?.disabled) all[Number(e.key) - 1]?.click();
     } else if (

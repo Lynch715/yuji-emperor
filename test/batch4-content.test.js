@@ -3,13 +3,13 @@ import assert from 'node:assert/strict';
 import {createState} from '../src/core/state.js';
 import {initialTurn} from '../src/core/turn.js';
 import {nationMonth,nationQuarter,nationYear} from '../src/core/nation.js';
-import {grainBudget} from '../src/core/finance.js';
+import {grainBudget,quarterlyGrain} from '../src/core/finance.js';
 import {simulate} from '../scripts/simulate.mjs';
 
 const start=()=>initialTurn(createState({seed:'audit3'}));
 const close=(a,b)=>assert.ok(Math.abs(a-b)<1e-7,`${a} ≠ ${b}`);
 
-test('C2 audit3先急件一律准奏30年不超仓容1.2倍，连灾减产且超仓年霉变三成',()=>{
+test('C2 audit3先急件准奏30年粮储受收支和年损耗约束，连灾减产且超仓年霉变三成',()=>{
  let s=start();s.nation.grain=0;s.nation.provinces.forEach(p=>p.disaster=0);
  const militaryQuarter=grainBudget(s).military*3,harvest=nationQuarter(s).nation.grain;
  assert.ok(harvest>=militaryQuarter*1.2&&harvest<=militaryQuarter*1.5,`季粮/季军粮=${harvest/militaryQuarter}`);
@@ -25,14 +25,19 @@ test('C2 audit3先急件一律准奏30年不超仓容1.2倍，连灾减产且超
   if(month%12===0){normal=nationYear(normal);disaster=nationYear(disaster);}
  }
  assert.ok(disaster.nation.grain<initial*0.5&&disaster.nation.grain<normal.nation.grain*0.5);
- let live=start();
+ let live=start(),maxCapacity=grainBudget(live).storageCapacity,maxAnnualHarvest=quarterlyGrain(live)*4;
  for(let turn=0;turn<30*36;turn++){
   live.history=[];live.volumes=[];live.ledger=[];
   const before=live,f=forecastTurn(live,makeSimulationSchedule(live,()=>0,'greedy'));
-  assert.ok(before.nation.grain<=grainBudget(before).storageCapacity*1.2+1e-7,`旬初粮储${before.nation.grain}`);
-  const cap=Math.max(grainBudget(before).storageCapacity,grainBudget(f.state).storageCapacity);
-  for(const e of f.entries.filter(e=>e.path==='nation.grain'))assert.ok(Math.max(e.before,e.after)<=cap*1.2+1e-7,`旬中粮储${e.after}/${cap}`);
-  assert.ok(f.state.nation.grain<=grainBudget(f.state).storageCapacity*1.2+1e-7,`旬末粮储${f.state.nation.grain}`);
+  // 年损耗只作用于超仓粮；仓容随军队、灾情变化，不能把当前仓容当硬上限。
+  maxCapacity=Math.max(maxCapacity,grainBudget(before).storageCapacity,grainBudget(f.state).storageCapacity);
+  maxAnnualHarvest=Math.max(maxAnnualHarvest,quarterlyGrain(before)*4,quarterlyGrain(f.state)*4);
+  const bound=maxCapacity+maxAnnualHarvest/0.3;
+  for(const e of f.entries.filter(e=>e.path==='nation.grain')){
+   assert.ok(e.after>=0&&Math.max(e.before,e.after)<=bound+1e-7,`粮储${e.after}超过收支界限${bound}`);
+   if(e.after>e.before)assert.match(e.source,/^季结：赋税实收 .* 与新粮入仓$/);
+  }
+  assert.ok(Number.isFinite(f.state.nation.grain)&&f.state.nation.grain>=0&&f.state.nation.grain<=bound);
   live=commitTurn(live,f,{});assert.equal(live.ending,null);
  }
  assert.equal(live.turn,1080);
@@ -189,7 +194,7 @@ test('D1 实际先急件准奏策略50年例行奏报标题至少二十五种',(
 
 test('D1 空仓核报粮缺，不请求翻晒搬运不存在的库存',()=>{
  let s=start();s.nation.grain=0;s.nation.grainArrears=20;s.nation.provinces.forEach(p=>p.disaster=0);
- const seen=new Set();for(let turn=0;turn<108;turn++){s.turn=turn;s.memorials=[];s=seedMemorials(s);for(const m of s.memorials.filter(m=>m.type==='仓储'||m.type==='漕运')){assert.equal(m.templateId,'grain-shortage');assert.equal(m.options[0].effects.grain,-0.6);seen.add(m.templateId);}assert.equal(s.nation.grain,0);}
+ const seen=new Set();for(let turn=0;turn<108;turn++){s.turn=turn;s.memorials=[];s=seedMemorials(s);for(const m of s.memorials.filter(m=>m.type==='仓储'||m.type==='漕运')){assert.equal(m.templateId,'grain-shortage');assert.ok(m.options.every(o=>!(o.effects.grain<0)));assert.ok(m.options[0].effects.treasury<0);seen.add(m.templateId);}assert.equal(s.nation.grain,0);}
  assert.ok(seen.has('grain-shortage'));
 });
 

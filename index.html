@@ -68,7 +68,7 @@
 --font-value:20px;
 --font-heading:26px;
 --font-title:30px;
---font-brush:40px;
+--font-brush:34px;
 --font-hero:64px;
 --body-line:32px;
 --document-line:36px;
@@ -1561,6 +1561,13 @@ transform-origin:left center;
 padding:var(--s3);
 margin:var(--s0);
 resize:none;
+overflow-y:hidden;
+}
+.option-consequence{
+display:block;
+line-height:1.6;
+color:var(--text-soft);
+margin-top:var(--s1);
 }
 textarea.brush-input::placeholder{
 font:var(--font-small) / 1.5 var(--sans);
@@ -3652,7 +3659,7 @@ entries.push({
 path,
 before: old,
 after: obj[key],
-delta: Math.round((obj[key] - old) * 100) / 100,
+delta: Math.round((obj[key] - old) * 100) / 100 || 0,
 source,
 });
 };
@@ -3690,6 +3697,12 @@ const o = s.court.officials.find(
 if (o)
 set(o, "favor", effects.official.favor, "official." + o.id + ".favor");
 }
+if(effects.army){
+const a=effects.army,id=a.id,b=id==='capital'?s.nation.army.capital:s.nation.army.frontiers.find(x=>x.dir===id);
+const path=id==='capital'?'nation.army.capital':'nation.army.frontiers.'+s.nation.army.frontiers.indexOf(b);
+if(b){set(b,'readiness',a.readiness,path+'.readiness');if(id!=='capital')set(b,'threat',a.threat,path+'.threat');}
+}
+if(effects.foreign){const f=s.foreign.find(f=>f.id===effects.foreign.id);if(f)set(f,'attitude',effects.foreign.attitude,'foreign.'+f.id+'.attitude');}
 if (effects.thread) {
 const t = s.threads.find((t) => t.id === effects.thread.id);
 if (t && t.stage !== "结束") {
@@ -3731,7 +3744,7 @@ const { seedNumber, random, DRAFT } = __load("src/core/rng.js");
 const { uniqueName } = __load("src/core/names.js");
 const { chooseRegent } = __load("src/core/regency-info.js");
 const {factionPowers} = __load("src/core/politics.js");
-const VERSION = 12;
+const VERSION = 13;
 const TALENTS = ["政略", "权谋", "武略", "文采", "魅力"];
 const SLOTS = ["朝", "午", "夜"];
 const POST_NAMES = [
@@ -4204,6 +4217,8 @@ if (input.v >= 11 && !Array.isArray(s.intentResults)) throw new Error("口谕裁
 s.intentResults ??= [];
 if(input.v>=12&&!Array.isArray(s.memorialVariety))throw new Error('奏折轮换记录损坏');
 s.memorialVariety ??= s.memorials.filter(m=>m.templateId).slice(-72).map(m=>({id:m.templateId,type:m.type,turn:s.turn}));
+// v13 adds optional consequence/army/foreign packages on newly generated
+// options. Keep received petitions and saved forecasts exactly as they were.
 s.settings.freedom ??= "mid";
 s.v = VERSION;
 s.volumeIndex ??= [];
@@ -4362,6 +4377,7 @@ for(const r of s.intentResults)if(!r||typeof r.id!=='string'||!Number.isSafeInte
 }
 if(s.v>=12&&(!Array.isArray(s.memorialVariety)||s.memorialVariety.length>72||s.memorialVariety.some(r=>!r||typeof r.id!=='string'||typeof r.type!=='string'||!Number.isSafeInteger(r.turn)||r.turn<0||r.turn>s.turn)))throw new Error('奏折轮换记录损坏');
 if(s.v>=12&&s.turnBudget?.rewriteAttempted!==undefined&&typeof s.turnBudget.rewriteAttempted!=='boolean')throw new Error('剧情改写标记损坏');
+if(s.v>=13&&s.memorials.some(m=>m.options?.some(o=>o.consequence!==undefined&&typeof o.consequence!=='string')))throw new Error('奏折后果说明损坏');
 const walk = (x) => {
 if (typeof x === "number" && !Number.isFinite(x))
 throw new Error("存档含 NaN/Infinity");
@@ -5307,10 +5323,10 @@ return [...new Set(pool.filter(x=>Math.max(0,x.distance)===distance).map(x=>x.ow
 function quantityEvidence(f){
 const sets=Object.fromEntries(['money','grain','hu','area','ratio','households','horses','people','age'].map(k=>[k,new Set()]));
 const add=(kind,v)=>{if(!Number.isFinite(v))return;v=Math.abs(v);sets[kind].add(v);sets[kind].add(Math.round(v));if(kind==='money'||kind==='grain'){sets[kind].add(Math.round(v/1000)*1000);sets[kind].add(Math.round(v/10000)*10000);}};
-const keys={treasury:['money',1e4],privy:['money',1e4],arrears:['money',1e4],cost:['money',1e4],grain:['grain',1e4],grainArrears:['grain',1e4],troops:['people',1],garrison:['people',1],enemyTroops:['people',1],pop:['people',1e4],age:['age',1],area:['area',1],landArea:['area',1],households:['households',1],horses:['horses',1],execRate:['ratio',100],rate:['ratio',100],factor:['ratio',100],progress:['ratio',1]};
+const keys={treasury:['money',1e4],privy:['money',1e4],arrears:['money',1e4],cost:['money',1e4],grain:['grain',1e4],grainArrears:['grain',1e4],troops:['people',1],garrison:['people',1],enemyTroops:['people',1],pop:['people',1e4],age:['age',1],area:['area',1],landArea:['area',1],households:['households',1],horses:['horses',1],execRate:['ratio',100],rate:['ratio',100],factor:['ratio',100],progress:['ratio',1],readiness:['ratio',1],threat:['ratio',1],attitude:['ratio',1]};
 const walk=v=>{if(!v||typeof v!=='object')return;for(const [k,x]of Object.entries(v)){if(['history','volumes','pending','ledger'].includes(k))continue;if(keys[k])add(keys[k][0],x*keys[k][1]);if(typeof x==='object')walk(x);}};
 walk(f.state);
-const pathKind=p=>/grain/.test(p)?['grain',1e4]:/treasury|privy|arrears/.test(p)?['money',1e4]:/troops|garrison/.test(p)?['people',1]:/\.age$/.test(p)?['age',1]:null;
+const pathKind=p=>/grain/.test(p)?['grain',1e4]:/treasury|privy|arrears/.test(p)?['money',1e4]:/troops|garrison/.test(p)?['people',1]:/\.age$/.test(p)?['age',1]:/readiness|threat|attitude/.test(p)?['ratio',1]:null;
 for(const e of f.entries||[]){const spec=pathKind(e.path);if(spec)for(const v of [e.before,e.after,e.delta])add(spec[0],v*spec[1]);}
 for(const q of quantityMatches(JSON.stringify([f.slotResults,f.notes])))add(q.kind,q.value);
 const s=f.state,ageOwners=[];
@@ -5383,9 +5399,9 @@ return {modernTalkFallback,sceneNarrative};
 },
 "src/core/memorial-templates.js":function(__load){
 const { seedNumber, random } = __load("src/core/rng.js");
-// Routine requests fund a small, specified administrative task. Approval trades
-// silver (and, for handling grain, stock) for execution; refusal saves resources
-// and asserts authority. Large rewards remain in events and edicts.
+const { memorialChoices } = __load("src/core/memorial-choices.js");
+// Topic selection and policy choices are separate: each petition keeps the
+// concrete alternatives and costs assigned when it reaches the court.
 const stateTrigger=type=>s=>{
  if(['钱粮','赋税','盐政'].includes(type))return s.nation.provinces.some(p=>p.tax>0&&!p.rebellion);
  if(['仓储','漕运'].includes(type))return s.nation.grain>=0.6&&s.nation.army.capital.troops+s.nation.army.frontiers.reduce((n,b)=>n+b.troops,0)>0;
@@ -5515,15 +5531,11 @@ function routineTemplate(state,group,province,draw){
  const batchTypes=new Set(recent.filter(r=>r.turn===state.turn).map(r=>r.type)),unpicked=types.filter(t=>!batchTypes.has(t.type));
  const type=pick(least(unpicked.length?unpicked:types,'type')).type;
  const t=pick(least(available.filter(t=>t.type===type),'id'));
- const z=province,logistics=group===2&&!t.grain;
- return {...t,...(logistics?{grain:0.6,request:t.request+'，并请拨外差所需口粮'}:{}),provinceId:z.id,title:z.name+' '+t.title};
+ const z=province;
+ return {...t,provinceId:z.id,title:z.name+' '+t.title};
 }
-function routineOptions(t,province){
- return [
-  {id:'approve',label:t.approve||'准奏',effects:t.relief?{treasury:-8,province:{id:province.id,morale:2,disaster:-5},virtue:1}:{treasury:-2,governance:0.1,...(t.grain?{grain:-t.grain}:{})}},
-  {id:'reject',label:t.reject||'驳回',effects:{prestige:0.2,...(t.relief?{virtue:-2}:{})}},
-  {id:'hold',label:'留中',effects:{}},
- ];
+function routineOptions(t,province,state=null,fromId=null){
+ return memorialChoices(t,province,state,fromId);
 }
 const MEMORIAL_DETAILS={
  钱粮:'此事牵涉收款、解送与支领各处，若只凭一册定夺，恐将旧欠当作新欠，反教百姓再出钱。臣拟让经手人带原据当面核对，先分清哪些是册上笔误，哪些确须追问，再将有争议之处另呈御前，不使无涉人户陪着等候。',
@@ -5561,6 +5573,321 @@ function memorialText(m,modern=false){
 }
 
 return {MEMORIAL_TEMPLATES,routineTemplate,routineOptions,memorialText};
+},
+"src/core/memorial-choices.js":function(__load){
+// Each petition owns its alternatives. Local and named targets are bound once
+// when the petition is generated; resolving an old petition never rebuilds them.
+const MEMORIAL_CHOICES={
+'tax-register':[
+['清退重复税款','退还多收款，安抚受累农户',{treasury:-1.2,localMorale:1,governance:0.2}],
+['先核票据再退','少花钱核对底册，等候的农户略有不满',{treasury:-0.4,governance:0.4,localMorale:-0.2}],
+['按旧册催缴','本旬多收税银，但伤及当地民心',{treasury:2.4,localMorale:-1.2,virtue:-0.3}]],
+'tax-audit':[
+['拨员重核税册','核查较细，需付书吏与走访费用',{treasury:-1.6,governance:0.4,localMorale:0.3}],
+['限现员清理','省下拨款，承办官员受压，核查较粗',{governance:0.1,favor:-1.2}]],
+'salt-books':[
+['查验盐引源流','花钱查清流转，减少盐户受累',{treasury:-1.4,governance:0.3,localMorale:0.5}],
+['先追漏课','先补库款，盐户与商人负担加重',{treasury:1.8,localMorale:-0.7,governance:-0.1}]],
+'land-books':[
+['逐地丈量核籍','查册花费较高，田界争议缓和',{treasury:-2.8,governance:0.4,localMorale:0.6}],
+['依旧册暂缓丈量','省钱维持旧例，田界疑处仍未厘清',{governance:-0.2,localMorale:-0.2,favor:0.5}]],
+'deficit':[
+['拨员查库止漏','花钱查库，先整顿经手规矩',{treasury:-0.8,governance:0.5,favor:-0.5}],
+['限经手官补亏','本旬追补库款，承办者怨气上升',{treasury:2.6,favor:-2.5,governance:-0.2}]],
+'arrears':[
+['先付急用欠款','支出较多，安抚长期等款的地方',{treasury:-3.2,localMorale:1.1,virtue:0.3}],
+['分次偿付','少付现银，久候者仍有不满',{treasury:-0.7,localMorale:0.2,prestige:-0.2}]],
+'tax-receipts':[
+['逐票核对收解','花费不多，清楚追溯经手责任',{treasury:-0.6,governance:0.3,favor:-0.4}],
+['催地方先补解','先补库银，地方须垫款应付',{treasury:1.3,localMorale:-0.5,favor:-1}]],
+'old-tax':[
+['重核旧案','付查档费用，清理积年疑账',{treasury:-1.1,governance:0.5}],
+['豁免小额争欠','省下追查人手，以库款换取民心',{treasury:-0.5,localMorale:0.7,governance:-0.1}]],
+'documents':[
+['增雇书吏清积案','多花钱加快清理，承办者压力减轻',{treasury:-1.8,governance:0.4,favor:0.6}],
+['限期以现员办完','不增开销，官员须加班清案',{governance:0.2,favor:-1.4}]],
+'exams':[
+['跨县核验保结','花钱核验，减少冒籍争议',{treasury:-1.3,governance:0.3,virtue:0.3}],
+['由原籍官具保','少花钱依靠地方，核验较宽',{treasury:-0.3,governance:-0.1,favor:1}]],
+'exam-rooms':[
+['拨款修足号舍','考生处境改善，修缮支出较多',{treasury:-3,localMorale:0.8,virtue:0.4}],
+['先补漏雨旧舍','先应急节省费用，修得不够周全',{treasury:-0.7,localMorale:0.2,prestige:-0.2}]],
+'river-inspect':[
+['派河员实地踏勘','付差旅钱粮，查清险段先后',{treasury:-1.5,grain:-0.2,governance:0.3,localDisaster:-0.8}],
+['先据堤户报册','省下踏勘开销，查验仍有疏漏',{treasury:-0.2,governance:-0.2,localMorale:0.2}]],
+'roads':[
+['补足驿递人手','加快公文传递，需补驿站钱粮',{treasury:-2,grain:-0.3,governance:0.4}],
+['删繁文减差派','省下人手，以精简换取周转',{governance:0.2,prestige:-0.2}]],
+'official-records':[
+['交叉核考履历','核查更严，花费查档费用',{treasury:-0.9,governance:0.4,favor:-0.6}],
+['先许官员自补','开销少，官员承情，履历核验较松',{treasury:-0.2,favor:1.2,governance:-0.1}]],
+'grain-shortage':[
+['拨银接济仓役','不支空仓余粮，先用现银维持差务',{treasury:-1.5,governance:0.2,localMorale:0.3}],
+['缩减差务先核欠粮','不添支出，少办急务换取清查时间',{governance:-0.2,prestige:-0.2,favor:-0.5}]],
+'grain-register':[
+['开仓实盘','支出役粮实点库存，仓簿更清楚',{treasury:-0.5,grain:-0.6,governance:0.4}],
+['先对交割凭据','省下役粮，实物仍待抽验',{treasury:-0.2,governance:0.1,favor:-0.5}]],
+'grain-air':[
+['雇役翻晾旧谷','花钱粮防霉，仓粮照管更稳妥',{treasury:-0.8,grain:-0.6,governance:0.3,localMorale:0.2}],
+['征附近民夫翻晾','省银仍需役粮，附近百姓受累',{grain:-0.4,governance:0.2,localMorale:-0.6}]],
+'grain-boat':[
+['沿程核单清耗','付查验钱粮，厘清运输损耗',{treasury:-1.1,grain:-0.5,governance:0.4}],
+['限船户包赔','收回赔款，船户负担加重',{treasury:0.8,localMorale:-0.6,governance:-0.1}]],
+'grain-measure':[
+['统一校准官斛','付校验钱粮，买卖双方少些争执',{treasury:-0.7,grain:-0.3,governance:0.3,localMorale:0.4}],
+['先由各仓自行校验','少花钱粮，仍有各仓尺度不一之忧',{treasury:-0.1,governance:0.1,favor:0.5}]],
+'grain-seal':[
+['增役轮巡仓门','付钱粮加严巡查，官员须担更多责任',{treasury:-1,grain:-0.4,governance:0.4,favor:-0.4}],
+['轮用现有仓役','不增银粮，轮值者压力较大',{governance:0.1,favor:-1}]],
+'grain-road':[
+['当面点粮交割','补搬运口粮，减少交割扯皮',{treasury:-0.6,grain:-0.6,governance:0.3}],
+['先收凭单后抽验','节省搬运开销，交接核验较松',{treasury:-0.1,governance:-0.1,favor:0.7}]],
+'army-grain':[
+['拨银运粮入营','花钱粮补给，优先恢复营中战备',{treasury:-2.4,grain:-0.8,readiness:1.5}],
+['借邻营余粮接济','少花银粮，邻营与地方承担周转',{treasury:-0.4,grain:-0.3,readiness:0.4,localMorale:-0.3}]],
+'army-arms':[
+['拨款修补旧械','修械费用较多，战备提升较快',{treasury:-2.6,readiness:1.3}],
+['拆旧械拼修','省钱但只能补齐部分军械',{treasury:-0.5,readiness:0.4,prestige:-0.2}]],
+'army-roll':[
+['实地点卯清兵籍','付点验钱粮，整顿营规并触动人情',{treasury:-1.1,grain:-0.2,readiness:0.8,favor:-1}],
+['由营官具结','开销少，营官承情，点验较松',{treasury:-0.2,favor:1.1,readiness:-0.3}]],
+'army-post':[
+['修齐边台烽燧','花钱修台，传警更稳，边患稍减',{treasury:-2.8,threat:-1.2,readiness:0.3}],
+['增派哨卒代传','省下修台款，需支巡哨口粮',{grain:-0.4,threat:-0.4,localMorale:-0.2}]],
+'army-horses':[
+['购足草料整马政','花钱粮保养战马，补强战备',{treasury:-1.9,grain:-0.4,readiness:1}],
+['向地方摊派草料','节省国库，地方百姓负担加重',{readiness:0.5,localMorale:-0.8,virtue:-0.2}]],
+'army-scout':[
+['增哨核实塘报','补钱粮派哨，降低边报迟误之患',{treasury:-1.2,grain:-0.3,threat:-0.8}],
+['并哨整理旧报','节省开销，整顿文报而少作外探',{governance:0.2,readiness:-0.2}]],
+'classics':[
+['召讲经筵','花费讲读用度，以修德劝学',{treasury:-0.8,virtue:0.6,mood:-0.2}],
+['先阅讲义缓开筵','省去仪节费用，教官略感冷落',{virtue:0.2,favor:-0.6}]],
+'censor':[
+['严核考成','拨查核费用，整肃吏治，触动官场人情',{treasury:-1.7,governance:0.5,favor:-1.2}],
+['先许自陈补正','开销较少，官员承情，整顿较缓',{treasury:-0.3,governance:0.1,favor:1.1}]],
+'greed':[
+['派无涉者查证','付查案费用，立清查之威，得罪经办者',{treasury:-1.6,governance:0.5,favor:-1.4}],
+['先令本衙自查','少付费用，但独立核查不足',{treasury:-0.3,governance:0.1,prestige:-0.3}]],
+'prison-books':[
+['增吏清理积案','花钱清卷，使囚属少些久候',{treasury:-1.3,governance:0.3,localMorale:0.7}],
+['限原衙补齐文卷','不加经费，以官员承压催清旧案',{governance:0.2,favor:-1.5,localMorale:-0.2}]],
+'rules':[
+['合议删繁旧章','付校订费用，省地方繁文',{treasury:-0.7,governance:0.3,localMorale:0.4}],
+['重申原有章程','不添开销，皇令更严，地方通融更少',{prestige:0.4,localMorale:-0.3}]],
+'censor-merit':[
+['核实后褒奖','出褒奖费用，鼓励清明任事',{treasury:-1.4,governance:0.2,favor:1.5}],
+['存案暂不加赏','省去赏钱，获荐者稍有失望',{governance:0.1,favor:-0.5}]],
+'accounts':[
+['交叉稽核报销','花钱核账，要求有关官员说明来由',{treasury:-0.9,governance:0.4,favor:-0.8}],
+['限额核销','少花核验费用，但退回部分报销请求',{treasury:0.5,favor:-1.6,governance:-0.1}]],
+'good-official':[
+['核实后给赏','付赏银鼓励地方任事，百姓亦受安抚',{treasury:-1.6,localMorale:0.5,favor:1.4}],
+['传旨嘉勉不加赏','省银维持体面，激励稍弱',{prestige:0.2,favor:0.4,governance:-0.1}]],
+'clan':[
+['拨员重校玉牒','花钱核谱，收紧资格，引起宗亲不满',{treasury:-1,governance:0.3,favor:-1}],
+['由族中具保','省银倚赖族中，资格核验较宽',{favor:1.5,governance:-0.2}]],
+'envoy':[
+['按足礼仪接使','动用礼费示好，来使态度改善',{treasury:-1.5,attitude:1,prestige:0.2}],
+['简仪相待','节省礼费，来使稍感冷落',{treasury:-0.2,attitude:-0.4,prestige:0.3}]],
+'tribute-books':[
+['增译官校订国书','花钱减少误译，外邦态度改善',{treasury:-1.1,attitude:0.7,governance:0.2}],
+['沿用旧译牍','不增译费，接洽较僵硬',{attitude:-0.3,prestige:0.2}]],
+'schools':[
+['小修祭器','付修缮费用，安抚州学师生',{treasury:-0.9,localMorale:0.4,virtue:0.3}],
+['借邻学祭器','少花银，州学须协调借还',{treasury:-0.2,virtue:0.1,favor:-0.5}]],
+'ritual':[
+['照册备齐祭物','礼仪周全，动用较多礼费',{treasury:-1.8,prestige:0.5}],
+['减省非必需用物','少用库款，仪制体面略减',{treasury:-0.3,virtue:0.3,prestige:-0.2}]],
+'tax-ferry':[
+['准旧票抵缴','少收一笔新摊钱，缓解小贩负担',{treasury:-0.6,localMorale:0.8}],
+['仍按新市例征收','本旬增收摊钱，小贩怨气上升',{treasury:1.1,localMorale:-0.7}]],
+'tax-weavers':[
+['准试行折银','本旬折收入库，织户少误农时但核收更费事',{treasury:0.6,localMorale:0.4,governance:-0.2}],
+['仍照旧例交绢','收解省事，织户仍须赶缴',{governance:0.2,localMorale:-0.4}]],
+'money-wages':[
+['先付工钱','国库先垫工薪，工匠与地方民心改善',{treasury:-3.5,localMorale:1,virtue:0.3}],
+['先办原定用物','优先保礼仪体面，工匠仍在等薪',{treasury:-1.8,prestige:0.4,localMorale:-0.7}]],
+'salt-mothers':[
+['准留家用盐','少取盐课，灶户生计稍宽',{treasury:-0.5,localMorale:0.7,virtue:0.2}],
+['先核清课额','少花钱查明旧额，灶户仍须等候',{treasury:-0.2,governance:0.3,localMorale:-0.2}]],
+'salt-roads':[
+['准轮日开市','出协调费用，兼顾两埠生计',{treasury:-0.6,localMorale:0.6,governance:-0.1}],
+['仍用旧埠','维持旧章，便于课司征收',{treasury:0.5,localMorale:-0.4,governance:0.1}]],
+'grain-mice':[
+['准修木架','花钱添架，仓粮照管更稳',{treasury:-1.4,grain:-0.2,governance:0.4}],
+['先用旧料修补','节省银粮，只先补急处',{treasury:-0.3,governance:0.1,favor:-0.4}]],
+'grain-quay':[
+['准分批共用泊位','补调度口粮，民船得便，官运略受牵制',{grain:-0.3,localMorale:0.7,governance:-0.1}],
+['官船依例先入','优先保官运，民船等待更久',{governance:0.3,localMorale:-0.5}]],
+'canal-lock':[
+['准错时放行','付值守费用，船户少些拥堵',{treasury:-0.5,localMorale:0.5,governance:0.2}],
+['仍按旧次序','不加值守开销，商船仍受等闸之苦',{governance:0.1,localMorale:-0.3}]],
+'army-shoes':[
+['准军匠赶制','付补贴赶制冬靴，营中战备改善',{treasury:-1.3,grain:-0.2,readiness:0.9}],
+['待例拨再办','省下眼前开支，战备暂受拖累',{readiness:-0.4,favor:0.4}]],
+'army-meals':[
+['准小营试办','花钱建磨，改善营中给养，触动旧供应人情',{treasury:-2.2,readiness:1,favor:-0.5}],
+['仍向粮商采买','省去建磨钱，仍需支付采买与运粮开销',{treasury:-0.5,grain:-0.3,readiness:0.2}]],
+'army-leave':[
+['准分班给假','军民得安抚，短期操练与战备减弱',{localMorale:0.8,virtue:0.2,readiness:-0.8}],
+['待换防后给假','维持操练，军眷与地方稍有怨气',{grain:-0.2,readiness:0.5,localMorale:-0.5}]],
+'army-archery':[
+['先阵法后弓术','多支操练口粮，优先提高整体战备',{grain:-0.5,readiness:1,governance:-0.1}],
+['先弓术后阵法','少支口粮，教习更易接受，战备收效较小',{grain:-0.2,readiness:0.3,favor:0.7}]],
+'border-flags':[
+['准边台试新灯号','花钱试灯，传警更清楚但须重新操演',{treasury:-1.1,threat:-0.7,readiness:-0.2}],
+['先修旧烽台','多花修缮钱，沿用熟悉旗号',{treasury:-2.1,threat:-0.5,readiness:0.4}]],
+'border-market':[
+['准设卡查验开市','增收市税、方便边民，也增加守边负担',{treasury:0.7,localMorale:0.5,threat:0.5}],
+['暂缓关外小市','守备省心，边民互易受阻',{threat:-0.6,localMorale:-0.6}]],
+'exam-inn':[
+['准官舍分院借住','付照管费用，减轻寒士负担',{treasury:-1,localMorale:0.6,virtue:0.3}],
+['仍由客店安置','省去官舍开支，寒士等候更难',{localMorale:-0.4,prestige:0.2}]],
+'exam-paper':[
+['准试行统一试纸','花钱统一式样，考场更易查验',{treasury:-1.2,governance:0.4,localMorale:-0.2}],
+['旧纸用完再换','节省官费，书坊承情，尺度暂未统一',{treasury:-0.2,localMorale:0.3,governance:-0.1}]],
+'river-willow':[
+['先补险段再栽柳','支出较多，优先减轻险情',{treasury:-4.2,localDisaster:-2.4,localMorale:0.4}],
+['先植柳固土','少花银，兼顾田户，眼前险情改善较少',{treasury:-1.2,localDisaster:-0.5,localMorale:0.6}]],
+'river-ferry':[
+['准修路并限期还地','补偿被占菜地，修路与乡情兼顾',{treasury:-2.5,localDisaster:-0.8,localMorale:0.3}],
+['另觅不占田的路','免扰田户，绕路费工费粮',{treasury:-1,grain:-0.5,localMorale:0.6,governance:-0.1}]],
+'censor-gifts':[
+['准简礼接风','整肃送礼之风，官员少些人情往来',{governance:0.3,favor:-0.7}],
+['先由各省自定','尊重地方旧情，整肃收效较弱',{favor:1,governance:-0.2}]],
+'censor-drums':[
+['准轮值受理','付值守费用，方便百姓陈情',{treasury:-1.2,localMorale:0.8,governance:0.1}],
+['先整现有申诉处','少花钱整顿旧处，百姓仍须等候',{treasury:-0.3,governance:0.3,localMorale:-0.2}]],
+'greed-stamps':[
+['准核查印簿','花钱独立查证，收紧用印并得罪经办者',{treasury:-0.8,governance:0.4,favor:-1}],
+['先令本衙说明','免添查案开销，须接受较弱的外部核验',{favor:0.6,governance:-0.2}]],
+'greed-relatives':[
+['准公开比价核查','付核验费用，压低采购中的人情空间',{treasury:-0.6,governance:0.5,favor:-1.3}],
+['先补采购凭据','开销少，沿用原经手关系',{treasury:-0.1,governance:0.1,prestige:-0.2}]],
+'clan-school':[
+['准同堂受业','补州学用度，利于教化，宗亲略有不满',{treasury:-1.1,virtue:0.5,localMorale:0.4,favor:-1}],
+['仍在宗学就读','宗亲承情，宗学用度由内帑承担',{privy:-1.5,favor:1.5,virtue:-0.1}]],
+'clan-fields':[
+['准限期借居','付修缮钱安置宗亲，管园官员须多担责任',{privy:-2,favor:1,governance:-0.2}],
+['另议城中住处','少动内帑，宗亲仍须等候',{privy:-0.3,favor:-0.6,governance:0.1}]],
+'envoy-food':[
+['准依习俗另备','以宫中礼费示好，来使态度改善',{privy:-1.5,attitude:1.2}],
+['仍照馆中旧例','省去额外礼费，坚持礼制但来使不悦',{prestige:0.3,attitude:-0.6}]],
+'envoy-seats':[
+['准先设便宴','先付便宴费用缓和争执，正礼暂留余地',{privy:-1.8,attitude:0.8,prestige:-0.2}],
+['等礼仪议定再宴','坚持朝廷体面，来使等待不悦',{prestige:0.5,attitude:-0.5}]],
+'ritual-music':[
+['准先修旧器','花小钱修旧器，示俭但体面稍减',{treasury:-0.8,virtue:0.3,prestige:-0.1}],
+['依礼备新器','购新器保仪典体面，礼费更高',{treasury:-2.7,prestige:0.6}]],
+'ritual-villages':[
+['准轮流主祭','付协调费用，节省乡间重复张罗',{treasury:-0.4,localMorale:0.6,prestige:-0.1}],
+['仍各村分办','守住旧礼，乡间仍有用度负担',{prestige:0.3,localMorale:-0.3}]],
+'justice-water':[
+['准先行轮灌','先保农时，安抚两村，但暂未厘清契界',{localMorale:0.8,governance:-0.2}],
+['先核契界再议','付查契费用，法理更清，农户等待不悦',{treasury:-0.7,governance:0.4,localMorale:-0.3}]],
+'justice-pawn':[
+['准传双方对质','花查案费用，让双方当面申明',{treasury:-0.8,governance:0.3,localMorale:0.4}],
+['先查铺中账簿','少花钱核单据，失主仍须等候',{treasury:-0.2,governance:0.2,localMorale:-0.2}]],
+'justice-fines':[
+['准限定轻罪试办','少收罚银，补修公共桥路并缓和民怨',{treasury:-0.7,localMorale:0.7,virtue:0.2}],
+['仍依旧例纳罚','本旬收取罚银，地方负担上升',{treasury:1.4,localMorale:-0.5,prestige:0.2}]],
+'farm-bees':[
+['准边角地试种','付试种费用，田户承情，需多作协调',{treasury:-1.2,localMorale:0.7,governance:-0.1}],
+['先保现有粮田','不添试种开支，维持田规但果农失望',{governance:0.2,localMorale:-0.3}]],
+'farm-water':[
+['准借料由田户出工','官府付料钱，农户出工改善用水',{treasury:-2.3,localMorale:0.9,localDisaster:-0.7}],
+['待地方自筹木料','省下库款，用水难处暂未缓解',{localMorale:-0.4,prestige:-0.1}]],
+'farm-seeds':[
+['准试田再推行','付试种钱粮，顾及水土，推广稍缓',{treasury:-0.7,grain:-0.2,localMorale:0.6,governance:-0.1}],
+['仍循本地旧历','不添试种开销，便于官府统一催办',{governance:0.3,localMorale:-0.4}]],
+'market-night':[
+['准专街试办','增收市钱、方便商贩，衙门巡夜事务增多',{treasury:0.8,localMorale:0.6,governance:-0.3}],
+['仍按旧时闭市','巡夜照旧，商贩少了生意',{governance:0.2,localMorale:-0.4}]],
+'market-scales':[
+['准设公秤公尺','付置办费用，让客商买卖更安心',{treasury:-1,localMorale:0.6,governance:0.2}],
+['先由行会调处','省去官费，争议交回行会处理',{favor:0.7,governance:-0.1,localMorale:-0.1}]],
+'market-fair':[
+['准轮换集日','付协调费用，商贩得便，衙门更费心',{treasury:-0.4,localMorale:0.5,governance:-0.1}],
+['各乡仍循旧日','省去协调，乡集相争仍未平息',{governance:0.2,localMorale:-0.3}]],
+'people-wells':[
+['准立共用井约','付立约与照管费用，弱户取水更有保障',{treasury:-0.5,localMorale:0.8,virtue:0.2}],
+['先由里老调处','省去官费，地方人情更重，效果较缓',{localMorale:0.2,governance:-0.2,favor:0.4}]],
+'people-elders':[
+['准立约借屋','以钱粮安置孤老，民心和圣德改善',{treasury:-1.6,grain:-0.3,localMorale:0.8,virtue:0.4}],
+['另寻官有房舍','少付租修费用，孤老安置仍需等候',{treasury:-0.4,localMorale:-0.2,governance:0.1}]],
+'people-peddlers':[
+['准划时入巷','老弱采买方便，衙门须多作巡查',{localMorale:0.6,governance:-0.2}],
+['仍在巷外摆摊','便于管理，巷中老人仍有采买不便',{governance:0.3,localMorale:-0.3}]],
+'works-bridge':[
+['准架可拆便桥','多花桥料钱，先保往来与民生',{treasury:-3.8,localMorale:1,governance:-0.1}],
+['先修桥墩再通行','修得更稳，但商户暂须绕行',{treasury:-2.2,governance:0.3,localMorale:-0.3}]],
+'works-roof':[
+['准先领瓦修漏','先付修漏款应急，领料手续暂须补正',{treasury:-1.4,localMorale:0.3,governance:-0.2}],
+['补齐请领文书再修','少付急办费用，守住领料章程',{treasury:-0.5,governance:0.3,favor:-0.5}]],
+'works-apprentices':[
+['准学徒另册随工','付教习口粮，匠户承情，监工多担责任',{treasury:-0.7,grain:-0.2,localMorale:0.5,governance:-0.1}],
+['仅用在册工匠','省下学徒开销，点验省事，匠户失望',{governance:0.3,localMorale:-0.3}]],
+'school-books':[
+['准立借书簿轮借','付照管费用，乡塾较快得书，须承担损毁风险',{treasury:-0.8,localMorale:0.7,virtue:0.2,governance:-0.1}],
+['先抄副本再借','少付银两，原书保全，乡塾须等抄写',{treasury:-0.2,governance:0.2,localMorale:0.1}]],
+'school-girls':[
+['准自愿入塾','补学堂用度，教化更广，触动族中旧见',{treasury:-1.3,localMorale:0.6,virtue:0.4,favor:-0.6}],
+['先由乡老议定','不添学费开支，乡中认可更重要，开课较缓',{favor:0.8,virtue:-0.1,localMorale:-0.1}]],
+'school-plays':[
+['准审本后试演','付审本演戏费用，百姓易于听懂',{treasury:-1.1,localMorale:0.6,virtue:0.2}],
+['仍用讲读劝学','礼官更认可，开销少但听讲者受益较窄',{treasury:-0.2,virtue:0.1,favor:0.6,localMorale:-0.1}]],
+'medicine-boxes':[
+['准借驿站巡诊','付药箱与差旅钱粮，方便偏远乡民',{treasury:-1.8,grain:-0.2,localMorale:0.9,virtue:0.2}],
+['仍由村民入城求诊','省去出诊开销，乡民奔走负担较重',{localMorale:-0.4,governance:0.1}]],
+'medicine-herbs':[
+['准校图刊印','花钱校印辨药图，乡民更安心',{treasury:-1.7,localMorale:0.6,virtue:0.3}],
+['先在药行传抄','少花官费，流传较慢且须靠药行',{treasury:-0.3,localMorale:0.1,governance:-0.1}]],
+'medicine-midwives':[
+['准自愿试学','付巡教费用，方便乡间学习，协调更费事',{treasury:-1.2,localMorale:0.7,virtue:0.3,governance:-0.1}],
+['先办医馆讲习','开销较少，先顾城中，乡间受益较慢',{treasury:-0.4,localMorale:0.2,prestige:-0.1}]],
+'palace-lamps':[
+['准随交班核领','付整顿费用，以内帑换更清楚的领用',{privy:-0.6,governance:0.2,favor:-0.3}],
+['仍按房领取','省下改制费用，管事承情，领用较松',{favor:0.7,governance:-0.2}]],
+'palace-fabrics':[
+['准余绸补衣','少付制衣钱，示俭却稍减体面',{privy:-0.3,virtue:0.4,prestige:-0.1}],
+['先清库存再议','多付清点用度，以库簿清楚为先',{privy:-1.1,governance:0.3,mood:-0.1}]],
+'palace-garden':[
+['准后圃堆肥','付划圃费用，示俭而须容园中不尽整洁',{privy:-0.4,virtue:0.3,mood:-0.2}],
+['仍按旧例清运','付清运费用，保园中整洁舒心',{privy:-0.9,mood:0.5,virtue:-0.1}]],
+'war-messengers':[
+['准分路传报','多付驿递钱粮，加强行营战备',{treasury:-2.8,grain:-0.3,readiness:1.2}],
+['仍由原驿路传递','省下增路费用，沿用旧路但收效有限',{treasury:-0.3,readiness:0.2,favor:-0.4}]],
+'war-letters':[
+['准便车附送','付附送费用，安抚军眷，军报调度略受牵制',{treasury:-0.7,localMorale:0.7,readiness:-0.2}],
+['待战事稍缓再送','以军报为先，军眷继续等候',{readiness:0.4,localMorale:-0.5}]],
+'war-carts':[
+['准立约短借','付车户补偿，增强行营运送能力',{treasury:-2.1,readiness:1,localMorale:-0.2}],
+['仍用官有军车','多付维护钱粮，免扰农时',{treasury:-1.1,grain:-0.4,readiness:0.2,localMorale:0.4}]]
+};
+const RELIEF=[
+['拨银赈济','花国库银救急，赈务较快展开',{treasury:-8,localMorale:2,localDisaster:-5,virtue:1}],
+['开仓赈粮','少动现银，以仓粮接济灾民',{treasury:-1,grain:-4,localMorale:1.6,localDisaster:-4,virtue:0.6}],
+['劝乡绅募赈','官府少出钱粮，救急较慢，承办官须多担责任',{treasury:-0.3,localMorale:0.4,localDisaster:-1,prestige:-0.2,favor:-1}]
+];
+function memorialChoices(template,province,state=null,fromId=null){
+const rows=template.relief?RELIEF:MEMORIAL_CHOICES[template.id];
+if(!rows)throw new Error('此奏折缺少处置方案：'+template.id);
+const author=state?.court.officials.find(o=>o.id===fromId&&o.alive);
+const activeWar=state?.campaigns.find(w=>!w.done);
+const border=state?.nation.army.frontiers.find(b=>b.dir===activeWar?.dir)||state?.nation.army.frontiers.reduce((a,b)=>!a||b.threat>a.threat?b:a,null);
+const foreign=state?.foreign.find(f=>f.status!=='交战');
+return [...rows.map(([label,consequence,spec],i)=>{
+const {localMorale,localDisaster,readiness,threat,favor,attitude,...effects}=spec;
+if(localMorale!==undefined||localDisaster!==undefined)effects.province={id:province.id,...(localMorale!==undefined?{morale:localMorale}:{}),...(localDisaster!==undefined?{disaster:localDisaster}:{})};
+if(readiness!==undefined||threat!==undefined)effects.army={id:border?.dir||'capital',...(readiness!==undefined?{readiness}:{}),...(threat!==undefined&&border?{threat}:{})};
+if(favor!==undefined&&author)effects.official={id:author.id,favor};
+if(attitude!==undefined&&foreign)effects.foreign={id:foreign.id,attitude};
+return {id:['approve','reject','alternative'][i],label,consequence,effects};
+}),{id:'hold',label:'留中',effects:{}}];
+}
+
+return {MEMORIAL_CHOICES,memorialChoices};
 },
 "src/llm/intents.js":function(__load){
 const { normalizeIntents } = __load("src/core/intents.js");
@@ -6073,23 +6400,24 @@ const d = faction.demand,
 e = option.effects || {},
 topic = memorial.type + " " + memorial.title + " " + memorial.request;
 let score = (e.faction?.[faction.id] || 0) * 3;
+const localMorale=(e.morale||0)+(e.province?.morale||0);
 const support = /准|拨|增|查|赈|开仓|奖|册/.test(option.label),
 reject = /驳|压下|自筹|放任|暂息/.test(option.label);
 if (/清议|纳谏|清廉|吏治|名节/.test(d))
 score +=
 (e.governance || 0) * 4 +
 (e.virtue || 0) * 2 +
-(e.morale || 0) +
+localMorale +
 (/贪腐|弹劾|赈|经筵/.test(topic) ? (support ? 4 : reject ? -4 : 0) : 0);
 if (/军|兵|封赏|勋/.test(d))
 score +=
-(e.prestige || 0) +
+(e.prestige || 0)+(e.army?.readiness||0)*1.5-(e.army?.threat||0) +
 (/军|边|兵|报捷|封赏/.test(topic) ? (support ? 7 : reject ? -6 : 0) : 0) -
 (e.governance || 0);
 if (/钱粮|地方|自主/.test(d))
 score +=
 -(e.treasury || 0) * 0.3 +
-(e.morale || 0) +
+localMorale +
 (/地方|州|赈|河/.test(topic) ? (support ? 4 : reject ? -3 : 0) : 0);
 if (/家族|恩荫|宗藩|封地|宗室/.test(d))
 score +=
@@ -6294,15 +6622,16 @@ let z=(pool.length?pool:s.nation.provinces)[pick.value];
 const template=routineTemplate(s,i,z,pick.value);if(!template)continue;
 z=s.nation.provinces.find(p=>p.id===template.provinceId)||z;
 const relief=!!template.relief;
+const author=pickMemorialist(s,template.type,z.id);
 const memorial={
 id: "routine-" + s.turn + "-" + i,
 templateId:template.id,
 title:template.title,
-...pickMemorialist(s,template.type,z.id),
+...author,
 provinceId:z.id,
 type:template.type,
 request:template.request,
-options:routineOptions(template,z),
+options:routineOptions(template,z,s,author.fromId),
 due: s.turn + 4,
 threadId: null,
 urgent: relief,
@@ -6345,11 +6674,8 @@ const chosen =
 m.options.find((o) => o.id === option) ||
 m.options.find((o) => o.id === (option === "reject" ? "opt1" : "opt0"));
 if (!chosen) throw new Error("无此处置选项");
-if (
-chosen.effects.treasury < 0 &&
-state.nation.treasury < -chosen.effects.treasury
-)
-throw new Error("国库不足以准奏此事");
+for(const [key,label]of [['treasury','国库'],['privy','内帑'],['grain','粮储']])
+if(chosen.effects[key]<0&&state.nation[key]<-chosen.effects[key])throw new Error(label+'不足以办理此事');
 const regional=m.provinceId&&state.nation.provinces.some(p=>p.id===m.provinceId)&&Number.isFinite(chosen.effects.morale);
 const effects=regional?{...chosen.effects,morale:undefined,province:{...chosen.effects.province,id:m.provinceId,morale:(chosen.effects.province?.morale||0)+chosen.effects.morale}}:chosen.effects;
 let s = applyPackage(
@@ -6375,7 +6701,7 @@ const province = s.nation.provinces.find((p) => p.id === t.provinceId);
 if (province) province.rebellion = false;
 }
 }
-return { state: applyMemorialRemark(s,m,remark,remarkKind), note: m.title + " · " + chosen.label + brushNote };
+return { state: applyMemorialRemark(s,m,remark,remarkKind), note: m.title + " · " + chosen.label + (chosen.consequence?'：'+chosen.consequence:'') + brushNote };
 }
 function applyMemorialRemark(state,memorial,remark,kind){
 const text=String(remark||'').slice(0,100),category=REMARK_KINDS.includes(kind)?kind:remarkCategory(text);
@@ -7224,7 +7550,7 @@ turn: after.turn,
 path: full,
 before: prior + logged,
 after: value,
-delta: Math.round((delta - logged) * 10000) / 10000,
+delta: Math.round((delta - logged) * 10000) / 10000 || 0,
 source,
 });
 } else if (value && typeof value === "object")
@@ -8217,7 +8543,11 @@ function digestLabel(state, path) {
   const p = path.split(".");
   const find = (list, id) => (list || []).find((x) => x.id === id);
   if (p[0] === "nation" && NATION_LABELS[p[1]] && p.length === 2) return NATION_LABELS[p[1]];
-  if (p[0] === "nation" && p[1] === "army" && p.at(-1) === "threat") return ["边患" + (Number(p[3]) + 1 || ""), "", 1];
+  if (p[0] === "nation" && p[1] === "army" && ['threat','readiness'].includes(p.at(-1))) {
+    const name=p[2]==='capital'?'京营':(state.nation.army.frontiers[Number(p[3])]?.dir||'边')+'境';
+    return [name+(p.at(-1)==='readiness'?'战备':'边患'),'',0.1];
+  }
+  if(p[0]==='foreign'&&p[2]==='attitude')return [(find(state.foreign,p[1])?.name||'外邦')+'态度','',0.1];
   if (p[0] === "emperor" && EMPEROR_LABELS[p[1]] && p.length === 2) return [EMPEROR_LABELS[p[1]], "", 0.5];
   if (p[0] === "province" && PROVINCE_LABELS[p[2]]) {
     const z = find(state.nation.provinces, p[1]);
@@ -8308,7 +8638,7 @@ function systemPrompt(state) {
 }
 const TASK_RULES = `【叙事守则】死亡、怀孕、生产、小产、任免、战果、执行度只在结算表列出时才可写成本旬发生；其余只能作回忆或传闻，并用“曾”“昔”“当年”标明。不写结算表以外的金额、人数、年龄。人物反应仅限官员，须在本章出场，每人好感-5到5，合计绝对值不超过10。宏愿证据须逐字引用本章原句并含该目标全部关键词。长期事实只记本章写明、日后仍成立的事。
 标题、正文、奏折、对白只写游戏中的人和事，禁用“据实落账”“引擎结算”“模型叙事”等开发说明，不向玩家解释生成或校验过程。
-【正文任务】把本旬写成「朝」「午」「夜」三段，每段{{LENGTH}}字，空槽可略写。必须表现结算表的执行度与成败。正文只写故事，不抄结算条目；起居注会另行展示结算。廷议按名单立场写。为新奏报写60–120字正文。风闻只写无关痛痒的市井传言。
+【正文任务】把本旬写成「朝」「午」「夜」三段，每段{{LENGTH}}字，空槽可略写。必须表现结算表的执行度与成败。正文只写故事，不抄结算条目；起居注会另行展示结算。廷议按名单立场写。为新奏报写160–260字正文。风闻只写无关痛痒的市井传言。
 章末 hook 写一句 30 字内的下旬伏笔，只能取自未结奏报、在途政务或新近事实，用“恐”“将”“未知”等未定语气，不得断言结果。
 正文输出：{"chapter":{"朝":"","午":"","夜":""},"summary":"30字内","hook":"","memorialTexts":[{"id":"","text":""}],"reactions":[{"name":"官员全名","favorDelta":0,"mood":"","note":""}],"rumors":[],"ambitionEvidence":[{"id":"","objectiveId":"","evidence":""}],"factUpdates":[{"subject":"","key":"","value":"","reason":""}]}
 【面谈任务】扮演被召见者御前面谈。只写此人言行，成功才让步，失败不得让步，不得超过职权。未提供的秘密不得编造，未允时不得承诺拨款、调兵或落实请求。好感、让步与秘密是否揭露由引擎判定，照判定写即可。
@@ -8396,7 +8726,7 @@ function turnMessages(state, forecast) {
     {
       role: "user",
       content: dynastyBible(state) + "\n" + historyBlock(state) + "\n" + situationBlock(state) +
-        `\n【本旬状态】${stable(dynamic)}\n【玩家排程】${stable(forecast.schedule)}\n【本旬结算表（不可更改）】${stable({ die: forecast.die, fate: forecast.fate, slots: forecast.slotResults, 账目: settlementDigest(state, forecast.entries), notes: forecast.notes, facts: forecast.facts || [] })}\n【廷议名单】${stable(forecast.debate || [])}\n【新奏报】${stable(forecast.newMemorials.map((m) => ({ id: m.id, title: m.title, type:m.type, from: m.from, request:m.request, choices:m.options.map(o=>o.label) })))}\n每本奏折写160–260字，交代事情来由、眼前难处、各方顾虑与具体请求；各折围绕所列事务展开，不套用“事关地方生计”等空话，不靠重复寒暄凑字。不能把请办的事写成已经办成，不得补造人名或硬结果。按【正文任务】写本旬，输出正文 JSON。`,
+        `\n【本旬状态】${stable(dynamic)}\n【玩家排程】${stable(forecast.schedule)}\n【本旬结算表（不可更改）】${stable({ die: forecast.die, fate: forecast.fate, slots: forecast.slotResults, 账目: settlementDigest(state, forecast.entries), notes: forecast.notes, facts: forecast.facts || [] })}\n【廷议名单】${stable(forecast.debate || [])}\n【新奏报】${stable(forecast.newMemorials.map((m) => ({ id: m.id, title: m.title, type:m.type, from: m.from, request:m.request, choices:m.options.map(o=>o.consequence?[o.label,o.consequence]:o.label) })))}\n每本奏折写160–260字，交代事情来由、眼前难处、各方顾虑与具体请求；各折围绕所列事务展开，不套用“事关地方生计”等空话，不靠重复寒暄凑字。方案效果仍是待选的取舍，不能把请办的事写成已经办成；不得补造人名或硬结果。按【正文任务】写本旬，输出正文 JSON。`,
     },
   ];
 }
@@ -8771,9 +9101,10 @@ o.opinions.map((v) => v.stance).join("、") +
 }
 for (const id of ids) {
 const decision = memorialDecision(action,id);
+const declared=s.memorials.find(m=>m.id===id)?.options.some(o=>o.consequence);
 result = resolveMemorial(s, id, decision.option, decision.remark, "处置奏报", intents.some(a=>a.inputId===slot+':remark:'+id&&a.type!=='other')?'无':decision.remarkKind);
 s = result.state;
-if(action.kind==='上朝'&&decision.option==='reject')s=applyPackage(s,{prestige:2},'当廷驳回');
+if(action.kind==='上朝'&&decision.option==='reject'&&!declared)s=applyPackage(s,{prestige:2},'当廷驳回');
 slotResults[slot].push(result.note);
 }
 if (action.stance === "当廷问责") {
@@ -11334,6 +11665,9 @@ favor: "好感",
 disaster: "灾情",
 stage: "阶段",
 result: "结果",
+readiness: "战备",
+threat: "边患",
+attitude: "态度",
 };
 const result = [];
 for (const [key, value] of Object.entries(effects || {})) {
@@ -11346,6 +11680,9 @@ s.nation.provinces.find((p) => p.id === value.id)?.name || "州郡";
 if (key === "official")
 name = s.court.officials.find((p) => p.id === value.id)?.name || "官员";
 if (key === "thread") name = "事件";
+if (key === "army") name = value.id === "capital" ? "京营" : value.id + "境";
+if (key === "foreign")
+name = s.foreign.find(f => f.id === value.id)?.name || "外邦";
 if (key === "faction") {
 for (const [id, n] of Object.entries(value))
 result.push({
@@ -11371,10 +11708,9 @@ return result;
 function effectLabel(value, unit = "") {
 if (typeof value !== "number") return String(value ?? "");
 if (value === 0) return "0" + unit;
-if (Math.abs(value) < 1) return value > 0 ? "微升" : "微降";
 return (
 (value > 0 ? "+" : "−") +
-Math.round(Math.abs(value)).toLocaleString("zh-CN") +
+Math.abs(value).toLocaleString("zh-CN", { maximumFractionDigits: 2 }) +
 unit
 );
 }
@@ -11391,7 +11727,9 @@ faction.demand +
 );
 }
 function memorialOptions(s, m) {
-const options = m.options.map((o) => ({ ...o }));
+const options = m.options.map((o) => ({ ...o,
+disabled: ["treasury", "privy", "grain"].some(k => (s.nation[k] || 0) < -(o.effects?.[k] || 0))
+}));
 if (!options.some((o) => o.id === "hold"))
 options.push({ id: "hold", label: "留中", effects: {} });
 options.push({
@@ -11468,9 +11806,9 @@ const fx = effectItems(o.effects, s)
 (f) =>
 '<span class="effect ' +
 (typeof f.value === "number"
-? f.value > 0
+? (/灾情|边患$/.test(f.label) ? -f.value : f.value) > 0
 ? "positive"
-: f.value < 0
+: (/灾情|边患$/.test(f.label) ? -f.value : f.value) < 0
 ? "negative"
 : "neutral"
 : "neutral") +
@@ -11498,7 +11836,7 @@ o.edictType && EDICTS[o.edictType]
 ? "已选"
 : draft?.option === o.id
 ? "票拟"
-: i < 4
+: i < 9
 ? "按 " + (i + 1)
 : "";
 return (
@@ -11518,7 +11856,7 @@ esc(o.label) +
 esc(tag) +
 '</small></span><span class="effects">' +
 (fx || '<span class="effect neutral">' + note + "</span>") +
-"</span></button>"
+"</span>" + (o.consequence ? '<small class="option-consequence">' + esc(o.consequence) + '</small>' : '') + "</button>"
 );
 })
 .join("");
@@ -11671,7 +12009,8 @@ esc(factionDemandReason(s, o, m)) +
 .join("") +
 "</section>"
 : "") +
-('<p class="review-help"><span class="keyboard-help">1–4 择批 · Enter 下一本 · Esc 暂退</span></p><p id="review-error" ' +
+('<p class="review-help"><span class="keyboard-help">1–' + Math.min(opts.length - 1, 9) +
+' 择批 · Enter 下一本 · Esc 暂退</span></p><p id="review-error" ' +
 'class="review-error" role="status" aria-live="polite"></p></section></div><footer class="review-footer"><butto' +
 'n type="button" data-review-hold>留中不发</button>') +
 (session.ids.some((id) => !session.choices[id] && !s.memorials.find((x) => x.id === id)?.urgent)
@@ -11728,10 +12067,17 @@ picker.onclick = null;
 }
 revealCurrent();
 };
+const fitBrush = () => {
+const field = root.querySelector("#review-remark");
+if (!field) return;
+field.style.height = "auto";
+field.style.height = field.scrollHeight + "px";
+};
 const paint = (focus = null) => {
 d.querySelector(".dialog-head .queue-picker")?.remove();
 root.innerHTML = memorialHTML(s, session);
 alignPicker();
+fitBrush();
 requestAnimationFrame(revealCurrent);
 if (focus) d.querySelector(focus)?.focus({ preventScroll: true });
 };
@@ -11836,16 +12182,23 @@ next();
 root.onclick = handleClick;
 const resize = () => {
 alignPicker();
+fitBrush();
 requestAnimationFrame(revealCurrent);
 };
 mobile.addEventListener("change", resize);
-onDialogExit(d, root, () => mobile.removeEventListener("change", resize));
+window.addEventListener("resize", resize);
+onDialogExit(d, root, () => {
+mobile.removeEventListener("change", resize);
+window.removeEventListener("resize", resize);
+});
 document.fonts?.ready.then(() => {
-if (d.open && root.isConnected) revealCurrent();
+if (d.open && root.isConnected) { revealCurrent(); fitBrush(); }
 });
 root.oninput = (e) => {
-if (e.target.id === "review-remark")
+if (e.target.id === "review-remark") {
 session.remarks[session.ids[session.index]] = e.target.value;
+fitBrush();
+}
 };
 d.onkeydown = (e) => {
 if (e.target.matches("input,textarea,select")) return;
@@ -11853,7 +12206,7 @@ const all = [
 ...root.querySelectorAll(".review-options [data-review-option]"),
 ],
 opts = all.filter((b) => !b.disabled);
-if (/^[1-4]$/.test(e.key)) {
+if (/^[1-9]$/.test(e.key)) {
 e.preventDefault();
 if (!all[Number(e.key) - 1]?.disabled) all[Number(e.key) - 1]?.click();
 } else if (

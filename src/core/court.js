@@ -353,23 +353,24 @@ export function factionOptionScore(faction, memorial, option) {
     e = option.effects || {},
     topic = memorial.type + " " + memorial.title + " " + memorial.request;
   let score = (e.faction?.[faction.id] || 0) * 3;
+  const localMorale=(e.morale||0)+(e.province?.morale||0);
   const support = /准|拨|增|查|赈|开仓|奖|册/.test(option.label),
     reject = /驳|压下|自筹|放任|暂息/.test(option.label);
   if (/清议|纳谏|清廉|吏治|名节/.test(d))
     score +=
       (e.governance || 0) * 4 +
       (e.virtue || 0) * 2 +
-      (e.morale || 0) +
+      localMorale +
       (/贪腐|弹劾|赈|经筵/.test(topic) ? (support ? 4 : reject ? -4 : 0) : 0);
   if (/军|兵|封赏|勋/.test(d))
     score +=
-      (e.prestige || 0) +
+      (e.prestige || 0)+(e.army?.readiness||0)*1.5-(e.army?.threat||0) +
       (/军|边|兵|报捷|封赏/.test(topic) ? (support ? 7 : reject ? -6 : 0) : 0) -
       (e.governance || 0);
   if (/钱粮|地方|自主/.test(d))
     score +=
       -(e.treasury || 0) * 0.3 +
-      (e.morale || 0) +
+      localMorale +
       (/地方|州|赈|河/.test(topic) ? (support ? 4 : reject ? -3 : 0) : 0);
   if (/家族|恩荫|宗藩|封地|宗室/.test(d))
     score +=

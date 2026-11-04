@@ -1,7 +1,7 @@
 import { seedNumber, random } from './rng.js';
-// Routine requests fund a small, specified administrative task. Approval trades
-// silver (and, for handling grain, stock) for execution; refusal saves resources
-// and asserts authority. Large rewards remain in events and edicts.
+import { memorialChoices } from './memorial-choices.js';
+// Topic selection and policy choices are separate: each petition keeps the
+// concrete alternatives and costs assigned when it reaches the court.
 const stateTrigger=type=>s=>{
  if(['钱粮','赋税','盐政'].includes(type))return s.nation.provinces.some(p=>p.tax>0&&!p.rebellion);
  if(['仓储','漕运'].includes(type))return s.nation.grain>=0.6&&s.nation.army.capital.troops+s.nation.army.frontiers.reduce((n,b)=>n+b.troops,0)>0;
@@ -131,15 +131,11 @@ export function routineTemplate(state,group,province,draw){
  const batchTypes=new Set(recent.filter(r=>r.turn===state.turn).map(r=>r.type)),unpicked=types.filter(t=>!batchTypes.has(t.type));
  const type=pick(least(unpicked.length?unpicked:types,'type')).type;
  const t=pick(least(available.filter(t=>t.type===type),'id'));
- const z=province,logistics=group===2&&!t.grain;
- return {...t,...(logistics?{grain:0.6,request:t.request+'，并请拨外差所需口粮'}:{}),provinceId:z.id,title:z.name+' '+t.title};
+ const z=province;
+ return {...t,provinceId:z.id,title:z.name+' '+t.title};
 }
-export function routineOptions(t,province){
- return [
-  {id:'approve',label:t.approve||'准奏',effects:t.relief?{treasury:-8,province:{id:province.id,morale:2,disaster:-5},virtue:1}:{treasury:-2,governance:0.1,...(t.grain?{grain:-t.grain}:{})}},
-  {id:'reject',label:t.reject||'驳回',effects:{prestige:0.2,...(t.relief?{virtue:-2}:{})}},
-  {id:'hold',label:'留中',effects:{}},
- ];
+export function routineOptions(t,province,state=null,fromId=null){
+ return memorialChoices(t,province,state,fromId);
 }
 const MEMORIAL_DETAILS={
  钱粮:'此事牵涉收款、解送与支领各处，若只凭一册定夺，恐将旧欠当作新欠，反教百姓再出钱。臣拟让经手人带原据当面核对，先分清哪些是册上笔误，哪些确须追问，再将有争议之处另呈御前，不使无涉人户陪着等候。',

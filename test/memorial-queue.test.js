@@ -46,7 +46,7 @@ test('两时辰都拟批后禁止新批折，撤下原安排才释放奏折',()=
 });
 test('已拟批分组及选折列表有明确状态，其他时辰占用的折子不能再选',()=>{
   const {s,ids}=queued(),html=memorialListHTML(s),session=createMemorialSession(s,'批折','午',null,{newBatch:true});
-  assert.match(html,/待批 · 4 本/);assert.match(html,/已拟批 · 2 本/);assert.match(html,/已拟批 · 朝间 · 准奏/);
+  assert.match(html,/待批 · 4 本/);assert.match(html,/已拟批 · 2 本/);assert.ok(html.includes('已拟批 · 朝间 · '+s.memorials.find(m=>m.id===ids[0]).options.find(o=>o.id==='approve').label));
   const review=memorialHTML(s,session);assert.match(review,new RegExp('data-review-add="'+ids[0]+'"[^>]*disabled'));
   assert.match(review,/已拟批（朝间）/);
 });

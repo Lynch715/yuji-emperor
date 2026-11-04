@@ -98,7 +98,7 @@ export function auditChanges(
             path: full,
             before: prior + logged,
             after: value,
-            delta: Math.round((delta - logged) * 10000) / 10000,
+            delta: Math.round((delta - logged) * 10000) / 10000 || 0,
             source,
           });
       } else if (value && typeof value === "object")

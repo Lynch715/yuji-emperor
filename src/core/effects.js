@@ -19,7 +19,7 @@ export function applyEffects(state, effects = {}, source = "引擎结算") {
         path,
         before: old,
         after: obj[key],
-        delta: Math.round((obj[key] - old) * 100) / 100,
+        delta: Math.round((obj[key] - old) * 100) / 100 || 0,
         source,
       });
   };
@@ -57,6 +57,12 @@ export function applyEffects(state, effects = {}, source = "引擎结算") {
     if (o)
       set(o, "favor", effects.official.favor, "official." + o.id + ".favor");
   }
+  if(effects.army){
+    const a=effects.army,id=a.id,b=id==='capital'?s.nation.army.capital:s.nation.army.frontiers.find(x=>x.dir===id);
+    const path=id==='capital'?'nation.army.capital':'nation.army.frontiers.'+s.nation.army.frontiers.indexOf(b);
+    if(b){set(b,'readiness',a.readiness,path+'.readiness');if(id!=='capital')set(b,'threat',a.threat,path+'.threat');}
+  }
+  if(effects.foreign){const f=s.foreign.find(f=>f.id===effects.foreign.id);if(f)set(f,'attitude',effects.foreign.attitude,'foreign.'+f.id+'.attitude');}
   if (effects.thread) {
     const t = s.threads.find((t) => t.id === effects.thread.id);
     if (t && t.stage !== "结束") {

@@ -321,5 +321,15 @@
     "remark": "9ad584115cb6769086f9adc09b360f38c7b5992482801364002959fd2e2fd7c2",
     "debate": "22b2b0e26d54d5427811c71faf14bfc369020abcdd421a560c59453a0d0fc886"
   },
-  "memorialVarietyForecastHashesNote": "v12新增奏折轮换记录、95种题材模板及灾情请赈，固定分组改为各类型轮换，故七条路径的奏折文本、选择与预演内容按本次授权变化。新基线保留完整当前预演；原formatForecastHashes及V8历史基线未覆盖。"
+  "memorialVarietyForecastHashesNote": "v12新增奏折轮换记录、95种题材模板及灾情请赈，固定分组改为各类型轮换，故七条路径的奏折文本、选择与预演内容按本次授权变化。新基线保留完整当前预演；原formatForecastHashes及V8历史基线未覆盖。",
+  "memorialChoicesForecastHashesV13": {
+    "court3": "87827762e1505a217932cafafd36cb3730a02681ac901cc4b7d5181d717941bb",
+    "batch6": "5c822b2578e08363cbef80babc4dd520193c5532e94148e3578c34fcf02c666b",
+    "discuss": "a19b0e2d44244084ac1857727c8262bbfdb8eeccccb941763a121473e193590b",
+    "hold": "1132b05da432937bc5d1794bf7db2908a3419b02ca5d33fc2eb1aadcb4c68d6e",
+    "accountability": "8a57ea10cb64a402725ae7125a67ad43f9217c8db617e0c6dfada6f89a0b4f45",
+    "remark": "99f807d90a238462ef36d3afa597a3500e5ad93bdc37e0d873e08cca4dee6be5",
+    "debate": "e502e0a6f25f2fd05cb4caa9e16498104de13348331590d7af5ccd79054085ea"
+  },
+  "memorialChoicesForecastHashesNote": "v13按授权为95个题目及灾情请赈设置独立政策效果，移除新选项按reject额外加皇威的隐藏奖励。新基线保留完整预演；历史v12、v8及格式基线保留。"
 }

@@ -27,10 +27,10 @@ test('C1 民心按人口加权，普遍效果乘0.3且相关州效果不波及�
   const r=applyEffects(s,{governance:8,virtue:8,prestige:8,morale:8});close(r.state.nation.governance,value+inc);close(r.state.emperor.virtue,value+inc);close(r.state.emperor.prestige,value+inc);close(r.state.nation.morale,value+inc*0.3);assert.ok(r.entries.some(e=>e.path==='nation.governance'&&e.delta===inc));}
 });
 
-test('C1 六部履职成为治理回归目标，圣德皇威心情按月回归，例行准奏只加0.1吏治且驳回不扣民心',()=>{
+test('C1 六部履职成为治理回归目标，圣德皇威心情按月回归，旧奏折按原存选项结算',()=>{
  let s=start();s.nation.governance=95;s.emperor.virtue=90;s.emperor.prestige=90;s.emperor.mood=90;s.emperor.tags=[];
  const month=court.courtMonth(s);assert.ok(month.nation.governance<95);s=emperorMonth(s);close(s.emperor.virtue,89.2);close(s.emperor.prestige,89.2);close(s.emperor.mood,88.25);
- s=start();s.memorials=[];s=seedMemorials(s);const m=s.memorials.find(m=>m.options[0].effects.governance===0.1);assert.ok(m);assert.equal(m.options[0].effects.governance,0.1);assert.ok(!m.options[1].effects.morale);
+ s=start();const m=s.memorials[0];m.options=[{id:'approve',label:'准奏',effects:{treasury:-2,governance:0.1}},{id:'reject',label:'驳回',effects:{}}];
  const approved=resolveMemorial(s,m.id,'approve').state;close(approved.nation.morale,s.nation.morale);
 });
 
@@ -128,7 +128,7 @@ test('C9 互市成功只设季度收入与一年期限，同国外邦一年只�
 });
 
 test('C6 当廷驳回另记皇威来源，成功问责祭天胜仗和代批仍走核心效果包',()=>{
- const s=start(),m=s.memorials.find(m=>m.options.some(o=>o.id==='reject'));
+ const s=start(),m=s.memorials[0];m.options=[{id:'reject',label:'驳回',effects:{prestige:0.2}}];
  const f=forecastTurn(s,{朝:{kind:'上朝',memorials:[m.id],decisions:{[m.id]:'reject'}},午:null,夜:null});
  assert.ok(f.entries.some(e=>e.source==='当廷驳回'&&e.path==='emperor.prestige'&&e.delta>0));
 });
@@ -141,10 +141,14 @@ test('C1 例行积压每月记一次治理成本，低治理影响各州民心�
  s.nation.governance=35;assert.ok(nationMonth(s).nation.morale<middle.nation.morale);
 });
 
-test('C1 有灾请赈的驳回损圣德，普通案牍驳回不扣民心圣德',()=>{
+test('C1 有灾请赈的拨银、开仓与募赈按不同代价和救灾力度结算',()=>{
  let s=start();s.memorials=[];s.nation.provinces[0].disaster=50;s=seedMemorials(s);
- const relief=s.memorials.find(m=>m.type==='请赈');assert.ok(relief);assert.equal(relief.options.find(o=>o.id==='reject').effects.virtue,-2);
- const routine=s.memorials.find(m=>m.type!=='请赈');assert.ok(!routine.options.find(o=>o.id==='reject').effects.virtue);
+ const relief=s.memorials.find(m=>m.type==='请赈');assert.ok(relief);
+ const results=['approve','reject','alternative'].map(id=>resolveMemorial(s,relief.id,id).state);
+ const z=x=>x.nation.provinces.find(p=>p.id===relief.provinceId);
+ assert.deepEqual(results.map(x=>50-z(x).disaster),[5,4,1]);
+ close(s.nation.treasury-results[0].nation.treasury,8);close(s.nation.grain-results[1].nation.grain,4);
+ assert.ok(results[2].nation.treasury>results[0].nation.treasury);
 });
 
 test('C6 真实急报逾期损皇威，普通案牍逾期不额外损皇威',()=>{

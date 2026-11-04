@@ -63,15 +63,16 @@ export function seedMemorials(state) {
     const template=routineTemplate(s,i,z,pick.value);if(!template)continue;
     z=s.nation.provinces.find(p=>p.id===template.provinceId)||z;
     const relief=!!template.relief;
+    const author=pickMemorialist(s,template.type,z.id);
     const memorial={
       id: "routine-" + s.turn + "-" + i,
       templateId:template.id,
       title:template.title,
-      ...pickMemorialist(s,template.type,z.id),
+      ...author,
       provinceId:z.id,
       type:template.type,
       request:template.request,
-      options:routineOptions(template,z),
+      options:routineOptions(template,z,s,author.fromId),
       due: s.turn + 4,
       threadId: null,
       urgent: relief,
@@ -114,11 +115,8 @@ export function resolveMemorial(
     m.options.find((o) => o.id === option) ||
     m.options.find((o) => o.id === (option === "reject" ? "opt1" : "opt0"));
   if (!chosen) throw new Error("无此处置选项");
-  if (
-    chosen.effects.treasury < 0 &&
-    state.nation.treasury < -chosen.effects.treasury
-  )
-    throw new Error("国库不足以准奏此事");
+  for(const [key,label]of [['treasury','国库'],['privy','内帑'],['grain','粮储']])
+    if(chosen.effects[key]<0&&state.nation[key]<-chosen.effects[key])throw new Error(label+'不足以办理此事');
   const regional=m.provinceId&&state.nation.provinces.some(p=>p.id===m.provinceId)&&Number.isFinite(chosen.effects.morale);
   const effects=regional?{...chosen.effects,morale:undefined,province:{...chosen.effects.province,id:m.provinceId,morale:(chosen.effects.province?.morale||0)+chosen.effects.morale}}:chosen.effects;
   let s = applyPackage(
@@ -144,7 +142,7 @@ export function resolveMemorial(
       if (province) province.rebellion = false;
     }
   }
-  return { state: applyMemorialRemark(s,m,remark,remarkKind), note: m.title + " · " + chosen.label + brushNote };
+  return { state: applyMemorialRemark(s,m,remark,remarkKind), note: m.title + " · " + chosen.label + (chosen.consequence?'：'+chosen.consequence:'') + brushNote };
 }
 function applyMemorialRemark(state,memorial,remark,kind){
   const text=String(remark||'').slice(0,100),category=REMARK_KINDS.includes(kind)?kind:remarkCategory(text);

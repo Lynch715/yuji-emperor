@@ -41,7 +41,11 @@ function digestLabel(state, path) {
   const p = path.split(".");
   const find = (list, id) => (list || []).find((x) => x.id === id);
   if (p[0] === "nation" && NATION_LABELS[p[1]] && p.length === 2) return NATION_LABELS[p[1]];
-  if (p[0] === "nation" && p[1] === "army" && p.at(-1) === "threat") return ["边患" + (Number(p[3]) + 1 || ""), "", 1];
+  if (p[0] === "nation" && p[1] === "army" && ['threat','readiness'].includes(p.at(-1))) {
+    const name=p[2]==='capital'?'京营':(state.nation.army.frontiers[Number(p[3])]?.dir||'边')+'境';
+    return [name+(p.at(-1)==='readiness'?'战备':'边患'),'',0.1];
+  }
+  if(p[0]==='foreign'&&p[2]==='attitude')return [(find(state.foreign,p[1])?.name||'外邦')+'态度','',0.1];
   if (p[0] === "emperor" && EMPEROR_LABELS[p[1]] && p.length === 2) return [EMPEROR_LABELS[p[1]], "", 0.5];
   if (p[0] === "province" && PROVINCE_LABELS[p[2]]) {
     const z = find(state.nation.provinces, p[1]);
@@ -132,7 +136,7 @@ export function systemPrompt(state) {
 }
 const TASK_RULES = `【叙事守则】死亡、怀孕、生产、小产、任免、战果、执行度只在结算表列出时才可写成本旬发生；其余只能作回忆或传闻，并用“曾”“昔”“当年”标明。不写结算表以外的金额、人数、年龄。人物反应仅限官员，须在本章出场，每人好感-5到5，合计绝对值不超过10。宏愿证据须逐字引用本章原句并含该目标全部关键词。长期事实只记本章写明、日后仍成立的事。
 标题、正文、奏折、对白只写游戏中的人和事，禁用“据实落账”“引擎结算”“模型叙事”等开发说明，不向玩家解释生成或校验过程。
-【正文任务】把本旬写成「朝」「午」「夜」三段，每段{{LENGTH}}字，空槽可略写。必须表现结算表的执行度与成败。正文只写故事，不抄结算条目；起居注会另行展示结算。廷议按名单立场写。为新奏报写60–120字正文。风闻只写无关痛痒的市井传言。
+【正文任务】把本旬写成「朝」「午」「夜」三段，每段{{LENGTH}}字，空槽可略写。必须表现结算表的执行度与成败。正文只写故事，不抄结算条目；起居注会另行展示结算。廷议按名单立场写。为新奏报写160–260字正文。风闻只写无关痛痒的市井传言。
 章末 hook 写一句 30 字内的下旬伏笔，只能取自未结奏报、在途政务或新近事实，用“恐”“将”“未知”等未定语气，不得断言结果。
 正文输出：{"chapter":{"朝":"","午":"","夜":""},"summary":"30字内","hook":"","memorialTexts":[{"id":"","text":""}],"reactions":[{"name":"官员全名","favorDelta":0,"mood":"","note":""}],"rumors":[],"ambitionEvidence":[{"id":"","objectiveId":"","evidence":""}],"factUpdates":[{"subject":"","key":"","value":"","reason":""}]}
 【面谈任务】扮演被召见者御前面谈。只写此人言行，成功才让步，失败不得让步，不得超过职权。未提供的秘密不得编造，未允时不得承诺拨款、调兵或落实请求。好感、让步与秘密是否揭露由引擎判定，照判定写即可。
@@ -220,7 +224,7 @@ export function turnMessages(state, forecast) {
     {
       role: "user",
       content: dynastyBible(state) + "\n" + historyBlock(state) + "\n" + situationBlock(state) +
-        `\n【本旬状态】${stable(dynamic)}\n【玩家排程】${stable(forecast.schedule)}\n【本旬结算表（不可更改）】${stable({ die: forecast.die, fate: forecast.fate, slots: forecast.slotResults, 账目: settlementDigest(state, forecast.entries), notes: forecast.notes, facts: forecast.facts || [] })}\n【廷议名单】${stable(forecast.debate || [])}\n【新奏报】${stable(forecast.newMemorials.map((m) => ({ id: m.id, title: m.title, type:m.type, from: m.from, request:m.request, choices:m.options.map(o=>o.label) })))}\n每本奏折写160–260字，交代事情来由、眼前难处、各方顾虑与具体请求；各折围绕所列事务展开，不套用“事关地方生计”等空话，不靠重复寒暄凑字。不能把请办的事写成已经办成，不得补造人名或硬结果。按【正文任务】写本旬，输出正文 JSON。`,
+        `\n【本旬状态】${stable(dynamic)}\n【玩家排程】${stable(forecast.schedule)}\n【本旬结算表（不可更改）】${stable({ die: forecast.die, fate: forecast.fate, slots: forecast.slotResults, 账目: settlementDigest(state, forecast.entries), notes: forecast.notes, facts: forecast.facts || [] })}\n【廷议名单】${stable(forecast.debate || [])}\n【新奏报】${stable(forecast.newMemorials.map((m) => ({ id: m.id, title: m.title, type:m.type, from: m.from, request:m.request, choices:m.options.map(o=>o.consequence?[o.label,o.consequence]:o.label) })))}\n每本奏折写160–260字，交代事情来由、眼前难处、各方顾虑与具体请求；各折围绕所列事务展开，不套用“事关地方生计”等空话，不靠重复寒暄凑字。方案效果仍是待选的取舍，不能把请办的事写成已经办成；不得补造人名或硬结果。按【正文任务】写本旬，输出正文 JSON。`,
     },
   ];
 }
