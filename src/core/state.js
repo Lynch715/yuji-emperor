@@ -1,10 +1,11 @@
 import { normalizeMemorialAction } from "./memorial-decisions.js";
 import { validateMemorialReviews } from "./memorial-records.js";
+import { validateScenarioAmbitions } from "./scenario-goals.js";
 import { seedNumber, random, DRAFT } from "./rng.js";
 import { uniqueName } from "./names.js";
 import { chooseRegent } from "./regency-info.js";
 import {factionPowers} from './politics.js';
-export const VERSION = 14;
+export const VERSION = 15;
 export const TALENTS = ["政略", "权谋", "武略", "文采", "魅力"];
 export const SLOTS = ["朝", "午", "夜"];
 export const POST_NAMES = [
@@ -481,6 +482,9 @@ export function migrate(input) {
   // options. Keep received petitions and saved forecasts exactly as they were.
   // v14 stores optional memorialReviews on committed chapters. Missing old
   // records are displayed from surviving notes; old chapters stay immutable.
+  // v15 adds bound conditions and consecutive-turn progress only to newly
+  // selected scenario goals. Never replace an old save's chosen objectives.
+  if(input.v<15)for(const a of s.ambitions)if(a.scenarioId&&a.holdTurns){a.stableTurns??=0;a.checkedTurn??=s.turn;}
   s.settings.freedom ??= "mid";
   s.v = VERSION;
   s.volumeIndex ??= [];
@@ -641,6 +645,7 @@ export function assertState(s) {
   if(s.v>=12&&s.turnBudget?.rewriteAttempted!==undefined&&typeof s.turnBudget.rewriteAttempted!=='boolean')throw new Error('剧情改写标记损坏');
   if(s.v>=13&&s.memorials.some(m=>m.options?.some(o=>o.consequence!==undefined&&typeof o.consequence!=='string')))throw new Error('奏折后果说明损坏');
   if(s.v>=14)validateMemorialReviews([...(s.volumes||[]).flatMap(v=>v.chapters),...(s.history||[])]);
+  if(s.v>=15)validateScenarioAmbitions(s,reignId(s));
   const walk = (x) => {
     if (typeof x === "number" && !Number.isFinite(x))
       throw new Error("存档含 NaN/Infinity");

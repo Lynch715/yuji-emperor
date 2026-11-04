@@ -17,14 +17,15 @@ import {talkAttempt} from '../src/core/court.js';
 import {callJSON} from '../src/llm/client.js';
 const fresh=()=>initialTurn(createState({seed:'国势全览',freedom:'free'}));
 const near=(a,b)=>assert.ok(Math.abs(a-b)<1e-6,`${a} != ${b}`);
-test('七位预设皇帝各有两宏愿两心事，崇祯推荐整顿朝局、钱粮、能臣和继嗣',async()=>{
+test('七位预设皇帝各有两宏愿两心事，崇祯使用专属中兴、辽东、周后与毕自严目标',async()=>{
  for(const sc of SCENARIOS){
   const goals=scenarioRecommendations(sc.id);assert.equal(goals.length,4);assert.equal(new Set(goals.map(g=>g.id)).size,4);
   assert.deepEqual(goals.map(g=>g.kind),['宏愿','宏愿','心事','心事']);assert.ok(goals.every(g=>g.reason));
   const s=await createOpening({scenario:sc.id,demo:true,seed:'推荐-'+sc.id},[],{}, {fetcher:()=>assert.fail('预设试读不得请求接口')});
   assert.deepEqual(s.ambitions.map(g=>g.id),goals.map(g=>g.id));assert.doesNotThrow(()=>migrate(s));
  }
- assert.deepEqual(scenarioRecommendations('ming-chongzhen').map(g=>g.id),['clean','wealth','friend','heir']);
+ assert.deepEqual(scenarioRecommendations('ming-chongzhen').map(g=>g.id),
+  ['restoration','liaodong','empress-zhou','bi-ziyan'].map(id=>'ming-chongzhen-'+id));
 });
 test('推荐不会覆盖玩家自选或明确随机，也不会更改已有存档的目标',async()=>{
  const options={scenario:'ming-chongzhen',demo:true,seed:'玩家自选'},selected=['sea','river','poetry','journey'];

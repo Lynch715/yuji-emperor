@@ -48,7 +48,8 @@ import {
 } from "../core/turn.js";
 import { assignTutor, generateCandidates } from "../core/harem.js";
 import { requestCompletion, applyBiography } from "../core/chronicles.js";
-import { GOALS } from "../core/ambitions.js";
+import { GOALS, goalsForScenario } from "../core/ambitions.js";
+import { goalConditionsHTML } from "./render.js";
 import { talkAttempt } from "../core/court.js";
 import { callJSON, createBudget } from "../llm/client.js";
 import {
@@ -345,7 +346,9 @@ async function newGame() {
     previousScenario=id;
     for (const name of ["emperor-name", "era-name"]) $("#"+name).disabled=!!sc;
     goalInputs().forEach((el,i)=>{
-      for(const opt of el.options){const g=GOALS.find(g=>g.id===opt.value);if(g)opt.textContent=g.title+(recommended.some(r=>r.id===g.id)?'（推荐）':'');}
+      const kind=i<2?'宏愿':'心事';
+      el.innerHTML='<option value="">随机分配</option>'+goalsForScenario(id).filter(g=>g.kind===kind).map(g=>
+        '<option value="'+esc(g.id)+'">'+esc(g.title)+(g.scenarioId?'（专属）':'')+'</option>').join('');
       el.value=(goalDrafts.get(id)||recommended.map(g=>g.id))[i]||'';
     });
     const panel=$("#goal-recommendations"); panel.hidden=!sc;
@@ -353,8 +356,8 @@ async function newGame() {
       const v=scenarioPreview(sc);$("#emperor-name").value=v.emperor;$("#era-name").value=v.era;$("#difficulty").value=scenarioDifficulty(sc);
       card.innerHTML='<strong>'+esc(v.dynasty+' · '+v.year+' · '+v.emperor+' '+v.age+' 岁')+'</strong><p>'+esc(v.blurb)+
         '</p><small>朝中：'+esc(v.cast.join('、'))+'等</small>';
-      panel.innerHTML='<h3>推荐宏愿与心事</h3><p class="muted">按这个开局推荐，可随时自行更换。</p><div class="goal-recommend-grid">'+
-        recommended.map(g=>'<div><strong>'+esc(g.kind+' · '+g.title)+'</strong><p>'+esc(g.reason)+'</p></div>').join('')+
+      panel.innerHTML='<h3>这位皇帝的宏愿与心事</h3><p class="muted">每项都有自己的达成条件，也可以换选其他目标。</p><div class="goal-recommend-grid">'+
+        recommended.map(g=>'<div><strong>'+esc(g.kind+' · '+g.title)+'</strong><p>'+esc(g.reason)+'</p>'+goalConditionsHTML(g)+'</div>').join('')+
         '</div><button type="button" id="use-recommended">采用这组推荐</button>';
       $("#use-recommended").onclick=()=>goalInputs().forEach((el,i)=>el.value=recommended[i].id);
     }else{

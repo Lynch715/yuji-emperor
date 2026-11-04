@@ -9,7 +9,7 @@ for(const [name,c] of Object.entries(CASES)){
  session.ids=s.memorials.slice(0,c.count).map(m=>m.id);session.stance=c.stance;
  for(const id of session.ids){session.choices[id]=c.decision;session.remarks[id]=c.remark||'';}
  const f=forecastTurn(s,{...s.schedule,[c.slot]:memorialAction(s,session)});
- // v14 adds archive records at commit only; compare the unchanged forecast
+ // v14/v15 add archive records and optional scenario goals; generic forecasts
  // against the v13 policy baseline with its historical version marker.
  f.state.v=13;
  // v13 changes memorial choices and their real effects intentionally.

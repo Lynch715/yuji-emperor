@@ -8,6 +8,7 @@ import {
 import { fateLabel } from "../core/rng.js";
 import { energyLimit } from "../core/emperor.js";
 import { scheduleCost, ACTIONS } from "../core/turn.js";
+import { goalConditionLabel } from "../core/scenario-goals.js";
 import {
   ACTION_GROUPS,
   HALLS,
@@ -369,6 +370,17 @@ export function mobileNavHTML(s) {
     "</nav>"
   );
 }
+export function goalConditionsHTML(a, showCurrent = false) {
+  const items=a.objectives.map(o=>{
+    const current=!showCurrent?'':o.current===null?'尚未具备':o.current!==undefined?'当前 '+num(o.current):'';
+    return '<li>'+esc((showCurrent?(o.done?'✓ ':'○ '):'')+goalConditionLabel(o))+
+      (current?'<small>'+esc(current)+'</small>':'')+'</li>';
+  }).join('');
+  const hold=a.holdTurns?'<p>以上条件须连续保持 '+a.holdTurns+' 旬'+
+    (showCurrent?'（已保持 '+(a.stableTurns||0)+' 旬）':'')+'。</p>':'';
+  return '<details class="goal-conditions"><summary>达成条件'+(a.status==='达成'?' · 已达成':'')+
+    '</summary><ul>'+items+'</ul>'+hold+'</details>';
+}
 export function ambitionsHTML(s) {
   return s.ambitions
     .map(
@@ -385,7 +397,7 @@ export function ambitionsHTML(s) {
         a.progress +
         '" aria-valuemin="0" aria-valuemax="100"><i style="width:' +
         a.progress +
-        '%"></i></div></div>',
+        '%"></i></div>'+goalConditionsHTML(a,true)+'</div>',
     )
     .join("");
 }
