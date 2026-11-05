@@ -34,6 +34,7 @@ export function applyEffects(state, effects = {}, source = "引擎结算") {
   for(const f of ['arrears','privyArrears','grainArrears'])if(Number.isFinite(effects[f])){s.nation[f]??=0;set(s.nation,f,effects[f],'nation.'+f,Number.MAX_SAFE_INTEGER);}
   if(Number.isFinite(effects.morale))for(const p of s.nation.provinces)
     set(p,'morale',diminishing(p.morale,effects.morale)*0.3,'province.'+p.id+'.morale');
+  if(s.keju)set(s.keju,'scholarReputation',effects.scholarReputation,'keju.scholarReputation');
   set(s.nation,'governance',diminishing(s.nation.governance,effects.governance),'nation.governance');
   for (const f of ["health", "mood", "prestige", "virtue"])
     set(s.emperor, f, ['prestige','virtue'].includes(f)?diminishing(s.emperor[f],effects[f]):effects[f], "emperor." + f);

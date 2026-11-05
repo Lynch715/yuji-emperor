@@ -1,3 +1,4 @@
+import { openEnke, enkeBlock } from './keju.js';
 import {configureResearch} from './tech.js';
 import {buildIndustry,completeIndustry} from './industries.js';
 import {techEffects} from './tech-rules.js';
@@ -8,6 +9,7 @@ import { applyPackage, clamp } from "./effects.js";
 import { addEvent } from "./events.js";
 import { roll } from "./rng.js";
 export const EDICTS = {
+  加开恩科:{cost:30,months:0,difficulty:0,office:'礼部尚书',effects:{}},
   赈灾: {
     cost: 30,
     grain: 20,
@@ -143,6 +145,7 @@ export function execution(state, type, die) {
   };
 }
 export function edictBlock(state, type, province = null) {
+  if(type==='加开恩科')return enkeBlock(state);
   if(!freedomRules(state).edictCooldown)return '';
   const same=p=>p.edictType===type&&(type!=='赈灾'||!province||!p.province||p.province===province);
   if(state.projects.some(p=>!p.done&&same(p)))return '同类旨意尚在途，请待竣结';
@@ -163,6 +166,7 @@ export function issueEdict(state, action, die) {
   const type = action.edictType || "禁令",
     rule = EDICTS[type]&&{...EDICTS[type],cost:edictCost(state,type)};
   if (!rule) throw new Error("无法识别此旨意，请选择模板");
+  if(type==='加开恩科')return openEnke(state,action.examiner);
   if(type==='格物')return configureResearch(state,action);
   if(type==='兴业')return buildIndustry(state,action);
   const blocked=edictBlock(state,type,action.province);if(blocked)throw new Error(blocked);

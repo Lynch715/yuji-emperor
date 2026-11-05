@@ -1,3 +1,4 @@
+import { examOfficialView } from '../core/keju.js';
 import {technologyHTML} from './technology.js';
 import {INDUSTRIES} from '../core/tech-rules.js';
 import {memoryButton,relationName} from './memories.js';
@@ -87,9 +88,9 @@ export function palacePanel(s, name) {
             "</h3></div><p>" +
             o.age +
             " 岁 · " +
-            esc(s.court.factions.find((f) => f.id === o.faction)?.name) +
+            esc(examOfficialView(s,o).faction) +
             "</p><dl>" +
-            Object.entries(o.abilities)
+            Object.entries(examOfficialView(s,o).abilities)
               .map(([k, v]) => "<dt>" + esc(k) + "</dt><dd>" + v + "</dd>")
               .join("") +
             "<dt>好感</dt><dd>" +
@@ -98,6 +99,8 @@ export function palacePanel(s, name) {
             (o.secretKnown ? num(o.greed) : "尚未揭露") +
             "</dd></dl>" +
             (o.secretKnown ? "<p>" + esc(o.secret) + "</p>" : "") +
+            (o.keju?'<p>'+esc(o.keju.rank)+' · '+esc(o.keju.hometown)+' · '+(o.post?'在任':'候补')+'<br>座师：'+esc(official(o.keju.mentor))+'<br>立场：'+esc(examOfficialView(s,o).stance)+' · 野心：'+esc(examOfficialView(s,o).ambition)+'</p>':'') +
+            (o.examStudents?.length?'<p>门生：'+o.examStudents.map(id=>esc(official(id))).join('、')+'</p>':'') +
             '<button data-talk="' +
             o.id +
             '">召见</button>'+memoryButton(o.id)+'</div>',

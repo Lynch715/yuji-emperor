@@ -1,3 +1,4 @@
+import { examiners } from '../core/keju.js';
 import {researchFields,industryFields,developmentAction,updateDevelopmentPreview} from './technology.js';
 import {sceneActionFields,sceneActionLabel} from './scene-view.js';
 import { postTitle } from "../core/scenarios.js";
@@ -39,6 +40,7 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
       '</select></div><div id="edict-army-field"><label for="edict-army">补充军队</label><select id="edict-army"><option value="capital">京营</option>'+s.nation.army.frontiers.map(b=>'<option value="'+esc(b.dir)+'">'+esc(b.dir)+'境边军</option>').join('')+'</select></div><div id="edict-amount-field"><label for="edict-amount">拨转金额（万两）</label><input id="edict-amount" type="number" min="0.01" step="any" value="10"></div><div id="edict-child-field"><label for="edict-child">储君人选</label><select id="edict-child"><option value="">请选择在世皇子</option>' +
       opt(s.harem.children.filter((c) => c.sex === "男" && c.health > 0)) +
       '</select></div><div id="edict-followup-field"><label for="edict-followup">同一事项尚未办结时</label><select id="edict-followup"><option value="重申">重申原旨，不另花钱</option><option value="督办">追加督办，再付一份钱粮，缩短工期、改善执行</option></select></div><div id="edict-text-field"><label for="edict-text">御旨（选填）</label><textarea id="edict-text" maxlength="8000" placeholder="着有司依议施行。"></textarea></div><label id="force-edict-field" class="check"><input id="force-edict" type="checkbox">遭封驳仍强推（可能引发党争）</label>';
+  if(kind==='下旨')fields+='<div id="examiner-edict-field"><label for="enke-examiner">恩科主考官</label><select id="enke-examiner"><option value="">请先任主考</option>'+opt(examiners(s))+'</select><p class="muted">颁旨后开恩科，国库支三十万两，士林声望加3；请到科举殿命题。</p></div>';
   if(kind==='下旨')fields+='<div id="research-fields">'+researchFields(s)+'</div><div id="industry-fields">'+industryFields(s)+'</div>';
   if (kind === "任命")
     fields =
@@ -186,6 +188,7 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
       const ongoing=s.projects.find(p=>!p.done&&p.edictType===type&&(p.province||null)===province&&(type!=='征兵'||p.armyTarget===$('#edict-army').value));
       if(['转内帑','转国库'].includes(type))text='按实际余银拨转，超过余额或收款余量时只拨可用部分。';
       else if(ongoing)text=$('#edict-followup').value==='督办'?'追加一份钱粮，催办原来的事项；不会再另开一项。':'重申原旨，不另支钱粮，仍按原来的进度办理。';
+      if(type==='加开恩科')text='国库三十万两，士林声望加3；先选主考，起驾后到科举殿命题。';
       if(type==='格物')text='格物月经费 '+$('#research-funding').value+' 万两，月结按余银拨付；安排后起驾生效。';
       if(type==='兴业'){updateDevelopmentPreview($('#action-form'),s);text=$('#industry-quote').textContent;}
       const blocked=edictBlock(s,$('#edict-type').value,$('#province').value||null);if(blocked)text+='；'+blocked;}
@@ -207,8 +210,9 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
     if(kind==='外交'&&$('#operation')?.value==='互市')text+='；可重新议约，议成后替换原约，未成仍照旧约往来。';
     $("#action-estimate").textContent = text;
     const show=(id,visible)=>$("#"+id)?.classList.toggle("hidden",!visible);
-    const development=['格物','兴业'].includes($('#edict-type')?.value);
+    const development=['格物','兴业','加开恩科'].includes($('#edict-type')?.value);
     for(const id of ['edict-province-field','edict-followup-field','edict-text-field','force-edict-field'])show(id,!development);
+    show('examiner-edict-field',$('#edict-type')?.value==='加开恩科');
     show('research-fields',$('#edict-type')?.value==='格物');
     show('industry-fields',$('#edict-type')?.value==='兴业');
     show("edict-amount-field",["转内帑","转国库"].includes($("#edict-type")?.value));
@@ -228,7 +232,8 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
     if(person)html+='<p>'+esc(person.family||person.personality||postTitle(s,s.court.posts.find(p=>p.holder===person.id))||person.status||'御前候命')+'</p><p>'+esc(person.age?person.age+' 岁':'')+(person.favor!==undefined?' · 好感 '+person.favor:'')+'</p>';
     if(kind==='下旨'){
       const r={...EDICTS[$('#edict-type').value],cost:edictCost(s,$('#edict-type').value)};
-      if(['格物','兴业'].includes($('#edict-type').value))html+='<p>先定方向与经费，起驾后发往有司。</p>';
+      if($('#edict-type').value==='加开恩科')html+='<p>国库三十万两，士林声望加3。</p><p>主考：'+esc(s.court.officials.find(o=>o.id===$('#enke-examiner').value)?.name||'尚未任命')+'</p><p>起驾后，前往科举殿颁题阅卷。</p>';
+      else if(['格物','兴业'].includes($('#edict-type').value))html+='<p>先定方向与经费，起驾后发往有司。</p>';
       else html+='<p>主办　'+r.office+'</p><p>每次新办或追加督办需 '+r.cost+' 万两'+(r.grain?'、'+r.grain+' 万石':'')+'，预计 '+r.months+' 个月。</p><p>预计成算「'+execution(s,$('#edict-type').value,11).label+'」</p>';
     }
     html+='<p class="muted action-preview-note">'+({自拟情节:'写下想经历的事情，人物会有自己的回应。',召见:'候见之人已至殿外。',宴请:'择宾客，定酒席。',后宫:'宫中诸事，待陛下裁定。',任命:'官职与人选，均在此列。',外交:'先定来往之国，再议国书。',选妃:'大选有定期，平日也可举荐；候选人须年满十八。',出巡:'出行占满一旬，奏报仍会呈来。',亲征:'御驾亲征，须留一臣守京。',私下行事:'择一人，定所行之事。',下旨:'旨意发至有司，须待回奏。'}[kind]||'安排时辰后，放入本旬日程。')+'</p>';
@@ -250,6 +255,7 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
       if (kind === "下旨")
         Object.assign(a, {
           edictType: val("edict-type"),
+          ...($("#edict-type").value==='加开恩科'?{examiner:val("enke-examiner")}:{}),
           province: val("province"),
           ...($('#edict-type').value==='征兵'?{armyTarget:val('edict-army')}:{}),
           amount: Number(val("edict-amount")),

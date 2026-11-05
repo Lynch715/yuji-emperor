@@ -6,7 +6,7 @@ export function personNames(state, excludeId = null) {
   // Historical names are also reserved: this exceeds the living-name minimum
   // and keeps names in old chronicles unambiguous.
   const groups = [state.court.officials, state.harem.consorts, state.harem.children,
-    state.harem.royalWomen || [], state.harem.candidates || []];
+    state.harem.royalWomen || [], state.harem.candidates || [], (state.keju?.exams||[]).flatMap(e=>e.candidates)];
   const names = groups.flat().filter(p => !excludeId || p.id !== excludeId).map(p => p.name);
   names.push(...(state.chronicles || []).map(r=>r.emperor),state.emperor.name, ...(state.foreign || []).filter(f=>f.id!==excludeId).map(f => f.ruler));
   if (typeof state.dowager === 'string') names.push(state.dowager);

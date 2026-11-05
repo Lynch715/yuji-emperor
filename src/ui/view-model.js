@@ -16,7 +16,7 @@ export const ACTION_GROUPS = [
   ["内廷", ["后宫", "选妃"]],
   ["出行", ["出巡", "亲征"]],
 ];
-export const HALLS = ["朝堂", "后宫", "天下", "格物", "内库", "宗室", "史馆"];
+export const HALLS = ["朝堂", "科举", "后宫", "天下", "格物", "内库", "宗室", "史馆"];
 export const GLYPHS = {自拟情节:"叙",上朝:"朝",批折:"批",下旨:"旨",任命:"任",召见:"见",宴请:"宴",外交:"使",私下行事:"密",后宫:"宫",选妃:"选",出巡:"行",亲征:"征",歇息:"憩"};
 export function selectionDescription(s){const period=freedomRules(s).selectionPeriod;return period?'每'+period+'年大选一次；平日可花内帑三万两举荐一人，已有候选人可随时留牌。':'可随时选秀，位分名额不限。';}
 export function actionAvailability(s, kind) {

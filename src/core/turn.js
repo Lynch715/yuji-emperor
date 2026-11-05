@@ -1,3 +1,4 @@
+import { advanceExams, examiners } from './keju.js';
 import {developmentNotes} from './tech.js';
 import {resolveScene,sceneBlock,sceneOutcomeText,rememberScene,SCENE_ENERGY} from './scenes.js';
 import { freedomRules, selectionYear, adjudicate } from "./freedom.js";
@@ -111,6 +112,7 @@ export function validateSchedule(state, schedule) {
     if(a.kind==='自拟情节'){const blocked=sceneBlock(state,a);if(blocked)throw new Error(blocked);}
     if(a.kind==='外交'){const blocked=diplomacyBlock(state,a);if(blocked)throw new Error(blocked);}
     if(a.kind==='下旨'){const blocked=edictBlock(state,a.edictType,a.province);if(blocked)throw new Error(blocked);}
+    if(a.kind==='下旨'&&a.edictType==='加开恩科'&&!examiners(state).some(o=>o.id===a.examiner))throw new Error('加开恩科须先任命在京主考官');
     if(a.kind==='召见'&&(talkPeople(a).length===0||talkPeople(a).some(id=>![...state.court.officials,...state.harem.consorts,...state.foreign].some(o=>o.id===id))))throw new Error('请选择名册中的召见人物');
     if (rule.full) full = true;
     for (const id of a.memorials || []) {
@@ -137,7 +139,7 @@ export function initialTurn(state) {
   s.harem.royalWomen ??= [
     { id: "royal-1", name: "萧静宜", age: 22, married: null },
   ];
-  return unlockAchievements(evaluateAmbitions(s));
+  return advanceExams(unlockAchievements(evaluateAmbitions(s)));
 }
 export function forecastTurn(
   state,
@@ -343,9 +345,11 @@ function forecastDraft(state, schedule, intents = []) {
     s = foreignYear(s);
     notes.push(
       "年结：长岁、朝贡、年度评估" +
-        ((Math.floor(s.turn / 36) + 1) % 3 === 1 ? (selectionYear(s)?"；科举、选秀开科":"；科举开科") : selectionYear(s)?"；选秀开选":""),
+        (selectionYear(s)?"；选秀开选":""),
     );
   }
+  s = advanceExams(s);
+  if(s.keju.exams.length>(state.keju?.exams.length||0))notes.push('常科开科，礼部请任主考官；请入科举殿主持取士');
   s.era = calendarEra(s);
   const wasRegent=!!s.regency;
   s=advanceRegency(s);

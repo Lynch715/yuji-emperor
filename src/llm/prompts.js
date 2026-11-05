@@ -43,6 +43,7 @@ const PERSON_LABELS = { favor: "好感", mood: "心情", health: "健康" };
 const FACTION_LABELS = { power: "势力", attitude: "态度" };
 const PROVINCE_LABELS = { morale: "民心", disaster: "灾情", pop: "人口" };
 function digestLabel(state, path) {
+  if(path==='keju.scholarReputation')return ['士林声望','',0.1];
   const p = path.split(".");
   const find = (list, id) => (list || []).find((x) => x.id === id);
   if (p[0] === "nation" && NATION_LABELS[p[1]] && p.length === 2) return NATION_LABELS[p[1]];
@@ -99,6 +100,7 @@ export function worldRules(state) {
     : `你是架空王朝「${state.dynasty}」的叙事引擎，制度近似明清。`;
   return `${frame}只输出一个 JSON 对象。\n铁律：引擎记账，模型叙事。所有钱粮、人物、派系、健康、受孕、生育、死亡、升迁、战争胜负、执行度由结算表决定，你不得追加或改写硬结果，不得另给数字。名册姓名一字不改，大臣称陛下、自称臣，妃嫔自称臣妾。人物各有利益。文风「${style.label}」：${style.rules}${pov.rules}\n【文风范文（只学笔法，不照搬人物与事件）】${style.sample}\n白描，禁用嘴角勾起、眼中闪过一丝${modern ? "" : "、现代词"}；对话用「」。亲密场面点到为止，禁止描写性行为或身体细节。共同经历摘要是旁白所知，NPC只知道自己参与、目睹或后来获知的部分；私下往事不得让未在场者无故知晓。人物各有立场，不替玩家决定；自由度只影响口谕裁决，不改变叙事一致性要求。`;
 }
+function examFaction(o,value){return o.keju&&!o.keju.revealed.includes('faction')?'派系待察':value;}
 export function roster(state) {
   return state.court.officials
     .filter((o) => o.alive)
@@ -110,7 +112,7 @@ export function roster(state) {
         "｜" +
         (postTitle(state, state.court.posts.find((p) => p.holder === o.id)) || "待任") +
         "｜" +
-        (state.court.factions.find((f) => f.id === o.faction)?.name || "无党") +
+        examFaction(o,state.court.factions.find((f) => f.id === o.faction)?.name || "无党") +
         "｜好感" +
         o.favor,
     )
@@ -174,7 +176,7 @@ export function dynastyBible(state,context=null) {
     州郡: state.nation.provinces.map((z) => z.name),
     // Full cards follow the stable compact roster to preserve prefix caching.
     出场人物: state.court.officials.filter(o=>o.alive&&full.has(o.id)).slice().sort(byId)
-      .map(o=>[o.id,o.name,post(o.id),faction(o.faction),o.personality||''].join('｜'))
+      .map(o=>[o.id,o.name,post(o.id),examFaction(o,faction(o.faction)),o.personality||''].join('｜'))
       .concat(state.harem.consorts.filter(c=>full.has(c.id)).slice().sort(byId).map(c=>[c.id,c.name,c.rank,c.family].join('｜'))),
   });
 }
@@ -283,7 +285,7 @@ export function talkMessages(state, result, log = []) {
   const { secret, secretKnown, memory, life, favor, attitude, mood, health, ...card } = npc;
   const known = secretKnown || (result.kind === "试探" && result.success);
   const post = postTitle(state, state.court.posts.find((p) => p.holder === npc.id));
-  const header = dynastyBible(state,{person:result.person,line:result.line,log}) + "\n【面谈对象】" + stable({ id: card.id, name: card.name, 职位: post || card.rank || card.status || "", personality: card.personality, family: card.family, faction: card.faction, ruler: card.ruler, demand: card.demand }) +
+  const header = dynastyBible(state,{person:result.person,line:result.line,log}) + "\n【面谈对象】" + stable({ id: card.id, name: card.name, 职位: post || card.rank || card.status || "", personality: card.personality, family: card.family, faction: card.keju&&!card.keju.revealed.includes('faction')?'待察':card.faction, ruler: card.ruler, demand: card.demand }) +
     "\n【此人能做到什么】妃嫔不能给钱兵；其他职权外请求必须回去议。\n";
   const recent = (Array.isArray(log) ? log : [])
     .filter((t) => t && t.person === result.person && t.turn === result.turn && t.id !== result.id && t.reply)

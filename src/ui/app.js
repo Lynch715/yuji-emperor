@@ -1,3 +1,4 @@
+import { openKeju } from './keju.js';
 import {industryForm,developmentAction,updateDevelopmentPreview} from './technology.js';
 import {configureResearch} from '../core/tech.js';
 import {buildIndustry} from '../core/industries.js';
@@ -798,6 +799,17 @@ function exportMarkdown() {
     "text/markdown;charset=utf-8",
   );
 }
+function showKeju() {
+  openKeju({getState:()=>state,config:()=>config,onMetric:markMetric,guard,
+    readonly:()=>readOnly||busy||!!state.pending||!!state.ending||!!state.regency,
+    setBusy:value=>{busy=value;},render,
+    saveState:async next=>{
+      const entries=next.ledger.slice(state.ledger.length);
+      next.interimEntries=[...(state.interimEntries||[]),...entries];
+      state=next;
+      if(!(await persist()))throw new Error('未能存妥，请先导出备份');
+    }});
+}
 async function command(name) {
   if (name === "memorial-archive") return openMemorialArchive(state);
   if (name === "settings") {
@@ -922,7 +934,7 @@ async function command(name) {
     openDialog(
       "殿阁",
       '<div class="grid">' +
-        ["朝堂", "后宫", "天下", "格物", "内库", "宗室", "史馆"]
+        ["朝堂", "科举", "后宫", "天下", "格物", "内库", "宗室", "史馆"]
           .map((p) => '<button data-panel="' + p + '">' + p + "</button>")
           .join("") +
         "</div>",
@@ -960,7 +972,7 @@ document.addEventListener("click", async (e) => {
   try {
     if (b.dataset.command) await command(b.dataset.command);
     else if (b.dataset.action) chooseAction(b.dataset.action);
-    else if (b.dataset.panel){palacePanel(state,b.dataset.panel);if(state&&b.dataset.panel==='格物')updateDevelopmentPreview($('#modal'),state);}
+    else if (b.dataset.panel){if(b.dataset.panel==='科举'){showKeju();return;}palacePanel(state,b.dataset.panel);if(state&&b.dataset.panel==='格物')updateDevelopmentPreview($('#modal'),state);}
     else if(b.dataset.industryProvince){guard();openDialog('兴业营建',industryForm(state,b.dataset.industryProvince));updateDevelopmentPreview($('#modal'),state);}
     else if (b.dataset.slot) {
       guard();

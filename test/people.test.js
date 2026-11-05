@@ -80,7 +80,7 @@ test("audience effects are included in ensuing chapter exactly once", () => {
   const n = commitTurn(s, f, {});
   assert.equal(n.interimEntries.length, 0);
 });
-test("private actions are bounded, referrals expire and imperial examinations add engine-assigned talent", async () => {
+test("private actions are bounded, referrals expire and annual settlement awaits imperial examination ranking", async () => {
   const { privateAction } = await import("../src/core/private.js");
   const { courtYear } = await import("../src/core/court.js");
   const { resolveMemorial } = await import("../src/core/events.js");
@@ -92,6 +92,6 @@ test("private actions are bounded, referrals expire and imperial examinations ad
   assert.equal(s.memorials[0].due, due);
   s.turn = 108;
   const n = courtYear(s);
-  assert.equal(n.court.officials.length,30);
-  assert.equal(new Set(n.court.officials.map((o) => o.name)).size,30);
+  assert.equal(n.court.officials.length,25);
+  assert.equal(new Set(n.court.officials.map((o) => o.name)).size,25);
 });

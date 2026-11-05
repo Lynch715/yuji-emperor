@@ -129,7 +129,7 @@ test('补写期间换卷、换进度或修订已变时，旧回复不写入新�
 });
 test('v19迁移保留所有旧数值、奏文及待续原骰，v20状态损坏进入保护',async()=>{
  const old=fresh();old.v=19;old.memorials[0].text='旧奏文原样保留';const f=forecastTurn(old);old.pending={forecast:f};old.turnBudget={used:4,rewriteAttempted:true};
- const before=structuredClone(old),m=migrate(old);assert.equal(m.v,VERSION);assert.deepEqual(m,{...before,v:VERSION});assert.deepEqual(old,before);
+ const before=structuredClone(old),m=migrate(old);assert.equal(m.v,VERSION);assert.deepEqual(m,{...before,v:VERSION,keju:{interval:108,nextRegularTurn:old.turn+108,scholarReputation:50,exams:[],hooks:[]}});assert.deepEqual(old,before);
  const committed=commitTurn(m,m.pending.forecast,prose);assert.equal(committed.rng,f.state.rng);assert.deepEqual(committed.nation,f.state.nation);
  const broken={...m,memorials:m.memorials.map((x,i)=>i?x:{...x,textStatus:'broken'})};assert.throws(()=>migrate(broken),/奏折正文状态/);
  const raw=pack(broken),store=createSaveStore({primary:{get:async()=>raw},backup:{getItem:()=>raw},validate:migrate});const loaded=await store.load(1);assert.equal(loaded.readOnly,true);

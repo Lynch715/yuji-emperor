@@ -150,6 +150,7 @@ export function metricsHTML(s, mobile = false) {
   );
 }
 export function ledgerLabel(path) {
+  if(path==='keju.scholarReputation')return '士林声望';
   if(path.startsWith('tech.'))return ({funding:'格物月经费',progress:'研究进度',elapsed:'研究月数',spent:'研究累计支银'})[path.split('.').at(-1)]||'格物变化';
   const key = path.split(".").at(-1);
   return {

@@ -2994,3 +2994,23 @@ button.primary:not(:disabled):active {
 .memory-entry {border-top:var(--hairline) solid var(--paper-line);padding:1rem 0;}
 .memory-entry p {white-space:pre-wrap;overflow-wrap:anywhere;}
 .scene-memory-links button,.memory-entry button {min-height:44px;}
+
+/* 科举：复用纸笺与表单，窄屏逐卷阅览。 */
+.exam-period { display:flex; flex-wrap:wrap; align-items:center; gap:10px; margin-block:16px; }
+.exam-period input { width:100px; min-width:80px; }
+.exam-session { margin-top:16px; padding:18px; min-width:0; }
+.exam-session form { margin-block:18px; }
+.exam-session button { min-height:44px; margin-block:6px; }
+.exam-session input[type=checkbox] { min-width:24px; }
+.exam-topic,.exam-summary,.exam-essay { overflow-wrap:anywhere; white-space:pre-wrap; }
+.exam-paper-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; margin-block:18px; }
+.exam-paper { min-width:0; }
+.exam-paper h3 { overflow-wrap:anywhere; }
+.exam-paper details { margin-block:12px; }
+.exam-paper summary { min-height:44px; cursor:pointer; display:flex; align-items:center; color:var(--gold); }
+.exam-paper select { min-height:44px; width:100%; }
+.exam-essay { max-height:65vh; overflow:auto; }
+@media(max-width:640px) { .exam-paper-list { grid-template-columns:minmax(0,1fr); } .exam-session { padding:12px; } }
+.exam-session label { color:var(--ink-muted); }
+.exam-session label.check { color:var(--ink); }
+.exam-paper summary { color:var(--ink-muted); font-weight:600; }

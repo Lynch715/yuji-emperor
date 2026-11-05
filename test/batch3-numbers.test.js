@@ -97,11 +97,11 @@ test('C6 郁结连续满三个月后按月损健康，恢复心情重置，常�
  s.emperor.mood=55;s=emperorMonth(s);assert.equal(s.emperor.depressedMonths,0);close(s.emperor.mood,55);
 });
 
-test('C7 官员年龄死亡率有阶梯，七十岁请致仕可准留，科举按空缺取一至五人',()=>{
+test('C7 官员年龄死亡率有阶梯，七十岁请致仕可准留，新科取士由御前放榜决定',()=>{
  assert.equal(typeof court.officialDeathChance,'function');for(const [age,chance]of [[59,0],[60,0.02],[69,0.02],[70,0.06],[79,0.06],[80,0.15]])assert.equal(court.officialDeathChance(age),chance);
  let s=start();s.turn=36;s.court.officials.forEach(o=>o.age=30);const person=s.court.officials.find(o=>o.post);person.age=69;s=court.courtYear(s);const m=s.memorials.find(m=>m.type==='致仕'&&m.fromId===person.id);assert.ok(m);assert.equal(m.options.length,2);
  const retired=resolveMemorial(s,m.id,'opt0').state;assert.equal(retired.court.officials.find(o=>o.id===person.id).retired,true);assert.ok(!retired.court.posts.some(p=>p.holder===person.id));const kept=resolveMemorial(s,m.id,'opt1').state;assert.equal(kept.court.officials.find(o=>o.id===person.id).retired||false,false);
- for(const vacancies of [0,1,3,9]){let a=start();a.turn=108;a.court.officials.forEach(o=>o.age=30);a.court.posts.forEach((p,i)=>p.holder=i<vacancies?null:a.court.officials[0].id);const prev=a.court.officials.length;a=court.courtYear(a);assert.equal(a.court.officials.length-prev,Math.min(5,vacancies));}
+ for(const vacancies of [0,1,3,9]){let a=start();a.turn=108;a.court.officials.forEach(o=>o.age=30);a.court.posts.forEach((p,i)=>p.holder=i<vacancies?null:a.court.officials[0].id);const prev=a.court.officials.length;a=court.courtYear(a);assert.equal(a.court.officials.length,prev);}
 });
 
 test('C8 宫斗发起者按心机加权且选择最差关系目标，小产概率独立限制2至8%',()=>{

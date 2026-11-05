@@ -128,6 +128,7 @@ export function simulate(years = 200, seed = "御极·两百年", options = {}) 
       income: 0, expense: 0, taxIncome: 0, wasteExpense: 0,
       resetAdjustment: 0, peakTreasury: s.nation.treasury,
     };
+    if(options.prepareState)s=options.prepareState(s,i);
     const schedule = makeSimulationSchedule(s,pick,policy);
     // Mock chapters contain no narrative. Discard them after their state has been checked.
     s.history = [];

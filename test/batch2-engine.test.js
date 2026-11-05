@@ -150,12 +150,12 @@ test('B10 起用清除处分残留，空职处分报错，巡抚同步且宴请�
  assert.throws(()=>banquet(n,{guests:['o0','o1']}),/在京/);n=appoint(n,{post:'p29',operation:'remove'}).state;assert.equal(n.nation.provinces[0].governor,null);
 });
 
-test('B16 逾年改元且年月季按全局历法，选秀科举三年同基准',()=>{
+test('B16 逾年改元且年月季按全局历法，选秀按全局历法且年结不自动放榜',()=>{
  let s=infant();s.harem.children[0].born=-500;s.turn=50;s.revision=50;s.era={name:'旧年号',year:2,month:5,xun:2,startTurn:0};s=succeedEmperor(s);
  assert.equal(s.era.name,'旧年号');assert.equal(s.era.year,2);const newName=s.reign.eraName;assert.ok(newName);
  s.settings.freedom='free';while(s.turn<72){s.history=[];s.volumes=[];s=commitTurn(s,forecastTurn(s),{});}
  assert.equal(s.era.name,newName);assert.equal(s.era.year,1);assert.equal(s.era.month,1);assert.equal(s.era.startTurn,72);
- s.turn=108;s.era.year=2;s.harem.selectionYear=0;assert.doesNotThrow(()=>generateCandidates(s));assert.ok(courtYear(s).court.officials.length>s.court.officials.length);
+ s.turn=108;s.era.year=2;s.harem.selectionYear=0;assert.doesNotThrow(()=>generateCandidates(s));assert.equal(courtYear(s).court.officials.length,s.court.officials.length);
 });
 
 test('B17 铸世州名与职位provinceId一一关联并同步巡抚标题',()=>{

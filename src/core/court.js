@@ -3,7 +3,6 @@ import { freedomRules, adjudicate } from "./freedom.js";
 import { resolveMemorial,addEvent } from "./events.js";
 import { clone } from "./state.js";
 import { applyPackage, clamp } from "./effects.js";
-import { uniqueName } from "./names.js";
 import { roll, check } from "./rng.js";
 import {factionPowers} from './politics.js';
 import { campaignChoiceBlock } from './campaign-rules.js';
@@ -79,44 +78,6 @@ export function courtYear(state) {
     }
   }
   for(const p of s.nation.provinces)p.governor=s.court.posts.find(o=>o.provinceId===p.id)?.holder||null;
-  const year = 1 + Math.floor(s.turn / 36);
-  if (year % 3 === 1 && !s.court.officials.some(o=>o.id.startsWith("exam-"+year+"-"))) {
-    const intake=Math.min(5,s.court.posts.filter(p=>!p.holder).length);
-    for (
-      let i = 0;
-      i < intake;
-      i++
-    ) {
-      const index = s.court.officials.length - 25,
-        abilities = {};
-      for (const a of ["政", "军", "才", "德", "忠", "权谋"]) {
-        const r = roll(s, 40, 85);
-        s = r.state;
-        abilities[a] = r.value;
-      }
-      const named=uniqueName(s);s=named.state;
-      s.court.officials.push({
-        id: "exam-" + year + "-" + i,
-        name: named.name,
-        gender: "男",
-        age: 25,
-        post: null,
-        faction: "f" + (index % 6),
-        abilities,
-        ambition: 35,
-        greed: 15,
-        favor: 55,
-        health: 90,
-        alive: true,
-        inCapital: true,
-        secret: "科场旧交尚存于京。",
-        secretKnown: false,
-        memory: [],
-        life: [{ turn: s.turn, event: "登科候选" }],
-        banquetTurn:-1000000,
-      });
-    }
-  }
   s.court.factions=factionPowers(s);
   return s;
 }
