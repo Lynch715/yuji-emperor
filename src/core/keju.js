@@ -5,7 +5,7 @@ import { applyPackage } from './effects.js';
 import { adjudicate } from './freedom.js';
 import { addEvent } from './events.js';
 import { factionPowers } from './politics.js';
-import { defaultKeju, ENKE_COST, EXAM_SIZE, EXAM_STANCES, EXAM_RANKS } from './keju-schema.js';
+import { defaultKeju, examGraceStart, examGraceReceipt, ENKE_COST, EXAM_SIZE, EXAM_STANCES, EXAM_RANKS } from './keju-schema.js';
 export function activeExam(s) { return s.keju?.exams.find(e => e.status !== 'published') || null; }
 export function examiners(s) {
   return s.court.officials.filter(o => o.alive && o.health > 0 && !o.jailed && !o.retired && o.inCapital !== false && s.court.posts.some(p => p.id === o.post && p.holder === o.id));
@@ -178,21 +178,22 @@ export function advanceExams(state) {
     s=openExam(s,'regular');
     s.keju.nextRegularTurn=s.turn+s.keju.interval;
   }
-  const exam=activeExam(s),age=exam?s.turn-exam.createdTurn:0;
+  const exam=activeExam(s),start=exam?examGraceStart(s,exam):s.turn,age=s.turn-start;
+  if(exam&&!s.regency&&start>exam.createdTurn){const receipt=examGraceReceipt(exam,start);if(!s.receipts.includes(receipt))s.receipts.push(receipt);}
   // Reuse existing receipts: no save shape change or replay of past periods.
   // Thirty-six turns are grace; the first complete overdue period ends at 48.
-  if(exam&&age>=48&&age%12===0) {
-    const receipt='keju-delay:'+exam.id+':'+age;
+  if(exam&&!s.regency&&age>=48&&age%12===0) {
+    const receipt='keju-delay:'+exam.id+':'+(start===exam.createdTurn?age:'grace:'+start+':'+age);
     if(!s.receipts.includes(receipt)) {
       s.receipts.push(receipt);
       s=applyPackage(s,{scholarReputation:-1},'科举迟未放榜：每十二旬士林声望下降');
       const reminder='keju-reminder:'+exam.id;
       if(!s.receipts.includes(reminder)) {
         s.receipts.push(reminder);
-        s=addEvent(s,'科举催办','礼部催请钦定科举榜次','本届开科已逾一年，榜次久悬，士林议论渐起。礼部请尽早命题阅卷、钦定放榜。',[
+        s=addEvent(s,'科举催办','礼部催请钦定科举榜次','本届科举宽限已过，榜次久悬，士林议论渐起。礼部请尽早命题阅卷、钦定放榜。',[
           {label:'阅知，着即办理',effects:{}},
         ],exam.examiner?[exam.examiner]:[]);
-        s.memorials.at(-1).text='臣礼部谨奏：本届'+(exam.type==='enke'?'恩科':'常科')+'开科迄今已'+age+'旬，尚未放榜。士子久候京师，旅食日艰，士林亦有疑议。伏请陛下督促科场，尽早完成任主考、命题阅卷与钦定榜次，使取士之典有始有终。谨候圣裁。';
+        s.memorials.at(-1).text='臣礼部谨奏：本届'+(exam.type==='enke'?'恩科':'常科')+(start>exam.createdTurn?'亲政后已过':'开科迄今已')+age+'旬，尚未放榜。士子久候京师，旅食日艰，士林亦有疑议。伏请陛下督促科场，尽早完成任主考、命题阅卷与钦定榜次，使取士之典有始有终。谨候圣裁。';
       }
     }
   }

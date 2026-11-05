@@ -4212,7 +4212,7 @@ return {};
 },
 "src/ui/keju.js":function(__load){
 const { activeExam, examiners, configureExams, appointExaminer, setExamTopics, fallbackTopics, chooseExamTopic, receiveExamPapers, setExamBlind, rankExamCandidate, publishExam, cacheExamEssay } = __load("src/core/keju.js");
-const { EXAM_RANKS } = __load("src/core/keju-schema.js");
+const { EXAM_RANKS, examGraceStart } = __load("src/core/keju-schema.js");
 const { callJSON } = __load("src/llm/client.js");
 const { examTopicMessages, examTopicReviewMessages, examPaperMessages, examEssayMessages, validateExamTopics, validateTopicReview, validateExamPapers, validateExamEssay, mockExamPapers, mockExamEssay } = __load("src/llm/keju.js");
 const { $, esc, openDialog, toast, gameText } = __load("src/ui/common.js");
@@ -4231,7 +4231,10 @@ const k=s.keju,active=activeExam(s),e=k.exams.find(e=>e.id===selectedId)||active
 let html='<p>士林声望 <strong>'+Math.round(k.scholarReputation)+'</strong> · '+(active?'本届待办：'+stages[active.status]:'距下届常科 '+Math.max(0,k.nextRegularTurn-s.turn)+' 旬')+'</p><form id="exam-period-form" class="exam-period"><label for="exam-period">常科间隔（旬）</label><input id="exam-period" type="number" min="1" max="3600" value="'+k.interval+'"'+disabled+'><button type="submit"'+disabled+'>调整间隔</button></form><p class="muted">每年36旬。恩科可在「下旨」中加开，国库三十万两，士林声望加3；须先选主考。</p>';
 if(!e)return html+'<p>本届尚未开科。到期由礼部呈请，或下旨加开恩科。</p>';
 html+='<label for="exam-session">科场档案</label><select id="exam-session">'+[...k.exams].reverse().map(x=>'<option value="'+esc(x.id)+'"'+(x.id===e.id?' selected':'')+'>第'+x.year+'年 · '+(x.type==='enke'?'恩科':'常科')+' · '+stages[x.status]+'</option>').join('')+'</select><section class="paper exam-session"><h3>'+ (e.type==='enke'?'恩科':'常科')+' · '+stages[e.status]+'</h3>';
-if(e.status!=='published')html+='<p class="muted">开科已过'+Math.max(0,s.turn-e.createdTurn)+'旬。满36旬后，每再满12旬士林声望减1，礼部只催办一次。</p>';
+if(e.status!=='published'){
+const start=examGraceStart(s,e);
+html+='<p class="muted">'+(s.regency?'摄政期间暂停迟榜扣分与催办；亲政当旬重新起算36旬宽限。':(start>e.createdTurn?'亲政后已过':'开科已过')+Math.max(0,s.turn-start)+'旬。满36旬后，每再满12旬士林声望减1，礼部只催办一次。')+'</p>';
+}
 if(['awaiting_examiner','topic'].includes(e.status))html+='<form id="examiner-form"><label for="examiner">任命主考官</label><select id="examiner"'+disabled+'><option value="">请选择在京在任大臣</option>'+examiners(s).map(o=>'<option value="'+esc(o.id)+'"'+(o.id===e.examiner?' selected':'')+'>'+esc(o.name)+' · '+esc(s.court.posts.find(p=>p.holder===o.id)?.title)+'</option>').join('')+'</select><button type="submit"'+disabled+'>任主考</button></form>';
 else html+='<p>主考：'+esc(s.court.officials.find(o=>o.id===e.examiner)?.name||'原主考')+'</p>';
 if(e.status==='topic')html+='<button type="button" data-exam-topics'+disabled+'>'+(e.topics.length?'重拟备选策问':'拟备选策问')+'</button>'+ (e.topics.length?'<form id="exam-topic-form"><label for="exam-topic">备选策问</label><select id="exam-topic"'+disabled+'>'+e.topics.map((t,i)=>'<option value="'+i+'">'+esc(t)+'</option>').join('')+'</select><button type="submit"'+disabled+'>采用此题</button></form>':'')+'<form id="exam-custom-form"><label for="exam-custom">皇帝自拟策问</label><textarea id="exam-custom" maxlength="2000" rows="3" placeholder="试陈治国之策……"'+disabled+'></textarea><p class="muted">沿用口谕自由度：成败看实力时礼部可劝改，多数能成时可通融，想做就成时原样采用。</p><button type="submit"'+disabled+'>颁下自拟题</button></form>';
@@ -4320,7 +4323,7 @@ const { applyPackage } = __load("src/core/effects.js");
 const { adjudicate } = __load("src/core/freedom.js");
 const { addEvent } = __load("src/core/events.js");
 const { factionPowers } = __load("src/core/politics.js");
-const { defaultKeju, ENKE_COST, EXAM_SIZE, EXAM_STANCES, EXAM_RANKS } = __load("src/core/keju-schema.js");
+const { defaultKeju, examGraceStart, examGraceReceipt, ENKE_COST, EXAM_SIZE, EXAM_STANCES, EXAM_RANKS } = __load("src/core/keju-schema.js");
 function activeExam(s) { return s.keju?.exams.find(e => e.status !== 'published') || null; }
 function examiners(s) {
 return s.court.officials.filter(o => o.alive && o.health > 0 && !o.jailed && !o.retired && o.inCapital !== false && s.court.posts.some(p => p.id === o.post && p.holder === o.id));
@@ -4493,21 +4496,22 @@ if(!activeExam(s)&&s.turn>=s.keju.nextRegularTurn) {
 s=openExam(s,'regular');
 s.keju.nextRegularTurn=s.turn+s.keju.interval;
 }
-const exam=activeExam(s),age=exam?s.turn-exam.createdTurn:0;
+const exam=activeExam(s),start=exam?examGraceStart(s,exam):s.turn,age=s.turn-start;
+if(exam&&!s.regency&&start>exam.createdTurn){const receipt=examGraceReceipt(exam,start);if(!s.receipts.includes(receipt))s.receipts.push(receipt);}
 // Reuse existing receipts: no save shape change or replay of past periods.
 // Thirty-six turns are grace; the first complete overdue period ends at 48.
-if(exam&&age>=48&&age%12===0) {
-const receipt='keju-delay:'+exam.id+':'+age;
+if(exam&&!s.regency&&age>=48&&age%12===0) {
+const receipt='keju-delay:'+exam.id+':'+(start===exam.createdTurn?age:'grace:'+start+':'+age);
 if(!s.receipts.includes(receipt)) {
 s.receipts.push(receipt);
 s=applyPackage(s,{scholarReputation:-1},'科举迟未放榜：每十二旬士林声望下降');
 const reminder='keju-reminder:'+exam.id;
 if(!s.receipts.includes(reminder)) {
 s.receipts.push(reminder);
-s=addEvent(s,'科举催办','礼部催请钦定科举榜次','本届开科已逾一年，榜次久悬，士林议论渐起。礼部请尽早命题阅卷、钦定放榜。',[
+s=addEvent(s,'科举催办','礼部催请钦定科举榜次','本届科举宽限已过，榜次久悬，士林议论渐起。礼部请尽早命题阅卷、钦定放榜。',[
 {label:'阅知，着即办理',effects:{}},
 ],exam.examiner?[exam.examiner]:[]);
-s.memorials.at(-1).text='臣礼部谨奏：本届'+(exam.type==='enke'?'恩科':'常科')+'开科迄今已'+age+'旬，尚未放榜。士子久候京师，旅食日艰，士林亦有疑议。伏请陛下督促科场，尽早完成任主考、命题阅卷与钦定榜次，使取士之典有始有终。谨候圣裁。';
+s.memorials.at(-1).text='臣礼部谨奏：本届'+(exam.type==='enke'?'恩科':'常科')+(start>exam.createdTurn?'亲政后已过':'开科迄今已')+age+'旬，尚未放榜。士子久候京师，旅食日艰，士林亦有疑议。伏请陛下督促科场，尽早完成任主考、命题阅卷与钦定榜次，使取士之典有始有终。谨候圣裁。';
 }
 }
 }
@@ -5237,7 +5241,7 @@ return (s.reign?.number || 1) === 1
 return {VERSION,TALENTS,SLOTS,POST_NAMES,withDraft,clone,createState,migrate,assertState,reignId};
 },
 "src/core/keju-schema.js":function(__load){
-// Save-only validation: no imports from state or effects.
+// Save validation and pure exam clock helpers; no imports from state or effects.
 const EXAM_INTERVAL = 108;
 const ENKE_COST = 30;
 const EXAM_SIZE = 9;
@@ -5245,6 +5249,21 @@ const EXAM_STANCES = ['务实经世', '守成循礼', '锐意变法'];
 const EXAM_RANKS = ['状元', '榜眼', '探花', '二甲', '三甲', '黜落'];
 function defaultKeju(turn = 0, fresh = false) {
 return { interval: EXAM_INTERVAL, nextRegularTurn: fresh ? turn : turn + EXAM_INTERVAL, scholarReputation: 50, exams: [], hooks: [] };
+}
+function examGraceReceipt(exam, turn) {
+return 'keju-grace:'+exam.id+':'+turn;
+}
+function examGraceStart(state, exam) {
+let start=exam.createdTurn;
+const accept=turn=>{if(Number.isSafeInteger(turn)&&turn>=exam.createdTurn&&turn<=state.turn)start=Math.max(start,turn);};
+// Legacy v22 saves already record the actual accession to personal rule.
+for(const fact of state.facts||[])if(fact.key==='亲政'&&fact.subject===state.emperor.name)accept(fact.turn);
+const prefix='keju-grace:'+exam.id+':';
+for(const receipt of state.receipts||[])if(receipt.startsWith(prefix)) {
+const suffix=receipt.slice(prefix.length);
+if(/^(0|[1-9]\d*)$/.test(suffix))accept(Number(suffix));
+}
+return start;
 }
 function validateKeju(s) {
 if (s.v < 22) return;
@@ -5277,7 +5296,7 @@ if (!ids.has(o.keju.examId) || !Array.isArray(o.keju.revealed) || o.keju.reveale
 }
 }
 
-return {EXAM_INTERVAL,ENKE_COST,EXAM_SIZE,EXAM_STANCES,EXAM_RANKS,defaultKeju,validateKeju};
+return {EXAM_INTERVAL,ENKE_COST,EXAM_SIZE,EXAM_STANCES,EXAM_RANKS,defaultKeju,examGraceReceipt,examGraceStart,validateKeju};
 },
 "src/core/tech-schema.js":function(__load){
 const { TECHS,INDUSTRIES,TECH_LINES,INDUSTRY_SLOTS,RESEARCH_CAP } = __load("src/core/tech-rules.js");
@@ -12397,6 +12416,7 @@ function compactChapter(chapter){return {...chapter,entries:compactEntries(chapt
 return {compactEntries,compactChapter};
 },
 "src/core/succession.js":function(__load){
+const { examGraceReceipt } = __load("src/core/keju-schema.js");
 const { clone, reignId, TALENTS } = __load("src/core/state.js");
 const { roll } = __load("src/core/rng.js");
 const { succession } = __load("src/core/harem.js");
@@ -12433,6 +12453,8 @@ const aptitude=child?.aptitude ?? 58,education=(child?.education || 0)/10;
 s.emperor.talents=Object.fromEntries(TALENTS.map(t=>[t,clamp(aptitude*Math.min(1,age/16)+education)]));
 if(age>=16){
 s.regency=null;
+const exam=s.keju?.exams.find(e=>e.status!=='published');
+if(exam){const receipt=examGraceReceipt(exam,s.turn);if(!s.receipts.includes(receipt))s.receipts.push(receipt);}
 s.facts.push({subject:s.emperor.name,key:'亲政',value:'年满十六，撤摄政，亲裁庶政',turn:s.turn});
 s=imperialWedding(s);
 }

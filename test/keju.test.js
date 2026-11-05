@@ -1,3 +1,5 @@
+import { advanceRegency, succeedEmperor } from '../src/core/succession.js';
+import { examGraceStart, examGraceReceipt } from '../src/core/keju-schema.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createState,migrate,assertState,VERSION} from '../src/core/state.js';
@@ -176,4 +178,44 @@ test('迟榜真实预演失败重试与提交只扣一次，不修改原档和�
  assert.equal(restored.keju.scholarReputation,50);assert.equal(restored.pending.forecast.die,f.die);
  const n=commitTurn(restored,restored.pending.forecast,{});assert.equal(n.keju.scholarReputation,49);assert.equal(n.rng,f.state.rng);assert.deepEqual(commitTurn(n,f,{}),n);assert.deepEqual(advanceExams(n),n);
  assert.ok(kejuHTML(n).includes('每再满12旬士林声望减1'));assert.ok(kejuHTML(grading()).includes('放榜时仍糊名，不判门生偏私'));
+});
+
+function regencyFixture(s=fresh('free'),until=108) {
+ const child={id:'keju-young-emperor',name:'萧景宁',sex:'男',born:until-16*36,health:90,aptitude:70,education:0,mother:'c0',fatherId:s.runId,faction:'f0'};
+ s.harem.children=[child];s.reign.emperorId=child.id;s.emperor.name=child.name;s.emperor.age=15;s.regency={regentId:'o0',until};s.reign.married=false;
+ for(const c of s.harem.consorts)c.retired=true;
+ return s;
+}
+test('摄政期间不扣迟榜声望、不生成催办，也不改原档',()=>{
+ let s=regencyFixture();
+ for(const turn of [48,60,96]){s.turn=turn;const before=JSON.stringify(s),n=advanceExams(s);assert.equal(JSON.stringify(s),before);assert.deepEqual(n,s);assert.equal(n.keju.scholarReputation,50);assert.ok(!n.memorials.some(m=>m.type==='科举催办'));assert.ok(!n.receipts.some(r=>r.startsWith('keju-delay:')));}
+ assert.ok(kejuHTML(s).includes('摄政期间暂停迟榜扣分与催办'));
+});
+test('亲政当旬重启36旬宽限，第48旬才首次扣分催办',()=>{
+ let s=regencyFixture();s.turn=108;s=advanceRegency(advanceExams(s));assert.equal(s.regency,null);assert.equal(examGraceStart(s,activeExam(s)),108);assert.equal(s.keju.scholarReputation,50);
+ for(const turn of [109,144,155]){s.turn=turn;s=advanceExams(s);assert.equal(s.keju.scholarReputation,50);assert.ok(!s.memorials.some(m=>m.type==='科举催办'));}
+ s.turn=156;s=advanceExams(s);assert.equal(s.keju.scholarReputation,49);assert.equal(s.memorials.filter(m=>m.type==='科举催办').length,1);assert.ok(s.memorials.find(m=>m.type==='科举催办').text.includes('亲政后已过48旬'));assert.ok(kejuHTML(s).includes('亲政后已过48旬'));assert.deepEqual(advanceExams(s),s);
+ s.turn=168;s=advanceExams(s);assert.equal(s.keju.scholarReputation,48);assert.equal(s.threads.filter(t=>t.type==='科举催办').length,1);assertState(s);
+});
+test('亲政新周期不与摄政前迟榜凭据冲突，本届催办仍只一次',()=>{
+ let s=fresh('free');s.turn=48;s=advanceExams(s);assert.equal(s.keju.scholarReputation,49);
+ s=regencyFixture(s);s.turn=60;s=advanceExams(s);assert.equal(s.keju.scholarReputation,49);
+ s.turn=108;s=advanceRegency(s);s.turn=156;s=advanceExams(s);assert.equal(s.keju.scholarReputation,48);assert.equal(s.receipts.filter(r=>r.startsWith('keju-delay:')).length,2);assert.equal(s.threads.filter(t=>t.type==='科举催办').length,1);assert.deepEqual(advanceExams(s),s);
+});
+test('亲政回合的真实预演、失败重试与提交不扣分且保存当旬起点',()=>{
+ const s=regencyFixture(fresh('free'),48);s.turn=47;s.revision=47;const before=JSON.stringify(s),f=forecastTurn(s);
+ assert.equal(JSON.stringify(s),before);assert.equal(f.state.regency,null);assert.equal(f.state.keju.scholarReputation,50);assert.ok(!f.entries.some(e=>e.path==='keju.scholarReputation'));assert.ok(!f.state.memorials.some(m=>m.type==='科举催办'));assert.equal(examGraceStart(f.state,activeExam(f.state)),48);
+ const pending={...s,pending:{forecast:f}},bytes=JSON.stringify(f),loaded=migrate(unpack(pack(pending)).state);assert.equal(JSON.stringify(loaded.pending.forecast),bytes);
+ const n=commitTurn(loaded,loaded.pending.forecast,{});assert.equal(n.rng,f.state.rng);assert.equal(n.keju.scholarReputation,50);assert.equal(examGraceStart(n,activeExam(n)),48);assert.deepEqual(commitTurn(n,f,{}),n);
+});
+test('亲政计时持久保存，旧v22亲政事实可恢复起点且不补算原预演',()=>{
+ let s=regencyFixture();s.turn=108;s=advanceRegency(s);const id=activeExam(s).id,legacy=structuredClone(s);
+ s.facts=[];s=migrate(unpack(pack(s)).state);assert.equal(examGraceStart(s,activeExam(s)),108);s.turn=156;s=advanceExams(s);assert.equal(s.keju.scholarReputation,49);assert.deepEqual(advanceExams(migrate(unpack(pack(s)).state)),s);
+ legacy.receipts=legacy.receipts.filter(r=>!r.startsWith('keju-grace:'));legacy.turn=156;let restored=migrate(legacy);assert.equal(examGraceStart(restored,activeExam(restored)),108);restored=advanceExams(restored);assert.equal(restored.keju.scholarReputation,49);assert.ok(restored.receipts.includes(examGraceReceipt(activeExam(restored),108)));
+ restored.facts=[];restored.turn=168;restored=advanceExams(restored);assert.equal(restored.keju.scholarReputation,48);assert.equal(activeExam(restored).id,id);assertState(restored);
+});
+test('幼帝继位继承旧科场，摄政免罚、亲政后从当旬重新计时',()=>{
+ let s=fresh('free');s.turn=72;s.harem.children=[{id:'keju-heir',name:'萧绍宁',sex:'男',born:0,health:90,aptitude:70,education:0,mother:'c0',fatherId:s.runId,faction:'f0'}];s.harem.heir='keju-heir';s.ending={type:'驾崩',cause:'寿终'};const id=activeExam(s).id;
+ s=succeedEmperor(s);assert.ok(s.regency);s.turn=84;s=advanceExams(s);assert.equal(s.keju.scholarReputation,50);assert.ok(!s.memorials.some(m=>m.type==='科举催办'));
+ s.turn=576;s=advanceRegency(advanceExams(s));assert.equal(s.regency,null);assert.equal(activeExam(s).id,id);assert.equal(examGraceStart(s,activeExam(s)),576);s.turn=624;s=advanceExams(s);assert.equal(s.keju.scholarReputation,49);assertState(s);
 });

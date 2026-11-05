@@ -1,3 +1,4 @@
+import { examGraceReceipt } from './keju-schema.js';
 import { clone, reignId, TALENTS } from './state.js';
 import { roll } from './rng.js';
 import { succession } from './harem.js';
@@ -35,6 +36,8 @@ export function advanceRegency(state) {
   s.emperor.talents=Object.fromEntries(TALENTS.map(t=>[t,clamp(aptitude*Math.min(1,age/16)+education)]));
   if(age>=16){
     s.regency=null;
+    const exam=s.keju?.exams.find(e=>e.status!=='published');
+    if(exam){const receipt=examGraceReceipt(exam,s.turn);if(!s.receipts.includes(receipt))s.receipts.push(receipt);}
     s.facts.push({subject:s.emperor.name,key:'亲政',value:'年满十六，撤摄政，亲裁庶政',turn:s.turn});
     s=imperialWedding(s);
   }

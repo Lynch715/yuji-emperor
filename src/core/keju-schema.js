@@ -1,4 +1,4 @@
-// Save-only validation: no imports from state or effects.
+// Save validation and pure exam clock helpers; no imports from state or effects.
 export const EXAM_INTERVAL = 108;
 export const ENKE_COST = 30;
 export const EXAM_SIZE = 9;
@@ -6,6 +6,21 @@ export const EXAM_STANCES = ['务实经世', '守成循礼', '锐意变法'];
 export const EXAM_RANKS = ['状元', '榜眼', '探花', '二甲', '三甲', '黜落'];
 export function defaultKeju(turn = 0, fresh = false) {
   return { interval: EXAM_INTERVAL, nextRegularTurn: fresh ? turn : turn + EXAM_INTERVAL, scholarReputation: 50, exams: [], hooks: [] };
+}
+export function examGraceReceipt(exam, turn) {
+  return 'keju-grace:'+exam.id+':'+turn;
+}
+export function examGraceStart(state, exam) {
+  let start=exam.createdTurn;
+  const accept=turn=>{if(Number.isSafeInteger(turn)&&turn>=exam.createdTurn&&turn<=state.turn)start=Math.max(start,turn);};
+  // Legacy v22 saves already record the actual accession to personal rule.
+  for(const fact of state.facts||[])if(fact.key==='亲政'&&fact.subject===state.emperor.name)accept(fact.turn);
+  const prefix='keju-grace:'+exam.id+':';
+  for(const receipt of state.receipts||[])if(receipt.startsWith(prefix)) {
+    const suffix=receipt.slice(prefix.length);
+    if(/^(0|[1-9]\d*)$/.test(suffix))accept(Number(suffix));
+  }
+  return start;
 }
 export function validateKeju(s) {
   if (s.v < 22) return;

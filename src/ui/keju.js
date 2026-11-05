@@ -1,5 +1,5 @@
 import { activeExam, examiners, configureExams, appointExaminer, setExamTopics, fallbackTopics, chooseExamTopic, receiveExamPapers, setExamBlind, rankExamCandidate, publishExam, cacheExamEssay } from '../core/keju.js';
-import { EXAM_RANKS } from '../core/keju-schema.js';
+import { EXAM_RANKS, examGraceStart } from '../core/keju-schema.js';
 import { callJSON } from '../llm/client.js';
 import { examTopicMessages, examTopicReviewMessages, examPaperMessages, examEssayMessages, validateExamTopics, validateTopicReview, validateExamPapers, validateExamEssay, mockExamPapers, mockExamEssay } from '../llm/keju.js';
 import { $, esc, openDialog, toast, gameText } from './common.js';
@@ -18,7 +18,10 @@ export function kejuHTML(s,selectedId=null,readonly=false) {
   let html='<p>士林声望 <strong>'+Math.round(k.scholarReputation)+'</strong> · '+(active?'本届待办：'+stages[active.status]:'距下届常科 '+Math.max(0,k.nextRegularTurn-s.turn)+' 旬')+'</p><form id="exam-period-form" class="exam-period"><label for="exam-period">常科间隔（旬）</label><input id="exam-period" type="number" min="1" max="3600" value="'+k.interval+'"'+disabled+'><button type="submit"'+disabled+'>调整间隔</button></form><p class="muted">每年36旬。恩科可在「下旨」中加开，国库三十万两，士林声望加3；须先选主考。</p>';
   if(!e)return html+'<p>本届尚未开科。到期由礼部呈请，或下旨加开恩科。</p>';
   html+='<label for="exam-session">科场档案</label><select id="exam-session">'+[...k.exams].reverse().map(x=>'<option value="'+esc(x.id)+'"'+(x.id===e.id?' selected':'')+'>第'+x.year+'年 · '+(x.type==='enke'?'恩科':'常科')+' · '+stages[x.status]+'</option>').join('')+'</select><section class="paper exam-session"><h3>'+ (e.type==='enke'?'恩科':'常科')+' · '+stages[e.status]+'</h3>';
-  if(e.status!=='published')html+='<p class="muted">开科已过'+Math.max(0,s.turn-e.createdTurn)+'旬。满36旬后，每再满12旬士林声望减1，礼部只催办一次。</p>';
+  if(e.status!=='published'){
+    const start=examGraceStart(s,e);
+    html+='<p class="muted">'+(s.regency?'摄政期间暂停迟榜扣分与催办；亲政当旬重新起算36旬宽限。':(start>e.createdTurn?'亲政后已过':'开科已过')+Math.max(0,s.turn-start)+'旬。满36旬后，每再满12旬士林声望减1，礼部只催办一次。')+'</p>';
+  }
   if(['awaiting_examiner','topic'].includes(e.status))html+='<form id="examiner-form"><label for="examiner">任命主考官</label><select id="examiner"'+disabled+'><option value="">请选择在京在任大臣</option>'+examiners(s).map(o=>'<option value="'+esc(o.id)+'"'+(o.id===e.examiner?' selected':'')+'>'+esc(o.name)+' · '+esc(s.court.posts.find(p=>p.holder===o.id)?.title)+'</option>').join('')+'</select><button type="submit"'+disabled+'>任主考</button></form>';
   else html+='<p>主考：'+esc(s.court.officials.find(o=>o.id===e.examiner)?.name||'原主考')+'</p>';
   if(e.status==='topic')html+='<button type="button" data-exam-topics'+disabled+'>'+(e.topics.length?'重拟备选策问':'拟备选策问')+'</button>'+ (e.topics.length?'<form id="exam-topic-form"><label for="exam-topic">备选策问</label><select id="exam-topic"'+disabled+'>'+e.topics.map((t,i)=>'<option value="'+i+'">'+esc(t)+'</option>').join('')+'</select><button type="submit"'+disabled+'>采用此题</button></form>':'')+'<form id="exam-custom-form"><label for="exam-custom">皇帝自拟策问</label><textarea id="exam-custom" maxlength="2000" rows="3" placeholder="试陈治国之策……"'+disabled+'></textarea><p class="muted">沿用口谕自由度：成败看实力时礼部可劝改，多数能成时可通融，想做就成时原样采用。</p><button type="submit"'+disabled+'>颁下自拟题</button></form>';
