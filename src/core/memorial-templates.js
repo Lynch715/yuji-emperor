@@ -166,6 +166,11 @@ const MEMORIAL_DETAILS={
  请赈:'赈济须及时，领用也须有人照管，若等所有名册核完才办，恐使求助者久候；若一概凭口头领用，又怕挤占应得之人。臣拟先由熟悉乡情者会同经办官查明急缓，发放与复核分别有人负责，有争议之户另记呈问，不误眼前救急。'
 };
 export function memorialText(m,modern=false){
+ if(m.agendaVersion===1){
+  const choices=m.options.filter(o=>o.id!=='hold').map(o=>o.label+'：'+o.consequence).join('；');
+  return (modern?'陛下，':'臣谨奏：')+(m.context||'')+m.request+'\n\n'+m.escalation+'\n\n'+
+   choices+'。各部所议，尚未奉旨施行。'+(modern?'请陛下裁定取舍，臣等奉旨后办理。':'伏请圣裁，臣等奉旨后遵行。');
+ }
  const request=String(m.request||m.title||'有事待议').replace(/[。；]+$/,''),place=m.provinceId&&m.title.includes(' ')?m.title.split(' ')[0]:'';
  const detail=MEMORIAL_DETAILS[m.type]||MEMORIAL_DETAILS.政务,approve=m.options?.[0]?.label==='准奏'?'准照所请办理':m.options?.[0]?.label||'裁处',reject=m.options?.[1]?.label||'暂缓议行';
  return (modern?'陛下，'+(place?place+'报来一事：':''):'臣谨奏：'+(place?place+'来文，':''))+request+'。\n\n'+detail+'\n\n'+

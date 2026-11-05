@@ -60,11 +60,11 @@ test('突破同时进入旬结算和工部报捷奏折，commit幂等且不重�
  const n=commitTurn(s,f,{});assert.deepEqual(n.tech.done,['farming']);assert.equal(n.rng,f.state.rng);assert.deepEqual(commitTurn(n,f,{}),n);assert.equal(JSON.stringify(f),before);
 });
 test('旧v20迁移仅增加零值字段，原有全部数值、奏文、待续预演逐字段保留',()=>{
- const old=fresh();old.v=20;delete old.keju;delete old.tech;for(const p of old.nation.provinces){delete p.prosperity;delete p.industries;}
+ const old=fresh();old.v=20;delete old.briefings;delete old.keju;delete old.tech;for(const p of old.nation.provinces){delete p.prosperity;delete p.industries;}
  const f=forecastTurn(fresh());f.state.v=20;delete f.state.tech;for(const p of f.state.nation.provinces){delete p.prosperity;delete p.industries;}
  old.pending={forecast:f};const before=structuredClone(old),bytes=JSON.stringify(f),next=migrate(unpack(pack(old)).state);
  assert.equal(next.v,VERSION);assert.deepEqual(next.tech,{funding:0,current:null,done:[],lead:null,custom:[]});assert.ok(next.nation.provinces.every(p=>p.prosperity===0&&p.industries.length===0));
- const projected=structuredClone(next);projected.v=20;delete projected.keju;delete projected.tech;for(const p of projected.nation.provinces){delete p.prosperity;delete p.industries;}
+ const projected=structuredClone(next);projected.v=20;delete projected.briefings;delete projected.keju;delete projected.tech;for(const p of projected.nation.provinces){delete p.prosperity;delete p.industries;}
  assert.deepEqual(projected,before);assert.equal(JSON.stringify(next.pending.forecast),bytes);assert.deepEqual(old,before);
  const committed=commitTurn(next,next.pending.forecast,{});assert.equal(committed.v,VERSION);assert.equal(committed.rng,f.state.rng);assert.deepEqual(committed.nation.provinces.map(p=>p.pop),f.state.nation.provinces.map(p=>p.pop));
 });

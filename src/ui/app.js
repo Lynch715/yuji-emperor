@@ -774,6 +774,7 @@ function exportMarkdown() {
             ["朝", "午", "夜"]
               .map((sl) => "### " + sl + "\n\n" + (h.chapter[sl] || "略")+(h.scenes||[]).filter(r=>r.slot===sl).flatMap(r=>r.steps).map(t=>"\n\n接着写："+t.request+"\n\n"+t.prose).join(""))
               .join("\n\n") +
+            ((h.briefings||[]).length?'\n\n### 例行奏报与有司细务\n\n'+h.briefings.map(b=>'- '+b.title+'：'+b.text).join('\n'):'') +
             "\n\n### 本旬变化\n\n" +
             h.entries
               .map((e) => "- " + gameText(e.source) + "：" + ledgerLabel(e.path) + " " + (e.delta > 0 ? "+" : "") + e.delta)

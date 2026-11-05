@@ -6,7 +6,7 @@ import {requestTurnNarrative} from '../src/ui/turn-request.js';
 import {inspectNarrative,applySentenceRewrites} from '../src/llm/rewrite.js';
 import {pack,unpack} from '../src/store/save.js';
 const config={base:'https://rewrite.example.test',model:'test',key:'test'};
-const fixture=()=>{const state=initialTurn(createState({seed:'一次改写'})),forecast=forecastTurn(state);return {state,forecast};};
+const fixture=()=>{const state=initialTurn(createState({seed:'一次改写'}));state.turn=2;state.day=20;state.era.xun=2;const forecast=forecastTurn(state);return {state,forecast};};
 const bad=()=>({chapter:{朝:'殿门缓缓打开。拨银九亿两。',午:'臣尚未开口。',夜:'夜色渐深。'},summary:'宫中一旬'});
 const json=data=>new Response(JSON.stringify({choices:[{message:{content:JSON.stringify(data)}}]}),{headers:{'Content-Type':'application/json'}});
 test('第四步 收集正文与附文全部违规句和原因，按ID只替换指定句子',()=>{

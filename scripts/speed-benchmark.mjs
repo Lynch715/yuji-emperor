@@ -11,6 +11,8 @@ export async function speedBenchmark(root=resolve(import.meta.dirname,'..')){
  const config={key:'mock',base:'https://speed.example.test',model:'mock',provider:'custom'},rows=[];
  for(const scenario of ['无自由文本','四本明确朱批','混合口谕与含糊朱批','混合输入及软违规']){
   const state=initialTurn(createState({seed:'提速对照',demo:false,freedom:'mid'}));
+  // Measure the maximum request chain on a monthly new-petition turn.
+  if(state.v>=23){state.turn=2;state.day=20;state.era.xun=2;}
   while(state.memorials.length<4)state.memorials.push({...structuredClone(state.memorials[0]),id:'speed-'+state.memorials.length});
   const mixed=scenario.startsWith('混合'),soft=scenario.endsWith('软违规');
   const schedule=scenario==='无自由文本'?{朝:{kind:'歇息'}}:{朝:{kind:'批折',memorials:state.memorials.slice(0,4).map(m=>m.id),decisions:Object.fromEntries(state.memorials.slice(0,4).map((m,i)=>[m.id,{option:'hold',remark:mixed&&i<2?'此番有心了':'不必嘉奖，责成核查'}]))},...(mixed?{午:{kind:'下旨',text:'请户部再议仓储之事'}}:{})};

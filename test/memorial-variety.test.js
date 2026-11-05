@@ -7,8 +7,9 @@ import {MEMORIAL_TEMPLATES,memorialText,routineOptions} from '../src/core/memori
 import {diplomacy} from '../src/core/foreign.js';
 import {mockNarrative} from '../src/llm/validate.js';
 import {turnMessages,memorialMessages} from '../src/llm/prompts.js';
-const fresh=()=>initialTurn(createState({seed:'奏折轮换验收',demo:true}));
-test('奏折：短期覆盖各类，单批不重复、未批同题不重发、正文不套同一模板',()=>{
+// Legacy corpus stays executable for received v22 petitions and frozen forecasts.
+const fresh=()=>{const s=createState({seed:'奏折轮换验收',demo:true});s.v=22;delete s.briefings;return initialTurn(s);};
+test('旧奏折兼容：短期覆盖各类，单批不重复、未批同题不重发、正文不套同一模板',()=>{
  let s=fresh();const seen=new Set(),types=new Set(),texts=new Set();
  for(let turn=1;turn<=36;turn++){
   s.turn=turn;s.memorials=s.memorials.filter(m=>m.due>=turn);
@@ -20,7 +21,7 @@ test('奏折：短期覆盖各类，单批不重复、未批同题不重发、�
  assert.ok(seen.size>=65,'题目覆盖 '+seen.size);assert.ok(types.size>=22,'类型覆盖 '+types.size);assert.ok(texts.size>=100,'正文覆盖 '+texts.size);
  assert.ok(s.memorialVariety.length<=72);
 });
-test('奏折：抽取可复现、不改输入，饥荒与战事只在对应国势出现',()=>{
+test('旧奏折兼容：抽取可复现、不改输入，饥荒与战事只在对应国势出现',()=>{
  let s=fresh();s.memorials=[];const before=structuredClone(s),a=seedMemorials(s),b=seedMemorials(s);assert.deepEqual(a,b);assert.deepEqual(s,before);
  const expected=new Set(MEMORIAL_TEMPLATES.filter(t=>t.when(s)).map(t=>t.type)),seen=new Set();
  for(let i=0;i<72;i++){s.turn=i;s.memorials=[];s=seedMemorials(s);s.memorials.forEach(m=>{seen.add(m.type);assert.notEqual(m.type,'请赈');assert.notEqual(m.type,'战事');});}
@@ -31,7 +32,7 @@ test('奏折：抽取可复现、不改输入，饥荒与战事只在对应国�
  s=diplomacy(fresh(),{country:'w0',operation:'宣战'},20).state;let war=false;
  for(let i=0;i<24;i++){s.turn=i;s.memorials=[];s=seedMemorials(s);war ||= s.memorials.some(m=>m.type==='战事');}assert.ok(war);
 });
-test('奏折：试读及正文接口携带具体事务、选择与已有文本，旧档补轮换记录且旧预演不动',()=>{
+test('旧奏折兼容：试读及正文接口携带具体事务、选择与已有文本，旧档补轮换记录且旧预演不动',()=>{
  const s=fresh(),f=forecastTurn(s),n=mockNarrative(f);assert.ok(n.memorialTexts.every(m=>m.text===f.newMemorials.find(x=>x.id===m.id).text));
  assert.doesNotMatch(turnMessages(s,f)[0].content,/memorialTexts/);
  const prompt=memorialMessages(f.state,f.newMemorials).map(m=>m.content).join('\n');assert.match(prompt,/160–260字/);for(const m of f.newMemorials){assert.ok(prompt.includes(m.request));assert.ok(prompt.includes(m.options[0].label));}

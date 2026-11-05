@@ -13,6 +13,7 @@ import {factionPowers} from './politics.js';
 import { campaignChoiceBlock } from './campaign-rules.js';
 import { applyCampaignDecision, expireCampaignPetition } from './campaigns.js';
 import { TEXT_LIMITS } from './text.js';
+import {imperialTemplates,routineBriefings} from './memorial-agenda.js';
 export function pickMemorialist(state, type, provinceId = null) {
   const eligible=state.court.posts.flatMap(post=>{
     const o=state.court.officials.find(o=>o.id===post.holder&&o.post===post.id&&o.alive&&o.health>0&&!o.jailed&&!o.retired);
@@ -23,7 +24,7 @@ export function pickMemorialist(state, type, provinceId = null) {
   const exact=money?(local||eligible.find(x=>x.post.title==='户部尚书')):
     military?(eligible.find(x=>x.post.title===provinceId+'境总兵')||eligible.find(x=>x.post.title==='兵部尚书')):
     censor?eligible.find(x=>x.post.title==='左都御史'):null;
-  const office=money||/盐政|仓储|漕运|商贸|农桑/.test(type)?'户部':military?'兵部':censor?'都察':/河工|工务/.test(type)?'工部':/刑狱/.test(type)?'刑部':/科举|文教|礼制|外邦/.test(type)?'礼部':/宗室/.test(type)?'宗人':'通政';
+  const office=money||/盐政|仓储|漕运|商贸|农桑/.test(type)?'户部':military?'兵部':censor?'都察':/河工|工务/.test(type)?'工部':/刑狱/.test(type)?'刑部':/铨选/.test(type)?'吏部':/科举|文教|礼制|外邦/.test(type)?'礼部':/宗室/.test(type)?'宗人':'通政';
   const direct=exact||eligible.find(x=>x.post.title.startsWith(office));
   const chosen=direct||eligible.find(x=>x.post.title==='通政使')||[...eligible].sort((a,b)=>a.post.rank-b.post.rank)[0];
   return chosen?{from:chosen.o.name,fromId:chosen.o.id,fromPost:chosen.post.provinceId&&state.governorTitle?(state.nation.provinces.find(z=>z.id===chosen.post.provinceId)?.name||'')+state.governorTitle:state.postNames?.[chosen.post.id]||chosen.post.title,fromRole:direct?'上奏':'转奏'}:{from:'通政司',fromId:null,fromPost:'',fromRole:'转呈（原折未署名）'};
@@ -61,6 +62,7 @@ export function addEvent(state, type, title, cause, options, actors = [], provin
   return s;
 }
 export function seedMemorials(state) {
+  if(state.v>=23)return seedImperialMemorials(state);
   let s = clone(state);
   const r = roll(s, 3, 6);
   s = r.state;
@@ -89,6 +91,34 @@ export function seedMemorials(state) {
     };
     memorial.text=memorialText(memorial,s.settings.prose==='modern');s.memorials.push(memorial);
     s.memorialVariety=[...(s.memorialVariety||[]),{id:template.id,type:template.type,turn:s.turn}].slice(-72);
+  }
+  return s;
+}
+function seedImperialMemorials(state){
+  const s=clone(state),briefings=routineBriefings(s);
+  for(const b of briefings){
+    if(s.briefings.some(old=>old.id===b.id))continue;
+    s.briefings.push({...b,...pickMemorialist(s,b.type,b.provinceId)});
+  }
+  s.briefings=s.briefings.slice(-72);
+  const existing=s.memorials.filter(m=>m.agendaVersion===1).length;
+  const monthly=s.turn===0||s.turn%3===0;
+  const spawned=s.memorialVariety.filter(r=>r.turn===s.turn&&r.id.startsWith('imperial-')).length;
+  const count=Math.max(0,(s.turn===0?3:monthly?2:1)-spawned);
+  let space=Math.max(0,6-existing);
+  const templates=imperialTemplates(s,count).filter(t=>{
+    if(t.priority>=60)return true;
+    if(!monthly||space<=0)return false;
+    space--;return true;
+  });
+  for(const t of templates){
+    const z=s.nation.provinces.find(p=>p.id===t.provinceId),author=pickMemorialist(s,t.type,z.id);
+    const m={id:`routine-${s.turn}-imperial-${t.id}`,templateId:t.id,agendaVersion:1,
+      title:t.title,...author,provinceId:z.id,type:t.type,request:t.request,escalation:t.escalation,context:t.context,
+      options:routineOptions(t,z,s,author.fromId),due:s.turn+(t.priority>=60?3:6),
+      threadId:null,urgent:t.priority>=60,secret:false,text:''};
+    m.text=memorialText(m,s.settings.prose==='modern');s.memorials.push(m);
+    s.memorialVariety=[...s.memorialVariety,{id:t.id,type:t.type,turn:s.turn}].slice(-72);
   }
   return s;
 }

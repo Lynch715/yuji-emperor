@@ -423,7 +423,9 @@ export function memorialHTML(s, session) {
     esc(m.type) +
     "</span><span>期限　剩 " +
     Math.max(0, m.due - s.turn) +
-    ' 旬</span></div></div><div class="memorial-body">' +
+    ' 旬</span></div></div>' +
+    (m.escalation?'<p class="imperial-reason"><strong>御前亲裁</strong> '+esc(m.escalation)+'</p>':'') +
+    '<div class="memorial-body">' +
     memorialParagraphHTML(
       m.text || "臣谨奏：" + m.title + "。" + (m.request || "伏乞陛下裁处。"),
     ) +

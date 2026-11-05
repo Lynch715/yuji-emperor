@@ -10,7 +10,7 @@ import { seedNumber, random, DRAFT } from "./rng.js";
 import { uniqueName } from "./names.js";
 import { chooseRegent } from "./regency-info.js";
 import {factionPowers} from './politics.js';
-export const VERSION = 22;
+export const VERSION = 23;
 export const TALENTS = ["政略", "权谋", "武略", "文采", "魅力"];
 export const SLOTS = ["朝", "午", "夜"];
 export const POST_NAMES = [
@@ -387,6 +387,7 @@ export function createState(options = {}) {
     ambitions: [],
     memorials: [],
     memorialVariety: [],
+    briefings: [],
     threads: [],
     projects: [],
     schedule: { 朝: null, 午: null, 夜: null },
@@ -507,6 +508,9 @@ export function migrate(input) {
     for(const p of s.nation.provinces){p.prosperity=0;p.industries=[];}
   }
   if(input.v<22)s.keju=defaultKeju(s.turn);
+  // v23 separates read-only departmental reports from petitions. Received
+  // petitions and frozen forecasts retain their original text and choices.
+  if(input.v<23)s.briefings=[];
   s.settings.freedom ??= "mid";
   s.v = VERSION;
   s.volumeIndex ??= [];
@@ -667,6 +671,7 @@ export function assertState(s) {
   }
   if(s.v>=12&&(!Array.isArray(s.memorialVariety)||s.memorialVariety.length>72||s.memorialVariety.some(r=>!r||typeof r.id!=='string'||typeof r.type!=='string'||!Number.isSafeInteger(r.turn)||r.turn<0||r.turn>s.turn)))throw new Error('奏折轮换记录损坏');
   if(s.memorials.some(m=>m.textStatus!==undefined&&!['template','ready'].includes(m.textStatus)))throw new Error('奏折正文状态损坏');
+  if(s.v>=23&&(!Array.isArray(s.briefings)||s.briefings.length>72||s.briefings.some(b=>!b||typeof b.id!=='string'||!['report','local'].includes(b.kind)||!Number.isSafeInteger(b.turn)||b.turn<0||b.turn>s.turn||['title','text','type'].some(k=>typeof b[k]!=='string'))))throw new Error('例行奏报记录损坏');
   if(s.v>=12&&s.turnBudget?.rewriteAttempted!==undefined&&typeof s.turnBudget.rewriteAttempted!=='boolean')throw new Error('剧情改写标记损坏');
   if(s.v>=13&&s.memorials.some(m=>m.options?.some(o=>o.consequence!==undefined&&typeof o.consequence!=='string')))throw new Error('奏折后果说明损坏');
   if(s.v>=14)validateMemorialReviews([...(s.volumes||[]).flatMap(v=>v.chapters),...(s.history||[])]);

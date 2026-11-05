@@ -6,11 +6,16 @@ import {talkAttempt} from '../src/core/court.js';
 import {mockNarrative} from '../src/llm/validate.js';
 export const SEED='御极·夜御案验收';
 export function stage9Fixture(visual=false){
- let s=initialTurn(selectAmbitions(createState({seed:SEED,demo:true,freedom:"real"})));
+ const original=createState({seed:SEED,demo:true,freedom:"real"});
+ // Freeze the v22 generator for the historical v17 serialization proof. New
+ // agenda behavior is verified separately; these hashes must not be rebased.
+ original.v=22;delete original.briefings;
+ let s=initialTurn(selectAmbitions(original));
  // This fixture checks historical UI serialization, not C5 takeover rules.
  // Keep the original memorial IDs available through its setup turn.
  s.court.officials.forEach(o=>o.ambition=0);
  const f=forecastTurn(s);s=commitTurn(s,f,mockNarrative(f));
+ s.v=22;delete s.briefings;
  s.memorials=s.memorials.slice(0,6);
  if(visual){
   const before=s.ledger.length;

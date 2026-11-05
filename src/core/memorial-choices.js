@@ -294,7 +294,7 @@ const RELIEF=[
  ['劝乡绅募赈','官府少出钱粮，救急较慢，承办官须多担责任',{treasury:-0.3,localMorale:0.4,localDisaster:-1,prestige:-0.2,favor:-1}]
 ];
 export function memorialChoices(template,province,state=null,fromId=null){
- const rows=template.relief?RELIEF:MEMORIAL_CHOICES[template.id];
+ const rows=template.choices||(template.relief?RELIEF:MEMORIAL_CHOICES[template.id]);
  if(!rows)throw new Error('此奏折缺少处置方案：'+template.id);
  const author=state?.court.officials.find(o=>o.id===fromId&&o.alive);
  const activeWar=state?.campaigns.find(w=>!w.done);

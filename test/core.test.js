@@ -84,8 +84,12 @@ test("month, quarter, year rollover and talent growth annual limits", () => {
 });
 test("memorial expiration and overload worsen governance with explicit ledger provenance", () => {
   let s = state();
-  for (let i = 0; i < 5; i++) s = commitTurn(s, forecastTurn(s), {});
-  assert.ok(s.nation.governance < 58);
+  // Explicitly build an overdue backlog; quiet months no longer manufacture it.
+  s.memorials=Array.from({length:14},(_,i)=>({...s.memorials[0],id:"overdue-"+i,due:2}));
+  s.turn=2;
+  const before=s.nation.governance;
+  s = commitTurn(s, forecastTurn(s), {});
+  assert.ok(s.nation.governance < before);
   assert.ok(
     s.history
       .at(-1)
@@ -147,6 +151,8 @@ test("personality has engine effects and force-pushing a blocked edict reuses fo
   assert.ok(nationMonth(s).nation.privy>nationMonth(normal).nation.privy);
   s.emperor.prestige = 0;
   s.nation.governance = 0;
+  s.rng=1; // Explicit low first die, independent of petition-selection draws.
+  s.settings.freedom='real'; // Exercise force rather than the mid-mode retry.
   const f = forecastTurn(s, {
     朝: { kind: "下旨", edictType: "赈灾", force: true },
     午: null,

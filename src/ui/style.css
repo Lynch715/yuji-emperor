@@ -3014,3 +3014,19 @@ button.primary:not(:disabled):active {
 .exam-session label { color:var(--ink-muted); }
 .exam-session label.check { color:var(--ink); }
 .exam-paper summary { color:var(--ink-muted); font-weight:600; }
+
+/* Routine reports stay readable without joining the petition queue. */
+.briefings{margin:18px 0;padding-top:14px;border-top:1px solid var(--line);min-width:0}
+.briefings h3{font-size:16px;margin:0 0 8px}.briefings>.muted{font-size:12px;line-height:1.7}
+.briefing{border-bottom:1px solid var(--line);overflow-wrap:anywhere}
+.briefing>summary{min-height:44px;padding:12px 2px;cursor:pointer;line-height:1.6}
+.briefing .chapter-detail{padding:0 4px 12px;font-size:14px;line-height:1.9}
+.briefing-kind{font-size:11px;color:var(--text-muted)}
+.scroll .briefings,.scroll .briefing{border-color:var(--paper-line)}
+.scroll .briefing-kind{color:var(--ink-muted)}
+.memorial-escalation{display:block;font-size:11px;line-height:1.6;color:var(--text-muted);margin-top:5px}
+.imperial-reason{
+ border-left:3px solid var(--gold);padding:10px 12px;line-height:1.8;
+ font-size:14px;background:var(--paper-chip);color:var(--ink);
+}
+@media(max-width:600px){.briefings{margin:14px 0}.briefing>summary{font-size:14px}.memorial-escalation{font-size:12px}}

@@ -141,8 +141,8 @@ test('C1 例行积压每月记一次治理成本，低治理影响各州民心�
  s.nation.governance=35;assert.ok(nationMonth(s).nation.morale<middle.nation.morale);
 });
 
-test('C1 有灾请赈的拨银、开仓与募赈按不同代价和救灾力度结算',()=>{
- let s=start();s.memorials=[];s.nation.provinces[0].disaster=50;s=seedMemorials(s);
+test('C1 旧请赈的拨银、开仓与募赈仍按原代价和救灾力度结算',()=>{
+ let s=start();s.v=22;s.memorials=[];s.nation.provinces[0].disaster=50;s=seedMemorials(s);
  const relief=s.memorials.find(m=>m.type==='请赈');assert.ok(relief);
  const results=['approve','reject','alternative'].map(id=>resolveMemorial(s,relief.id,id).state);
  const z=x=>x.nation.provinces.find(p=>p.id===relief.provinceId);

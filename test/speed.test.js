@@ -16,7 +16,8 @@ import {readFileSync} from 'node:fs';
 import {runInNewContext} from 'node:vm';
 
 const config={key:'fixture',base:'https://speed.test',model:'fixture',provider:'custom'};
-const fresh=()=>initialTurn(createState({seed:'第一批提速',demo:false,freedom:'mid'}));
+// Exercise the monthly batch so parallel-request tests include new petitions.
+const fresh=()=>{const s=initialTurn(createState({seed:'第一批提速',demo:false,freedom:'mid'}));s.turn=2;s.day=20;s.era.xun=2;return s;};
 const prose={chapter:{朝:'殿门缓缓打开。',午:'廊下风静。',夜:'灯影渐低。'}};
 const json=data=>new Response(JSON.stringify({choices:[{message:{content:JSON.stringify(data)}}]}),{headers:{'Content-Type':'application/json'}});
 const texts=memorials=>({memorialTexts:memorials.map(m=>({id:m.id,text:'臣请详议此事。\n\n未敢擅行，伏候裁处。'}))});
@@ -129,7 +130,7 @@ test('补写期间换卷、换进度或修订已变时，旧回复不写入新�
 });
 test('v19迁移保留所有旧数值、奏文及待续原骰，v20状态损坏进入保护',async()=>{
  const old=fresh();old.v=19;old.memorials[0].text='旧奏文原样保留';const f=forecastTurn(old);old.pending={forecast:f};old.turnBudget={used:4,rewriteAttempted:true};
- const before=structuredClone(old),m=migrate(old);assert.equal(m.v,VERSION);assert.deepEqual(m,{...before,v:VERSION,keju:{interval:108,nextRegularTurn:old.turn+108,scholarReputation:50,exams:[],hooks:[]}});assert.deepEqual(old,before);
+ const before=structuredClone(old),m=migrate(old);assert.equal(m.v,VERSION);assert.deepEqual(m,{...before,v:VERSION,briefings:[],keju:{interval:108,nextRegularTurn:old.turn+108,scholarReputation:50,exams:[],hooks:[]}});assert.deepEqual(old,before);
  const committed=commitTurn(m,m.pending.forecast,prose);assert.equal(committed.rng,f.state.rng);assert.deepEqual(committed.nation,f.state.nation);
  const broken={...m,memorials:m.memorials.map((x,i)=>i?x:{...x,textStatus:'broken'})};assert.throws(()=>migrate(broken),/奏折正文状态/);
  const raw=pack(broken),store=createSaveStore({primary:{get:async()=>raw},backup:{getItem:()=>raw},validate:migrate});const loaded=await store.load(1);assert.equal(loaded.readOnly,true);

@@ -47,7 +47,7 @@ test('v13待续不改原骰与预演，提交后收录；旧已结案原文不�
  assert.ok(rows.every(r=>r.legacy&&r.text===''));assert.deepEqual(n,before);assert.match(memorialArchiveDetailHTML(rows[0]),/未留存奏折全文/);
 });
 test('分卷与完整JSON留存全部档案，保存重读及两个槽位互不混淆',async()=>{
- let s=fresh();s.memorials[0].due=999;const id=s.memorials[0].id;
+ let s=fresh();s.court.officials.forEach(o=>o.ambition=0);s.memorials[0].due=999;const id=s.memorials[0].id;
  for(let i=0;i<40;i++){
   s.memorials.sort((a,b)=>Number(b.id===id)-Number(a.id===id));s=settle(s,'hold','第'+i+'次批示');
  }

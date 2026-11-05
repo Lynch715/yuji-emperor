@@ -258,8 +258,8 @@ export function turnMessages(state, forecast) {
 }
 export function memorialMessages(state,memorials){
   return [
-    {role:'system',content:worldRules(state)+'\n【奏折正文任务】只为所列奏报写正文，每本160–260字，三至五个自然段，以换行分隔。交代来由、现状、顾虑和具体请求，不套空话。只使用已提供的人名、事实和方案，不创造数值、成败或上奏人，不把请办写成已经办成。只输出 {"memorialTexts":[{"id":"","text":""}]}。'},
-    {role:'user',content:JSON.stringify({memorials:memorials.map(m=>({id:m.id,title:m.title,type:m.type,from:m.from,request:m.request,choices:m.options.map(o=>o.consequence?[o.label,o.consequence]:o.label)}))})},
+    {role:'system',content:worldRules(state)+'\n【奏折正文任务】只为所列奏报写正文，每本160–260字，三至五个自然段，以换行分隔。交代来由、现状、顾虑和具体请求，不套空话。有escalation时须交代为何超出有司常权、为何需要皇帝裁决，以及各方案由谁承担代价；不得降格成抄册、修瓦等细务。context是现有国情或拟议范围，不得虚构已发生的冤案、舞弊、灾害或大臣争执。只使用已提供的人名、事实和方案，不创造数值、成败或上奏人，不把请办写成已经办成。只输出 {"memorialTexts":[{"id":"","text":""}]}。'},
+    {role:'user',content:JSON.stringify({memorials:memorials.map(m=>({id:m.id,title:m.title,type:m.type,from:m.from,request:m.request,...(m.escalation?{escalation:m.escalation,context:m.context}:{}),choices:m.options.map(o=>o.consequence?[o.label,o.consequence]:o.label)}))})},
   ];
 }
 export function worldMessages(state) {

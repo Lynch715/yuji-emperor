@@ -3012,6 +3012,20 @@ text-indent:0;
 .exam-session label { color:var(--ink-muted); }
 .exam-session label.check { color:var(--ink); }
 .exam-paper summary { color:var(--ink-muted); font-weight:600; }
+.briefings{margin:18px 0;padding-top:14px;border-top:1px solid var(--line);min-width:0}
+.briefings h3{font-size:16px;margin:0 0 8px}.briefings>.muted{font-size:12px;line-height:1.7}
+.briefing{border-bottom:1px solid var(--line);overflow-wrap:anywhere}
+.briefing>summary{min-height:44px;padding:12px 2px;cursor:pointer;line-height:1.6}
+.briefing .chapter-detail{padding:0 4px 12px;font-size:14px;line-height:1.9}
+.briefing-kind{font-size:11px;color:var(--text-muted)}
+.scroll .briefings,.scroll .briefing{border-color:var(--paper-line)}
+.scroll .briefing-kind{color:var(--ink-muted)}
+.memorial-escalation{display:block;font-size:11px;line-height:1.6;color:var(--text-muted);margin-top:5px}
+.imperial-reason{
+border-left:3px solid var(--gold);padding:10px 12px;line-height:1.8;
+font-size:14px;background:var(--paper-chip);color:var(--ink);
+}
+@media(max-width:600px){.briefings{margin:14px 0}.briefing>summary{font-size:14px}.memorial-escalation{font-size:12px}}
     </style>
   </head>
   <body>
@@ -3800,6 +3814,7 @@ chapterTitle(h.summary) +
 ["朝", "午", "夜"]
 .map((sl) => "### " + sl + "\n\n" + (h.chapter[sl] || "略")+(h.scenes||[]).filter(r=>r.slot===sl).flatMap(r=>r.steps).map(t=>"\n\n接着写："+t.request+"\n\n"+t.prose).join(""))
 .join("\n\n") +
+((h.briefings||[]).length?'\n\n### 例行奏报与有司细务\n\n'+h.briefings.map(b=>'- '+b.title+'：'+b.text).join('\n'):'') +
 "\n\n### 本旬变化\n\n" +
 h.entries
 .map((e) => "- " + gameText(e.source) + "：" + ledgerLabel(e.path) + " " + (e.delta > 0 ? "+" : "") + e.delta)
@@ -4554,7 +4569,7 @@ const { seedNumber, random, DRAFT } = __load("src/core/rng.js");
 const { uniqueName } = __load("src/core/names.js");
 const { chooseRegent } = __load("src/core/regency-info.js");
 const {factionPowers} = __load("src/core/politics.js");
-const VERSION = 22;
+const VERSION = 23;
 const TALENTS = ["政略", "权谋", "武略", "文采", "魅力"];
 const SLOTS = ["朝", "午", "夜"];
 const POST_NAMES = [
@@ -4931,6 +4946,7 @@ trade:null,
 ambitions: [],
 memorials: [],
 memorialVariety: [],
+briefings: [],
 threads: [],
 projects: [],
 schedule: { 朝: null, 午: null, 夜: null },
@@ -5051,6 +5067,9 @@ s.tech={funding:0,current:null,done:[],lead:null,custom:[]};
 for(const p of s.nation.provinces){p.prosperity=0;p.industries=[];}
 }
 if(input.v<22)s.keju=defaultKeju(s.turn);
+// v23 separates read-only departmental reports from petitions. Received
+// petitions and frozen forecasts retain their original text and choices.
+if(input.v<23)s.briefings=[];
 s.settings.freedom ??= "mid";
 s.v = VERSION;
 s.volumeIndex ??= [];
@@ -5211,6 +5230,7 @@ for(const r of s.intentResults)if(!r||typeof r.id!=='string'||!Number.isSafeInte
 }
 if(s.v>=12&&(!Array.isArray(s.memorialVariety)||s.memorialVariety.length>72||s.memorialVariety.some(r=>!r||typeof r.id!=='string'||typeof r.type!=='string'||!Number.isSafeInteger(r.turn)||r.turn<0||r.turn>s.turn)))throw new Error('奏折轮换记录损坏');
 if(s.memorials.some(m=>m.textStatus!==undefined&&!['template','ready'].includes(m.textStatus)))throw new Error('奏折正文状态损坏');
+if(s.v>=23&&(!Array.isArray(s.briefings)||s.briefings.length>72||s.briefings.some(b=>!b||typeof b.id!=='string'||!['report','local'].includes(b.kind)||!Number.isSafeInteger(b.turn)||b.turn<0||b.turn>s.turn||['title','text','type'].some(k=>typeof b[k]!=='string'))))throw new Error('例行奏报记录损坏');
 if(s.v>=12&&s.turnBudget?.rewriteAttempted!==undefined&&typeof s.turnBudget.rewriteAttempted!=='boolean')throw new Error('剧情改写标记损坏');
 if(s.v>=13&&s.memorials.some(m=>m.options?.some(o=>o.consequence!==undefined&&typeof o.consequence!=='string')))throw new Error('奏折后果说明损坏');
 if(s.v>=14)validateMemorialReviews([...(s.volumes||[]).flatMap(v=>v.chapters),...(s.history||[])]);
@@ -6140,287 +6160,318 @@ const {factionPowers} = __load("src/core/politics.js");
 const { campaignChoiceBlock } = __load("src/core/campaign-rules.js");
 const { applyCampaignDecision, expireCampaignPetition } = __load("src/core/campaigns.js");
 const { TEXT_LIMITS } = __load("src/core/text.js");
+const {imperialTemplates,routineBriefings} = __load("src/core/memorial-agenda.js");
 function pickMemorialist(state, type, provinceId = null) {
-const eligible=state.court.posts.flatMap(post=>{
-const o=state.court.officials.find(o=>o.id===post.holder&&o.post===post.id&&o.alive&&o.health>0&&!o.jailed&&!o.retired);
-return o&&(o.inCapital!==false||post.provinceId===provinceId)?[{o,post}]:[];
-});
-const local=eligible.find(x=>x.post.provinceId===provinceId&&provinceId);
-const money=/赈|钱粮|赋税|天灾/.test(type), military=/军粮|边警|兵|战/.test(type), censor=/言官|贪腐|党争/.test(type);
-const exact=money?(local||eligible.find(x=>x.post.title==='户部尚书')):
-military?(eligible.find(x=>x.post.title===provinceId+'境总兵')||eligible.find(x=>x.post.title==='兵部尚书')):
-censor?eligible.find(x=>x.post.title==='左都御史'):null;
-const office=money||/盐政|仓储|漕运|商贸|农桑/.test(type)?'户部':military?'兵部':censor?'都察':/河工|工务/.test(type)?'工部':/刑狱/.test(type)?'刑部':/科举|文教|礼制|外邦/.test(type)?'礼部':/宗室/.test(type)?'宗人':'通政';
-const direct=exact||eligible.find(x=>x.post.title.startsWith(office));
-const chosen=direct||eligible.find(x=>x.post.title==='通政使')||[...eligible].sort((a,b)=>a.post.rank-b.post.rank)[0];
-return chosen?{from:chosen.o.name,fromId:chosen.o.id,fromPost:chosen.post.provinceId&&state.governorTitle?(state.nation.provinces.find(z=>z.id===chosen.post.provinceId)?.name||'')+state.governorTitle:state.postNames?.[chosen.post.id]||chosen.post.title,fromRole:direct?'上奏':'转奏'}:{from:'通政司',fromId:null,fromPost:'',fromRole:'转呈（原折未署名）'};
+  const eligible=state.court.posts.flatMap(post=>{
+    const o=state.court.officials.find(o=>o.id===post.holder&&o.post===post.id&&o.alive&&o.health>0&&!o.jailed&&!o.retired);
+    return o&&(o.inCapital!==false||post.provinceId===provinceId)?[{o,post}]:[];
+  });
+  const local=eligible.find(x=>x.post.provinceId===provinceId&&provinceId);
+  const money=/赈|钱粮|赋税|天灾/.test(type), military=/军粮|边警|兵|战/.test(type), censor=/言官|贪腐|党争/.test(type);
+  const exact=money?(local||eligible.find(x=>x.post.title==='户部尚书')):
+    military?(eligible.find(x=>x.post.title===provinceId+'境总兵')||eligible.find(x=>x.post.title==='兵部尚书')):
+    censor?eligible.find(x=>x.post.title==='左都御史'):null;
+  const office=money||/盐政|仓储|漕运|商贸|农桑/.test(type)?'户部':military?'兵部':censor?'都察':/河工|工务/.test(type)?'工部':/刑狱/.test(type)?'刑部':/铨选/.test(type)?'吏部':/科举|文教|礼制|外邦/.test(type)?'礼部':/宗室/.test(type)?'宗人':'通政';
+  const direct=exact||eligible.find(x=>x.post.title.startsWith(office));
+  const chosen=direct||eligible.find(x=>x.post.title==='通政使')||[...eligible].sort((a,b)=>a.post.rank-b.post.rank)[0];
+  return chosen?{from:chosen.o.name,fromId:chosen.o.id,fromPost:chosen.post.provinceId&&state.governorTitle?(state.nation.provinces.find(z=>z.id===chosen.post.provinceId)?.name||'')+state.governorTitle:state.postNames?.[chosen.post.id]||chosen.post.title,fromRole:direct?'上奏':'转奏'}:{from:'通政司',fromId:null,fromPost:'',fromRole:'转呈（原折未署名）'};
 }
 function addEvent(state, type, title, cause, options, actors = [], provinceId = null) {
-const s = clone(state),
-id = "ev-" + s.turn + "-" + s.stats.events;
-s.stats.events++;
-s.threads.push({
-id,
-title,
-type,
-stage: "发生",
-cause,
-actors,
-provinceId,
-born: s.turn,
-updated: s.turn,
-result: "",
-});
-s.memorials.push({
-id: "m-" + id,
-title,
-...pickMemorialist(s,type,provinceId),
-provinceId,
-type,
-request: title,
-options: options.map((o, i) => ({ id: "opt" + i, ...o })),
-due: s.turn + 3,
-threadId: id,
-urgent: true,
-secret: type === "贪腐",
-text: "",
-});
-return s;
+  const s = clone(state),
+    id = "ev-" + s.turn + "-" + s.stats.events;
+  s.stats.events++;
+  s.threads.push({
+    id,
+    title,
+    type,
+    stage: "发生",
+    cause,
+    actors,
+    provinceId,
+    born: s.turn,
+    updated: s.turn,
+    result: "",
+  });
+  s.memorials.push({
+    id: "m-" + id,
+    title,
+    ...pickMemorialist(s,type,provinceId),
+    provinceId,
+    type,
+    request: title,
+    options: options.map((o, i) => ({ id: "opt" + i, ...o })),
+    due: s.turn + 3,
+    threadId: id,
+    urgent: true,
+    secret: type === "贪腐",
+    text: "",
+  });
+  return s;
 }
 function seedMemorials(state) {
-let s = clone(state);
-const r = roll(s, 3, 6);
-s = r.state;
-for (let i = 0; i < r.value; i++) {
-const pool=i===2?s.nation.provinces.filter(p=>p.disaster>0):s.nation.provinces;
-const pick=roll(s,0,Math.max(0,(pool.length?pool:s.nation.provinces).length-1));s=pick.state;
-let z=(pool.length?pool:s.nation.provinces)[pick.value];
-const template=routineTemplate(s,i,z,pick.value);if(!template)continue;
-z=s.nation.provinces.find(p=>p.id===template.provinceId)||z;
-const relief=!!template.relief;
-const author=pickMemorialist(s,template.type,z.id);
-const memorial={
-id: "routine-" + s.turn + "-" + i,
-templateId:template.id,
-title:template.title,
-...author,
-provinceId:z.id,
-type:template.type,
-request:template.request,
-options:routineOptions(template,z,s,author.fromId),
-due: s.turn + 4,
-threadId: null,
-urgent: relief,
-secret: false,
-text: "",
-};
-memorial.text=memorialText(memorial,s.settings.prose==='modern');s.memorials.push(memorial);
-s.memorialVariety=[...(s.memorialVariety||[]),{id:template.id,type:template.type,turn:s.turn}].slice(-72);
+  if(state.v>=23)return seedImperialMemorials(state);
+  let s = clone(state);
+  const r = roll(s, 3, 6);
+  s = r.state;
+  for (let i = 0; i < r.value; i++) {
+    const pool=i===2?s.nation.provinces.filter(p=>p.disaster>0):s.nation.provinces;
+    const pick=roll(s,0,Math.max(0,(pool.length?pool:s.nation.provinces).length-1));s=pick.state;
+    let z=(pool.length?pool:s.nation.provinces)[pick.value];
+    const template=routineTemplate(s,i,z,pick.value);if(!template)continue;
+    z=s.nation.provinces.find(p=>p.id===template.provinceId)||z;
+    const relief=!!template.relief;
+    const author=pickMemorialist(s,template.type,z.id);
+    const memorial={
+      id: "routine-" + s.turn + "-" + i,
+      templateId:template.id,
+      title:template.title,
+      ...author,
+      provinceId:z.id,
+      type:template.type,
+      request:template.request,
+      options:routineOptions(template,z,s,author.fromId),
+      due: s.turn + 4,
+      threadId: null,
+      urgent: relief,
+      secret: false,
+      text: "",
+    };
+    memorial.text=memorialText(memorial,s.settings.prose==='modern');s.memorials.push(memorial);
+    s.memorialVariety=[...(s.memorialVariety||[]),{id:template.id,type:template.type,turn:s.turn}].slice(-72);
+  }
+  return s;
 }
-return s;
+function seedImperialMemorials(state){
+  const s=clone(state),briefings=routineBriefings(s);
+  for(const b of briefings){
+    if(s.briefings.some(old=>old.id===b.id))continue;
+    s.briefings.push({...b,...pickMemorialist(s,b.type,b.provinceId)});
+  }
+  s.briefings=s.briefings.slice(-72);
+  const existing=s.memorials.filter(m=>m.agendaVersion===1).length;
+  const monthly=s.turn===0||s.turn%3===0;
+  const spawned=s.memorialVariety.filter(r=>r.turn===s.turn&&r.id.startsWith('imperial-')).length;
+  const count=Math.max(0,(s.turn===0?3:monthly?2:1)-spawned);
+  let space=Math.max(0,6-existing);
+  const templates=imperialTemplates(s,count).filter(t=>{
+    if(t.priority>=60)return true;
+    if(!monthly||space<=0)return false;
+    space--;return true;
+  });
+  for(const t of templates){
+    const z=s.nation.provinces.find(p=>p.id===t.provinceId),author=pickMemorialist(s,t.type,z.id);
+    const m={id:`routine-${s.turn}-imperial-${t.id}`,templateId:t.id,agendaVersion:1,
+      title:t.title,...author,provinceId:z.id,type:t.type,request:t.request,escalation:t.escalation,context:t.context,
+      options:routineOptions(t,z,s,author.fromId),due:s.turn+(t.priority>=60?3:6),
+      threadId:null,urgent:t.priority>=60,secret:false,text:''};
+    m.text=memorialText(m,s.settings.prose==='modern');s.memorials.push(m);
+    s.memorialVariety=[...s.memorialVariety,{id:t.id,type:t.type,turn:s.turn}].slice(-72);
+  }
+  return s;
 }
 function resolveMemorial(
-state,
-id,
-option = "approve",
-remark = "",
-sourcePrefix = "处置奏报",
-remarkKind = null,
+  state,
+  id,
+  option = "approve",
+  remark = "",
+  sourcePrefix = "处置奏报",
+  remarkKind = null,
 ) {
-const m = state.memorials.find((m) => m.id === id);
-if (!m) throw new Error("奏报已处置或不存在");
-const brushNote=remark?" · 朱批「"+String(remark).slice(0,TEXT_LIMITS.remark)+"」":"";
-if (option === "hold")
-return { state: applyMemorialRemark(state,m,remark,remarkKind), note: m.title + " · 留中" + brushNote };
-if (option === "discuss") {
-const s = clone(state),
-mem = s.memorials.find((x) => x.id === id);
-if ((mem.referrals || 0) >= freedomRules(s).referrals)
-throw new Error("此折已发部再议"+freedomRules(s).referrals+"次，请准驳裁处");
-mem.referrals = (mem.referrals || 0) + 1;
-const t = s.threads.find((t) => t.id === mem.threadId);
-if (t && t.stage !== "结束") t.stage = "搁置";
-return { state: applyMemorialRemark(s,m,remark,remarkKind), note: m.title + ' · 发部再议（原定期限不顺延）' + brushNote };
-}
-if (option === "remark") {
-return {state:applyMemorialRemark(state,m,remark,remarkKind),note:m.title+' · 朱批「'+String(remark).slice(0,TEXT_LIMITS.remark)+'」（原请款仍待准驳）'};
-}
-const chosen =
-m.options.find((o) => o.id === option) ||
-m.options.find((o) => o.id === (option === "reject" ? "opt1" : "opt0"));
-if (!chosen) throw new Error("无此处置选项");
-const blocked=campaignChoiceBlock(state,m,chosen)||developmentChoiceBlock(state,chosen);if(blocked)throw new Error(blocked);
-for(const [key,label]of [['treasury','国库'],['privy','内帑'],['grain','粮储']])
-if(chosen.effects[key]<0&&state.nation[key]<-chosen.effects[key])throw new Error(label+'不足以办理此事');
-const regional=m.provinceId&&state.nation.provinces.some(p=>p.id===m.provinceId)&&Number.isFinite(chosen.effects.morale);
-const effects=regional?{...chosen.effects,morale:undefined,province:{...chosen.effects.province,id:m.provinceId,morale:(chosen.effects.province?.morale||0)+chosen.effects.morale}}:chosen.effects;
-let s = chosen.development?applyDevelopmentChoice(state,chosen.development).state:applyPackage(
-state,effects,sourcePrefix + "：" + m.title + " / " + chosen.label,
-);
-s.memorials = s.memorials.filter((x) => x.id !== id);
-if(m.campaignOrder)s=applyCampaignDecision(s,m,chosen);
-s.stats.petitions++;
-const t = s.threads.find((x) => x.id === m.threadId);
-if(m.type==='致仕'&&chosen.id==='opt0'){
-const o=s.court.officials.find(o=>o.id===t?.actors[0]&&o.alive);
-if(o){o.retired=true;o.post=null;o.life.push({turn:s.turn,event:'准奏致仕'});for(const p of s.court.posts)if(p.holder===o.id)p.holder=null;}
-for(const p of s.nation.provinces)p.governor=s.court.posts.find(x=>x.provinceId===p.id)?.holder||null;
-s.court.factions=factionPowers(s);
-}
-if (t && t.stage !== "结束") {
-t.stage = "结束";
-t.updated = s.turn;
-t.result = chosen.label;
-if (t.type === "民变" && t.provinceId) {
-const province = s.nation.provinces.find((p) => p.id === t.provinceId);
-if (province) province.rebellion = false;
-}
-}
-return { state: applyMemorialRemark(s,m,remark,remarkKind), note: m.title + " · " + chosen.label + (chosen.consequence?'：'+chosen.consequence:'') + brushNote };
+  const m = state.memorials.find((m) => m.id === id);
+  if (!m) throw new Error("奏报已处置或不存在");
+  const brushNote=remark?" · 朱批「"+String(remark).slice(0,TEXT_LIMITS.remark)+"」":"";
+  if (option === "hold")
+    return { state: applyMemorialRemark(state,m,remark,remarkKind), note: m.title + " · 留中" + brushNote };
+  if (option === "discuss") {
+    const s = clone(state),
+      mem = s.memorials.find((x) => x.id === id);
+    if ((mem.referrals || 0) >= freedomRules(s).referrals)
+      throw new Error("此折已发部再议"+freedomRules(s).referrals+"次，请准驳裁处");
+    mem.referrals = (mem.referrals || 0) + 1;
+    const t = s.threads.find((t) => t.id === mem.threadId);
+    if (t && t.stage !== "结束") t.stage = "搁置";
+    return { state: applyMemorialRemark(s,m,remark,remarkKind), note: m.title + ' · 发部再议（原定期限不顺延）' + brushNote };
+  }
+  if (option === "remark") {
+    return {state:applyMemorialRemark(state,m,remark,remarkKind),note:m.title+' · 朱批「'+String(remark).slice(0,TEXT_LIMITS.remark)+'」（原请款仍待准驳）'};
+  }
+  const chosen =
+    m.options.find((o) => o.id === option) ||
+    m.options.find((o) => o.id === (option === "reject" ? "opt1" : "opt0"));
+  if (!chosen) throw new Error("无此处置选项");
+  const blocked=campaignChoiceBlock(state,m,chosen)||developmentChoiceBlock(state,chosen);if(blocked)throw new Error(blocked);
+  for(const [key,label]of [['treasury','国库'],['privy','内帑'],['grain','粮储']])
+    if(chosen.effects[key]<0&&state.nation[key]<-chosen.effects[key])throw new Error(label+'不足以办理此事');
+  const regional=m.provinceId&&state.nation.provinces.some(p=>p.id===m.provinceId)&&Number.isFinite(chosen.effects.morale);
+  const effects=regional?{...chosen.effects,morale:undefined,province:{...chosen.effects.province,id:m.provinceId,morale:(chosen.effects.province?.morale||0)+chosen.effects.morale}}:chosen.effects;
+  let s = chosen.development?applyDevelopmentChoice(state,chosen.development).state:applyPackage(
+    state,effects,sourcePrefix + "：" + m.title + " / " + chosen.label,
+  );
+  s.memorials = s.memorials.filter((x) => x.id !== id);
+  if(m.campaignOrder)s=applyCampaignDecision(s,m,chosen);
+  s.stats.petitions++;
+  const t = s.threads.find((x) => x.id === m.threadId);
+  if(m.type==='致仕'&&chosen.id==='opt0'){
+    const o=s.court.officials.find(o=>o.id===t?.actors[0]&&o.alive);
+    if(o){o.retired=true;o.post=null;o.life.push({turn:s.turn,event:'准奏致仕'});for(const p of s.court.posts)if(p.holder===o.id)p.holder=null;}
+    for(const p of s.nation.provinces)p.governor=s.court.posts.find(x=>x.provinceId===p.id)?.holder||null;
+    s.court.factions=factionPowers(s);
+  }
+  if (t && t.stage !== "结束") {
+    t.stage = "结束";
+    t.updated = s.turn;
+    t.result = chosen.label;
+    if (t.type === "民变" && t.provinceId) {
+      const province = s.nation.provinces.find((p) => p.id === t.provinceId);
+      if (province) province.rebellion = false;
+    }
+  }
+  return { state: applyMemorialRemark(s,m,remark,remarkKind), note: m.title + " · " + chosen.label + (chosen.consequence?'：'+chosen.consequence:'') + brushNote };
 }
 function applyMemorialRemark(state,memorial,remark,kind){
-const text=String(remark||'').slice(0,TEXT_LIMITS.remark),category=REMARK_KINDS.includes(kind)?kind:remarkCategory(text);
-const o=state.court.officials.find(o=>o.id===memorial.fromId&&o.alive&&o.health>0&&!o.jailed&&!o.retired&&state.court.posts.some(p=>p.holder===o.id&&p.id===o.post));
-if(!text||!o)return clone(state);
-const favor=category==='嘉奖'?2:category==='申饬'?-3:0;
-return favor?applyPackage(state,{official:{id:o.id,favor}},'朱批：'+text):clone(state);
+  const text=String(remark||'').slice(0,TEXT_LIMITS.remark),category=REMARK_KINDS.includes(kind)?kind:remarkCategory(text);
+  const o=state.court.officials.find(o=>o.id===memorial.fromId&&o.alive&&o.health>0&&!o.jailed&&!o.retired&&state.court.posts.some(p=>p.holder===o.id&&p.id===o.post));
+  if(!text||!o)return clone(state);
+  const favor=category==='嘉奖'?2:category==='申饬'?-3:0;
+  return favor?applyPackage(state,{official:{id:o.id,favor}},'朱批：'+text):clone(state);
 }
 function expireMemorials(state) {
-let s = clone(state);
-for (const m of s.memorials.filter((m) => m.due < s.turn)) {
-if(m.campaignOrder){s=expireCampaignPetition(s,m);continue;}
-if(m.type==='京畿民变' && !(s.nation.morale<18&&s.nation.treasury<10)) {
-s.threads=s.threads.map(t=>t.id===m.threadId?{...t,stage:'结束',updated:s.turn,result:'危机解除'}:t);
-continue;
-}
-s = applyPackage(
-s,
-{ morale: m.urgent ? -0.4 : -0.03, governance: -0.08,prestige:m.urgent?-0.5:0 },
-"奏报逾期：" + m.title,
-);
-const t = s.threads.find((t) => t.id === m.threadId);
-if (t && t.stage !== "结束") {
-t.stage = "结束";
-t.result = "逾期放任";
-t.updated = s.turn;
-}
-if(m.type==='京畿民变'&&s.settings.freedom!=='free')
-s.ending={type:'亡国',cause:'京畿民变急报逾期未处置，民变攻入京师'};
-if (m.type === "民变") {
-s.nation.army.capital.troops = Math.max(
-0,
-s.nation.army.capital.troops - 10000,
-);
-if (s.nation.army.capital.troops === 0 && s.settings.freedom !== "free")
-s.ending = { type: "亡国", cause: "民变失控，攻入京师" };
-}
-}
-s.memorials = s.memorials.filter((m) => m.due >= s.turn);
-if (s.memorials.length > 12 && s.turn%3===0)
-s = applyPackage(s, { governance: -1 }, "奏报积压超过十二本：月度案牍考成");
-return s;
+  let s = clone(state);
+  for (const m of s.memorials.filter((m) => m.due < s.turn)) {
+    if(m.campaignOrder){s=expireCampaignPetition(s,m);continue;}
+    if(m.type==='京畿民变' && !(s.nation.morale<18&&s.nation.treasury<10)) {
+      s.threads=s.threads.map(t=>t.id===m.threadId?{...t,stage:'结束',updated:s.turn,result:'危机解除'}:t);
+      continue;
+    }
+    s = applyPackage(
+      s,
+      { morale: m.urgent ? -0.4 : -0.03, governance: -0.08,prestige:m.urgent?-0.5:0 },
+      "奏报逾期：" + m.title,
+    );
+    const t = s.threads.find((t) => t.id === m.threadId);
+    if (t && t.stage !== "结束") {
+      t.stage = "结束";
+      t.result = "逾期放任";
+      t.updated = s.turn;
+    }
+    if(m.type==='京畿民变'&&s.settings.freedom!=='free')
+      s.ending={type:'亡国',cause:'京畿民变急报逾期未处置，民变攻入京师'};
+    if (m.type === "民变") {
+      s.nation.army.capital.troops = Math.max(
+        0,
+        s.nation.army.capital.troops - 10000,
+      );
+      if (s.nation.army.capital.troops === 0 && s.settings.freedom !== "free")
+        s.ending = { type: "亡国", cause: "民变失控，攻入京师" };
+    }
+  }
+  s.memorials = s.memorials.filter((m) => m.due >= s.turn);
+  if (s.memorials.length > 12 && s.turn%3===0)
+    s = applyPackage(s, { governance: -1 }, "奏报积压超过十二本：月度案牍考成");
+  return s;
 }
 function eventsMonth(state) {
-let s = clone(state);
-const r = roll(s, 1, 100);
-s = r.state;
-if (r.value <= 35) {
-const season = Math.floor(((s.turn-1)%36)/9), quarter=Math.floor(Math.max(0,s.turn-1)/9);
-const used=new Set(s.threads.filter(t=>t.type==='天灾'&&Math.floor(Math.max(0,t.born-1)/9)===quarter).map(t=>t.provinceId));
-const pool=s.nation.provinces.filter(p=>!used.has(p.id));
-if(pool.length) {
-const weights=pool.map(p=>1+[0.6,0.4,0.3,0.5][season]+p.pop/100);
-const pick=roll(s,1,1000000);s=pick.state;
-let point=(pick.value-1)/1000000*weights.reduce((a,b)=>a+b,0),index=pool.length-1;
-for(let i=0;i<pool.length;i++){point-=weights[i];if(point<0){index=i;break;}}
-const z=pool[index], kind = ["春旱", "夏涝", "秋蝗", "冬寒"][season];
-s = addEvent(s, "天灾", z.name + kind, "季候失调，地方急报", [
-{
-label: "拨银赈济",
-effects: {
-treasury: -12,
-morale: 8,
-virtue: 2,
-province: { id: z.id, disaster: -20 },
-},
-},
-{
-label: "令地方自筹",
-effects: { morale: -3, province: { id: z.id, disaster: 10 } },
-},
-], [z.name], z.id);
-s = applyPackage(
-s,
-{ province: { id: z.id, disaster: 25*(1-(techEffects(s).disasterProtection||0)),morale:-4 } },
-kind + "发生",
-);
+  let s = clone(state);
+  const r = roll(s, 1, 100);
+  s = r.state;
+  if (r.value <= 35) {
+    const season = Math.floor(((s.turn-1)%36)/9), quarter=Math.floor(Math.max(0,s.turn-1)/9);
+    const used=new Set(s.threads.filter(t=>t.type==='天灾'&&Math.floor(Math.max(0,t.born-1)/9)===quarter).map(t=>t.provinceId));
+    const pool=s.nation.provinces.filter(p=>!used.has(p.id));
+    if(pool.length) {
+    const weights=pool.map(p=>1+[0.6,0.4,0.3,0.5][season]+p.pop/100);
+    const pick=roll(s,1,1000000);s=pick.state;
+    let point=(pick.value-1)/1000000*weights.reduce((a,b)=>a+b,0),index=pool.length-1;
+    for(let i=0;i<pool.length;i++){point-=weights[i];if(point<0){index=i;break;}}
+    const z=pool[index], kind = ["春旱", "夏涝", "秋蝗", "冬寒"][season];
+    s = addEvent(s, "天灾", z.name + kind, "季候失调，地方急报", [
+      {
+        label: "拨银赈济",
+        effects: {
+          treasury: -12,
+          morale: 8,
+          virtue: 2,
+          province: { id: z.id, disaster: -20 },
+        },
+      },
+      {
+        label: "令地方自筹",
+        effects: { morale: -3, province: { id: z.id, disaster: 10 } },
+      },
+    ], [z.name], z.id);
+    s = applyPackage(
+      s,
+      { province: { id: z.id, disaster: 25*(1-(techEffects(s).disasterProtection||0)),morale:-4 } },
+      kind + "发生",
+    );
+    }
+  }
+  const unrest = s.nation.provinces.filter((p) => p.morale < 30 && !p.rebellion);
+  if (unrest.length) {
+    const rebel = roll(s, 1, 100);
+    s = rebel.state;
+    const lowest = Math.min(...unrest.map((p) => p.morale));
+    if (rebel.value <= Math.ceil((30 - lowest) / 5)) {
+      const pick = roll(s, 0, unrest.length - 1);
+      s = pick.state;
+      const province = s.nation.provinces.find((p) => p.id === unrest[pick.value].id);
+      province.rebellion = true;
+      province.rebellionQuarter = quarterIndex(s.turn);
+      s = addEvent(s, "民变", province.name + "民变告急", "民心低迷，钱粮困顿", [
+        { label: "开仓赈抚", effects: { grain: -20, morale: 4, province: {id: province.id, morale: 12} } },
+        { label: "调兵弹压", effects: { treasury: -8, morale: -2, prestige: 2, province: {id: province.id, morale: -3} } },
+      ], [province.name], province.id);
+      s.threads.at(-1).provinceId = province.id;
+    }
+  }
+  for (const ret of s.retaliations.filter((x) => !x.done && x.due <= s.turn)) {
+    ret.done = true;
+    const f = s.court.factions.find((f) => f.id === ret.faction);
+    s = addEvent(
+      s,
+      "党争",
+      f.name + " 联名反奏",
+      "此前罢免引发报复",
+      [
+        {
+          label: "安抚调停",
+          effects: { prestige: -1, faction: { [f.id]: 4 } },
+        },
+        {
+          label: "严旨申饬",
+          effects: { prestige: 2, faction: { [f.id]: -3 } },
+        },
+      ],
+      [f.name],
+    );
+  }
+  return s;
 }
-}
-const unrest = s.nation.provinces.filter((p) => p.morale < 30 && !p.rebellion);
-if (unrest.length) {
-const rebel = roll(s, 1, 100);
-s = rebel.state;
-const lowest = Math.min(...unrest.map((p) => p.morale));
-if (rebel.value <= Math.ceil((30 - lowest) / 5)) {
-const pick = roll(s, 0, unrest.length - 1);
-s = pick.state;
-const province = s.nation.provinces.find((p) => p.id === unrest[pick.value].id);
-province.rebellion = true;
-province.rebellionQuarter = quarterIndex(s.turn);
-s = addEvent(s, "民变", province.name + "民变告急", "民心低迷，钱粮困顿", [
-{ label: "开仓赈抚", effects: { grain: -20, morale: 4, province: {id: province.id, morale: 12} } },
-{ label: "调兵弹压", effects: { treasury: -8, morale: -2, prestige: 2, province: {id: province.id, morale: -3} } },
-], [province.name], province.id);
-s.threads.at(-1).provinceId = province.id;
-}
-}
-for (const ret of s.retaliations.filter((x) => !x.done && x.due <= s.turn)) {
-ret.done = true;
-const f = s.court.factions.find((f) => f.id === ret.faction);
-s = addEvent(
-s,
-"党争",
-f.name + " 联名反奏",
-"此前罢免引发报复",
-[
-{
-label: "安抚调停",
-effects: { prestige: -1, faction: { [f.id]: 4 } },
-},
-{
-label: "严旨申饬",
-effects: { prestige: 2, faction: { [f.id]: -3 } },
-},
-],
-[f.name],
-);
-}
-return s;
-}
+
 function seedDevelopmentMemorials(state,before){
-let s=clone(state);
-const append=(id,title,type,request,options,provinceId=null)=>{
-if(s.memorials.some(m=>m.id===id))return;
-const m={id,title,type,...pickMemorialist(s,type,provinceId),provinceId,request,options,due:s.turn+9,threadId:null,urgent:false,secret:false,text:''};
-m.text=memorialText(m,s.settings.prose==='modern');s.memorials.push(m);
-};
-for(const id of s.tech.done.filter(id=>!before.tech?.done.includes(id)))append('tech-done-'+id+'-'+s.turn,'工部报捷：'+techById(id).name,'工务','此法已研成，谨报御前。',[{id:'approve',label:'知道了',effects:{}}]);
-if(s.turn===0||s.turn%18||s.regency)return s;
-const kinds=['industry','research'],kind=kinds[Math.floor(s.turn/18)%2];
-if(kind==='research'&&!s.tech.current){
-const t=TECHS.find(t=>!researchBlock(s,t.id));
-if(t&&defaultResearchLead(s,t))append('tech-request-'+s.turn,'工部请研'+t.name,'工务','请委派主持，每月拨五万两研习'+t.name,[
-{id:'approve',label:'每月拨五万两',effects:{},development:{kind:'research',techId:t.id,funding:5},consequence:'按国库余额月结拨付，研究须耗时；不在此刻一次扣款'},
-{id:'reject',label:'暂缓研习',effects:{},consequence:'暂不新增经费'},
-]);
-}else if(kind==='industry'){
-const proposal=s.nation.provinces.flatMap(p=>Object.keys(INDUSTRIES).map(industry=>({p,industry,q:industryQuote(s,p.id,industry)}))).find(x=>!x.q.blocked&&x.q.level===1&&!s.projects.some(p=>!p.done&&p.edictType==='兴业'&&p.province===x.p.id&&p.industry===x.industry));
-if(proposal){const {p,industry,q}=proposal,r=INDUSTRIES[industry];append('industry-request-'+s.turn,p.name+'请设'+r.name,'工务','请拨银营建'+r.name,[
-{id:'approve',label:'准建'+r.name,effects:{treasury:-q.cost,...(r.morale?{province:{id:p.id,morale:r.morale}}:{})},development:{kind:'industry',province:p.id,industry,level:q.level},consequence:'支银'+q.cost+'万两，工期'+q.months+'月，建成后按季产出并支付维护费'},
-{id:'reject',label:'暂缓营建',effects:{},consequence:'不支银、不营建'},
-],p.id);}
-}
-return s;
+ let s=clone(state);
+ const append=(id,title,type,request,options,provinceId=null)=>{
+  if(s.memorials.some(m=>m.id===id))return;
+  const m={id,title,type,...pickMemorialist(s,type,provinceId),provinceId,request,options,due:s.turn+9,threadId:null,urgent:false,secret:false,text:''};
+  m.text=memorialText(m,s.settings.prose==='modern');s.memorials.push(m);
+ };
+ for(const id of s.tech.done.filter(id=>!before.tech?.done.includes(id)))append('tech-done-'+id+'-'+s.turn,'工部报捷：'+techById(id).name,'工务','此法已研成，谨报御前。',[{id:'approve',label:'知道了',effects:{}}]);
+ if(s.turn===0||s.turn%18||s.regency)return s;
+ const kinds=['industry','research'],kind=kinds[Math.floor(s.turn/18)%2];
+ if(kind==='research'&&!s.tech.current){
+  const t=TECHS.find(t=>!researchBlock(s,t.id));
+  if(t&&defaultResearchLead(s,t))append('tech-request-'+s.turn,'工部请研'+t.name,'工务','请委派主持，每月拨五万两研习'+t.name,[
+   {id:'approve',label:'每月拨五万两',effects:{},development:{kind:'research',techId:t.id,funding:5},consequence:'按国库余额月结拨付，研究须耗时；不在此刻一次扣款'},
+   {id:'reject',label:'暂缓研习',effects:{},consequence:'暂不新增经费'},
+  ]);
+ }else if(kind==='industry'){
+  const proposal=s.nation.provinces.flatMap(p=>Object.keys(INDUSTRIES).map(industry=>({p,industry,q:industryQuote(s,p.id,industry)}))).find(x=>!x.q.blocked&&x.q.level===1&&!s.projects.some(p=>!p.done&&p.edictType==='兴业'&&p.province===x.p.id&&p.industry===x.industry));
+  if(proposal){const {p,industry,q}=proposal,r=INDUSTRIES[industry];append('industry-request-'+s.turn,p.name+'请设'+r.name,'工务','请拨银营建'+r.name,[
+   {id:'approve',label:'准建'+r.name,effects:{treasury:-q.cost,...(r.morale?{province:{id:p.id,morale:r.morale}}:{})},development:{kind:'industry',province:p.id,industry,level:q.level},consequence:'支银'+q.cost+'万两，工期'+q.months+'月，建成后按季产出并支付维护费'},
+   {id:'reject',label:'暂缓营建',effects:{},consequence:'不支银、不营建'},
+  ],p.id);}
+ }
+ return s;
 }
 
 return {pickMemorialist,addEvent,seedMemorials,resolveMemorial,expireMemorials,eventsMonth,seedDevelopmentMemorials};
@@ -6829,6 +6880,11 @@ const MEMORIAL_DETAILS={
  请赈:'赈济须及时，领用也须有人照管，若等所有名册核完才办，恐使求助者久候；若一概凭口头领用，又怕挤占应得之人。臣拟先由熟悉乡情者会同经办官查明急缓，发放与复核分别有人负责，有争议之户另记呈问，不误眼前救急。'
 };
 function memorialText(m,modern=false){
+ if(m.agendaVersion===1){
+  const choices=m.options.filter(o=>o.id!=='hold').map(o=>o.label+'：'+o.consequence).join('；');
+  return (modern?'陛下，':'臣谨奏：')+(m.context||'')+m.request+'\n\n'+m.escalation+'\n\n'+
+   choices+'。各部所议，尚未奉旨施行。'+(modern?'请陛下裁定取舍，臣等奉旨后办理。':'伏请圣裁，臣等奉旨后遵行。');
+ }
  const request=String(m.request||m.title||'有事待议').replace(/[。；]+$/,''),place=m.provinceId&&m.title.includes(' ')?m.title.split(' ')[0]:'';
  const detail=MEMORIAL_DETAILS[m.type]||MEMORIAL_DETAILS.政务,approve=m.options?.[0]?.label==='准奏'?'准照所请办理':m.options?.[0]?.label||'裁处',reject=m.options?.[1]?.label||'暂缓议行';
  return (modern?'陛下，'+(place?place+'报来一事：':''):'臣谨奏：'+(place?place+'来文，':''))+request+'。\n\n'+detail+'\n\n'+
@@ -7134,7 +7190,7 @@ const RELIEF=[
 ['劝乡绅募赈','官府少出钱粮，救急较慢，承办官须多担责任',{treasury:-0.3,localMorale:0.4,localDisaster:-1,prestige:-0.2,favor:-1}]
 ];
 function memorialChoices(template,province,state=null,fromId=null){
-const rows=template.relief?RELIEF:MEMORIAL_CHOICES[template.id];
+const rows=template.choices||(template.relief?RELIEF:MEMORIAL_CHOICES[template.id]);
 if(!rows)throw new Error('此奏折缺少处置方案：'+template.id);
 const author=state?.court.officials.find(o=>o.id===fromId&&o.alive);
 const activeWar=state?.campaigns.find(w=>!w.done);
@@ -7326,6 +7382,202 @@ return s;
 }
 
 return {campaignCommander,newCampaign,campaignTactic,campaignReport,treatyOptions,openSettlement,applyCampaignDecision,expireCampaignPetition,breakTreaty,advanceTreaties};
+},
+"src/core/memorial-agenda.js":function(__load){
+const {annualBudget,grainBudget} = __load("src/core/finance.js");
+const {random,seedNumber} = __load("src/core/rng.js");
+
+// New petitions require a decision outside ordinary departmental authority.
+// Legacy templates remain available for received petitions and frozen forecasts.
+const policy=(id,title,type,request,escalation,choices,when=()=>true,priority=0)=>
+ ({id:'imperial-'+id,title,type,request,escalation,choices,when,priority});
+const IMPERIAL_AGENDA=[
+ policy('relief','灾区请定赈济与核销办法','请赈',
+  '请在拨银急赈、开仓给粮与官绅合赈之间定夺，并准灾区从急办理后再核销。',
+  '灾情已重，救急须动用中央钱粮并放宽通常核销次序，地方无权自行更改。',[
+   ['拨银急赈，事后核销','国库承担急赈，较快减轻灾情；事后仍须核账',{treasury:-10,localMorale:2,localDisaster:-6,governance:-0.2}],
+   ['开仓给粮，派员监赈','支用中央粮储并付监赈费用，保留更多现银',{treasury:-2,grain:-6,localMorale:1.6,localDisaster:-5}],
+   ['官绅合赈，依例核销','少动中央钱粮，救济较慢，灾民继续承受压力',{treasury:-1,localMorale:-0.3,localDisaster:-1,prestige:-0.3}],
+  ],(s,p)=>p.disaster>=20,100),
+ policy('grain','户兵二部请定缺粮应对','军粮',
+  '存粮已不足一个月常用，请裁先动国帑籴粮，还是收缩军中支给、优先保留救济。',
+  '粮储不足，军需与赈济争用同一仓储，须由御前裁定支给次序。',[
+   ['动帑籴粮，维持支给','付购粮银以补仓储，现银压力增加',{treasury:-12,grain:10,readiness:0.5}],
+   ['节缩军给，保留赈粮','保留钱粮但军备与地方信心受损',{grain:2,readiness:-2,localMorale:-0.5}],
+  ],s=>s.nation.grain<grainBudget(s).monthly,95),
+ policy('arrears','户部请裁积欠清偿次序','钱粮',
+  '国帑尚有积欠，请定以现银补付、核减非急公务，还是暂缓清偿以保留周转。',
+  '欠款涉及各衙门用度，单由户部裁减容易失衡，须确定中央财政取舍。',[
+   ['核减非急公务，先保周转','以整顿开支换取周转，执行衙门暂受掣肘',{treasury:4,governance:-0.5,prestige:-0.3}],
+   ['清核欠项，维持原支给','付稽核费用，整顿拖欠凭据，不额外削减支给',{treasury:-2,governance:0.6}],
+  ],s=>s.nation.arrears>0,85),
+ policy('border','兵部请定边防守备方略','边警',
+  '边患已高，请裁增拨守备经费、整训要隘，还是节用守成并约束边地冲突。',
+  '边防需在增军费与保财政之间取舍，地方将领无权增动中央军饷。',[
+   ['增拨守备，整训要隘','动用国帑加强战备，降低边患',{treasury:-9,readiness:2,threat:-2}],
+   ['节用守成，约束冲突','少花军费，守备改善有限，须承受边患压力',{treasury:-2,readiness:0.3,threat:0.5}],
+  ],s=>s.nation.army.frontiers.some(b=>b.threat>=60),80),
+ policy('war-supply','户兵二部会请筹措行营军需','战事',
+  '行营仍在用兵，请裁由国库加拨转运费用，还是征用地方车役以接济军前。',
+  '战时转运横跨军政两途，军需与民力难以兼顾，须裁定由谁承担。',[
+   ['国库拨运，减扰地方','国库付转运费用，行营战备改善',{treasury:-10,grain:-2,readiness:2,localMorale:0.5}],
+   ['征调车役，限期归还','少动现银，动用地方民力，行营得以接济',{treasury:-3,grain:-1,readiness:1,localMorale:-1}],
+  ],s=>s.campaigns.some(w=>!w.done),75),
+ policy('dike','工户二部请裁灾区堤防先后','河工',
+  '灾区修堤须与赈济共筹经费，请裁集中修护险段，还是先疏散沿河居民、缓办大工。',
+  '灾后工程与安置争用中央经费，涉及跨县迁移与超例拨款，须请御裁。',[
+   ['先修险段，兼办安置','较多国帑用于减灾，安置仍需民力',{treasury:-8,localDisaster:-4,localMorale:0.7}],
+   ['先办疏散，缓议大工','安置较快，堤防风险改善较少',{treasury:-3,localDisaster:-1,localMorale:1.1}],
+  ],(s,p)=>p.disaster>=25,65),
+ policy('resettle','灾区请议流民安置成例','民生',
+  '请在给资返乡与就地安置之间定夺，明定客籍编户、土地与赋役由哪一地承接。',
+  '灾情与民心承压，安置牵涉两地户籍、赋役权责，地方无法独断。',[
+   ['给资返乡，修复生计','花钱粮帮助返乡，减轻灾情',{treasury:-6,grain:-2,localMorale:1.5,localDisaster:-2}],
+   ['就地编户，缓征赋役','保留更多现银，安置协调负担增加',{treasury:-2,localMorale:1,governance:-0.3}],
+  ],(s,p)=>p.disaster>=15&&p.morale<45,60),
+ policy('tax','户部请议实征与额征之制','赋税',
+  '请择一省试核实征税额，将额外摊派并入明册；或守旧额、严查册外加派，再观各省情形。',
+  '涉及赋役成例与地方财权，户部只能拟议，须由御前确定试行范围。',[
+   ['择省试核，明列税目','付查核费用、安定地方，旧有征解暂受扰动',{treasury:-5,localMorale:1.2,governance:0.3}],
+   ['守旧额，严禁册外加派','少动国帑，治理小有改善，试行新制暂缓',{treasury:-1,governance:0.3,localMorale:0.2}],
+  ],(s,p)=>p.tax>0&&!p.rebellion),
+ policy('land','户部请议清丈田亩与宽限','钱粮',
+  '请择省核丈隐漏田亩，或先给业户自报宽限；须定清丈费用与追征是否从宽。',
+  '清丈关系田赋与乡绅利益，追征尺度将成为各省遵循的新例。',[
+   ['拨费核丈，追征从宽','国库承担核查费用，提升治理，地方承受清丈压力',{treasury:-5,governance:0.8,localMorale:-0.3}],
+   ['限期自报，暂不追旧','百姓较安，查核力度较弱',{treasury:-1,governance:0.2,localMorale:0.5}],
+  ],(s,p)=>p.tax>0&&!p.rebellion),
+ policy('salt','户部请裁盐课与民间行盐之禁','盐政',
+  '请议放宽一省行盐、以核课代重禁，或保留专引并整饬缉私；税收与民用须作取舍。',
+  '涉及盐课定制与民间经营边界，不能由地方用临时告示更改。',[
+   ['试宽行盐，以核课代禁','付试行费用，便民而暂减收解',{treasury:-4,localMorale:1,governance:-0.2}],
+   ['保留专引，整饬缉私','收回部分课银，地方受检查约束',{treasury:2,localMorale:-0.7,governance:0.3}],
+  ]),
+ policy('reserve','户部请议常平仓储备定额','仓储',
+  '请增留地方仓粮以备灾，或将一部分余粮调入中央统一支用；须明定仓储与军需的优先次序。',
+  '中央与地方争用储粮，涉及仓储定额，须确定钱粮留拨原则。',[
+   ['增留地方仓粮','支用中央粮储安定地方，中央余粮减少',{treasury:-2,grain:-3,localMorale:1.1}],
+   ['调入中央统一支用','增加中央周转粮，地方储备信心下降',{grain:2,localMorale:-0.5}],
+  ],s=>s.nation.grain>=grainBudget(s).monthly*3),
+ policy('canal','工户二部请议漕运与民运分流','漕运',
+  '请择要道疏浚、分流官民船运，或先保漕粮、缓议民运扩容；工程支出与沿途商民生计须兼筹。',
+  '牵涉跨省河道、漕粮优先权与中央工费，须裁定两部承办先后。',[
+   ['拨费疏浚，分流官民船运','国库付工程费，地方生计与调运得益',{treasury:-6,localMorale:1,governance:0.3}],
+   ['先保漕粮，缓办扩容','节省工程费，民运仍受挤压',{treasury:-1,grain:1,localMorale:-0.3}],
+  ],s=>s.nation.grain>=grainBudget(s).monthly),
+ policy('justice','刑部请定重案复核与限期之制','刑狱',
+  '请议重案由刑部复核后再执行，或仍由地方依限办理、中央抽查；错判风险与积案时限须作取舍。',
+  '涉及刑名成例及中央与地方审判权限，刑部不敢自行改章。',[
+   ['重案复核，准予展限','付复核费用，慎刑安民，案牍负担增加',{treasury:-4,virtue:0.8,localMorale:0.6,governance:-0.2}],
+   ['依限结案，中央抽查','付抽查费用，办理较快，慎刑收效较少',{treasury:-1,governance:0.5,virtue:-0.2}],
+  ]),
+ policy('audit','都察院请定督抚考成权责','言官',
+  '请准御史跨省核考督抚，或先由督抚自陈、六部会核；须防地方相护，也须防言官挟察扰政。',
+  '监察权与督抚事权互相牵制，须由皇帝明确问责尺度。',[
+   ['御史跨省核考','付巡察费用，提升治理，地方承办受压',{treasury:-4,governance:0.8,localMorale:-0.2}],
+   ['督抚自陈，六部会核','费用较少，核考较缓，对地方掣肘较轻',{treasury:-1,governance:0.3,prestige:-0.2}],
+  ],s=>s.nation.governance<85),
+ policy('gentry','户部请议绅户优免边界','赋税',
+  '请议将绅户优免限于本人，或仍循旧例、先严核冒免；关系国课与士林，须定一体遵行之例。',
+  '涉及功名优免与赋役成例，可能牵动士林利益，须由御前权衡。',[
+   ['限于本人，试行清核','增加收解，地方旧有利益受触动',{treasury:3,governance:0.4,localMorale:-0.6,prestige:-0.4}],
+   ['保留旧例，先核冒免','国库付清核费，治理渐进而不急改优免',{treasury:-2,governance:0.3,prestige:0.2}],
+  ]),
+ policy('schools','礼户二部请议官学取士与经费','文教',
+  '请议由国库拨助偏远官学，或仍由地方自筹、中央加严考核；教养与中央用度须定轻重。',
+  '官学经费牵涉中央与地方分担，取士教养的尺度须由御前定夺。',[
+   ['国库拨助偏远官学','花国帑扩大教养，地方民心较安',{treasury:-5,virtue:0.7,localMorale:0.6}],
+   ['地方自筹，中央核考','保留国帑，地方筹办负担较重',{governance:0.3,localMorale:-0.3}],
+  ]),
+ policy('appointment','吏部请议地方官候补与选任','铨选',
+  '请议以考成择优补缺，或保留按资序推补并加试政务；须兼顾用人实绩与官员进阶成例。',
+  '涉及铨选成例与仕进秩序，吏部只能拟定候选办法，具体任命仍候旨。',[
+   ['以考成为先，核实荐举','付考核费，重实绩而触动资序',{treasury:-3,governance:0.6,prestige:-0.2}],
+   ['循资序推补，加试政务','保留进阶成例，改革幅度较小',{treasury:-1,governance:0.2,prestige:0.2}],
+  ]),
+ policy('military','兵部请议边营轮防与常备','兵务',
+  '请议定期轮防以防将兵私属，或留熟边旧营、加强中央点验；军队熟习与统属须作取舍。',
+  '轮防牵动军队统属与中央军费，须由皇帝确定兵部权限。',[
+   ['拨费轮防，重整统属','付换防费用，改善战备但扰动地方',{treasury:-5,readiness:1.4,localMorale:-0.2}],
+   ['留营熟边，中央点验','点验费用较少，战备渐进',{treasury:-2,readiness:0.5,governance:0.2}],
+  ],s=>s.nation.army.frontiers.some(b=>b.troops>0)),
+ policy('trade','礼户二部请议互市查验与税例','外邦',
+  '请议放宽通好邦国的互市查验，或维持关禁、以小额官市试探；税课、边安与邦交须兼筹。',
+  '涉及对外成例与关税权限，不能由关吏自行放宽。',[
+   ['宽验通商，严禁军械','改善邦交与地方生计，查验费用增加',{treasury:-4,attitude:1,localMorale:0.7}],
+   ['维持关禁，先办官市','少付试办费用，邦交改善较缓',{treasury:-1,attitude:0.2,localMorale:-0.2}],
+  ],s=>s.foreign.some(f=>f.status!=='交战')),
+ policy('water','工户二部请议上下游水利权责','工务',
+  '请议由中央统筹上下游水利、分摊工费，或仍由各省分段承修、共同会勘；须先明权责再兴工。',
+  '水利跨越省界，受益与出资不在一地，两部请定共同遵行的原则。',[
+   ['中央统筹，拨费会勘','国库多出工费，改善跨省协调',{treasury:-5,governance:0.5,localMorale:0.6}],
+   ['分省承修，共同核验','中央少出钱，地方协调负担较重',{treasury:-1,governance:0.2,localMorale:-0.2}],
+  ]),
+ policy('clan','宗人府请议宗室俸养定额','宗室',
+  '请议核限远支宗室俸养并另给教养出路，或仍循原额、先核重领冒支；国用与宗亲体面须两全。',
+  '涉及宗室俸养成例与皇室名分，宗人府无权单独更改。',[
+   ['核限远支，另助教养','节省国用，宗亲体面稍损',{treasury:2,prestige:-0.5,virtue:0.2}],
+   ['维持原额，清核冒支','付清核费用，保持宗亲体面',{treasury:-2,governance:0.3,prestige:0.2}],
+  ],s=>s.harem.children.length>0||s.harem.royalWomen?.length>0),
+ policy('budget','户部请定国用缓急','钱粮',
+  '国库周转已低于全年常用，请裁紧缩非急公务留银，还是维持常用、另付费用清查收解。',
+  '中央用度吃紧，裁减涉及各部，须先确定国用的缓急顺序。',[
+   ['紧缩非急公务','保留周转银，各衙门办事承压',{treasury:3,governance:-0.4,prestige:-0.2}],
+   ['维持常用，清查收解','付查核费整顿治理，周转压力暂留',{treasury:-2,governance:0.5}],
+  ],s=>s.nation.treasury<annualBudget(s),30),
+];
+
+function imperialTemplates(state,count){
+ const active=new Set(state.memorials.map(m=>m.templateId)),recent=state.memorialVariety||[];
+ const eligible=IMPERIAL_AGENDA.flatMap(t=>{
+  if(active.has(t.id))return [];
+  const last=recent.filter(r=>r.id===t.id).at(-1)?.turn??-1000;
+  if(state.turn-last<(t.priority>=60?12:36))return [];
+  // Prevent a second relief request for the same disaster already before court.
+  const provinces=state.nation.provinces.filter(p=>t.when(state,p)&&
+   (t.id!=='imperial-relief'||!state.memorials.some(m=>m.provinceId===p.id&&/赈|灾/.test(m.type))));
+  if(!provinces.length)return [];
+  const r=random(seedNumber(`agenda:${state.rng}:${state.turn}:${t.id}`));
+  const p=provinces[Math.floor(r.value*provinces.length)];
+  const context=t.id==='imperial-relief'||t.id==='imperial-dike'||t.id==='imperial-resettle'
+   ?`${p.name}现有灾情 ${Math.round(p.disaster)}，民心 ${Math.round(p.morale)}。`
+   :t.id==='imperial-grain'?`粮储 ${Math.round(state.nation.grain)} 万石，每月常用约 ${Math.ceil(grainBudget(state).monthly)} 万石。`
+   :t.id==='imperial-arrears'?`国帑积欠 ${Math.round(state.nation.arrears)} 万两，现银 ${Math.round(state.nation.treasury)} 万两。`
+   :t.id==='imperial-border'?`当前最高边患为 ${Math.round(Math.max(...state.nation.army.frontiers.map(b=>b.threat)))}。`
+   :t.id==='imperial-budget'?`国库现银 ${Math.round(state.nation.treasury)} 万两，全年常用约 ${Math.ceil(annualBudget(state))} 万两。`
+   :`拟由${p.name}先行承办，涉及改例之处须奉旨后再行。`;
+  return [{...t,context,provinceId:p.id,last,title:(['请赈','河工','民生','赋税'].includes(t.type)?p.name+' ':'')+t.title}];
+ });
+ eligible.sort((a,b)=>b.priority-a.priority||a.last-b.last||
+  seedNumber(`${state.rng}:${state.turn}:${a.id}`)-seedNumber(`${state.rng}:${state.turn}:${b.id}`));
+ const chosen=[];
+ for(const t of eligible){if(chosen.length>=count)break;if(!chosen.some(x=>x.type===t.type))chosen.push(t);}
+ return chosen;
+}
+
+function routineBriefings(state){
+ if(state.turn%3!==0)return [];
+ const p=state.nation.provinces[Math.floor(state.turn/3)%state.nation.provinces.length];
+ const budget=grainBudget(state),round=n=>Math.round(n*10)/10;
+ const reports=[
+  ['钱粮','户部钱粮常报',`国库现存 ${round(state.nation.treasury)} 万两，积欠 ${round(state.nation.arrears)} 万两。${p.name}税额照现行册例收解；遇需减免或改章，再另具专折。`],
+  ['仓储','户部粮储常报',`中央粮储现有 ${round(state.nation.grain)} 万石，军需与赈济每月常用合计 ${round(budget.monthly)} 万石。仓廪盘查、翻晒仍由有司按例办理；缺粮急务另折请裁。`],
+  ['政务',p.name+'地方常报',`${p.name}现有灾情 ${round(p.disaster)}，民心 ${round(p.morale)}。地方日常公务照章办理；灾情扩大、民变及超例支用另具急折。`],
+  ['边警','兵部边防常报',`各边镇现报：${state.nation.army.frontiers.map(b=>b.dir+'境边患 '+round(b.threat)).join('，')}。点卯、军械检修循例办理；增调大军与加拨军费另候旨。`],
+ ];
+ const local=[
+  ['工务','衙署修缮',`${p.name}衙署修漏、领用旧瓦等小修由地方依定额办理，经费仍循原例。`],
+  ['文教','乡塾借书',`${p.name}官学旧书借阅、归还与修补交教官立簿管理，毋庸逐件请旨。`],
+  ['内廷','宫中灯油', '宫中灯油交领、旧物修补由内廷按额核销，管事按月查验。'],
+  ['民生','里邻纠纷',`${p.name}日常井水、集期与邻里争执先由里老、州县依例调处；涉重案者仍依法上报。`],
+  ['政务','案牍与驿递',`${p.name}文书誊录、驿递交割与簿册点验交所属衙门承办，不另增例外支用。`],
+ ];
+ const month=Math.floor(state.turn/3),selected=[reports[month%4],reports[(month+1)%4]];
+ return [...selected.map(([type,title,text],i)=>({id:`brief-${state.turn}-${i}`,turn:state.turn,kind:'report',type,title,text,provinceId:p.id})),
+  (([type,title,text])=>({id:`brief-${state.turn}-local`,turn:state.turn,kind:'local',type,title,text,provinceId:p.id}))(local[month%local.length])];
+}
+
+return {IMPERIAL_AGENDA,imperialTemplates,routineBriefings};
 },
 "src/llm/client.js":function(__load){
 const { parseJSONLoose } = __load("src/llm/validate.js");
@@ -8512,8 +8764,8 @@ function turnMessages(state, forecast) {
 }
 function memorialMessages(state,memorials){
   return [
-    {role:'system',content:worldRules(state)+'\n【奏折正文任务】只为所列奏报写正文，每本160–260字，三至五个自然段，以换行分隔。交代来由、现状、顾虑和具体请求，不套空话。只使用已提供的人名、事实和方案，不创造数值、成败或上奏人，不把请办写成已经办成。只输出 {"memorialTexts":[{"id":"","text":""}]}。'},
-    {role:'user',content:JSON.stringify({memorials:memorials.map(m=>({id:m.id,title:m.title,type:m.type,from:m.from,request:m.request,choices:m.options.map(o=>o.consequence?[o.label,o.consequence]:o.label)}))})},
+    {role:'system',content:worldRules(state)+'\n【奏折正文任务】只为所列奏报写正文，每本160–260字，三至五个自然段，以换行分隔。交代来由、现状、顾虑和具体请求，不套空话。有escalation时须交代为何超出有司常权、为何需要皇帝裁决，以及各方案由谁承担代价；不得降格成抄册、修瓦等细务。context是现有国情或拟议范围，不得虚构已发生的冤案、舞弊、灾害或大臣争执。只使用已提供的人名、事实和方案，不创造数值、成败或上奏人，不把请办写成已经办成。只输出 {"memorialTexts":[{"id":"","text":""}]}。'},
+    {role:'user',content:JSON.stringify({memorials:memorials.map(m=>({id:m.id,title:m.title,type:m.type,from:m.from,request:m.request,...(m.escalation?{escalation:m.escalation,context:m.context}:{}),choices:m.options.map(o=>o.consequence?[o.label,o.consequence]:o.label)}))})},
   ];
 }
 function worldMessages(state) {
@@ -12285,6 +12537,9 @@ facts: [...scenes.map(r=>({kind:'scene_result',slot:r.slot,status:r.outcome.stat
 newMemorials: s.memorials.filter(
 (m) => !state.memorials.some((old) => old.id === m.id),
 ),
+...(s.briefings?.some(b=>!state.briefings?.some(old=>old.id===b.id))?{
+newBriefings:s.briefings.filter(b=>!state.briefings?.some(old=>old.id===b.id)),
+}:{}),
 baseFingerprint: JSON.stringify({
 rng: state.rng,
 turn: state.turn,
@@ -12353,6 +12608,7 @@ id: forecast.turnId,
 turn: s.turn,
 era: clone(state.era),
 memorialReviews: collectMemorialReviews(state, forecast),
+...(forecast.newBriefings?.length?{briefings:clone(forecast.newBriefings)}:{}),
 ...(state.turnBudget?.rewriteAttempted?{rewriteAttempted:true}:{}),
 ...(forecast.scenes?.length?{scenes:clone(forecast.scenes).map(r=>({...r,memoryVersion:19,memoryNotes:(narrative.sceneMemories||[]).filter(m=>m.slot===r.slot)}))}:{}),
 chapter: narrative.chapter || {},
@@ -13431,6 +13687,7 @@ return {DIFFICULTIES,scenarioDifficulty,scenarioRecommendations};
 },
 "src/ui/render.js":function(__load){
 const {sceneChapterHTML} = __load("src/ui/scene-view.js");
+const {briefingsHTML} = __load("src/ui/briefings.js");
 const { esc, gameText } = __load("src/ui/common.js");
 const {
 memorialAssignments,
@@ -13710,7 +13967,7 @@ chapterNotes(h).map((n) => "<p>" + esc(n) + "</p>").join("") +
 (ambitions.length
 ? ambitionsHTML({ ambitions })
 : "<p>详见史馆的宏愿与心事。</p>") +
-"</div></details></div>"
+"</div></details></div>" + briefingsHTML(h.briefings)
 );
 }
 function memorialHTML(m, s = null) {
@@ -13741,6 +13998,7 @@ esc(m.from) +
 "</span><span>剩 " +
 Math.max(0, m.due - (m.currentTurn || 0)) +
 " 旬</span></small>" +
+(m.escalation?'<small class="memorial-escalation">御前亲裁 · '+esc(m.escalation)+'</small>':'') +
 status +
 "</span></button>"
 );
@@ -13769,7 +14027,7 @@ queued.length +
 ' 本</h3><p class="muted">已入本旬日程，起驾时生效。点开可查看拟批。</p>' +
 list(queued) +
 "</section>"
-: "")
+: "") + briefingsHTML(s.briefings,12)
 );
 }
 function mobileNavHTML(s) {
@@ -14070,7 +14328,7 @@ counts.pending +
 " 本</button>"
 : "")
 : '<p class="muted">待新帝登基，呈送六部奏报。</p>') +
-'<section class="ambitions-block"><h2>宏愿与心事</h2>' +
+briefingsHTML(s?.briefings,6) + '<section class="ambitions-block"><h2>宏愿与心事</h2>' +
 (s ? ambitionsHTML(s) : '<p class="muted">两件天下事，两桩心中愿。</p>') +
 "</section></aside></div>" +
 mobileNavHTML(s)
@@ -14095,6 +14353,17 @@ return [(names.slice(0,3).join('、')+(names.length>3?'等人':''))||'独处',a.
 }
 
 return {sceneActionFields,sceneChapterHTML,sceneActionLabel};
+},
+"src/ui/briefings.js":function(__load){
+const {esc} = __load("src/ui/common.js");
+function briefingsHTML(items=[],limit=9){
+if(!items.length)return '';
+const rows=items.slice(-limit).reverse();
+return '<section class="briefings"><h3>例行奏报与有司细务</h3><p class="muted">备览，无须拟批；遇超例事项另折请裁。</p>'+rows.map(b=>
+'<details class="briefing"><summary><span class="briefing-kind">'+(b.kind==='report'?'例行奏报':'有司细务')+'</span> '+esc(b.title)+'</summary><div class="chapter-detail"><p>'+esc(b.text)+'</p><small>'+esc(b.fromPost||b.from||'有司')+' · 第 '+(b.turn+1)+' 旬</small></div></details>').join('')+'</section>';
+}
+
+return {briefingsHTML};
 },
 "src/ui/memorial-state.js":function(__load){
 const { memorialDecision } = __load("src/core/memorial-decisions.js");
@@ -14711,7 +14980,9 @@ person.id +
 esc(m.type) +
 "</span><span>期限　剩 " +
 Math.max(0, m.due - s.turn) +
-' 旬</span></div></div><div class="memorial-body">' +
+' 旬</span></div></div>' +
+(m.escalation?'<p class="imperial-reason"><strong>御前亲裁</strong> '+esc(m.escalation)+'</p>':'') +
+'<div class="memorial-body">' +
 memorialParagraphHTML(
 m.text || "臣谨奏：" + m.title + "。" + (m.request || "伏乞陛下裁处。"),
 ) +

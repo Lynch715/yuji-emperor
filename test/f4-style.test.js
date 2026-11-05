@@ -38,7 +38,7 @@ test('F4 范文本身能通过叙事校验（不会示范被删除的写法）',
   }
 });
 test('现代文试读与面谈兜底也使用白话，保持同一预演与判定',()=>{
-  const s=initialTurn(createState({seed:'modern-demo',prose:'modern'})),f=forecastTurn(s,{朝:{kind:'歇息'}}),before=structuredClone(f);
+  const s=initialTurn(createState({seed:'modern-demo',prose:'modern'}));s.turn=2;s.day=20;s.era.xun=2;const f=forecastTurn(s,{朝:{kind:'歇息'}}),before=structuredClone(f);
   const reply=mockNarrative(f),checked=validateTurn(reply,f);
   assert.deepEqual(checked.chapter,reply.chapter);assert.deepEqual(f,before);
   assert.match(reply.chapter.朝,/皇帝/);

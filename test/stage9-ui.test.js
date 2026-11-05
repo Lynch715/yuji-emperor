@@ -5,7 +5,6 @@ import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {stage9Fixture} from '../qa/stage9-fixture.js';
 import {forecastTurn} from '../src/core/turn.js';
-import {VERSION} from '../src/core/state.js';
 import {createMemorialSession,memorialAction,effectItems} from '../src/ui/memorials.js';
 import {renderApp} from '../src/ui/render.js';
 import {energyView,metricGroups,scheduleEstimate} from '../src/ui/view-model.js';
@@ -25,7 +24,7 @@ for(const old of legacy)test('夜御案同种子实走对照：'+old.case,()=>{
  // decisions without changing the archived UI fixture.
  const forecast=forecastTurn(s,{...s.schedule,[old.slot]:action});
  assert.deepEqual(forecast,forecastTurn(s,{...s.schedule,[old.slot]:action}));
- assert.equal(forecast.state.v,VERSION);
+ assert.equal(forecast.state.v,22);
  assert.deepEqual(s,before);
 });
 test('逐本混合决定沿用既有 decisions 字段，未选完不得写入，上朝不限本数',()=>{

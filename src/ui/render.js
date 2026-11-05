@@ -1,4 +1,5 @@
 import {sceneChapterHTML} from './scene-view.js';
+import {briefingsHTML} from './briefings.js';
 import { esc, gameText } from "./common.js";
 import {
   memorialAssignments,
@@ -278,7 +279,7 @@ export function chapterHTML(h, ambitions = [], sceneActive = false, sceneState =
     (ambitions.length
       ? ambitionsHTML({ ambitions })
       : "<p>详见史馆的宏愿与心事。</p>") +
-    "</div></details></div>"
+    "</div></details></div>" + briefingsHTML(h.briefings)
   );
 }
 export function memorialHTML(m, s = null) {
@@ -309,6 +310,7 @@ export function memorialHTML(m, s = null) {
     "</span><span>剩 " +
     Math.max(0, m.due - (m.currentTurn || 0)) +
     " 旬</span></small>" +
+    (m.escalation?'<small class="memorial-escalation">御前亲裁 · '+esc(m.escalation)+'</small>':'') +
     status +
     "</span></button>"
   );
@@ -337,7 +339,7 @@ export function memorialListHTML(s) {
         ' 本</h3><p class="muted">已入本旬日程，起驾时生效。点开可查看拟批。</p>' +
         list(queued) +
         "</section>"
-      : "")
+      : "") + briefingsHTML(s.briefings,12)
   );
 }
 export function mobileNavHTML(s) {
@@ -638,7 +640,7 @@ export function renderApp(
             " 本</button>"
           : "")
       : '<p class="muted">待新帝登基，呈送六部奏报。</p>') +
-    '<section class="ambitions-block"><h2>宏愿与心事</h2>' +
+    briefingsHTML(s?.briefings,6) + '<section class="ambitions-block"><h2>宏愿与心事</h2>' +
     (s ? ambitionsHTML(s) : '<p class="muted">两件天下事，两桩心中愿。</p>') +
     "</section></aside></div>" +
     mobileNavHTML(s)

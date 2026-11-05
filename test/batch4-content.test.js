@@ -47,7 +47,7 @@ test('C2 audit3先急件准奏30年粮储受收支和年损耗约束，连灾减
 
 import {seedMemorials,pickMemorialist} from '../src/core/events.js';
 import {readFileSync} from 'node:fs';
-test('D1 三十种国势模板覆盖灾边亏欠贪举河盐宗言使，50年标题至少二十五种且无灾不请赈',()=>{
+test('D1 新御前议题覆盖国势与制度，50年标题至少二十五种且无灾不请赈',()=>{
  const templates=readFileSync(new URL('../src/core/memorial-templates.js',import.meta.url),'utf8');assert.ok(templates);
  const titles=new Set(),kinds=new Set();let s=start();
  for(let turn=0;turn<50*36;turn++){
@@ -56,7 +56,7 @@ test('D1 三十种国势模板覆盖灾边亏欠贪举河盐宗言使，50年标
   // through province-name variations of six stock titles.
   s.nation.treasury=turn%2?5:480;s.nation.arrears=turn%2?20:0;
   s.nation.provinces.forEach((p,i)=>p.disaster=turn%2&&i===0?30:0);
-  s.nation.army.frontiers[0].pressure=turn%2?80:20;
+  s.nation.army.frontiers[0].threat=turn%2?80:20;
   s=seedMemorials(s);
   for(const m of s.memorials){titles.add(m.title);kinds.add(m.templateId);
    assert.ok(m.options.length>=2&&m.options.length<=4);
@@ -64,7 +64,7 @@ test('D1 三十种国势模板覆盖灾边亏欠贪举河盐宗言使，50年标
    assert.deepEqual({from:m.from,fromId:m.fromId,fromPost:m.fromPost,fromRole:m.fromRole},pickMemorialist(s,m.type,m.provinceId));
   }
  }
- assert.ok(titles.size>=25,`标题${titles.size}`);assert.ok(kinds.size>=30,`模板${kinds.size}`);
+ assert.ok(titles.size>=25,`标题${titles.size}`);assert.ok(kinds.size>=18,`模板${kinds.size}`);
 });
 
 import {mockNarrative} from '../src/llm/validate.js';
@@ -188,15 +188,15 @@ test('D3 损坏的对象式决定进入保护，批语不接受数值或伪造�
 });
 
 
-test('D1 实际先急件准奏策略50年例行奏报标题至少二十五种',()=>{
+test('D1 实际先急件准奏50年御前大政标题至少二十五种',()=>{
  const titles=new Set(),templates=new Set();const r=simulate(50,'内容五十年',{strategy:'greedy',onForecast:(s,f)=>{for(const m of [...s.memorials,...f.newMemorials])if(m.templateId){titles.add(m.title);templates.add(m.templateId);}}});
- assert.equal(r.turns,1800);assert.ok(titles.size>=25,`标题${titles.size}`);assert.ok(templates.size>=25,`模板${templates.size}`);
+ assert.equal(r.turns,1800);assert.ok(titles.size>=25,`标题${titles.size}`);assert.ok(templates.size>=16,`模板${templates.size}`);
 });
 
 test('D1 空仓核报粮缺，不请求翻晒搬运不存在的库存',()=>{
  let s=start();s.nation.grain=0;s.nation.grainArrears=20;s.nation.provinces.forEach(p=>p.disaster=0);
- const seen=new Set();for(let turn=0;turn<108;turn++){s.turn=turn;s.memorials=[];s=seedMemorials(s);for(const m of s.memorials.filter(m=>m.type==='仓储'||m.type==='漕运')){assert.equal(m.templateId,'grain-shortage');assert.ok(m.options.every(o=>!(o.effects.grain<0)));assert.ok(m.options[0].effects.treasury<0);seen.add(m.templateId);}assert.equal(s.nation.grain,0);}
- assert.ok(seen.has('grain-shortage'));
+ const seen=new Set();for(let turn=0;turn<108;turn++){s.turn=turn;s.memorials=[];s=seedMemorials(s);for(const m of s.memorials.filter(m=>m.type==='仓储'||m.type==='漕运'||m.templateId==='imperial-grain')){assert.equal(m.templateId,'imperial-grain');assert.ok(m.options.every(o=>!(o.effects.grain<0)));assert.ok(m.options[0].effects.treasury<0);seen.add(m.templateId);}assert.equal(s.nation.grain,0);}
+ assert.ok(seen.has('imperial-grain'));
 });
 
 test('D3 模拟器新决定也使用逐本对象，空批语的新旧写法结算完全一致',()=>{

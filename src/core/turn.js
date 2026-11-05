@@ -429,6 +429,9 @@ function forecastDraft(state, schedule, intents = []) {
     newMemorials: s.memorials.filter(
       (m) => !state.memorials.some((old) => old.id === m.id),
     ),
+    ...(s.briefings?.some(b=>!state.briefings?.some(old=>old.id===b.id))?{
+      newBriefings:s.briefings.filter(b=>!state.briefings?.some(old=>old.id===b.id)),
+    }:{}),
     baseFingerprint: JSON.stringify({
       rng: state.rng,
       turn: state.turn,
@@ -497,6 +500,7 @@ function commitDraft(state, forecast, narrative = {}) {
     turn: s.turn,
     era: clone(state.era),
     memorialReviews: collectMemorialReviews(state, forecast),
+    ...(forecast.newBriefings?.length?{briefings:clone(forecast.newBriefings)}:{}),
     ...(state.turnBudget?.rewriteAttempted?{rewriteAttempted:true}:{}),
     ...(forecast.scenes?.length?{scenes:clone(forecast.scenes).map(r=>({...r,memoryVersion:19,memoryNotes:(narrative.sceneMemories||[]).filter(m=>m.slot===r.slot)}))}:{}),
     chapter: narrative.chapter || {},
