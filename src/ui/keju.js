@@ -1,3 +1,4 @@
+import { portraitHTML, hallArtHTML } from './art.js';
 import { activeExam, examiners, configureExams, appointExaminer, setExamTopics, fallbackTopics, chooseExamTopic, receiveExamPapers, setExamBlind, rankExamCandidate, publishExam, cacheExamEssay } from '../core/keju.js';
 import { EXAM_RANKS, examGraceStart } from '../core/keju-schema.js';
 import { callJSON } from '../llm/client.js';
@@ -6,11 +7,11 @@ import { $, esc, openDialog, toast, gameText } from './common.js';
 import { createDialogRequestScope } from './request-scope.js';
 const origins={commoner:'寒门',gentry:'士绅',noble:'勋贵'};
 const stages={awaiting_examiner:'待任主考',topic:'待定策问',writing:'待收试卷',grading:'御前阅卷',published:'已经放榜'};
-export function examPapersHTML(e, readonly=false) {
+export function examPapersHTML(e, readonly=false, state=null) {
   const blind=e.blindGrading&&e.status!=='published';
   return [...e.candidates].sort((a,b)=>a.reviewerSuggestedRank-b.reviewerSuggestedRank).map(c=>{
     const number=e.candidates.indexOf(c)+1,label=blind?'第'+number+'号卷':c.name+' · '+c.hometown+' · '+origins[c.origin]+' · '+c.age+'岁'+(c.priorMentor===e.examiner?' · 主考旧门生':'');
-    return '<article class="card exam-paper" data-exam-paper="'+esc(c.id)+'"><h3>'+esc(label)+'</h3><p class="exam-summary">'+esc(c.essaySummary)+'</p><p class="muted">读卷官拟第'+c.reviewerSuggestedRank+'名 · '+esc(c.reviewerComment)+'</p><details data-essay="'+esc(c.id)+'"'+(c.essayFull&&e.openPaper===c.id?' open':'')+'><summary>展开读全文'+(c.essayFull?' · 已存卷':'')+'</summary><div class="prose exam-essay">'+(c.essayFull?'<p>'+esc(c.essayFull).replace(/\n+/g,'</p><p>')+'</p>':'<button type="button" data-exam-full="'+esc(c.id)+'"'+(readonly?' disabled':'')+'>补读此卷全文</button>')+'</div></details>'+ (e.status==='grading'?'<label for="rank-'+esc(c.id)+'">钦定名次 · '+esc(blind?'第'+number+'号卷':c.name)+'</label><select id="rank-'+esc(c.id)+'" data-exam-rank="'+esc(c.id)+'"'+(readonly?' disabled':'')+'>'+EXAM_RANKS.map(r=>'<option'+(e.ranking[c.id]===r?' selected':'')+'>'+r+'</option>').join('')+'</select>':'<p class="tag">'+esc(e.ranking[c.id])+'</p>')+'</article>';
+    return '<article class="card exam-paper" data-exam-paper="'+esc(c.id)+'">'+(!blind&&state?portraitHTML(state,c,'avatar','scholar'):'')+'<h3>'+esc(label)+'</h3><p class="exam-summary">'+esc(c.essaySummary)+'</p><p class="muted">读卷官拟第'+c.reviewerSuggestedRank+'名 · '+esc(c.reviewerComment)+'</p><details data-essay="'+esc(c.id)+'"'+(c.essayFull&&e.openPaper===c.id?' open':'')+'><summary>展开读全文'+(c.essayFull?' · 已存卷':'')+'</summary><div class="prose exam-essay">'+(c.essayFull?'<p>'+esc(c.essayFull).replace(/\n+/g,'</p><p>')+'</p>':'<button type="button" data-exam-full="'+esc(c.id)+'"'+(readonly?' disabled':'')+'>补读此卷全文</button>')+'</div></details>'+ (e.status==='grading'?'<label for="rank-'+esc(c.id)+'">钦定名次 · '+esc(blind?'第'+number+'号卷':c.name)+'</label><select id="rank-'+esc(c.id)+'" data-exam-rank="'+esc(c.id)+'"'+(readonly?' disabled':'')+'>'+EXAM_RANKS.map(r=>'<option'+(e.ranking[c.id]===r?' selected':'')+'>'+r+'</option>').join('')+'</select>':'<p class="tag">'+esc(e.ranking[c.id])+'</p>')+'</article>';
   }).join('');
 }
 export function kejuHTML(s,selectedId=null,readonly=false) {
@@ -28,7 +29,7 @@ export function kejuHTML(s,selectedId=null,readonly=false) {
   if(e.topic)html+='<p class="exam-topic">策问：'+esc(e.topic)+'</p><p class="muted">'+esc(e.topicNote||'')+'</p>';
   if(['topic','writing','grading'].includes(e.status))html+='<label class="check"><input id="exam-blind" type="checkbox"'+(e.blindGrading?' checked':'')+disabled+'>糊名阅卷</label><p class="muted">糊名后隐藏姓名、籍贯与出身；收卷前的设置也约束读卷官，揭名后可按主考同派偏私。已有评语与拟次保留。放榜时仍糊名，不判门生偏私。</p>';
   if(e.status==='writing')html+='<p>考生名册已定，等待九卷一并呈上。</p><button class="primary" data-exam-papers'+disabled+'>收取本届全部试卷</button>';
-  if(['grading','published'].includes(e.status))html+='<div class="exam-paper-list">'+examPapersHTML(e,readonly)+'</div>';
+  if(['grading','published'].includes(e.status))html+='<div class="exam-paper-list">'+examPapersHTML(e,readonly,s)+'</div>';
   if(e.status==='grading')html+='<p class="muted">点选钦定名次；选中已有的一甲名次会交换两卷。状元、榜眼、探花各须一人；二甲、三甲与黜落不限人数。名次自动存卷。</p><button class="primary" data-exam-publish'+disabled+'>钦定放榜</button>';
   if(e.status==='published')html+='<p>本届已放榜。士林声望 '+(e.outcome.scholarReputation>=0?'+':'')+e.outcome.scholarReputation+'；一甲寒门'+e.outcome.commoners+'人、勋贵'+e.outcome.nobles+'人、主考旧门生'+e.outcome.clients+'人。</p><p class="muted">进士已入朝堂人才库，座师—门生关系已记入人物履历。任职后经吏部事件逐步察明才干、操守、立场、野心与派系。</p>';
   return html+'</section><p id="exam-status" role="status" aria-live="polite"></p>';
@@ -39,6 +40,7 @@ export function requestExamJSON(config,messages,validate,options={}) {
 export function openKeju(ctx,selectedId=null,openPaper=null) {
   const s=ctx.getState();if(!s){toast('请先登基');return;}
   openDialog('科举 · 贡院','<div id="exam-owner">'+kejuHTML(openPaper?{...s,keju:{...s.keju,exams:s.keju.exams.map(e=>({...e,openPaper}))}}:s,selectedId,ctx.readonly())+'</div>');
+  $('#modal .dialog-head').insertAdjacentHTML('beforebegin',hallArtHTML('科举'));
   const owner=$('#exam-owner'),scope=createDialogRequestScope($('#modal'),owner);
   const e=s.keju.exams.find(e=>e.id===selectedId)||activeExam(s)||s.keju.exams.at(-1);
   const request=(messages,validate,signal)=>requestExamJSON(ctx.config(),messages,validate,{signal,onMetric:ctx.onMetric});

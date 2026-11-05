@@ -1,3 +1,4 @@
+import { assignFaces } from './faces.js';
 import { defaultKeju, validateKeju } from './keju-schema.js';
 import {validateDevelopment} from './tech-schema.js';
 import {validateSocialState} from './social-schema.js';
@@ -10,7 +11,7 @@ import { seedNumber, random, DRAFT } from "./rng.js";
 import { uniqueName } from "./names.js";
 import { chooseRegent } from "./regency-info.js";
 import {factionPowers} from './politics.js';
-export const VERSION = 23;
+export const VERSION = 24;
 export const TALENTS = ["政略", "权谋", "武略", "文采", "魅力"];
 export const SLOTS = ["朝", "午", "夜"];
 export const POST_NAMES = [
@@ -595,7 +596,7 @@ export function migrate(input) {
   }
   for(const a of s.ambitions) if(s.receipts.includes('goal:'+a.id)&&!s.receipts.includes('goal:'+reignId(s)+':'+a.id)) s.receipts.push('goal:'+reignId(s)+':'+a.id);
   assertState(s);
-  return s;
+  return assignFaces(s);
 }
 export function assertState(s) {
   validateKeju(s);

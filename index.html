@@ -1281,6 +1281,37 @@ font:600 var(--font-value) / 1 var(--serif);
 color:var(--ink-muted);
 flex:none;
 }
+.art-portrait { position: relative; overflow: hidden; display: inline-grid; vertical-align: middle; }
+.art-portrait img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; }
+.art-portrait img.art-loaded { opacity: 1; }
+.art-card { width: 64px; height: 80px; border-radius: 6px; }
+.art-paper { width: 200px; height: 250px; max-width: 100%; border-radius: 6px; margin-bottom: var(--s5); }
+.art-paper img { object-fit: contain; }
+.art-byline { width: 28px; height: 28px; font-size: 14px; margin-right: 6px; }
+.art-dead { filter: grayscale(1); opacity: .7; }
+.art-muted { filter: saturate(.4); }
+.art-gold { box-shadow: 0 0 0 2px var(--gold); }
+.art-scene { position: relative; overflow: hidden; height: 120px; width: 100%; background: var(--paper); margin: 0 0 var(--s4); }
+.art-scene img { display: block; width: 100%; height: 100%; object-fit: cover; opacity: 0; }
+.art-scene img.art-loaded { opacity: 1; }
+.art-scene::after { content: ''; position: absolute; inset: 60% 0 0; background: linear-gradient(transparent, var(--paper)); pointer-events: none; }
+.art-action { height: 160px; background: var(--desk-shade); }
+.art-action::after { background: linear-gradient(transparent, var(--desk-shade)); }
+.art-hall { height: 180px; background: var(--desk); }
+.art-hall::after { background: linear-gradient(transparent, var(--desk)); }
+.art-night img { filter: brightness(.85); }
+.art-off .art-scene, .art-off .art-portrait img { display: none; }
+.art-off .art-card, .art-off .art-paper { width: 44px; height: 44px; border-radius: 50%; }
+.art-portrait.art-failed { width: 44px; height: 44px; border-radius: 50%; }
+.art-byline.art-failed { width: 28px; height: 28px; }
+.memorial-author > span { display: inline-flex; align-items: center; flex-wrap: wrap; }
+.memorial-from { display: inline-flex; align-items: center; }
+@media (max-width: 600px){
+.art-scene { height: 96px; }
+.art-action { height: 112px; }
+.art-hall { height: 120px; }
+.art-paper { width: 120px; height: 150px; }
+}
 .map-grid{
 display:grid;
 grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
@@ -3038,6 +3069,8 @@ font-size:14px;background:var(--paper-chip);color:var(--ink);
     >
     <script>
       (() => { "use strict"; const __modules = {"src/ui/app.js":function(__load){
+const { initArt, portraitHTML, sceneHTML, sceneKey, scenarioArtHTML, withChapterArt, withPortraitArt } = __load("src/ui/art.js");
+const { assignFaces } = __load("src/core/faces.js");
 const { openKeju } = __load("src/ui/keju.js");
 const {industryForm,developmentAction,updateDevelopmentPreview} = __load("src/ui/technology.js");
 const {configureResearch} = __load("src/core/tech.js");
@@ -3117,6 +3150,7 @@ validateTalk,
 const { DIFFICULTIES, scenarioDifficulty, scenarioRecommendations } = __load("src/ui/opening-options.js");
 const { openNationOverview } = __load("src/ui/nation-overview.js");
 initCommon();
+initArt();
 setLeaveGuard(() => busy);
 initAppIcon();
 const store = createSaveStore({
@@ -3141,6 +3175,7 @@ lastSchedule = null;
 const scheduleSave=createDebouncedSave(()=>persist());
 window.addEventListener("pagehide",()=>scheduleSave.flush());
 function render() {
+if(state)state = withPortraitArt(assignFaces(state));
 const y = window.scrollY, kept = captureView($("#app"));
 const canRepeat = !!state && Object.values(repeatSchedule(state, lastScheduleFor(state))).some(Boolean);
 $("#app").innerHTML = renderApp(state, { readOnly, busy, saveStatus, canRepeat, scheduleCollapsed });
@@ -3403,7 +3438,7 @@ el.value=(goalDrafts.get(id)||recommended.map(g=>g.id))[i]||'';
 const panel=$("#goal-recommendations"); panel.hidden=!sc;
 if(sc){
 const v=scenarioPreview(sc);$("#emperor-name").value=v.emperor;$("#era-name").value=v.era;$("#difficulty").value=scenarioDifficulty(sc);
-card.innerHTML='<strong>'+esc(v.dynasty+' · '+v.year+' · '+v.emperor+' '+v.age+' 岁')+'</strong><p>'+esc(v.blurb)+
+card.innerHTML=scenarioArtHTML(sc)+'<strong>'+esc(v.dynasty+' · '+v.year+' · '+v.emperor+' '+v.age+' 岁')+'</strong><p>'+esc(v.blurb)+
 '</p><small>朝中：'+esc(v.cast.join('、'))+'等</small>';
 panel.innerHTML='<h3>这位皇帝的宏愿与心事</h3><p class="muted">每项都有自己的达成条件，也可以换选其他目标。</p><div class="goal-recommend-grid">'+
 recommended.map(g=>'<div><strong>'+esc(g.kind+' · '+g.title)+'</strong><p>'+esc(g.reason)+'</p>'+goalConditionsHTML(g)+'</div>').join('')+
@@ -3546,6 +3581,7 @@ onPartial: streamDraft,
 });
 }
 state = commitTurn(state, f, narrative);
+state = withChapterArt(state, f);
 lastSchedule = { runId: state.runId, turn: state.turn, schedule: f.schedule };
 if (state.ending && !state.settings.demo) {
 try {
@@ -3598,6 +3634,7 @@ openDialog('自拟情节 · 接着写','<div id="scene-owner"><p class="muted">'
 [h.chapter[r.slot],...r.steps.slice(-3).map(t=>t.prose)].map(p=>'<p>'+esc(p).replace(/\n+/g,'</p><p>')+'</p>').join('')+
 '</div><p class="muted">'+esc(sceneOutcomeText(pending?.outcome||r.steps.at(-1)?.outcome||r.outcome))+'</p><form id="scene-form"><label for="scene-follow">接下来想发生什么（选填）</label><textarea id="scene-follow" maxlength="8000" rows="4" '+(pending?'readonly':'')+' placeholder="留空会接着描写；也可以写下新的想法。">'+esc(pending?.request||'')+'</textarea><p class="muted">续写不另耗精力。写下新的心意，让这段故事继续。</p><div class="dialog-actions"><button type="submit" class="primary">'+(pending?'重试续写':'接着写')+'</button></div><p id="scene-status" role="status"></p></form></div>','action-shell');
 $('#modal').classList.add('scene-dialog');
+$('#modal .dialog-head').insertAdjacentHTML('beforebegin',sceneHTML(sceneKey({kind:'自拟情节',place:r.place},r.slot),'action',r.slot==='夜'));
 if($('#action-document'))$('#action-document').innerHTML='<h3>'+esc(r.place||'自拟情节')+'</h3><p>'+esc(r.people.map(p=>p.name).join('、')||'独处')+'</p><p>'+esc(r.text)+'</p>';
 const dialog=$('#modal'),owner=$('#scene-owner'),scope=createDialogRequestScope(dialog,owner),form=$('#scene-form');
 form.onsubmit=async event=>{
@@ -3664,8 +3701,9 @@ esc(t.reply) +
 const refreshTalkPaper=()=>{
 if(!$('#talk-form')||!$('#action-document'))return;
 const live=state.court.officials.find(o=>o.id===person)||state.harem.consorts.find(o=>o.id===person)||state.foreign.find(o=>o.id===person)||npc;
-$('#action-document').innerHTML='<span class="portrait" aria-hidden="true">'+esc(live.name[0])+'</span><h3>'+esc(live.name)+'</h3><p>'+esc(postTitle(state,state.court.posts.find(p=>p.holder===person))||live.family||live.status||'御前候见')+'</p><p>'+esc(live.age?live.age+' 岁':'')+(live.favor!==undefined?' · 好感 '+live.favor:'')+'</p><p class="muted">可以继续垂询，也可稍后召见别人。聊天不限轮数，办事仍须核对钱粮和职权。</p>';
+$('#action-document').innerHTML=portraitHTML(state,live,'paper')+'<h3>'+esc(live.ruler||live.name)+'</h3><p>'+esc(postTitle(state,state.court.posts.find(p=>p.holder===person))||live.family||live.status||'御前候见')+'</p><p>'+esc(live.age?live.age+' 岁':'')+(live.favor!==undefined?' · 好感 '+live.favor:'')+'</p><p class="muted">可以继续垂询，也可稍后召见别人。聊天不限轮数，办事仍须核对钱粮和职权。</p>';
 };
+$('#modal .dialog-head')?.insertAdjacentHTML('beforebegin',sceneHTML('audience','action'));
 refreshTalkPaper();
 $("#talk-form").onsubmit = async (e) => {
 e.preventDefault();
@@ -3987,7 +4025,7 @@ if (name === "self") {
 openDialog(
 "天子心事",
 state
-? "<h3>" +
+? portraitHTML(state,state.emperor,'card') + '<h3>' +
 esc(state.emperor.name) +
 " · " +
 state.emperor.age +
@@ -4225,338 +4263,1407 @@ if(state&&event.target.closest('#research-plan,#industry-plan'))updateDevelopmen
 
 return {};
 },
-"src/ui/keju.js":function(__load){
-const { activeExam, examiners, configureExams, appointExaminer, setExamTopics, fallbackTopics, chooseExamTopic, receiveExamPapers, setExamBlind, rankExamCandidate, publishExam, cacheExamEssay } = __load("src/core/keju.js");
-const { EXAM_RANKS, examGraceStart } = __load("src/core/keju-schema.js");
-const { callJSON } = __load("src/llm/client.js");
-const { examTopicMessages, examTopicReviewMessages, examPaperMessages, examEssayMessages, validateExamTopics, validateTopicReview, validateExamPapers, validateExamEssay, mockExamPapers, mockExamEssay } = __load("src/llm/keju.js");
-const { $, esc, openDialog, toast, gameText } = __load("src/ui/common.js");
-const { createDialogRequestScope } = __load("src/ui/request-scope.js");
-const origins={commoner:'寒门',gentry:'士绅',noble:'勋贵'};
-const stages={awaiting_examiner:'待任主考',topic:'待定策问',writing:'待收试卷',grading:'御前阅卷',published:'已经放榜'};
-function examPapersHTML(e, readonly=false) {
-const blind=e.blindGrading&&e.status!=='published';
-return [...e.candidates].sort((a,b)=>a.reviewerSuggestedRank-b.reviewerSuggestedRank).map(c=>{
-const number=e.candidates.indexOf(c)+1,label=blind?'第'+number+'号卷':c.name+' · '+c.hometown+' · '+origins[c.origin]+' · '+c.age+'岁'+(c.priorMentor===e.examiner?' · 主考旧门生':'');
-return '<article class="card exam-paper" data-exam-paper="'+esc(c.id)+'"><h3>'+esc(label)+'</h3><p class="exam-summary">'+esc(c.essaySummary)+'</p><p class="muted">读卷官拟第'+c.reviewerSuggestedRank+'名 · '+esc(c.reviewerComment)+'</p><details data-essay="'+esc(c.id)+'"'+(c.essayFull&&e.openPaper===c.id?' open':'')+'><summary>展开读全文'+(c.essayFull?' · 已存卷':'')+'</summary><div class="prose exam-essay">'+(c.essayFull?'<p>'+esc(c.essayFull).replace(/\n+/g,'</p><p>')+'</p>':'<button type="button" data-exam-full="'+esc(c.id)+'"'+(readonly?' disabled':'')+'>补读此卷全文</button>')+'</div></details>'+ (e.status==='grading'?'<label for="rank-'+esc(c.id)+'">钦定名次 · '+esc(blind?'第'+number+'号卷':c.name)+'</label><select id="rank-'+esc(c.id)+'" data-exam-rank="'+esc(c.id)+'"'+(readonly?' disabled':'')+'>'+EXAM_RANKS.map(r=>'<option'+(e.ranking[c.id]===r?' selected':'')+'>'+r+'</option>').join('')+'</select>':'<p class="tag">'+esc(e.ranking[c.id])+'</p>')+'</article>';
-}).join('');
+"src/ui/art.js":function(__load){
+const { ART_POOLS, ART_UNIQUE, ART_SCENES, ART_HALLS, ART_FOCUS, HALL_SCENES } = __load("src/ui/art-manifest.js");
+const { scenarioById } = __load("src/core/scenarios.js");
+const { esc } = __load("src/ui/common.js");
+let enabled = true;
+function illustrationsEnabled() { return enabled; }
+function setIllustrations(value) {
+enabled = !!value;
+try { localStorage.setItem('yuji:illustrations', String(enabled)); } catch {}
+refreshIllustrations();
 }
-function kejuHTML(s,selectedId=null,readonly=false) {
-const k=s.keju,active=activeExam(s),e=k.exams.find(e=>e.id===selectedId)||active||k.exams.at(-1),disabled=readonly?' disabled':'';
-let html='<p>士林声望 <strong>'+Math.round(k.scholarReputation)+'</strong> · '+(active?'本届待办：'+stages[active.status]:'距下届常科 '+Math.max(0,k.nextRegularTurn-s.turn)+' 旬')+'</p><form id="exam-period-form" class="exam-period"><label for="exam-period">常科间隔（旬）</label><input id="exam-period" type="number" min="1" max="3600" value="'+k.interval+'"'+disabled+'><button type="submit"'+disabled+'>调整间隔</button></form><p class="muted">每年36旬。恩科可在「下旨」中加开，国库三十万两，士林声望加3；须先选主考。</p>';
-if(!e)return html+'<p>本届尚未开科。到期由礼部呈请，或下旨加开恩科。</p>';
-html+='<label for="exam-session">科场档案</label><select id="exam-session">'+[...k.exams].reverse().map(x=>'<option value="'+esc(x.id)+'"'+(x.id===e.id?' selected':'')+'>第'+x.year+'年 · '+(x.type==='enke'?'恩科':'常科')+' · '+stages[x.status]+'</option>').join('')+'</select><section class="paper exam-session"><h3>'+ (e.type==='enke'?'恩科':'常科')+' · '+stages[e.status]+'</h3>';
-if(e.status!=='published'){
-const start=examGraceStart(s,e);
-html+='<p class="muted">'+(s.regency?'摄政期间暂停迟榜扣分与催办；亲政当旬重新起算36旬宽限。':(start>e.createdTurn?'亲政后已过':'开科已过')+Math.max(0,s.turn-start)+'旬。满36旬后，每再满12旬士林声望减1，礼部只催办一次。')+'</p>';
+function refreshIllustrations() {
+document.documentElement.classList.toggle('art-off', !enabled);
+for (const source of document.querySelectorAll('source[data-art-srcset]')) {
+if(enabled)source.setAttribute('srcset',source.dataset.artSrcset);
+else source.removeAttribute('srcset');
 }
-if(['awaiting_examiner','topic'].includes(e.status))html+='<form id="examiner-form"><label for="examiner">任命主考官</label><select id="examiner"'+disabled+'><option value="">请选择在京在任大臣</option>'+examiners(s).map(o=>'<option value="'+esc(o.id)+'"'+(o.id===e.examiner?' selected':'')+'>'+esc(o.name)+' · '+esc(s.court.posts.find(p=>p.holder===o.id)?.title)+'</option>').join('')+'</select><button type="submit"'+disabled+'>任主考</button></form>';
-else html+='<p>主考：'+esc(s.court.officials.find(o=>o.id===e.examiner)?.name||'原主考')+'</p>';
-if(e.status==='topic')html+='<button type="button" data-exam-topics'+disabled+'>'+(e.topics.length?'重拟备选策问':'拟备选策问')+'</button>'+ (e.topics.length?'<form id="exam-topic-form"><label for="exam-topic">备选策问</label><select id="exam-topic"'+disabled+'>'+e.topics.map((t,i)=>'<option value="'+i+'">'+esc(t)+'</option>').join('')+'</select><button type="submit"'+disabled+'>采用此题</button></form>':'')+'<form id="exam-custom-form"><label for="exam-custom">皇帝自拟策问</label><textarea id="exam-custom" maxlength="2000" rows="3" placeholder="试陈治国之策……"'+disabled+'></textarea><p class="muted">沿用口谕自由度：成败看实力时礼部可劝改，多数能成时可通融，想做就成时原样采用。</p><button type="submit"'+disabled+'>颁下自拟题</button></form>';
-if(e.topic)html+='<p class="exam-topic">策问：'+esc(e.topic)+'</p><p class="muted">'+esc(e.topicNote||'')+'</p>';
-if(['topic','writing','grading'].includes(e.status))html+='<label class="check"><input id="exam-blind" type="checkbox"'+(e.blindGrading?' checked':'')+disabled+'>糊名阅卷</label><p class="muted">糊名后隐藏姓名、籍贯与出身；收卷前的设置也约束读卷官，揭名后可按主考同派偏私。已有评语与拟次保留。放榜时仍糊名，不判门生偏私。</p>';
-if(e.status==='writing')html+='<p>考生名册已定，等待九卷一并呈上。</p><button class="primary" data-exam-papers'+disabled+'>收取本届全部试卷</button>';
-if(['grading','published'].includes(e.status))html+='<div class="exam-paper-list">'+examPapersHTML(e,readonly)+'</div>';
-if(e.status==='grading')html+='<p class="muted">点选钦定名次；选中已有的一甲名次会交换两卷。状元、榜眼、探花各须一人；二甲、三甲与黜落不限人数。名次自动存卷。</p><button class="primary" data-exam-publish'+disabled+'>钦定放榜</button>';
-if(e.status==='published')html+='<p>本届已放榜。士林声望 '+(e.outcome.scholarReputation>=0?'+':'')+e.outcome.scholarReputation+'；一甲寒门'+e.outcome.commoners+'人、勋贵'+e.outcome.nobles+'人、主考旧门生'+e.outcome.clients+'人。</p><p class="muted">进士已入朝堂人才库，座师—门生关系已记入人物履历。任职后经吏部事件逐步察明才干、操守、立场、野心与派系。</p>';
-return html+'</section><p id="exam-status" role="status" aria-live="polite"></p>';
+for (const img of document.querySelectorAll('img[data-art-src]')) {
+if (enabled) {
+if (img.dataset.artSrcset) img.setAttribute('srcset', img.dataset.artSrcset);
+img.setAttribute('src', img.dataset.artSrc);
+} else {
+img.removeAttribute('srcset'); img.removeAttribute('src');
 }
-function requestExamJSON(config,messages,validate,options={}) {
-return callJSON(config,messages,{...options,maxAttempts:1,validate});
 }
-function openKeju(ctx,selectedId=null,openPaper=null) {
-const s=ctx.getState();if(!s){toast('请先登基');return;}
-openDialog('科举 · 贡院','<div id="exam-owner">'+kejuHTML(openPaper?{...s,keju:{...s.keju,exams:s.keju.exams.map(e=>({...e,openPaper}))}}:s,selectedId,ctx.readonly())+'</div>');
-const owner=$('#exam-owner'),scope=createDialogRequestScope($('#modal'),owner);
-const e=s.keju.exams.find(e=>e.id===selectedId)||activeExam(s)||s.keju.exams.at(-1);
-const request=(messages,validate,signal)=>requestExamJSON(ctx.config(),messages,validate,{signal,onMetric:ctx.onMetric});
-async function run(operation) {
-let token;
-try {
-ctx.guard();token=scope.begin();ctx.setBusy(true);
-const base=ctx.getState();
-owner.querySelectorAll('button,input,select,textarea').forEach(el=>el.disabled=true);
-$('#exam-status').textContent='贡院正在呈卷……';
-const next=await operation(base,token.signal);
-if(!scope.current(token)||ctx.getState()!==base)return;
-if(next)await ctx.saveState(next);
-if(scope.current(token)){
-const expanded=owner.querySelector('details[data-essay][open]')?.dataset.essay,scroll=$('#modal').scrollTop,focus=document.activeElement?.id;
-scope.finish(token);ctx.setBusy(false);openKeju(ctx,e?.id,expanded);
-$('#modal').scrollTop=scroll;if(focus)document.getElementById(focus)?.focus({preventScroll:true});
 }
-}catch(error) {
-if(token&&scope.current(token)) {
-owner.querySelectorAll('button,input,select,textarea').forEach(el=>el.disabled=false);
-$('#exam-status').textContent=gameText(error.message)+'。已定考生和已读卷子会保留，可重试。';
-} else if(!token)toast(error.message);
-}finally{if(token){scope.finish(token);ctx.setBusy(false);ctx.render();}}
+function initArt() {
+try { enabled = localStorage.getItem('yuji:illustrations') !== 'false'; } catch {}
+document.documentElement.classList.toggle('art-off', !enabled);
+document.addEventListener('load', e => {
+if (e.target.matches?.('img[data-art-src]')) {
+e.target.classList.add('art-loaded'); e.target.closest('.art-portrait')?.classList.remove('art-failed');
 }
-$('#exam-period-form').onsubmit=event=>{event.preventDefault();const n=Number($('#exam-period').value);run(s=>configureExams(s,n));};
-if($('#exam-session'))$('#exam-session').onchange=event=>openKeju(ctx,event.target.value);
-if($('#examiner-form'))$('#examiner-form').onsubmit=event=>{event.preventDefault();const id=$('#examiner').value;run(s=>appointExaminer(s,e.id,id));};
-if($('#exam-topic-form'))$('#exam-topic-form').onsubmit=event=>{event.preventDefault();const topic=e.topics[Number($('#exam-topic').value)];run(s=>chooseExamTopic(s,e.id,topic));};
-if($('#exam-custom-form'))$('#exam-custom-form').onsubmit=event=>{event.preventDefault();const topic=$('#exam-custom').value;run(async(s,signal)=>{
-if(!topic.trim())throw new Error('请先填写策问');
-const review=s.settings.freedom==='free'?null:s.settings.demo?{suitable:!(/长生|成仙|永生|神仙|外星|毁灭世界/.test(topic)),rewrite:fallbackTopics(s)[0],reason:'策问宜切合治国实务'}:await request(examTopicReviewMessages(s,topic),validateTopicReview,signal);
-return chooseExamTopic(s,e.id,topic,'emperor',review);
-});};
-if($('#exam-blind'))$('#exam-blind').onchange=event=>{const checked=event.target.checked;run(s=>setExamBlind(s,e.id,checked));};
-owner.querySelectorAll('[data-exam-rank]').forEach(el=>el.onchange=event=>{const rank=event.target.value;run(s=>rankExamCandidate(s,e.id,el.dataset.examRank,rank));});
-owner.onclick=event=>{
-const b=event.target.closest('button');if(!b||b.disabled)return;
-if(b.hasAttribute('data-exam-topics'))run(async(s,signal)=>setExamTopics(s,e.id,s.settings.demo?fallbackTopics(s):await request(examTopicMessages(s),validateExamTopics,signal)));
-if(b.hasAttribute('data-exam-papers'))run(async(s,signal)=>{
-const live=activeExam(s),papers=s.settings.demo?validateExamPapers({candidates:mockExamPapers(live)},live):await request(examPaperMessages(s,live),d=>validateExamPapers(d,live),signal);
-return receiveExamPapers(s,e.id,papers);
-});
-if(b.hasAttribute('data-exam-publish'))run(s=>publishExam(s,e.id));
-if(b.dataset.examFull)loadEssay(b.dataset.examFull);
-};
-function loadEssay(id) {
-run(async(s,signal)=>{
-const live=s.keju.exams.find(x=>x.id===e.id),c=live.candidates.find(c=>c.id===id);
-if(c.essayFull)return s;
-const essay=s.settings.demo?mockExamEssay(live,c):await request(examEssayMessages(live,c),d=>validateExamEssay(d,c),signal);
-return cacheExamEssay(s,e.id,id,essay);
-});
+}, true);
+document.addEventListener('error', e => {
+if (e.target.matches?.('img[data-art-src]')) {
+e.target.classList.remove('art-loaded'); e.target.closest('.art-portrait')?.classList.add('art-failed');
 }
-owner.addEventListener('toggle',event=>{
-const fold=event.target;if(!fold.matches('details[data-essay]')||!fold.open||ctx.readonly())return;
-const c=e.candidates.find(c=>c.id===fold.dataset.essay);
-if(!c?.essayFull)loadEssay(c.id);
-},true);
+}, true);
+}
+function artPerson(s, id) {
+return [s?.emperor, ...(s?.court.officials || []), ...(s?.harem.consorts || []),
+...(s?.harem.candidates || []), ...(s?.harem.children || []), ...(s?.harem.royalWomen || []),
+...(s?.foreign || [])].find(p => p && (p.id === id || p.name === id || p.ruler === id));
+}
+function contains(list, p) { return list?.some(x => x === p || p.id && x.id === p.id); }
+function portraitPool(s, p, role = '') {
+if (!s || !p) return null;
+const dynasty = scenarioById(s.scenario)?.posts || 'ming';
+if (role === 'scholar') return 'shared/scholar-' + (p.age < 30 ? 'young' : 'mature');
+if (role === 'dowager') return dynasty === 'ming' ? 'ming/dowager-all' : null;
+const retained = s.artFaces?.[artPersonKey(s,p)];
+if (deceased(p) && ART_POOLS[retained?.pool]) return retained.pool;
+if (p === s.emperor) return dynasty + '/emperor-' + (p.age < 40 ? 'young' : 'old');
+if (contains(s.court.officials, p)) {
+if (p.gender !== '男') return null;
+const index = s.court.posts.findIndex(post => post.holder === p.id || p.post && post.id === p.post);
+return dynasty + '/' + (index === 9 || index >= 25 && index <= 28 ? 'general-all' :
+index === 8 && dynasty !== 'qing' ? 'eunuch-all' : 'official-' + (p.age < 55 ? 'mature' : 'old'));
+}
+if (contains(s.harem.consorts, p) || contains(s.harem.candidates, p))
+return dynasty + '/consort-' + (['皇后', '皇贵妃', '贵妃'].includes(p.rank) ? 'high' : 'regular');
+if (contains(s.harem.children, p)) {
+const age = Math.max(0, Math.floor((s.turn - p.born) / 36)), male = (p.gender || p.sex) === '男';
+return age <= 6 ? 'shared/' + (male ? 'boy' : 'girl') + '-young' :
+dynasty + '/' + (male ? 'prince' : 'princess') + '-' + (age < 16 ? 'teen' : 'adult');
+}
+if (contains(s.harem.royalWomen, p)) return dynasty + '/princess-adult';
+if (contains(s.foreign, p)) return 'shared/foreign-' + ({北:'north',西:'west',南:'south',东:'east'})[p.frontier];
+return null;
+}
+function candidateFace(id) {
+let hash = 2166136261;
+for (const c of String(id)) hash = Math.imul(hash ^ c.charCodeAt(0), 16777619) >>> 0;
+return hash;
+}
+function artPersonKey(s,p) {
+return p === s.emperor ? 'emperor:' + (s.reign?.emperorId || 'founder') : p.id;
+}
+function portraitPeople(s) {
+return [s.emperor, ...s.court.officials, ...s.harem.consorts, ...(s.harem.candidates || []),
+...s.harem.children, ...(s.harem.royalWomen || []), ...s.foreign];
+}
+function deceased(p) { return p.alive === false || p.health === 0; }
+// Pure, inspectable assignment table. Persisting the optional display table is
+// necessary: an existing overflow occupant must not change faces when someone
+// dies. Only a NEW occupant may reuse a face whose owners are all deceased.
+function resolvePortraits(s) {
+const previous=s.artFaces || {}, result={}, groups=new Map();
+for (const p of portraitPeople(s)) {
+const key=portraitPool(s,p);
+if (!ART_POOLS[key]?.length || !Number.isSafeInteger(p.faceNo)) continue;
+if (!groups.has(key)) groups.set(key,[]);
+groups.get(key).push(p);
+}
+for (const [pool,people] of groups) {
+const size=ART_POOLS[pool].length, owners=Array.from({length:size},()=>[]);
+people.sort((a,b)=>a.faceNo-b.faceNo || String(artPersonKey(s,a)).localeCompare(String(artPersonKey(s,b))));
+const valid=record=>record?.pool===pool && Number.isInteger(record.index) && record.index>=0 && record.index<size;
+// A live role/age transition may reorder its old and new pool, as §3.4 permits.
+const changed=Object.entries(previous).some(([id,record])=>record?.pool===pool &&
+portraitPeople(s).some(p=>artPersonKey(s,p)===id && !deceased(p) && portraitPool(s,p)!==pool)) ||
+people.some(p=>previous[artPersonKey(s,p)] && previous[artPersonKey(s,p)].pool!==pool);
+if (!changed) for (const p of people) {
+const id=artPersonKey(s,p), record=previous[id];
+if(valid(record)){result[id]={pool,index:record.index};owners[record.index].push(p);}
+}
+for (const p of people) {
+const id=artPersonKey(s,p);if(result[id])continue;
+let index=owners.findIndex(list=>!list.length);
+if(index<0)index=owners.findIndex(list=>list.every(deceased));
+if(index<0)index=p.faceNo%size;
+result[id]={pool,index};owners[index].push(p);
+}
+}
+return result;
+}
+function withPortraitArt(s) {
+if(!s)return s;
+const artFaces=resolvePortraits(s);
+return JSON.stringify(artFaces)===JSON.stringify(s.artFaces)?s:{...s,artFaces};
+}
+function poolFaceIndex(s, p, role = '') {
+const key=portraitPool(s,p,role),size=ART_POOLS[key]?.length;
+if(!size)return null;
+if(role==='scholar')return candidateFace(p.id)%size;
+if(role==='dowager')return (p.faceNo||0)%size;
+return resolvePortraits(s)[artPersonKey(s,p)]?.index ?? null;
+}
+function portraitSource(s, p, role = '') {
+if (!p) return null;
+const name = p.ruler || p.name, unique = ART_UNIQUE[s?.scenario]?.[name];
+if (unique && role !== 'scholar') {
+const age = contains(s.harem.children, p) ? Math.floor((s.turn - p.born) / 36) : p.age;
+const variant = p === s.emperor && age >= 40 ? 'old' : age >= 16 && 'adult' in unique ? 'adult' : 'base';
+if (unique[variant]) return unique[variant];
+}
+const pool = ART_POOLS[portraitPool(s, p, role)], index = poolFaceIndex(s,p,role);
+return index === null ? null : pool?.[index] || null;
+}
+function imageHTML(src, width, height, focus, extra = '') {
+return '<img alt="" aria-hidden="true" loading="lazy" decoding="async" width="' + width + '" height="' + height +
+'" data-art-src="' + esc(src) + '"' + (enabled ? ' src="' + esc(src) + '"' : '') +
+' style="object-position:' + focus + '" ' + extra + '>';
+}
+function portraitHTML(s, p, size = 'avatar', role = '') {
+if (!p) return '';
+const src = portraitSource(s, p, role), name = p.ruler || p.name || '人';
+const status = p.alive === false || p.health === 0 ? ' art-dead' : p.cold || p.confined || p.retired ? ' art-muted' : '';
+const gold = p.rank === '皇后' || p.id && p.id === s?.harem.heir ? ' art-gold' : '';
+return '<span class="portrait art-portrait art-' + (src || size==='byline' ? size : 'avatar') + status + gold + '" aria-hidden="true"><span>' + esc(name[0]) + '</span>' +
+(src ? imageHTML(src, 400, 500, ART_FOCUS[size] || ART_FOCUS.avatar) : '') + '</span>';
+}
+function sceneKey(action, slot = '朝') {
+if (action?.kind === '自拟情节') {
+const place = action.place || '';
+if (/园|花|亭/.test(place)) return 'garden';
+if (/城外|驿|出宫/.test(place)) return 'tour';
+}
+if (action?.kind === '后宫') return slot === '夜' ? 'palace' : 'garden';
+if (action?.kind === '下旨' && action.edictType === '格物') return 'study';
+if (action?.kind === '下旨' && action.edictType === '加开恩科') return 'exam';
+return ({上朝:'court',外交:'court',召见:'audience',面谈:'audience',任命:'audience',宴请:'banquet',选妃:'garden',私下行事:'study',经筵:'study',格物:'study',科举:'exam',出巡:'tour',亲征:'camp'})[action?.kind] || (slot === '夜' ? 'desk-night' : 'desk-day');
+}
+function sceneHTML(key, type = 'chapter', night = false) {
+const art = ART_SCENES[key] || ART_HALLS[key];
+if (!art?.src) return '';
+const set = art.small ? art.small + ' 720w, ' + art.src + ' 1440w' : '';
+return '<div class="art-scene art-' + type + (night && !['desk-night','palace','ending'].includes(key) ? ' art-night' : '') + '" aria-hidden="true">' +
+'<picture>' + (art.small ? '<source media="(max-width: 600px)" data-art-srcset="' + esc(art.small) + '"' +
+(enabled ? ' srcset="' + esc(art.small) + '"' : '') + '>' : '') +
+imageHTML(art.src, 1440, type === 'hall' ? 480 : 810, art.focus,
+set ? 'data-art-srcset="' + esc(set) + '"' + (enabled ? ' srcset="' + esc(set) + '"' : '') + ' sizes="100vw"' : '') + '</picture></div>';
+}
+function hallArtHTML(name) { return sceneHTML(HALL_SCENES[name], 'hall'); }
+function scenarioArtHTML(sc) {
+const s={scenario:sc.id,emperor:{name:sc.emperor[0],age:sc.emperor[1],faceNo:0},
+court:{officials:[],posts:[]},harem:{consorts:[],children:[]},foreign:[]};
+return sceneHTML('court','action') + portraitHTML(s,s.emperor,'card');
+}
+function withChapterArt(s, forecast) {
+if (!s.history.some(h=>h.id===forecast.turnId&&!h.artScenes)) return s;
+return withPortraitArt({...s,history:s.history.map(h=>h.id===forecast.turnId&&!h.artScenes ? {...h,
+artScenes:Object.fromEntries(['朝','午','夜'].map(slot=>[slot,sceneKey(forecast.schedule?.[slot],slot)]))} : h)});
+}
+function memorialPortraitHTML(s, m) {
+const p = artPerson(s, m.fromId || m.from);
+// Historical author snapshots must never be replaced by a current office holder.
+return p && p.name === m.from ? portraitHTML(s, p, 'byline') : '';
 }
 
-return {examPapersHTML,kejuHTML,requestExamJSON,openKeju};
+return {illustrationsEnabled,setIllustrations,initArt,artPerson,portraitPool,candidateFace,artPersonKey,resolvePortraits,withPortraitArt,poolFaceIndex,portraitSource,portraitHTML,sceneKey,sceneHTML,hallArtHTML,scenarioArtHTML,withChapterArt,memorialPortraitHTML};
 },
-"src/core/keju.js":function(__load){
+"src/ui/art-manifest.js":function(__load){
+// ART-SPEC: empty slots are intentional; never request an unproduced file.
+// Paths are relative to index.html so project GitHub Pages subpaths work.
+const ART_FOCUS = {
+"avatar": "50% 32%",
+"card": "50% 25%",
+"paper": "50% 50%"
+};
+const ART_POOLS = {
+"ming/official-mature": [
+"assets/art/portraits/ming/official-mature-01.webp",
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null
+],
+"ming/official-old": [
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null
+],
+"ming/general-all": [
+null,
+null,
+null,
+null
+],
+"ming/eunuch-all": [
+null,
+null
+],
+"ming/consort-high": [
+null,
+null,
+null
+],
+"ming/consort-regular": [
+"assets/art/portraits/ming/consort-regular-01.webp",
+null,
+null,
+null,
+null,
+null,
+null,
+null
+],
+"ming/dowager-all": [
+null
+],
+"ming/emperor-young": [
+null,
+null
+],
+"ming/emperor-old": [
+null,
+null
+],
+"ming/prince-teen": [
+null,
+null
+],
+"ming/prince-adult": [
+null,
+null
+],
+"ming/princess-teen": [
+null,
+null
+],
+"ming/princess-adult": [
+null,
+null
+],
+"qing/official-mature": [
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null
+],
+"qing/official-old": [
+null,
+null,
+null,
+null,
+null,
+null
+],
+"qing/general-all": [
+null,
+null,
+null
+],
+"qing/consort-high": [
+null,
+null
+],
+"qing/consort-regular": [
+null,
+null,
+null,
+null,
+null
+],
+"qing/emperor-young": [
+null
+],
+"qing/emperor-old": [
+null
+],
+"qing/prince-teen": [
+null
+],
+"qing/prince-adult": [
+null
+],
+"qing/princess-teen": [
+null
+],
+"qing/princess-adult": [
+null
+],
+"han/official-mature": [
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null
+],
+"han/official-old": [
+null,
+null,
+null,
+null,
+null,
+null
+],
+"han/general-all": [
+null,
+null,
+null
+],
+"han/eunuch-all": [
+null
+],
+"han/consort-high": [
+null,
+null
+],
+"han/consort-regular": [
+null,
+null,
+null,
+null,
+null
+],
+"han/emperor-young": [
+null
+],
+"han/emperor-old": [
+null
+],
+"han/prince-teen": [
+null
+],
+"han/prince-adult": [
+null
+],
+"han/princess-teen": [
+null
+],
+"han/princess-adult": [
+null
+],
+"tang/official-mature": [
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null
+],
+"tang/official-old": [
+null,
+null,
+null,
+null,
+null,
+null
+],
+"tang/general-all": [
+null,
+null,
+null
+],
+"tang/eunuch-all": [
+null
+],
+"tang/consort-high": [
+null,
+null
+],
+"tang/consort-regular": [
+null,
+null,
+null,
+null,
+null
+],
+"tang/emperor-young": [
+null
+],
+"tang/emperor-old": [
+null
+],
+"tang/prince-teen": [
+null
+],
+"tang/prince-adult": [
+null
+],
+"tang/princess-teen": [
+null
+],
+"tang/princess-adult": [
+null
+],
+"song/official-mature": [
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null
+],
+"song/official-old": [
+null,
+null,
+null,
+null,
+null,
+null
+],
+"song/general-all": [
+null,
+null,
+null
+],
+"song/eunuch-all": [
+null
+],
+"song/consort-high": [
+null,
+null
+],
+"song/consort-regular": [
+null,
+null,
+null,
+null,
+null
+],
+"song/emperor-young": [
+null
+],
+"song/emperor-old": [
+null
+],
+"song/prince-teen": [
+null
+],
+"song/prince-adult": [
+null
+],
+"song/princess-teen": [
+null
+],
+"song/princess-adult": [
+null
+],
+"shared/foreign-north": [
+null,
+null
+],
+"shared/foreign-west": [
+null,
+null
+],
+"shared/foreign-south": [
+null,
+null
+],
+"shared/foreign-east": [
+null,
+null
+],
+"shared/boy-young": [
+null,
+null
+],
+"shared/girl-young": [
+null,
+null
+],
+"shared/scholar-young": [
+null,
+null,
+null,
+null
+],
+"shared/scholar-mature": [
+null,
+null,
+null,
+null
+]
+};
+const ART_UNIQUE = {
+"han-wudi": {
+"刘彻": {
+"base": null,
+"old": null
+},
+"窦婴": {
+"base": null
+},
+"田蚡": {
+"base": null
+},
+"赵绾": {
+"base": null
+},
+"王臧": {
+"base": null
+},
+"董仲舒": {
+"base": null
+},
+"汲黯": {
+"base": null
+},
+"韩安国": {
+"base": null
+},
+"李广": {
+"base": null
+},
+"程不识": {
+"base": null
+},
+"庄助": {
+"base": null
+},
+"陈阿娇": {
+"base": null
+},
+"卫子夫": {
+"base": null
+},
+"军臣单于": {
+"base": null
+},
+"猎骄靡": {
+"base": null
+},
+"赵佗": {
+"base": null
+},
+"驺郢": {
+"base": null
+},
+"驺望": {
+"base": null
+},
+"窦太皇太后": {
+"base": null
+}
+},
+"tang-taizong": {
+"李世民": {
+"base": null,
+"old": null
+},
+"房玄龄": {
+"base": null
+},
+"杜如晦": {
+"base": null
+},
+"长孙无忌": {
+"base": null
+},
+"魏征": {
+"base": null
+},
+"王珪": {
+"base": null
+},
+"萧瑀": {
+"base": null
+},
+"封德彝": {
+"base": null
+},
+"高士廉": {
+"base": null
+},
+"戴胄": {
+"base": null
+},
+"尉迟敬德": {
+"base": null
+},
+"李靖": {
+"base": null
+},
+"李勣": {
+"base": null
+},
+"李孝恭": {
+"base": null
+},
+"长孙氏": {
+"base": null
+},
+"杨氏": {
+"base": null
+},
+"韦珪": {
+"base": null
+},
+"李承乾": {
+"base": null,
+"adult": null
+},
+"李泰": {
+"base": null,
+"adult": null
+},
+"李恪": {
+"base": null,
+"adult": null
+},
+"颉利可汗": {
+"base": null
+},
+"伏允": {
+"base": null
+},
+"高建武": {
+"base": null
+},
+"扶余璋": {
+"base": null
+},
+"夷男": {
+"base": null
+}
+},
+"song-renzong": {
+"赵祯": {
+"base": null,
+"old": null
+},
+"丁谓": {
+"base": null
+},
+"王曾": {
+"base": null
+},
+"吕夷简": {
+"base": null
+},
+"晏殊": {
+"base": null
+},
+"鲁宗道": {
+"base": null
+},
+"曹利用": {
+"base": null
+},
+"钱惟演": {
+"base": null
+},
+"张士逊": {
+"base": null
+},
+"雷允恭": {
+"base": null
+},
+"范仲淹": {
+"base": null
+},
+"耶律隆绪": {
+"base": null
+},
+"李德明": {
+"base": null
+},
+"唃厮啰": {
+"base": null
+},
+"李公蕴": {
+"base": null
+},
+"王询": {
+"base": null
+},
+"刘太后": {
+"base": null
+}
+},
+"ming-wanli": {
+"朱翊钧": {
+"base": null,
+"old": null
+},
+"张居正": {
+"base": null
+},
+"冯保": {
+"base": null
+},
+"吕调阳": {
+"base": null
+},
+"张四维": {
+"base": null
+},
+"申时行": {
+"base": null
+},
+"王锡爵": {
+"base": null
+},
+"王国光": {
+"base": null
+},
+"杨博": {
+"base": null
+},
+"谭纶": {
+"base": null
+},
+"潘季驯": {
+"base": null
+},
+"戚继光": {
+"base": null
+},
+"李成梁": {
+"base": null
+},
+"俺答汗": {
+"base": null
+},
+"王杲": {
+"base": null
+},
+"李昖": {
+"base": null
+},
+"莫茂洽": {
+"base": null
+},
+"织田信长": {
+"base": null
+},
+"李太后": {
+"base": null
+}
+},
+"ming-chongzhen": {
+"朱由检": {
+"base": null,
+"old": null
+},
+"魏忠贤": {
+"base": null
+},
+"崔呈秀": {
+"base": null
+},
+"黄立极": {
+"base": null
+},
+"温体仁": {
+"base": null
+},
+"周延儒": {
+"base": null
+},
+"毕自严": {
+"base": null
+},
+"王永光": {
+"base": null
+},
+"袁崇焕": {
+"base": null
+},
+"洪承畴": {
+"base": null
+},
+"卢象升": {
+"base": null
+},
+"周氏": {
+"base": null
+},
+"田氏": {
+"base": null
+},
+"袁氏": {
+"base": null
+},
+"林丹汗": {
+"base": null
+},
+"皇太极": {
+"base": null
+},
+"李倧": {
+"base": null
+},
+"德川家光": {
+"base": null
+},
+"懿安皇后": {
+"base": null
+}
+},
+"qing-kangxi": {
+"玄烨": {
+"base": null,
+"old": null
+},
+"索尼": {
+"base": null
+},
+"苏克萨哈": {
+"base": null
+},
+"遏必隆": {
+"base": null
+},
+"鳌拜": {
+"base": null
+},
+"索额图": {
+"base": null
+},
+"明珠": {
+"base": null
+},
+"熊赐履": {
+"base": null
+},
+"魏裔介": {
+"base": null
+},
+"汤若望": {
+"base": null
+},
+"杰书": {
+"base": null
+},
+"阿列克谢": {
+"base": null
+},
+"僧格": {
+"base": null
+},
+"吴三桂": {
+"base": null
+},
+"郑成功": {
+"base": null
+},
+"李棩": {
+"base": null
+},
+"孝庄太皇太后": {
+"base": null
+}
+},
+"qing-yongzheng": {
+"胤禛": {
+"base": null,
+"old": null
+},
+"允禩": {
+"base": null
+},
+"允祥": {
+"base": null
+},
+"马齐": {
+"base": null
+},
+"隆科多": {
+"base": null
+},
+"张廷玉": {
+"base": null
+},
+"年羹尧": {
+"base": null
+},
+"鄂尔泰": {
+"base": null
+},
+"田文镜": {
+"base": null
+},
+"李卫": {
+"base": null
+},
+"允禟": {
+"base": null
+},
+"允禵": {
+"base": null
+},
+"岳钟琪": {
+"base": null
+},
+"乌拉那拉氏": {
+"base": null
+},
+"年氏": {
+"base": null
+},
+"钮祜禄氏": {
+"base": null
+},
+"李氏": {
+"base": null
+},
+"弘时": {
+"base": null
+},
+"弘历": {
+"base": null,
+"adult": null
+},
+"福惠": {
+"base": null,
+"adult": null
+},
+"彼得一世": {
+"base": null
+},
+"策妄阿拉布坦": {
+"base": null
+},
+"罗卜藏丹津": {
+"base": null
+},
+"黎维祹": {
+"base": null
+},
+"李昀": {
+"base": null
+},
+"仁寿皇太后": {
+"base": null
+}
+}
+};
+const ART_SCENES = {
+"desk-day": {
+"src": null,
+"small": null,
+"focus": "50% 50%"
+},
+"desk-night": {
+"src": "assets/art/scenes/desk-night-1440.webp",
+"small": "assets/art/scenes/desk-night-720.webp",
+"focus": "50% 50%"
+},
+"court": {
+"src": "assets/art/scenes/court-1440.webp",
+"small": "assets/art/scenes/court-720.webp",
+"focus": "50% 50%"
+},
+"audience": {
+"src": null,
+"small": null,
+"focus": "50% 50%"
+},
+"banquet": {
+"src": null,
+"small": null,
+"focus": "50% 50%"
+},
+"palace": {
+"src": null,
+"small": null,
+"focus": "50% 50%"
+},
+"garden": {
+"src": null,
+"small": null,
+"focus": "50% 50%"
+},
+"study": {
+"src": null,
+"small": null,
+"focus": "50% 50%"
+},
+"exam": {
+"src": null,
+"small": null,
+"focus": "50% 50%"
+},
+"tour": {
+"src": null,
+"small": null,
+"focus": "50% 50%"
+},
+"camp": {
+"src": null,
+"small": null,
+"focus": "50% 50%"
+},
+"accession": {
+"src": null,
+"small": null,
+"focus": "50% 50%"
+},
+"ending": {
+"src": null,
+"small": null,
+"focus": "50% 50%"
+}
+};
+const ART_HALLS = {
+"hall-realm": {
+"src": null,
+"small": null,
+"focus": "50% 50%"
+},
+"hall-treasury": {
+"src": null,
+"small": null,
+"focus": "50% 50%"
+},
+"hall-archive": {
+"src": null,
+"small": null,
+"focus": "50% 50%"
+}
+};
+const HALL_SCENES = {
+"朝堂": "court",
+"后宫": "garden",
+"宗室": "accession",
+"格物": "study",
+"科举": "exam",
+"天下": "hall-realm",
+"国势全览": "hall-realm",
+"内库": "hall-treasury",
+"史馆": "hall-archive"
+};
+
+return {ART_FOCUS,ART_POOLS,ART_UNIQUE,ART_SCENES,ART_HALLS,HALL_SCENES};
+},
+"src/core/scenarios.js":function(__load){
+// 历史剧本：只提供开局的人物、官制显示名与局势，一切数值变化仍由引擎结算。
+// 史实只决定开局；之后的生死成败按引擎推进，不按史实预演。
 const { clone } = __load("src/core/state.js");
-const { roll } = __load("src/core/rng.js");
-const { uniqueName } = __load("src/core/names.js");
-const { applyPackage } = __load("src/core/effects.js");
-const { adjudicate } = __load("src/core/freedom.js");
-const { addEvent } = __load("src/core/events.js");
+const { clamp } = __load("src/core/effects.js");
 const { factionPowers } = __load("src/core/politics.js");
-const { defaultKeju, examGraceStart, examGraceReceipt, ENKE_COST, EXAM_SIZE, EXAM_STANCES, EXAM_RANKS } = __load("src/core/keju-schema.js");
-function activeExam(s) { return s.keju?.exams.find(e => e.status !== 'published') || null; }
-function examiners(s) {
-return s.court.officials.filter(o => o.alive && o.health > 0 && !o.jailed && !o.retired && o.inCapital !== false && s.court.posts.some(p => p.id === o.post && p.holder === o.id));
+// 官职显示名：引擎内部仍按原职名（内阁首辅、户部尚书……）匹配规则，只换给人看的名字。
+// 下标与 POST_NAMES 0–28 对应；省级职官另由 governor 拼接。
+const POSTS = {
+han: "丞相 大农令 太尉 丞相司直 奉常 廷尉 将作少府 御史大夫 郎中令 中尉 中书谒者令 侍中 尚书令 大农丞 太尉长史 丞相长史 博士祭酒 廷尉正 少府 博士 太子太傅 廷尉监 太常丞 谒者 宗正 北地将军 陇西将军 南境校尉 东境将军",
+tang: "尚书左仆射 户部尚书 兵部尚书 吏部尚书 礼部尚书 刑部尚书 工部尚书 御史大夫 内侍监 左右卫大将军 中书令 侍中 尚书右仆射 户部侍郎 兵部侍郎 吏部侍郎 礼部侍郎 刑部侍郎 工部侍郎 弘文馆学士 太子太傅 大理寺卿 太常寺卿 谏议大夫 宗正卿 朔方道行军总管 凉州都督 岭南道总管 营州都督",
+song: "同中书门下平章事 三司使 枢密使 吏部尚书 礼部尚书 刑部尚书 工部尚书 御史中丞 入内内侍省都知 殿前都指挥使 参知政事 枢密副使 尚书左丞 盐铁副使 同知枢密院事 吏部侍郎 礼部侍郎 刑部侍郎 工部侍郎 翰林学士 太子太傅 大理寺卿 太常博士 知谏院 大宗正 河北路安抚使 陕西路经略安抚使 广南路安抚使 河东路安抚使",
+ming: "内阁首辅 户部尚书 兵部尚书 吏部尚书 礼部尚书 刑部尚书 工部尚书 左都御史 司礼监掌印 京营戎政 内阁次辅 内阁大学士 詹事府詹事 户部侍郎 兵部侍郎 吏部侍郎 礼部侍郎 刑部侍郎 总理河道 翰林学士 太子太傅 大理寺卿 太常寺卿 通政使 宗人令 宣大总兵 甘肃总兵 两广总兵 蓟辽总兵",
+qing: "首席大学士 户部尚书 兵部尚书 吏部尚书 礼部尚书 刑部尚书 工部尚书 左都御史 内务府总管 领侍卫内大臣 议政大臣 大学士 协办大学士 户部侍郎 兵部侍郎 吏部侍郎 礼部侍郎 刑部侍郎 工部侍郎 翰林院掌院学士 太子太傅 大理寺卿 钦天监监正 通政使 宗人府宗令 北路将军 西路将军 南路将军 东路将军",
+};
+// 官员：姓名｜职位下标｜派系下标｜年龄｜性格｜秘密｜能力（政军才德忠谋）｜野心
+// 后宫：姓名｜位分｜家世｜年龄｜派系下标｜宠眷｜秘密
+// 皇嗣：姓名｜性别｜年龄｜母（后宫下标，可空）｜资质
+// 外邦：国名｜君主｜关系｜态度｜边境｜诉求
+const SCENARIOS = [
+{
+id: "han-wudi", power: "0 0 15 0 0 0", title: "汉武帝 · 建元新政", difficulty: "常制", dynasty: "汉", era: "建元", year: "前140年",
+emperor: ["刘彻", 16, "70 72 80 85 82", "多疑"], posts: "han", governor: "刺史",
+provinces: "司隶 豫州 扬州 荆州 青州 并州 凉州 益州 会稽 长沙 冀州 幽州",
+factions: "儒生:纳谏清议 军功列侯:军功封赏 外戚:家族恩荫 近侍郎官:亲近信任 郡国守相:钱粮自主 诸侯王:宗藩安稳",
+nation: { treasury: 620, morale: 66, governance: 58, prestige: 48 }, threat: [55, 30, 25, 25],
+dowager: "窦太皇太后",
+blurb: "少年天子初立，欲兴儒术、立明堂；太皇太后崇黄老，东宫一句话便能让新政夭折。北边匈奴岁岁索要和亲。",
+officials: [
+"窦婴|0|2|50|好儒术，任侠自喜|与太皇太后同族，却力推儒术，夹在两宫之间。|70 60 70 70 75 55|55",
+"田蚡|2|2|40|善辩，贪财好名|暗中收受诸侯馈赠，与淮南王有书信往来。|55 35 70 30 45 75|85",
+"赵绾|7|0|45|儒生，锐意更化|上书请勿奏事东宫，已触怒太皇太后。|65 30 75 75 80 40|50",
+"王臧|8|0|50|鲁诗名家，帝之旧师|与赵绾共议立明堂，东宫耳目已在查访。|60 25 80 75 80 40|45",
+"董仲舒|19|0|39|治公羊春秋，三年不窥园|私撰灾异之书，言辞多有讥刺。|70 20 90 85 80 40|35",
+"汲黯|23|0|40|好直谏，不拘礼|素轻田蚡，曾当众斥之。|70 30 65 85 85 35|30",
+"韩安国|1|1|45|多大略，善为人谋|旧为梁王属吏，曾以重金求官。|75 65 70 55 65 70|60",
+"李广|25|1|44|善射，爱士卒，不善治军簿|屡战而功不得封侯，心有不平。|35 85 50 70 80 30|60",
+"程不识|26|1|45|治军严整，号令分明|与李广治军之道相左，常受同僚讥其苛细。|50 80 50 70 80 40|40",
+"庄助|11|3|30|辩博，帝之近臣|与淮南王门客有旧交。|60 40 80 55 70 60|55",
+],
+consorts: ["陈阿娇|皇后|馆陶长公主之女|18|2|55|多年无子，心事渐重。", "卫子夫|嫔|平阳公主府讴者|17|3|60|其弟卫青在平阳侯家为骑奴。"],
+foreign: ["匈奴|军臣单于|冷淡|30|北|和亲岁币", "乌孙|猎骄靡|通好|45|西|远交共击匈奴", "南越|赵佗|通好|50|南|自治如故", "闽越|驺郢|冷淡|35|东|吞并东瓯", "东瓯|驺望|通好|55|东|求内附避闽越"],
+facts: ["太皇太后|好恶|崇黄老，不喜儒生", "明堂|议立|赵绾、王臧议立明堂，事在未定"],
+},
+{
+id: "tang-taizong", power: "0 0 0 10 0 0", title: "唐太宗 · 渭水之盟", difficulty: "常制", dynasty: "唐", era: "贞观", year: "626年",
+emperor: ["李世民", 28, "82 85 92 72 85", "勤政"], posts: "tang", governor: "刺史",
+provinces: "京畿 河南道 江南道 山南道 河北道 河东道 关内道 剑南道 淮南道 岭南道 陇右道 幽州",
+factions: "谏官清议:纳谏清议 秦府将帅:军功封赏 长孙外戚:家族恩荫 秦府谋臣:亲近信任 关陇勋旧:钱粮自主 宗室诸王:宗藩安稳",
+nation: { treasury: 280, morale: 55, governance: 56, prestige: 55, virtue: 50 }, threat: [92, 50, 20, 30],
+dowager: "",
+blurb: "玄武门之变方过两月，东宫旧臣惶惶不安；突厥颉利可汗率十余万骑直抵渭水便桥之北，长安震动。",
+officials: [
+"房玄龄|10|3|47|善谋，处事周密|玄武门前夜曾力劝先发制人。|90 40 80 75 90 80|40",
+"杜如晦|2|3|41|临机善断|体弱多病，自知天年不永。|85 55 80 75 90 75|35",
+"长孙无忌|3|2|32|通悟，有筹略|玄武门之变首谋之一，深知许多不可言之事。|75 50 75 60 85 85|65",
+"魏征|23|0|46|犯颜直谏|曾劝隐太子早除秦王。|80 30 85 90 70 55|30",
+"王珪|11|0|56|恬淡守正|原为东宫属官，曾因杨文干事流放。|75 25 75 85 75 40|30",
+"萧瑀|0|4|52|刚直，好佛|与房玄龄、杜如晦素来不睦。|70 30 70 75 70 50|50",
+"封德彝|12|4|58|阴持两端|曾私下替隐太子说话，事未泄露。|75 30 75 30 40 80|60",
+"高士廉|4|2|51|涉猎文史，持重|长孙皇后之舅，与外戚往来最密。|70 30 75 70 80 50|40",
+"戴胄|21|0|53|明于法令，敢于执法|常为断狱与上意相争。|80 25 70 80 80 40|30",
+"尉迟敬德|9|1|41|勇猛，性直好讼功|玄武门之日亲手斩杀齐王元吉。|30 90 40 60 85 40|60",
+"李靖|25|1|55|沉毅有谋|曾在隋末欲告发高祖起兵。|60 95 75 75 80 70|35",
+"李勣|28|1|32|善用兵，处事谨慎|玄武门之变时袖手不言，两不相助。|60 88 65 65 75 75|50",
+"李孝恭|24|5|35|宽恕退让|宗室中战功最著，难免招人猜忌。|55 80 55 60 80 45|45",
+],
+consorts: ["长孙氏|皇后|河南长孙氏|25|2|85|体有气疾，常隐忍不言。", "杨氏|妃|隋炀帝之女|26|5|65|前朝公主身份使她处处谨慎。", "韦珪|妃|京兆韦氏|29|4|55|曾嫁李珉，再入秦府。"],
+children: ["李承乾|男|8|0|60", "李泰|男|7|0|75", "李恪|男|7|1|70"], heir: 0,
+foreign: ["东突厥|颉利可汗|冷淡|15|北|岁币与劫掠", "吐谷浑|伏允|冷淡|35|西|互市与边地", "高句丽|高建武|通好|45|东|保辽东旧界", "百济|扶余璋|通好|50|东|求援以抗新罗", "薛延陀|夷男|通好|50|北|脱离突厥"],
+facts: ["颉利可汗|兵临|突厥大军已至渭水便桥北", "太上皇李渊|居处|退居太安宫，不复问政"],
+},
+{
+id: "song-renzong", power: "0 0 25 0 0 0", title: "宋仁宗 · 太后垂帘", difficulty: "宽和", dynasty: "宋", era: "天圣", year: "1022年",
+emperor: ["赵祯", 12, "60 50 40 70 75", "仁厚"], aptitude: 75, posts: "song", governor: "转运使",
+provinces: "开封府 京西路 两浙路 荆湖路 京东路 河东路 陕西路 川峡路 福建路 广南路 江南路 河北路",
+factions: "台谏清议:纳谏清议 将门勋旧:军功封赏 刘氏外戚:家族恩荫 内侍近臣:亲近信任 三司计臣:钱粮自主 宗室:宗藩安稳",
+nation: { treasury: 900, morale: 66, governance: 60, prestige: 50 }, threat: [35, 40, 20, 25],
+dowager: "刘太后", regent: "dowager", wedding: ["郭氏", "曹氏", "张氏"],
+blurb: "真宗新丧，十二岁的天子即位，刘太后垂帘听政。权相丁谓与内侍雷允恭擅移先帝陵穴，王曾正等一个开口的机会。",
+officials: [
+"丁谓|0|2|56|机敏多智，善揣上意|与内侍雷允恭擅移先帝陵穴，事将败露。|80 30 85 20 30 90|90",
+"王曾|10|0|44|端厚持重|已暗中搜集丁谓擅移皇陵的证据。|85 30 80 85 85 70|40",
+"吕夷简|12|4|43|深沉有城府|知道陛下生母实为李宸妃，此事宫中无人敢言。|85 30 75 60 70 85|60",
+"晏殊|19|0|31|文章典丽，少年神童|曾在东宫侍读，深知天子性情。|70 20 90 75 80 50|35",
+"鲁宗道|7|0|56|刚正，人称鱼头参政|屡与太后亲族争执，已结怨刘氏。|75 20 70 90 85 40|25",
+"曹利用|2|1|50|恃功骄横|家人仗势横行乡里。|60 70 55 40 60 65|75",
+"钱惟演|14|2|45|附势善文|以妹嫁太后之兄刘美，结为姻亲。|60 30 85 40 50 70|70",
+"张士逊|3|0|58|和易宽厚|曾为天子东宫旧臣。|65 25 65 70 75 45|40",
+"雷允恭|8|3|40|骄纵专擅|擅移山陵，罪证已在王曾手中。|30 10 30 15 40 60|80",
+"范仲淹|22|0|33|先忧后乐，慷慨敢言|幼年随母改嫁，长大后方知身世。|80 60 80 90 85 45|35",
+],
+foreign: ["辽|耶律隆绪|通好|60|北|岁币如约", "西夏|李德明|通好|50|西|互市与封爵", "唃厮啰|唃厮啰|通好|60|西|联宋抗夏", "交趾|李公蕴|通好|55|南|册封", "高丽|王询|通好|60|东|通使求书"],
+facts: ["李宸妃|身世|宫中讳言天子生母，众人皆以太后为母", "真宗|山陵|陵穴移位一事尚未查明"],
+},
+{
+id: "ming-wanli", power: "0 0 0 10 25 0", title: "明神宗 · 江陵柄国", difficulty: "常制", dynasty: "明", era: "万历", year: "1572年",
+emperor: ["朱翊钧", 9, "55 55 35 65 55", "节俭"], aptitude: 72, posts: "ming", governor: "巡抚",
+provinces: "北直隶 河南 南直隶 湖广 山东 山西 陕西 四川 福建 广东 云南 辽东",
+factions: "清流言官:纳谏清议 勋贵边将:军功封赏 外戚李氏:家族恩荫 司礼监:亲近信任 考成实务:钱粮自主 宗藩:宗藩安稳",
+nation: { treasury: 380, morale: 58, governance: 52, prestige: 50 }, threat: [30, 20, 25, 45],
+dowager: "李太后", regent: "张居正", wedding: ["王喜姐", "王氏", "郑氏"],
+blurb: "隆庆帝崩，十岁太子即位。张居正联手冯保逐走高拱，独掌内阁；李太后严于管教，考成、清丈、一条鞭，都在等一道旨意。",
+officials: [
+"张居正|0|4|47|刚毅果决，综核名实|与冯保内外相结，逐高拱出京。|95 60 85 60 75 90|85",
+"冯保|8|3|40|知书善琴，贪而有才|矫遗诏与内阁同受顾命，自加顾命之名。|60 20 70 30 60 80|80",
+"吕调阳|10|0|56|谨厚，凡事唯首辅是听|私下以为考成法太急。|70 20 75 75 75 40|30",
+"张四维|15|0|46|工于心计|家族世代经营盐业，与晋商往来密切。|75 25 75 50 60 80|75",
+"申时行|19|0|37|温和圆融|状元出身，与言官、阁臣皆不愿结怨。|80 25 85 70 70 70|55",
+"王锡爵|16|0|38|刚直有守|曾在高拱、张居正之间两不依附。|75 25 80 80 75 60|50",
+"王国光|1|4|60|精于理财|正着手编订《万历会计录》。|85 25 75 70 75 55|40",
+"杨博|3|1|70|老成知兵|年事已高，屡请致仕。|80 75 70 75 80 60|20",
+"谭纶|2|1|52|知兵，能任事|与戚继光同在东南抗倭，交情深厚。|70 85 70 70 80 55|40",
+"潘季驯|18|4|51|精于治河，主束水攻沙|屡被言官弹劾治河耗费。|80 30 80 75 75 45|35",
+"戚继光|28|1|44|治军严明|以重礼结交张居正，求在蓟镇专权练兵。|50 95 70 70 85 55|50",
+"李成梁|25|1|46|骁勇，善养家丁|冒功邀赏、纵容家丁之事不在少数。|50 88 50 40 65 70|70",
+],
+foreign: ["蒙古|俺答汗|朝贡|60|北|互市与封贡", "建州女真|王杲|冷淡|30|东|抚赏与马市", "朝鲜|李昖|朝贡|70|东|册封与书籍", "安南|莫茂洽|朝贡|50|南|册封", "日本|织田信长|冷淡|35|东|勘合贸易"],
+facts: ["高拱|去职|被逐出京，回籍闲住", "张居正|新政|拟行考成法，以六科稽查六部"],
+},
+{
+id: "ming-chongzhen", power: "-10 0 0 10 0 0", title: "明思宗 · 天启七年", difficulty: "艰危", dynasty: "明", era: "崇祯", year: "1627年",
+emperor: ["朱由检", 17, "65 60 45 65 50", "多疑"], posts: "ming", governor: "巡抚",
+provinces: "北直隶 河南 南直隶 湖广 山东 山西 陕西 四川 福建 广东 云南 辽东",
+factions: "东林清流:纳谏清议 勋戚边将:军功封赏 外戚:家族恩荫 阉党:亲近信任 督抚:钱粮自主 宗藩:宗藩安稳",
+nation: { treasury: 120, morale: 36, governance: 30, prestige: 42, grain: 140 }, threat: [60, 45, 20, 85],
+dowager: "懿安皇后",
+blurb: "天启帝崩，信王入继大统。魏忠贤的生祠遍布天下，阉党把持内外；陕西大旱，辽东后金虎视，国库几乎见底。",
+officials: [
+"魏忠贤|8|3|59|目不识丁而权倾朝野|生祠遍天下，各地督抚多有馈遗。|40 30 30 10 20 85|95",
+"崔呈秀|2|3|50|依附魏珰，人称五虎之首|贪墨军饷，账目可查。|50 40 55 15 25 75|85",
+"黄立极|0|3|62|庸懦依违|曾为魏忠贤生祠撰写颂词。|55 20 60 30 40 55|45",
+"温体仁|16|4|54|外示温谨，内实阴狠|欲借攻讦东林以邀圣眷。|75 20 75 35 50 90|85",
+"周延儒|15|0|34|机敏善揣|状元出身，与东林若即若离。|70 25 85 45 50 80|80",
+"毕自严|1|4|58|精于钱谷|深知太仓银库已入不敷出。|85 30 75 75 80 50|35",
+"王永光|3|3|66|圆滑持禄|曾附阉党，如今正四处撇清。|60 20 60 40 45 65|50",
+"袁崇焕|28|4|43|慷慨负胆略|曾私遣使与后金议和。|65 85 75 60 70 60|70",
+"洪承畴|26|4|34|沉毅多谋|在陕西督粮，眼见饥民渐成流寇。|75 85 75 55 60 75|60",
+"卢象升|25|1|27|文武兼资，忠勇|治大名府，练兵颇有成效。|70 85 70 85 95 50|40",
+],
+consorts: ["周氏|皇后|苏州周氏|16|0|80|出身寒微，家中曾以卖卜为生。", "田氏|妃|扬州田氏|18|2|70|多才艺，其父田弘遇骄横。", "袁氏|嫔|宛平袁氏|17|1|55|性情温顺，少与人争。"],
+foreign: ["察哈尔|林丹汗|冷淡|30|北|抚赏", "后金|皇太极|冷淡|5|东|入关劫掠", "朝鲜|李倧|朝贡|55|东|乞援抗金", "日本|德川家光|冷淡|30|东|闭关自守"],
+facts: ["陕西|灾情|连年大旱，饥民聚众", "魏忠贤|权势|东厂与锦衣卫皆在其手"],
+},
+{
+id: "qing-kangxi", power: "0 30 0 0 0 0", title: "清圣祖 · 四辅臣", difficulty: "常制", dynasty: "清", era: "康熙", year: "1661年",
+emperor: ["玄烨", 7, "50 50 50 60 55", "勤政"], aptitude: 88, surname: "爱新觉罗", children: [], posts: "qing", governor: "巡抚",
+provinces: "直隶 河南 江南 湖广 山东 山西 陕西 四川 福建 广东 云南 奉天",
+childNaming: { 男: "胤", 女: "和" },
+factions: "汉臣清议:纳谏清议 两黄旗勋旧:军功封赏 赫舍里外戚:家族恩荫 正白旗旧部:亲近信任 督抚:钱粮自主 宗室王公:宗藩安稳",
+nation: { treasury: 500, morale: 52, governance: 50, prestige: 45 }, threat: [35, 30, 40, 55],
+dowager: "孝庄太皇太后", regent: "索尼", wedding: ["赫舍里氏", "钮祜禄氏", "纳喇氏"],
+blurb: "顺治帝崩于天花，八岁的玄烨即位。索尼、苏克萨哈、遏必隆、鳌拜四人辅政，鳌拜日渐跋扈；南方三藩坐大，台湾郑氏尚在。",
+officials: [
+"索尼|0|2|61|老成，持重|年老多病，暗中为孙女谋后位。|80 50 70 70 80 80|50",
+"苏克萨哈|10|3|50|刚愎，与鳌拜积怨|曾首告多尔衮，两黄旗视之为仇。|65 70 55 55 70 60|60",
+"遏必隆|11|1|50|依违两可|女儿正待选入宫。|55 60 50 55 60 50|40",
+"鳌拜|9|1|51|骁勇善战，专横跋扈|已在暗中撤换两白旗圈地的官员。|60 90 50 35 35 75|95",
+"索额图|15|2|25|骄纵，好揽权|索尼之子，自视为天子外家。|65 40 65 40 70 75|75",
+"明珠|8|3|26|通敏，善揣上意|结交满汉士人，门下已有不少人。|75 40 75 45 65 85|80",
+"熊赐履|19|0|26|理学名儒|对辅臣专断多有腹诽。|75 20 85 85 85 40|35",
+"魏裔介|7|0|45|敢言，持论平正|屡上疏请减圈地之害。|75 20 75 80 80 45|35",
+"汤若望|22|0|69|精于历算|杨光先已在罗织历法之狱。|70 10 90 75 75 30|10",
+"杰书|24|5|16|宽厚，少年袭爵|康亲王府与诸王旧怨未解。|50 60 50 65 75 45|40",
+],
+foreign: ["沙俄|阿列克谢|冷淡|30|北|侵占黑龙江", "准噶尔|僧格|通好|45|西|贸易与西藏", "平西藩|吴三桂|通好|50|南|钱粮自主", "台湾郑氏|郑成功|冷淡|10|东|奉明正朔", "朝鲜|李棩|朝贡|60|东|册封"],
+facts: ["四辅臣|共政|先帝遗诏四大臣辅政", "圈地|旧事|两黄旗与两白旗为圈地积怨"],
+},
+{
+id: "qing-yongzheng", power: "0 0 10 0 0 15", title: "清世宗 · 九子夺嫡之后", difficulty: "常制", dynasty: "清", era: "雍正", year: "1722年",
+emperor: ["胤禛", 44, "88 85 55 70 50", "勤政"], surname: "爱新觉罗", posts: "qing", governor: "巡抚",
+provinces: "直隶 河南 江南 湖广 山东 山西 陕西 四川 福建 广东 云南 奉天",
+childNaming: { 男: "弘", 女: "和" },
+factions: "汉臣清流:纳谏清议 西北军功:军功封赏 佟佳外戚:家族恩荫 藩邸旧人:亲近信任 督抚:钱粮自主 八爷党:宗藩安稳",
+nation: { treasury: 800, morale: 55, governance: 38, prestige: 50 }, threat: [30, 70, 25, 20],
+dowager: "仁寿皇太后",
+blurb: "康熙帝崩于畅春园，四阿哥继位。八爷党党羽遍布六部，十四阿哥手握西北大军；国库虽有八百万两，亏空与积欠却查不胜查。",
+officials: [
+"允禩|0|5|41|宽仁得士心|党羽遍布六部，暗中仍有人称其八贤王。|80 50 80 60 40 85|90",
+"允祥|10|3|36|忠勤明练|曾被先帝圈禁多年，旧伤未愈。|85 70 75 80 95 60|20",
+"马齐|11|0|70|老成谨慎|先帝时曾因附议允禩被斥。|70 30 70 65 70 55|30",
+"隆科多|9|2|55|居功自傲|传位诏书一事，只有他最清楚。|65 60 55 40 55 80|85",
+"张廷玉|4|0|50|谨慎周密，过目不忘|从不留片纸私稿。|90 20 90 80 85 70|40",
+"年羹尧|26|1|43|才气凌厉，恃功而骄|与九阿哥门人有旧交。|70 92 75 40 60 75|85",
+"鄂尔泰|15|3|42|有识断，敢任事|久在内务府，四十余仍是员外郎。|85 70 75 70 85 60|50",
+"田文镜|13|3|60|苛察，勇于任事|监生出身，被科甲同僚视为异类。|85 30 55 65 85 50|50",
+"李卫|23|3|35|不学而有吏才|捐纳出身，常遭言官讥讽。|80 45 45 65 90 60|55",
+"允禟|24|5|39|富而好结纳|暗中经营商号，与西洋传教士往来。|55 30 70 40 30 80|75",
+"允禵|25|5|34|大将军王，素有人望|以为大位本该属于自己。|60 85 70 55 30 70|90",
+"岳钟琪|27|1|36|善用兵，持重|岳飞之后，在川陕军中声望日隆。|60 88 65 70 80 55|40",
+],
+consorts: ["乌拉那拉氏|皇后|乌拉那拉氏|41|0|60|嫡子早殇，膝下无子。", "年氏|妃|年羹尧之妹|25|1|85|兄长权势日重，她夜里常难安睡。", "钮祜禄氏|嫔|钮祜禄氏|30|3|55|处事极为低调，一心教子。", "李氏|嫔|知府李文烨之女|45|4|40|长子早年夭折，所余之子性情孤僻。"],
+children: ["弘时|男|18|3|50", "弘历|男|11|2|85", "福惠|男|1|1|60"],
+foreign: ["沙俄|彼得一世|冷淡|35|北|划界与通商", "准噶尔|策妄阿拉布坦|冷淡|20|西|西藏与哈密", "青海和硕特|罗卜藏丹津|通好|40|西|总管青海", "安南|黎维祹|朝贡|55|南|册封", "朝鲜|李昀|朝贡|60|东|册封"],
+facts: ["康熙|传位|遗诏传位四阿哥，朝野多有私议", "户部|亏空|各省钱粮亏空积年未清"],
+},
+];
+function scenarioById(id) {
+return SCENARIOS.find((x) => x.id === id) || null;
 }
-function editable(s) {
-if (s.pending || s.ending) throw new Error('请先续完本旬；封卷后不能办理科举');
-if (s.regency) throw new Error('请待亲政后主持科举');
+// 开局局势预览（开局界面使用）。
+function scenarioPreview(sc) {
+return {
+id: sc.id, title: sc.title, difficulty: sc.difficulty, year: sc.year, blurb: sc.blurb,
+emperor: sc.emperor[0], age: sc.emperor[1], era: sc.era, dynasty: sc.dynasty,
+cast: sc.officials.slice(0, 6).map((x) => x.split("|")[0]),
+};
 }
-function findExam(s, id, statuses) {
-const e = s.keju?.exams.find(e => e.id === id);
-if (!e || !statuses.includes(e.status)) throw new Error('科场进度已变化，请重新打开');
-return e;
+function postTitle(state, post) {
+if (!post) return "";
+if (post.provinceId && state.governorTitle)
+return (state.nation.provinces.find((z) => z.id === post.provinceId)?.name || "") + state.governorTitle;
+return state.postNames?.[post.id] || post.title;
 }
-function revision(s) { s.revision++; return s; }
-function openExam(s, type) {
-s.keju.exams.push({ id: 'keju-' + s.runId + '-' + s.turn + '-' + s.keju.exams.length, year: Math.floor(s.turn / 36) + 1, type, createdTurn: s.turn, examiner: null, examinerFaction: null, topic: '', topicSource: 'system', blindGrading: true, candidates: [], ranking: {}, topics: [], status: 'awaiting_examiner' });
+const split = (x) => x.split("|");
+const nums = (x) => x.trim().split(/\s+/).map(Number);
+function applyScenario(state, id) {
+const sc = scenarioById(id);
+if (!sc) throw new Error("未知剧本");
+let s = clone(state);
+s.scenario = sc.id;
+s.dynasty = sc.dynasty;
+s.imperialSurname = sc.surname || sc.emperor[0][0];
+s.childNaming = sc.childNaming || null;
+s.backstory = sc.blurb;
+s.era.name = s.reign.eraName = sc.era;
+// 官制与州郡
+const titles = POSTS[sc.posts].split(" ");
+s.postNames = Object.fromEntries(titles.map((t, i) => ["p" + i, t]));
+s.governorTitle = sc.governor;
+sc.provinces.split(" ").forEach((name, i) => { if (s.nation.provinces[i]) s.nation.provinces[i].name = name; });
+const mods = nums(sc.power || "0 0 0 0 0 0");
+sc.factions.split(" ").forEach((x, i) => { const [name, demand] = x.split(":"); Object.assign(s.court.factions[i], { name, demand, powerModifier: mods[i] }); });
+// 天子
+const [name, age, talents, tag] = sc.emperor;
+const t = nums(talents);
+s.emperor.name = name;
+s.emperor.age = age;
+s.emperor.lifespan = Math.max(s.emperor.lifespan, age + 25);
+s.emperor.talents = Object.fromEntries(Object.keys(s.emperor.talents).map((k, i) => [k, t[i]]));
+s.emperor.tags = [tag];
+for (const k of ["prestige", "virtue"]) if (sc.nation[k] !== undefined) s.emperor[k] = sc.nation[k];
+for (const k of ["treasury", "morale", "governance", "grain"]) if (sc.nation[k] !== undefined) s.nation[k] = sc.nation[k];
+s.reign.initialTreasury = s.stats.initialTreasury = s.nation.treasury;
+for (const z of s.nation.provinces) z.morale = clamp(s.nation.morale + (z.morale - 62));
+s.nation.army.frontiers.forEach((f, i) => { f.threat = sc.threat[i]; });
+// 官员：剧本人物按指定职位就任，其余原有官员依次补齐空缺
+const cast = sc.officials.map(split), taken = new Set(cast.map((c) => "p" + c[1]));
+const free = s.court.posts.filter((p) => !p.provinceId && !taken.has(p.id) && Number(p.id.slice(1)) < 25).map((p) => p.id);
+for (const p of s.court.posts) if (!p.provinceId) p.holder = null;
+s.court.officials.forEach((o, i) => {
+const c = cast[i];
+if (c) {
+const [n, post, faction, oage, personality, secret, abil, ambition] = c, a = nums(abil);
+Object.assign(o, { name: n, post: "p" + post, faction: "f" + faction, age: Number(oage), personality, secret, ambition: Number(ambition),
+abilities: { 政: a[0], 军: a[1], 才: a[2], 德: a[3], 忠: a[4], 权谋: a[5] } });
+o.life = [personality];
+} else {
+// 补缺的无名官员不抢剧本人物的戏：野心与权谋压低。
+o.post = free.shift() || null;
+o.ambition = Math.min(o.ambition, 35);
+o.abilities.权谋 = Math.min(o.abilities.权谋, 60);
+}
+if (o.post) s.court.posts.find((p) => p.id === o.post).holder = o.id;
+});
+// 后宫与皇嗣
+const child = age < 16;
+s.harem.consorts = (sc.consorts || []).map(split).map(([n, rank, family, cage, faction, favor, secret], i) => ({
+...s.harem.consorts[Math.min(i, s.harem.consorts.length - 1)], id: "c" + i, name: n, rank, family, age: Number(cage),
+faction: "f" + faction, favor: Number(favor), secret, preg: null, relations: {},
+}));
+s.harem.children = (sc.children || []).map(split).map(([n, sex, cage, mother, aptitude], i) => ({
+id: "child-" + s.runId + "-s" + i, name: n, sex, mother: mother === "" ? null : "c" + mother, fatherId: s.runId,
+legit: s.harem.consorts[Number(mother)]?.rank === "皇后", born: -Number(cage) * 36, aptitude: Number(aptitude), health: 85,
+tutor: null, education: Math.min(60, Number(cage) * 4), faction: s.harem.consorts[Number(mother)]?.faction || "f0", party: false,
+}));
+s.harem.heir = sc.heir !== undefined ? s.harem.children[sc.heir]?.id || null : null;
+s.harem.royalWomen = [];
+s.dowager = sc.dowager || null;
+s.weddingNames = sc.wedding || null;
+if (child) {
+// 幼帝以皇嗣身份记年龄，亲政时由 advanceRegency 撤摄政、行大婚。
+const id = "emperor-" + s.runId;
+s.harem.children.push({ id, name, sex: "男", mother: null, fatherId: "prior", legit: true, born: -age * 36,
+aptitude: sc.aptitude || 60, health: 85, tutor: null, education: age * 3, faction: "f0", party: false });
+s.reign.emperorId = id;
+s.reign.married = false;
+const regent = sc.regent === "dowager" ? "dowager" : s.court.officials.find((o) => o.name === sc.regent)?.id;
+s.regency = { regentId: regent || "dowager", until: (16 - age) * 36 };
+} else s.reign.married = s.harem.consorts.length > 0;
+// 外邦
+s.foreign = sc.foreign.map(split).map(([n, ruler, status, attitude, dir, demand], i) => ({
+...s.foreign[Math.min(i, s.foreign.length - 1)], id: "w" + i, name: n, ruler, status, attitude: Number(attitude), frontier: dir, demand, trade: null,
+}));
+s.court.factions = factionPowers(s);
+s.facts = (sc.facts || []).map((x) => { const [subject, key, value] = split(x); return { subject, key, value, turn: 0 }; });
 return s;
-}
-function configureExams(state, interval) {
-editable(state);
-if (!Number.isSafeInteger(interval) || interval < 1 || interval > 3600) throw new Error('常科间隔须为1–3600旬的整数');
-const s = clone(state);
-s.keju.interval = interval;
-// A due exam remains available; a changed period starts after the current turn.
-if (s.keju.nextRegularTurn > s.turn) s.keju.nextRegularTurn = s.turn + interval;
-return revision(s);
-}
-function enkeBlock(s, examiner) {
-if (activeExam(s)) return '本届尚未放榜，请先办完本届科举';
-if (s.nation.treasury < ENKE_COST) return '恩科需国库三十万两';
-if (examiner && !examiners(s).some(o => o.id === examiner)) return '请任命一位在京在任官员为主考';
-return '';
-}
-function openEnke(state, examiner) {
-editable(state);
-const blocked = enkeBlock(state, examiner);
-if (blocked) throw new Error(blocked);
-if (!examiner) throw new Error('加开恩科须先任命主考官');
-let s = openExam(clone(state), 'enke');
-s = appointExaminer(s, activeExam(s).id, examiner);
-s = applyPackage(s, { treasury: -ENKE_COST, scholarReputation: 3 }, '加开恩科');
-s.stats.edicts++;
-return { state: s, note: '加开恩科，主考已任；请入科举殿命题' };
-}
-function appointExaminer(state, examId, officialId) {
-editable(state);
-const s = clone(state), e = findExam(s, examId, ['awaiting_examiner', 'topic']);
-const o = examiners(s).find(o => o.id === officialId);
-if (!o) throw new Error('请选择在京在任且未下狱的官员主考');
-e.examiner = o.id; e.examinerFaction = o.faction; e.status = 'topic';
-return revision(s);
-}
-function setExamTopics(state, id, topics) {
-editable(state);
-const s = clone(state), e = findExam(s, id, ['topic']);
-if (!Array.isArray(topics) || topics.length < 2 || topics.length > 3 || topics.some(t => typeof t !== 'string' || !t.trim() || t.length > 2000)) throw new Error('策问备选须为2–3道');
-e.topics = [...new Set(topics)];
-if (e.topics.length < 2) throw new Error('策问备选不能重复');
-return revision(s);
-}
-function fallbackTopics(s) {
-const worst = [...s.nation.provinces].sort((a,b) => b.disaster - a.disaster)[0];
-return [s.nation.treasury < 200 ? '国用日绌，如何量入为出而不困民？' : '国用与民生如何相济，试陈理财之策。', worst.disaster > 20 ? worst.name + '灾情未息，赈济与备荒当如何并举？' : '承平之时，如何整饬吏治而免因循？', '边备与农事相争，如何安边而不扰民？'];
-}
-function chooseExamTopic(state, id, topic, source = 'system', review = null) {
-editable(state);
-let s = clone(state), e = findExam(s, id, ['topic']);
-if (!examiners(s).some(o => o.id === e.examiner)) throw new Error('主考官已离任，请重新任命');
-if (typeof topic !== 'string' || !topic.trim() || topic.length > 2000 || !['system', 'emperor'].includes(source)) throw new Error('策问须为1–2000字');
-if (source === 'system' && !e.topics.includes(topic)) throw new Error('请选择本届备选策问');
-const unsuitable = source === 'emperor' && (review?.suitable === false || /长生|成仙|永生|神仙|外星|毁灭世界/.test(topic));
-let adopted = topic, note = '';
-if (unsuitable && s.settings.freedom !== 'free') {
-let accept = false;
-if (s.settings.freedom === 'mid') { const r = adjudicate(s, {success:false}, e.examiner); s = r.state; accept = r.verdict.success; note = r.verdict.partial ? r.verdict.cost : ''; }
-if (!accept) { adopted = typeof review?.rewrite==='string' && review.rewrite.trim() && review.rewrite.length<=2000 ? review.rewrite : fallbackTopics(s)[0]; note = '礼部劝谏：' + (review?.reason || '策问宜切合治国实务') + '；改拟为：' + adopted; }
-}
-e = s.keju.exams.find(e => e.id === id);
-e.topic = adopted; e.topicSource = source; e.requestedTopic = source === 'emperor' ? topic : null; e.topicNote = note;
-// Dossiers and independent literary skill are rolled once before any prose request.
-for (let i = 0; i < EXAM_SIZE; i++) {
-const named = uniqueName(s); s = named.state;
-const draw = (a,b) => { const r = roll(s,a,b); s = r.state; return r.value; };
-const origin = ['commoner','gentry','noble'][draw(0,2)], age = draw(18,48);
-const hometown = s.nation.provinces[draw(0,s.nation.provinces.length-1)].name;
-const hidden = {ability:draw(25,95),integrity:draw(10,95),stance:EXAM_STANCES[draw(0,2)],ambition:draw(5,95),faction:s.court.factions[draw(0,s.court.factions.length-1)].id};
-const literary = draw(25,98),current=s.keju.exams.find(e=>e.id===id);
-const priorMentor=hidden.faction===current.examinerFaction?current.examiner:null;
-s.keju.exams.find(e => e.id === id).candidates.push({id:id+'-c'+i,name:named.name,hometown,origin,age,hidden,literary,priorMentor,essaySummary:'',reviewerComment:'',reviewerSuggestedRank:i+1});
-}
-e = s.keju.exams.find(e => e.id === id); e.status = 'writing';
-return revision(s);
-}
-function receiveExamPapers(state, id, papers) {
-editable(state);
-const s = clone(state), e = findExam(s,id,['writing']);
-if (!Array.isArray(papers) || papers.length !== EXAM_SIZE || new Set(papers.map(p=>p.id)).size !== EXAM_SIZE) throw new Error('试卷未齐，原名册已保留');
-if (papers.some(p=>!e.candidates.some(c=>c.id===p.id)||typeof p.essaySummary!=='string'||!p.essaySummary.trim()||p.essaySummary.length>1500||typeof p.reviewerComment!=='string'||!p.reviewerComment.trim()||p.reviewerComment.length>1000||!Number.isInteger(p.reviewerSuggestedRank)||p.reviewerSuggestedRank<1||p.reviewerSuggestedRank>EXAM_SIZE)) throw new Error('试卷格式有误');
-if (new Set(papers.map(p=>p.reviewerSuggestedRank)).size!==EXAM_SIZE) throw new Error('拟定名次不能重复');
-for (const c of e.candidates) { const p = papers.find(p=>p.id===c.id); c.essaySummary=p.essaySummary; c.reviewerComment=p.reviewerComment; c.reviewerSuggestedRank=p.reviewerSuggestedRank; }
-const ordered = [...e.candidates].sort((a,b)=>a.reviewerSuggestedRank-b.reviewerSuggestedRank);
-e.ranking = Object.fromEntries(ordered.map((c,i)=>[c.id, i<3?EXAM_RANKS[i]:i<5?'二甲':i<7?'三甲':'黜落']));
-e.status = 'grading';
-return revision(s);
-}
-function setExamBlind(state,id,blind) {
-editable(state);
-const s=clone(state),e=findExam(s,id,['topic','writing','grading']);
-e.blindGrading=!!blind;
-return revision(s);
-}
-function rankExamCandidate(state,id,candidateId,rank) {
-editable(state);
-const s=clone(state),e=findExam(s,id,['grading']);
-if(!e.candidates.some(c=>c.id===candidateId)||!EXAM_RANKS.includes(rank))throw new Error('请选择有效卷子与名次');
-const previous=e.ranking[candidateId];
-if(EXAM_RANKS.slice(0,3).includes(rank)) { const other=Object.keys(e.ranking).find(id=>e.ranking[id]===rank); if(other)e.ranking[other]=previous; }
-// Moving a top-three paper to a lower class leaves an explicit vacancy until another is selected.
-e.ranking[candidateId]=rank;
-return revision(s);
-}
-function cacheExamEssay(state,id,candidateId,essay) {
-editable(state);
-const s=clone(state),e=findExam(s,id,['grading','published']),c=e.candidates.find(c=>c.id===candidateId);
-if(!c)throw new Error('试卷不存在');
-if(c.essayFull)return s;
-if(typeof essay!=='string'||essay.trim().length<80||essay.length>12000)throw new Error('全文未完整送达，请重试');
-c.essayFull=essay;
-return revision(s);
-}
-function queueExamHook(state,examId,type,due=state.turn+1) {
-if(!['exam_fraud','failed_candidates_unrest'].includes(type)||!Number.isSafeInteger(due)||due<state.turn||!state.keju.exams.some(e=>e.id===examId&&e.status==='published'))throw new Error('科举事件参数无效');
-const s=clone(state);
-if(!s.keju.hooks.some(h=>h.examId===examId&&h.type===type))s.keju.hooks.push({examId,type,due,handled:false});
-return s;
-}
-function publishExam(state,id) {
-editable(state);
-const original=state.keju.exams.find(e=>e.id===id);
-if(original?.status==='published')return clone(state);
-let s=clone(state),e=findExam(s,id,['grading']);
-if(Object.keys(e.ranking).length!==EXAM_SIZE||Object.values(e.ranking).some(r=>!EXAM_RANKS.includes(r))||EXAM_RANKS.slice(0,3).some(r=>Object.values(e.ranking).filter(v=>v===r).length!==1))throw new Error('请为每卷定名次，一甲须各有一人');
-const top=e.candidates.filter(c=>EXAM_RANKS.slice(0,3).includes(e.ranking[c.id]));
-const commoners=top.filter(c=>c.origin==='commoner').length,nobles=top.filter(c=>c.origin==='noble').length;
-const clients=top.filter(c=>c.priorMentor===e.examiner).length;
-const bias=!e.blindGrading&&clients>=2;
-const rep=commoners*2-nobles-(bias?5:0);
-const influence={};
-for(const c of e.candidates.filter(c=>e.ranking[c.id]!=='黜落')) {
-const rank=e.ranking[c.id],h=c.hidden,oid='jinshi-'+c.id;
-influence[h.faction]=(influence[h.faction]||0)+(EXAM_RANKS.slice(0,3).includes(rank)?2:1);
-const title=rank==='状元'?'翰林院修撰':['榜眼','探花'].includes(rank)?'翰林院编修':null;
-const pid=title?'post-'+oid:null;
-if(title)s.court.posts.push({id:pid,title,rank:7,office:'翰林',tags:['政务'],provinceId:null,holder:oid});
-s.court.officials.push({id:oid,name:c.name,gender:'男',age:c.age,post:pid,faction:h.faction,abilities:{政:h.ability,军:Math.round(h.ability/2),才:c.literary,德:h.integrity,忠:Math.max(5,100-h.ambition),权谋:h.ambition},ambition:h.ambition,greed:100-h.integrity,favor:50,health:90,alive:true,inCapital:true,secret:'吏部已按任职实绩察明其操守。',secretKnown:false,memory:[],life:[{turn:s.turn,event:rank+'及第'+(title?'，授'+title:'，入人才库候补')}],banquetTurn:-1000000,relations:{[e.examiner]:60},keju:{examId:id,candidateId:c.id,mentor:e.examiner,origin:c.origin,hometown:c.hometown,rank,revealed:[],lastRevealTurn:s.turn}});
-const mentorIndex=s.court.officials.findIndex(o=>o.id===e.examiner),oldMentor=s.court.officials[mentorIndex];
-s.court.officials[mentorIndex]={...oldMentor,relations:{...oldMentor.relations,[oid]:60},examStudents:[...(oldMentor.examStudents||[]),oid]};
-}
-influence[e.examinerFaction]=(influence[e.examinerFaction]||0)+(bias?6:2);
-e.status='published';e.publishedTurn=s.turn;e.outcome={scholarReputation:rep,commoners,nobles,clients,biased:bias};
-s=applyPackage(s,{scholarReputation:rep,faction:influence},'科举放榜');
-s.court.factions=factionPowers(s);
-// The hook contract supports both cases; only the protest example is dispatched automatically.
-if(bias)s=queueExamHook(s,id,'failed_candidates_unrest');
-return revision(s);
-}
-function advanceExams(state) {
-let s=clone(state);s.keju??=defaultKeju(s.turn);
-if(!activeExam(s)&&s.turn>=s.keju.nextRegularTurn) {
-s=openExam(s,'regular');
-s.keju.nextRegularTurn=s.turn+s.keju.interval;
-}
-const exam=activeExam(s),start=exam?examGraceStart(s,exam):s.turn,age=s.turn-start;
-if(exam&&!s.regency&&start>exam.createdTurn){const receipt=examGraceReceipt(exam,start);if(!s.receipts.includes(receipt))s.receipts.push(receipt);}
-// Reuse existing receipts: no save shape change or replay of past periods.
-// Thirty-six turns are grace; the first complete overdue period ends at 48.
-if(exam&&!s.regency&&age>=48&&age%12===0) {
-const receipt='keju-delay:'+exam.id+':'+(start===exam.createdTurn?age:'grace:'+start+':'+age);
-if(!s.receipts.includes(receipt)) {
-s.receipts.push(receipt);
-s=applyPackage(s,{scholarReputation:-1},'科举迟未放榜：每十二旬士林声望下降');
-const reminder='keju-reminder:'+exam.id;
-if(!s.receipts.includes(reminder)) {
-s.receipts.push(reminder);
-s=addEvent(s,'科举催办','礼部催请钦定科举榜次','本届科举宽限已过，榜次久悬，士林议论渐起。礼部请尽早命题阅卷、钦定放榜。',[
-{label:'阅知，着即办理',effects:{}},
-],exam.examiner?[exam.examiner]:[]);
-s.memorials.at(-1).text='臣礼部谨奏：本届'+(exam.type==='enke'?'恩科':'常科')+(start>exam.createdTurn?'亲政后已过':'开科迄今已')+age+'旬，尚未放榜。士子久候京师，旅食日艰，士林亦有疑议。伏请陛下督促科场，尽早完成任主考、命题阅卷与钦定榜次，使取士之典有始有终。谨候圣裁。';
-}
-}
-}
-// Actual service, once per year per person, reveals one quality through an event.
-for(const original of s.court.officials.filter(o=>o.keju&&o.alive&&o.health>0&&!o.retired&&!o.jailed&&o.post&&s.court.posts.some(p=>p.id===o.post&&p.holder===o.id)&&s.turn-o.keju.lastRevealTurn>=36)) {
-const o=s.court.officials.find(o=>o.id===original.id),key=['ability','integrity','stance','ambition','faction'].find(k=>!o.keju.revealed.includes(k));
-if(!key)continue;
-o.keju.revealed.push(key);o.keju.lastRevealTurn=s.turn;
-const labels={ability:'才干',integrity:'操守',stance:'立场',ambition:'野心',faction:'派系'};
-o.life.push({turn:s.turn,event:'履职考察：'+labels[key]+'渐为人知'});
-if(key==='integrity')o.secretKnown=true;
-s=addEvent(s,'进士履职',o.name+'履职考察','吏部按任职实绩呈报，其'+labels[key]+'已可在人物名录查阅。',[{label:'阅知，继续察看',effects:{}}],[o.id]);
-}
-const due=s.keju.hooks.filter(h=>!h.handled&&h.due<=s.turn);
-for(const h of due) {
-s.keju.hooks.find(x=>x.examId===h.examId&&x.type===h.type).handled=true;
-if(h.type==='failed_candidates_unrest')s=addEvent(s,'落第举子闹事','落第举子聚集贡院','一甲多出主考旧门生，落第举子质疑取士有私，请求复核。',[{label:'命礼部复核，安抚举子',effects:{treasury:-5,scholarReputation:2}},{label:'维持原榜，令其散去',effects:{scholarReputation:-3}}]);
-// exam_fraud is deliberately reserved for the next event pack.
-}
-return s;
-}
-function examOfficialView(s,o) {
-if(!o.keju)return {abilities:o.abilities,faction:s.court.factions.find(f=>f.id===o.faction)?.name,ambition:o.ambition,stance:null};
-const known=new Set(o.keju.revealed),e=s.keju.exams.find(e=>e.id===o.keju.examId),c=e?.candidates.find(c=>c.id===o.keju.candidateId);
-return {abilities:Object.fromEntries(Object.entries(o.abilities).map(([k,v])=>[k,(k==='政'?known.has('ability'):k==='德'?known.has('integrity'):k==='权谋'||k==='忠'?known.has('ambition'):false)?v:'待察'])),faction:known.has('faction')?s.court.factions.find(f=>f.id===o.faction)?.name:'待察',ambition:known.has('ambition')?o.ambition:'待察',stance:known.has('stance')?c?.hidden.stance:'待察'};
 }
 
-return {activeExam,examiners,configureExams,enkeBlock,openEnke,appointExaminer,setExamTopics,fallbackTopics,chooseExamTopic,receiveExamPapers,setExamBlind,rankExamCandidate,cacheExamEssay,queueExamHook,publishExam,advanceExams,examOfficialView};
+return {SCENARIOS,scenarioById,scenarioPreview,postTitle,applyScenario};
 },
 "src/core/state.js":function(__load){
+const { assignFaces } = __load("src/core/faces.js");
 const { defaultKeju, validateKeju } = __load("src/core/keju-schema.js");
 const {validateDevelopment} = __load("src/core/tech-schema.js");
 const {validateSocialState} = __load("src/core/social-schema.js");
@@ -4569,7 +5676,7 @@ const { seedNumber, random, DRAFT } = __load("src/core/rng.js");
 const { uniqueName } = __load("src/core/names.js");
 const { chooseRegent } = __load("src/core/regency-info.js");
 const {factionPowers} = __load("src/core/politics.js");
-const VERSION = 23;
+const VERSION = 24;
 const TALENTS = ["政略", "权谋", "武略", "文采", "魅力"];
 const SLOTS = ["朝", "午", "夜"];
 const POST_NAMES = [
@@ -5154,7 +6261,7 @@ s.edictCooldowns[key] ??= p.end+6;
 }
 for(const a of s.ambitions) if(s.receipts.includes('goal:'+a.id)&&!s.receipts.includes('goal:'+reignId(s)+':'+a.id)) s.receipts.push('goal:'+reignId(s)+':'+a.id);
 assertState(s);
-return s;
+return assignFaces(s);
 }
 function assertState(s) {
 validateKeju(s);
@@ -5259,6 +6366,50 @@ return (s.reign?.number || 1) === 1
 }
 
 return {VERSION,TALENTS,SLOTS,POST_NAMES,withDraft,clone,createState,migrate,assertState,reignId};
+},
+"src/core/faces.js":function(__load){
+// Presentation identities only: no dice, art pool sizes, or changes to gameplay.
+// Copy on write also protects deceased officials shared by clone() and frozen forecasts.
+function assignFaces(state) {
+if (state.faceCounters !== undefined && (!state.faceCounters || typeof state.faceCounters !== 'object' ||
+Array.isArray(state.faceCounters) || Object.values(state.faceCounters).some(n=>!Number.isSafeInteger(n)||n<0)))
+throw new Error('人物脸号计数器损坏');
+const counters = { ...(state.faceCounters || {}) };
+const groups = [
+['emperor', [state.emperor]],
+['official', state.court.officials],
+['consort', [...state.harem.consorts, ...(state.harem.candidates || [])]],
+['child', state.harem.children],
+['royalWoman', state.harem.royalWomen || []],
+['foreign', state.foreign],
+];
+const replacements = new Map();
+for (const [key, people] of groups) {
+let next = Number.isSafeInteger(counters[key]) && counters[key] >= 0 ? counters[key] : 0;
+for (const p of people) if (Number.isSafeInteger(p.faceNo) && p.faceNo >= 0) next = Math.max(next, p.faceNo + 1);
+for (const p of people) {
+if (p.faceNo !== undefined) {
+if (!Number.isSafeInteger(p.faceNo) || p.faceNo < 0) throw new Error('人物脸号损坏');
+continue;
+}
+if (!Number.isSafeInteger(next + 1)) throw new Error('人物脸号超出范围');
+replacements.set(p, { ...p, faceNo: next++ });
+}
+counters[key] = next;
+}
+if (!replacements.size && state.faceCounters &&
+Object.keys(counters).length === Object.keys(state.faceCounters).length &&
+Object.entries(counters).every(([key,value])=>state.faceCounters[key]===value)) return state;
+const person = p => replacements.get(p) || p;
+return { ...state, faceCounters: counters, emperor: person(state.emperor),
+court: { ...state.court, officials: state.court.officials.map(person) },
+harem: { ...state.harem, consorts: state.harem.consorts.map(person),
+candidates: (state.harem.candidates || []).map(person), children: state.harem.children.map(person),
+royalWomen: (state.harem.royalWomen || []).map(person) },
+foreign: state.foreign.map(person) };
+}
+
+return {assignFaces};
 },
 "src/core/keju-schema.js":function(__load){
 // Save validation and pure exam clock helpers; no imports from state or effects.
@@ -6113,6 +7264,614 @@ return s;
 }
 
 return {clamp,populationMorale,diminishing,applyEffects,applyPackage,growTalent};
+},
+"src/ui/common.js":function(__load){
+const { initMobileViewport } = __load("src/ui/mobile.js");
+const $ = (selector) => document.querySelector(selector);
+// Display labels only; saves stay intact.
+function gameText(text) {
+const value = String(text ?? "");
+const status = Number(value.match(/^HTTP (\d+)/)?.[1]);
+if (status) return ({401:'密钥未通过验证，请在设置中检查。',402:'服务账户余额不足，请先补充余额。',
+403:'连接未获许可，请检查账户与地域。',404:'未找到所选服务，请检查连接设置。',
+429:'来信太密，请稍后再试。'})[status] || '暂未收到回音，请稍后再试。';
+if (/^(?:EMPTY|TRUNCATED|STREAM_INVALID|STREAM_ERROR|STREAM_CUT|TOO_LARGE)$/.test(value))
+return '故事未能完整送达，请重试。';
+if (/^(?:Failed to fetch|Load failed|NetworkError)/.test(value)) return '连接未通，请检查网络后再试。';
+return value
+.replace(/^本旬引擎结算：人物、政务与岁时变化$/, "本旬变化")
+.replace(/^模型人物反应建议：引擎限额采纳$/, "人物态度变化")
+.replace(/^引擎结算$/, "本旬变化")
+.replace(/宫闱事件：引擎判定小产/g, "宫中小产")
+.replace(/；面谈结果已落账/g, "；已在面谈中议定")
+.replace(/^本旬面谈已落账，午槽须保留对应人物的召见$/, "午间已召见此人，请先过完本旬。")
+.replace(/^预演已过期，不能提交到此存档$/, "这次安排已过期，请刷新后重试。")
+.replace(/^本回合请求已达 (?:90|240) 秒预算，请保留预演结果后重试$/, "故事续写超时，请重试本旬。")
+.replace(/^模型回复未完成或格式有误，原有进度已保留$/, "这次没能续完故事，请重试本旬。")
+.replace(/^存档处于只读保护模式$/, "此存档暂时无法保存，请先导出备份。");
+}
+function esc(text) {
+return String(text ?? "").replace(
+/[&<>"']/g,
+(c) =>
+({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[
+c
+],
+);
+}
+// Full re-renders replace the DOM. Keep inner scroll positions (the phone
+// layout scrolls inside fixed-height containers) and the focused control.
+function nodePath(node, root) {
+const path = [];
+while (node && node !== root) {
+const parent = node.parentElement;
+if (!parent) return null;
+path.unshift([...parent.children].indexOf(node));
+node = parent;
+}
+return node === root ? path : null;
+}
+function nodeAt(root, path) {
+let node = root;
+for (const i of path) { node = node?.children?.[i]; if (!node) return null; }
+return node;
+}
+function keyOf(el, root) {
+if (el.id) return { id: el.id };
+for (const name of ["scrollKey", "command", "action", "slot", "panel", "clear"])
+if (el.dataset?.[name]) return { data: name, value: el.dataset[name] };
+return { path: nodePath(el, root) };
+}
+function find(root, key) {
+if (key.id) return root.querySelector("#" + CSS.escape(key.id));
+if (key.data) return root.querySelector("[data-" + key.data.replace(/[A-Z]/g, (c) => "-" + c.toLowerCase()) + '="' + CSS.escape(key.value) + '"]');
+return key.path ? nodeAt(root, key.path) : null;
+}
+function captureView(root) {
+if (!root) return { scrolls: [], focus: null };
+const scrolls = [];
+for (const el of root.querySelectorAll("*"))
+if (el.scrollTop > 0 || el.scrollLeft > 0)
+scrolls.push({ key: keyOf(el, root), top: el.scrollTop, left: el.scrollLeft });
+const active = document.activeElement;
+const focus = active && active !== document.body && root.contains(active)
+? { key: keyOf(active, root), start: active.selectionStart ?? null, end: active.selectionEnd ?? null }
+: null;
+return { scrolls, focus };
+}
+function restoreView(root, view) {
+if (!root || !view) return;
+for (const s of view.scrolls) {
+const el = find(root, s.key);
+if (el) { el.scrollTop = s.top; el.scrollLeft = s.left; }
+}
+if (view.focus) {
+const el = find(root, view.focus.key);
+if (el && !el.disabled) {
+el.focus({ preventScroll: true });
+if (view.focus.start !== null && typeof el.setSelectionRange === "function")
+try { el.setSelectionRange(view.focus.start, view.focus.end); } catch {}
+}
+}
+}
+function throttleFrame(fn, schedule = (f) => requestAnimationFrame(f)) {
+let queued = false, latest;
+return (...args) => {
+latest = args;
+if (queued) return;
+queued = true;
+schedule(() => { queued = false; fn(...latest); });
+};
+}
+// Back gestures close the open dialog instead of leaving the game. One history
+// entry is pushed per dialog session; replacing the dialog content reuses it.
+let modalEntry = false, closingFromHistory = false, pendingBack = 0, leaveGuard = () => false;
+function setLeaveGuard(fn) { leaveGuard = fn; }
+function pushModalEntry() {
+if (modalEntry) return;
+try { history.pushState({ ...(history.state || {}), yujiModal: true }, ""); modalEntry = true; } catch {}
+}
+let toastTimer;
+function toast(text) {
+text = gameText(text);
+$("#notice").textContent = text;
+$("#notice").classList.add("show");
+const dialog=$("#modal");
+if(dialog?.open){
+let status=dialog.querySelector('.dialog-notice');
+if(!status){
+status=document.createElement('p');
+status.className='dialog-notice';
+status.setAttribute('role','status');
+status.setAttribute('aria-live','polite');
+const header=dialog.querySelector('.dialog-head');
+if(header)header.insertAdjacentElement('afterend',status);
+else dialog.prepend(status);
+}
+status.textContent=text;
+}
+clearTimeout(toastTimer);
+toastTimer = setTimeout(() => $("#notice").classList.remove("show"), 6000);
+}
+let returnFocus, returnSelector;
+function openDialog(title, body, className = "") {
+const d = $("#modal");
+const active=document.activeElement;
+if (d.open) d.close();
+if (!active?.closest?.('#modal')) {
+returnFocus=active;returnSelector=null;
+for (const key of ['command','action','slot','panel']) if(active?.dataset?.[key]) returnSelector='[data-'+key+'="'+CSS.escape(active.dataset[key])+'"]';
+}
+d.onkeydown=null;
+if (className === 'action-shell') body='<div class="dual-content"><article id="action-document" class="paper action-document"><h3>'+esc(title)+'</h3><p>御案上的事，请逐项裁定。</p></article><section class="action-options">'+body+'</section></div>';
+d.className = className;
+d.innerHTML =
+'<div class="dialog-head"><h2 id="modal-title">' +
+esc(title) +
+'</h2><button type="button" id="close-modal" aria-label="关闭窗口">×</button></div>' +
+body;
+$("#close-modal").onclick = () => d.close();
+d.showModal();
+pushModalEntry();
+document.documentElement.classList.add("modal-open");
+d.scrollTop = 0;
+}
+function closeDialog() {
+$("#modal").close();
+}
+function download(name, data, type = "application/json") {
+const url = URL.createObjectURL(new Blob([data], { type })),
+a = document.createElement("a");
+a.href = url;
+a.download = name;
+a.click();
+setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+function fitBrandText() {
+for(const date of document.querySelectorAll('.brand .date,.brand h1')) {
+date.style.removeProperty('font-size');
+const css=getComputedStyle(date),minimum=Number.parseFloat(css.getPropertyValue(date.matches('h1')?'--font-ui':'--font-minor'))||10;
+let size=Number.parseFloat(css.fontSize);
+while(date.scrollWidth>date.clientWidth&&size>minimum){size=Math.max(minimum,size-.5);date.style.fontSize=size+'px';}
+}
+}
+function initCommon() {
+initMobileViewport();
+// Refit after rendering, viewport changes and the optional web fonts settle.
+new MutationObserver(fitBrandText).observe($('#app'),{childList:true});
+window.addEventListener('resize',fitBrandText);
+document.fonts?.ready.then(fitBrandText);
+$("#modal").addEventListener("keydown", e => {
+if(e.key!=='Tab')return;
+const d=$("#modal"),items=[...d.querySelectorAll('button:not(:disabled),input:not(:disabled),select:not(:disabled),textarea:not(:disabled),summary,[tabindex="0"]')].filter(x=>x.tabIndex>=0&&x.getClientRects().length&&(!x.checkVisibility||x.checkVisibility()));
+if(!items.length){e.preventDefault();return;}
+const at=items.indexOf(document.activeElement);
+if((e.shiftKey&&at<=0)||(!e.shiftKey&&(at===items.length-1||at<0))){e.preventDefault();items[e.shiftKey?items.length-1:0].focus();}
+});
+window.addEventListener("popstate", () => {
+if (pendingBack > 0) {
+// Our own history.back() after a close. If a new dialog opened before the
+// traversal landed, the entry we arrived on still belongs to a dialog.
+pendingBack--;
+modalEntry = $("#modal").open;
+return;
+}
+if (!modalEntry) return;
+modalEntry = false;
+if ($("#modal").open) { closingFromHistory = true; $("#modal").close(); }
+});
+window.addEventListener("beforeunload", (e) => {
+if (!leaveGuard()) return;
+e.preventDefault();
+e.returnValue = "";
+});
+$("#modal").addEventListener("close", () => {
+if($("#modal").open)return;
+if (closingFromHistory) closingFromHistory = false;
+else if (modalEntry) { modalEntry = false; pendingBack++; try { history.back(); } catch { pendingBack--; } }
+document.documentElement.classList.remove("modal-open");
+if (returnFocus?.isConnected) returnFocus.focus();
+else if(returnSelector) document.querySelector(returnSelector)?.focus();
+});
+}
+
+return {$,gameText,esc,captureView,restoreView,throttleFrame,setLeaveGuard,toast,openDialog,closeDialog,download,initCommon};
+},
+"src/ui/mobile.js":function(__load){
+// Keep the game at its intended scale without delaying ordinary scrolling.
+// Android pinch is stopped by touch-action: pan-x pan-y; only iOS gesture
+// events need a non-passive listener, and they fire for pinches alone.
+const GUARDED_EVENTS = ["gesturestart", "gesturechange"];
+function blockPinch(event) {
+if ((event.touches?.length || 0) > 1 || GUARDED_EVENTS.includes(event.type)) {
+if (event.cancelable) event.preventDefault();
+}
+}
+// Coalesce viewport writes to one per frame and skip unchanged values, so a
+// visualViewport scroll does not restyle the whole document on every event.
+function createViewportUpdater(read, write, schedule = (f) => requestAnimationFrame(f)) {
+let queued = false, last = "";
+return () => {
+if (queued) return;
+queued = true;
+schedule(() => {
+queued = false;
+const { height, top } = read(), key = height + "|" + top;
+if (key === last) return;
+last = key;
+write(height, top);
+});
+};
+}
+const FONT_SCALES = { m: "标准", l: "较大", xl: "特大" };
+function applyFontScale(value, root = document.documentElement, storage = globalThis.localStorage) {
+const scale = FONT_SCALES[value] ? value : "m";
+if (scale === "m") root.removeAttribute("data-font");
+else root.setAttribute("data-font", scale);
+try { storage?.setItem("yuji:font", scale); } catch {}
+return scale;
+}
+function storedFontScale(storage = globalThis.localStorage) {
+try { return FONT_SCALES[storage?.getItem("yuji:font")] ? storage.getItem("yuji:font") : "m"; } catch { return "m"; }
+}
+let installed = false;
+function initMobileViewport() {
+if (installed) return;
+installed = true;
+for (const type of GUARDED_EVENTS)
+document.addEventListener(type, blockPinch, { passive: false });
+const root = document.documentElement;
+const update = createViewportUpdater(
+() => ({
+height: window.visualViewport?.height || window.innerHeight,
+top: window.visualViewport?.offsetTop || 0,
+}),
+(height, top) => {
+root.style.setProperty("--app-height", height + "px");
+root.style.setProperty("--viewport-top", top + "px");
+},
+);
+window.addEventListener("resize", update);
+window.visualViewport?.addEventListener("resize", update);
+window.visualViewport?.addEventListener("scroll", update);
+update();
+applyFontScale(storedFontScale());
+}
+
+return {GUARDED_EVENTS,blockPinch,createViewportUpdater,FONT_SCALES,applyFontScale,storedFontScale,initMobileViewport};
+},
+"src/ui/keju.js":function(__load){
+const { portraitHTML, hallArtHTML } = __load("src/ui/art.js");
+const { activeExam, examiners, configureExams, appointExaminer, setExamTopics, fallbackTopics, chooseExamTopic, receiveExamPapers, setExamBlind, rankExamCandidate, publishExam, cacheExamEssay } = __load("src/core/keju.js");
+const { EXAM_RANKS, examGraceStart } = __load("src/core/keju-schema.js");
+const { callJSON } = __load("src/llm/client.js");
+const { examTopicMessages, examTopicReviewMessages, examPaperMessages, examEssayMessages, validateExamTopics, validateTopicReview, validateExamPapers, validateExamEssay, mockExamPapers, mockExamEssay } = __load("src/llm/keju.js");
+const { $, esc, openDialog, toast, gameText } = __load("src/ui/common.js");
+const { createDialogRequestScope } = __load("src/ui/request-scope.js");
+const origins={commoner:'寒门',gentry:'士绅',noble:'勋贵'};
+const stages={awaiting_examiner:'待任主考',topic:'待定策问',writing:'待收试卷',grading:'御前阅卷',published:'已经放榜'};
+function examPapersHTML(e, readonly=false, state=null) {
+const blind=e.blindGrading&&e.status!=='published';
+return [...e.candidates].sort((a,b)=>a.reviewerSuggestedRank-b.reviewerSuggestedRank).map(c=>{
+const number=e.candidates.indexOf(c)+1,label=blind?'第'+number+'号卷':c.name+' · '+c.hometown+' · '+origins[c.origin]+' · '+c.age+'岁'+(c.priorMentor===e.examiner?' · 主考旧门生':'');
+return '<article class="card exam-paper" data-exam-paper="'+esc(c.id)+'">'+(!blind&&state?portraitHTML(state,c,'avatar','scholar'):'')+'<h3>'+esc(label)+'</h3><p class="exam-summary">'+esc(c.essaySummary)+'</p><p class="muted">读卷官拟第'+c.reviewerSuggestedRank+'名 · '+esc(c.reviewerComment)+'</p><details data-essay="'+esc(c.id)+'"'+(c.essayFull&&e.openPaper===c.id?' open':'')+'><summary>展开读全文'+(c.essayFull?' · 已存卷':'')+'</summary><div class="prose exam-essay">'+(c.essayFull?'<p>'+esc(c.essayFull).replace(/\n+/g,'</p><p>')+'</p>':'<button type="button" data-exam-full="'+esc(c.id)+'"'+(readonly?' disabled':'')+'>补读此卷全文</button>')+'</div></details>'+ (e.status==='grading'?'<label for="rank-'+esc(c.id)+'">钦定名次 · '+esc(blind?'第'+number+'号卷':c.name)+'</label><select id="rank-'+esc(c.id)+'" data-exam-rank="'+esc(c.id)+'"'+(readonly?' disabled':'')+'>'+EXAM_RANKS.map(r=>'<option'+(e.ranking[c.id]===r?' selected':'')+'>'+r+'</option>').join('')+'</select>':'<p class="tag">'+esc(e.ranking[c.id])+'</p>')+'</article>';
+}).join('');
+}
+function kejuHTML(s,selectedId=null,readonly=false) {
+const k=s.keju,active=activeExam(s),e=k.exams.find(e=>e.id===selectedId)||active||k.exams.at(-1),disabled=readonly?' disabled':'';
+let html='<p>士林声望 <strong>'+Math.round(k.scholarReputation)+'</strong> · '+(active?'本届待办：'+stages[active.status]:'距下届常科 '+Math.max(0,k.nextRegularTurn-s.turn)+' 旬')+'</p><form id="exam-period-form" class="exam-period"><label for="exam-period">常科间隔（旬）</label><input id="exam-period" type="number" min="1" max="3600" value="'+k.interval+'"'+disabled+'><button type="submit"'+disabled+'>调整间隔</button></form><p class="muted">每年36旬。恩科可在「下旨」中加开，国库三十万两，士林声望加3；须先选主考。</p>';
+if(!e)return html+'<p>本届尚未开科。到期由礼部呈请，或下旨加开恩科。</p>';
+html+='<label for="exam-session">科场档案</label><select id="exam-session">'+[...k.exams].reverse().map(x=>'<option value="'+esc(x.id)+'"'+(x.id===e.id?' selected':'')+'>第'+x.year+'年 · '+(x.type==='enke'?'恩科':'常科')+' · '+stages[x.status]+'</option>').join('')+'</select><section class="paper exam-session"><h3>'+ (e.type==='enke'?'恩科':'常科')+' · '+stages[e.status]+'</h3>';
+if(e.status!=='published'){
+const start=examGraceStart(s,e);
+html+='<p class="muted">'+(s.regency?'摄政期间暂停迟榜扣分与催办；亲政当旬重新起算36旬宽限。':(start>e.createdTurn?'亲政后已过':'开科已过')+Math.max(0,s.turn-start)+'旬。满36旬后，每再满12旬士林声望减1，礼部只催办一次。')+'</p>';
+}
+if(['awaiting_examiner','topic'].includes(e.status))html+='<form id="examiner-form"><label for="examiner">任命主考官</label><select id="examiner"'+disabled+'><option value="">请选择在京在任大臣</option>'+examiners(s).map(o=>'<option value="'+esc(o.id)+'"'+(o.id===e.examiner?' selected':'')+'>'+esc(o.name)+' · '+esc(s.court.posts.find(p=>p.holder===o.id)?.title)+'</option>').join('')+'</select><button type="submit"'+disabled+'>任主考</button></form>';
+else html+='<p>主考：'+esc(s.court.officials.find(o=>o.id===e.examiner)?.name||'原主考')+'</p>';
+if(e.status==='topic')html+='<button type="button" data-exam-topics'+disabled+'>'+(e.topics.length?'重拟备选策问':'拟备选策问')+'</button>'+ (e.topics.length?'<form id="exam-topic-form"><label for="exam-topic">备选策问</label><select id="exam-topic"'+disabled+'>'+e.topics.map((t,i)=>'<option value="'+i+'">'+esc(t)+'</option>').join('')+'</select><button type="submit"'+disabled+'>采用此题</button></form>':'')+'<form id="exam-custom-form"><label for="exam-custom">皇帝自拟策问</label><textarea id="exam-custom" maxlength="2000" rows="3" placeholder="试陈治国之策……"'+disabled+'></textarea><p class="muted">沿用口谕自由度：成败看实力时礼部可劝改，多数能成时可通融，想做就成时原样采用。</p><button type="submit"'+disabled+'>颁下自拟题</button></form>';
+if(e.topic)html+='<p class="exam-topic">策问：'+esc(e.topic)+'</p><p class="muted">'+esc(e.topicNote||'')+'</p>';
+if(['topic','writing','grading'].includes(e.status))html+='<label class="check"><input id="exam-blind" type="checkbox"'+(e.blindGrading?' checked':'')+disabled+'>糊名阅卷</label><p class="muted">糊名后隐藏姓名、籍贯与出身；收卷前的设置也约束读卷官，揭名后可按主考同派偏私。已有评语与拟次保留。放榜时仍糊名，不判门生偏私。</p>';
+if(e.status==='writing')html+='<p>考生名册已定，等待九卷一并呈上。</p><button class="primary" data-exam-papers'+disabled+'>收取本届全部试卷</button>';
+if(['grading','published'].includes(e.status))html+='<div class="exam-paper-list">'+examPapersHTML(e,readonly,s)+'</div>';
+if(e.status==='grading')html+='<p class="muted">点选钦定名次；选中已有的一甲名次会交换两卷。状元、榜眼、探花各须一人；二甲、三甲与黜落不限人数。名次自动存卷。</p><button class="primary" data-exam-publish'+disabled+'>钦定放榜</button>';
+if(e.status==='published')html+='<p>本届已放榜。士林声望 '+(e.outcome.scholarReputation>=0?'+':'')+e.outcome.scholarReputation+'；一甲寒门'+e.outcome.commoners+'人、勋贵'+e.outcome.nobles+'人、主考旧门生'+e.outcome.clients+'人。</p><p class="muted">进士已入朝堂人才库，座师—门生关系已记入人物履历。任职后经吏部事件逐步察明才干、操守、立场、野心与派系。</p>';
+return html+'</section><p id="exam-status" role="status" aria-live="polite"></p>';
+}
+function requestExamJSON(config,messages,validate,options={}) {
+return callJSON(config,messages,{...options,maxAttempts:1,validate});
+}
+function openKeju(ctx,selectedId=null,openPaper=null) {
+const s=ctx.getState();if(!s){toast('请先登基');return;}
+openDialog('科举 · 贡院','<div id="exam-owner">'+kejuHTML(openPaper?{...s,keju:{...s.keju,exams:s.keju.exams.map(e=>({...e,openPaper}))}}:s,selectedId,ctx.readonly())+'</div>');
+$('#modal .dialog-head').insertAdjacentHTML('beforebegin',hallArtHTML('科举'));
+const owner=$('#exam-owner'),scope=createDialogRequestScope($('#modal'),owner);
+const e=s.keju.exams.find(e=>e.id===selectedId)||activeExam(s)||s.keju.exams.at(-1);
+const request=(messages,validate,signal)=>requestExamJSON(ctx.config(),messages,validate,{signal,onMetric:ctx.onMetric});
+async function run(operation) {
+let token;
+try {
+ctx.guard();token=scope.begin();ctx.setBusy(true);
+const base=ctx.getState();
+owner.querySelectorAll('button,input,select,textarea').forEach(el=>el.disabled=true);
+$('#exam-status').textContent='贡院正在呈卷……';
+const next=await operation(base,token.signal);
+if(!scope.current(token)||ctx.getState()!==base)return;
+if(next)await ctx.saveState(next);
+if(scope.current(token)){
+const expanded=owner.querySelector('details[data-essay][open]')?.dataset.essay,scroll=$('#modal').scrollTop,focus=document.activeElement?.id;
+scope.finish(token);ctx.setBusy(false);openKeju(ctx,e?.id,expanded);
+$('#modal').scrollTop=scroll;if(focus)document.getElementById(focus)?.focus({preventScroll:true});
+}
+}catch(error) {
+if(token&&scope.current(token)) {
+owner.querySelectorAll('button,input,select,textarea').forEach(el=>el.disabled=false);
+$('#exam-status').textContent=gameText(error.message)+'。已定考生和已读卷子会保留，可重试。';
+} else if(!token)toast(error.message);
+}finally{if(token){scope.finish(token);ctx.setBusy(false);ctx.render();}}
+}
+$('#exam-period-form').onsubmit=event=>{event.preventDefault();const n=Number($('#exam-period').value);run(s=>configureExams(s,n));};
+if($('#exam-session'))$('#exam-session').onchange=event=>openKeju(ctx,event.target.value);
+if($('#examiner-form'))$('#examiner-form').onsubmit=event=>{event.preventDefault();const id=$('#examiner').value;run(s=>appointExaminer(s,e.id,id));};
+if($('#exam-topic-form'))$('#exam-topic-form').onsubmit=event=>{event.preventDefault();const topic=e.topics[Number($('#exam-topic').value)];run(s=>chooseExamTopic(s,e.id,topic));};
+if($('#exam-custom-form'))$('#exam-custom-form').onsubmit=event=>{event.preventDefault();const topic=$('#exam-custom').value;run(async(s,signal)=>{
+if(!topic.trim())throw new Error('请先填写策问');
+const review=s.settings.freedom==='free'?null:s.settings.demo?{suitable:!(/长生|成仙|永生|神仙|外星|毁灭世界/.test(topic)),rewrite:fallbackTopics(s)[0],reason:'策问宜切合治国实务'}:await request(examTopicReviewMessages(s,topic),validateTopicReview,signal);
+return chooseExamTopic(s,e.id,topic,'emperor',review);
+});};
+if($('#exam-blind'))$('#exam-blind').onchange=event=>{const checked=event.target.checked;run(s=>setExamBlind(s,e.id,checked));};
+owner.querySelectorAll('[data-exam-rank]').forEach(el=>el.onchange=event=>{const rank=event.target.value;run(s=>rankExamCandidate(s,e.id,el.dataset.examRank,rank));});
+owner.onclick=event=>{
+const b=event.target.closest('button');if(!b||b.disabled)return;
+if(b.hasAttribute('data-exam-topics'))run(async(s,signal)=>setExamTopics(s,e.id,s.settings.demo?fallbackTopics(s):await request(examTopicMessages(s),validateExamTopics,signal)));
+if(b.hasAttribute('data-exam-papers'))run(async(s,signal)=>{
+const live=activeExam(s),papers=s.settings.demo?validateExamPapers({candidates:mockExamPapers(live)},live):await request(examPaperMessages(s,live),d=>validateExamPapers(d,live),signal);
+return receiveExamPapers(s,e.id,papers);
+});
+if(b.hasAttribute('data-exam-publish'))run(s=>publishExam(s,e.id));
+if(b.dataset.examFull)loadEssay(b.dataset.examFull);
+};
+function loadEssay(id) {
+run(async(s,signal)=>{
+const live=s.keju.exams.find(x=>x.id===e.id),c=live.candidates.find(c=>c.id===id);
+if(c.essayFull)return s;
+const essay=s.settings.demo?mockExamEssay(live,c):await request(examEssayMessages(live,c),d=>validateExamEssay(d,c),signal);
+return cacheExamEssay(s,e.id,id,essay);
+});
+}
+owner.addEventListener('toggle',event=>{
+const fold=event.target;if(!fold.matches('details[data-essay]')||!fold.open||ctx.readonly())return;
+const c=e.candidates.find(c=>c.id===fold.dataset.essay);
+if(!c?.essayFull)loadEssay(c.id);
+},true);
+}
+
+return {examPapersHTML,kejuHTML,requestExamJSON,openKeju};
+},
+"src/core/keju.js":function(__load){
+const { clone } = __load("src/core/state.js");
+const { roll } = __load("src/core/rng.js");
+const { uniqueName } = __load("src/core/names.js");
+const { applyPackage } = __load("src/core/effects.js");
+const { adjudicate } = __load("src/core/freedom.js");
+const { addEvent } = __load("src/core/events.js");
+const { factionPowers } = __load("src/core/politics.js");
+const { defaultKeju, examGraceStart, examGraceReceipt, ENKE_COST, EXAM_SIZE, EXAM_STANCES, EXAM_RANKS } = __load("src/core/keju-schema.js");
+function activeExam(s) { return s.keju?.exams.find(e => e.status !== 'published') || null; }
+function examiners(s) {
+return s.court.officials.filter(o => o.alive && o.health > 0 && !o.jailed && !o.retired && o.inCapital !== false && s.court.posts.some(p => p.id === o.post && p.holder === o.id));
+}
+function editable(s) {
+if (s.pending || s.ending) throw new Error('请先续完本旬；封卷后不能办理科举');
+if (s.regency) throw new Error('请待亲政后主持科举');
+}
+function findExam(s, id, statuses) {
+const e = s.keju?.exams.find(e => e.id === id);
+if (!e || !statuses.includes(e.status)) throw new Error('科场进度已变化，请重新打开');
+return e;
+}
+function revision(s) { s.revision++; return s; }
+function openExam(s, type) {
+s.keju.exams.push({ id: 'keju-' + s.runId + '-' + s.turn + '-' + s.keju.exams.length, year: Math.floor(s.turn / 36) + 1, type, createdTurn: s.turn, examiner: null, examinerFaction: null, topic: '', topicSource: 'system', blindGrading: true, candidates: [], ranking: {}, topics: [], status: 'awaiting_examiner' });
+return s;
+}
+function configureExams(state, interval) {
+editable(state);
+if (!Number.isSafeInteger(interval) || interval < 1 || interval > 3600) throw new Error('常科间隔须为1–3600旬的整数');
+const s = clone(state);
+s.keju.interval = interval;
+// A due exam remains available; a changed period starts after the current turn.
+if (s.keju.nextRegularTurn > s.turn) s.keju.nextRegularTurn = s.turn + interval;
+return revision(s);
+}
+function enkeBlock(s, examiner) {
+if (activeExam(s)) return '本届尚未放榜，请先办完本届科举';
+if (s.nation.treasury < ENKE_COST) return '恩科需国库三十万两';
+if (examiner && !examiners(s).some(o => o.id === examiner)) return '请任命一位在京在任官员为主考';
+return '';
+}
+function openEnke(state, examiner) {
+editable(state);
+const blocked = enkeBlock(state, examiner);
+if (blocked) throw new Error(blocked);
+if (!examiner) throw new Error('加开恩科须先任命主考官');
+let s = openExam(clone(state), 'enke');
+s = appointExaminer(s, activeExam(s).id, examiner);
+s = applyPackage(s, { treasury: -ENKE_COST, scholarReputation: 3 }, '加开恩科');
+s.stats.edicts++;
+return { state: s, note: '加开恩科，主考已任；请入科举殿命题' };
+}
+function appointExaminer(state, examId, officialId) {
+editable(state);
+const s = clone(state), e = findExam(s, examId, ['awaiting_examiner', 'topic']);
+const o = examiners(s).find(o => o.id === officialId);
+if (!o) throw new Error('请选择在京在任且未下狱的官员主考');
+e.examiner = o.id; e.examinerFaction = o.faction; e.status = 'topic';
+return revision(s);
+}
+function setExamTopics(state, id, topics) {
+editable(state);
+const s = clone(state), e = findExam(s, id, ['topic']);
+if (!Array.isArray(topics) || topics.length < 2 || topics.length > 3 || topics.some(t => typeof t !== 'string' || !t.trim() || t.length > 2000)) throw new Error('策问备选须为2–3道');
+e.topics = [...new Set(topics)];
+if (e.topics.length < 2) throw new Error('策问备选不能重复');
+return revision(s);
+}
+function fallbackTopics(s) {
+const worst = [...s.nation.provinces].sort((a,b) => b.disaster - a.disaster)[0];
+return [s.nation.treasury < 200 ? '国用日绌，如何量入为出而不困民？' : '国用与民生如何相济，试陈理财之策。', worst.disaster > 20 ? worst.name + '灾情未息，赈济与备荒当如何并举？' : '承平之时，如何整饬吏治而免因循？', '边备与农事相争，如何安边而不扰民？'];
+}
+function chooseExamTopic(state, id, topic, source = 'system', review = null) {
+editable(state);
+let s = clone(state), e = findExam(s, id, ['topic']);
+if (!examiners(s).some(o => o.id === e.examiner)) throw new Error('主考官已离任，请重新任命');
+if (typeof topic !== 'string' || !topic.trim() || topic.length > 2000 || !['system', 'emperor'].includes(source)) throw new Error('策问须为1–2000字');
+if (source === 'system' && !e.topics.includes(topic)) throw new Error('请选择本届备选策问');
+const unsuitable = source === 'emperor' && (review?.suitable === false || /长生|成仙|永生|神仙|外星|毁灭世界/.test(topic));
+let adopted = topic, note = '';
+if (unsuitable && s.settings.freedom !== 'free') {
+let accept = false;
+if (s.settings.freedom === 'mid') { const r = adjudicate(s, {success:false}, e.examiner); s = r.state; accept = r.verdict.success; note = r.verdict.partial ? r.verdict.cost : ''; }
+if (!accept) { adopted = typeof review?.rewrite==='string' && review.rewrite.trim() && review.rewrite.length<=2000 ? review.rewrite : fallbackTopics(s)[0]; note = '礼部劝谏：' + (review?.reason || '策问宜切合治国实务') + '；改拟为：' + adopted; }
+}
+e = s.keju.exams.find(e => e.id === id);
+e.topic = adopted; e.topicSource = source; e.requestedTopic = source === 'emperor' ? topic : null; e.topicNote = note;
+// Dossiers and independent literary skill are rolled once before any prose request.
+for (let i = 0; i < EXAM_SIZE; i++) {
+const named = uniqueName(s); s = named.state;
+const draw = (a,b) => { const r = roll(s,a,b); s = r.state; return r.value; };
+const origin = ['commoner','gentry','noble'][draw(0,2)], age = draw(18,48);
+const hometown = s.nation.provinces[draw(0,s.nation.provinces.length-1)].name;
+const hidden = {ability:draw(25,95),integrity:draw(10,95),stance:EXAM_STANCES[draw(0,2)],ambition:draw(5,95),faction:s.court.factions[draw(0,s.court.factions.length-1)].id};
+const literary = draw(25,98),current=s.keju.exams.find(e=>e.id===id);
+const priorMentor=hidden.faction===current.examinerFaction?current.examiner:null;
+s.keju.exams.find(e => e.id === id).candidates.push({id:id+'-c'+i,name:named.name,hometown,origin,age,hidden,literary,priorMentor,essaySummary:'',reviewerComment:'',reviewerSuggestedRank:i+1});
+}
+e = s.keju.exams.find(e => e.id === id); e.status = 'writing';
+return revision(s);
+}
+function receiveExamPapers(state, id, papers) {
+editable(state);
+const s = clone(state), e = findExam(s,id,['writing']);
+if (!Array.isArray(papers) || papers.length !== EXAM_SIZE || new Set(papers.map(p=>p.id)).size !== EXAM_SIZE) throw new Error('试卷未齐，原名册已保留');
+if (papers.some(p=>!e.candidates.some(c=>c.id===p.id)||typeof p.essaySummary!=='string'||!p.essaySummary.trim()||p.essaySummary.length>1500||typeof p.reviewerComment!=='string'||!p.reviewerComment.trim()||p.reviewerComment.length>1000||!Number.isInteger(p.reviewerSuggestedRank)||p.reviewerSuggestedRank<1||p.reviewerSuggestedRank>EXAM_SIZE)) throw new Error('试卷格式有误');
+if (new Set(papers.map(p=>p.reviewerSuggestedRank)).size!==EXAM_SIZE) throw new Error('拟定名次不能重复');
+for (const c of e.candidates) { const p = papers.find(p=>p.id===c.id); c.essaySummary=p.essaySummary; c.reviewerComment=p.reviewerComment; c.reviewerSuggestedRank=p.reviewerSuggestedRank; }
+const ordered = [...e.candidates].sort((a,b)=>a.reviewerSuggestedRank-b.reviewerSuggestedRank);
+e.ranking = Object.fromEntries(ordered.map((c,i)=>[c.id, i<3?EXAM_RANKS[i]:i<5?'二甲':i<7?'三甲':'黜落']));
+e.status = 'grading';
+return revision(s);
+}
+function setExamBlind(state,id,blind) {
+editable(state);
+const s=clone(state),e=findExam(s,id,['topic','writing','grading']);
+e.blindGrading=!!blind;
+return revision(s);
+}
+function rankExamCandidate(state,id,candidateId,rank) {
+editable(state);
+const s=clone(state),e=findExam(s,id,['grading']);
+if(!e.candidates.some(c=>c.id===candidateId)||!EXAM_RANKS.includes(rank))throw new Error('请选择有效卷子与名次');
+const previous=e.ranking[candidateId];
+if(EXAM_RANKS.slice(0,3).includes(rank)) { const other=Object.keys(e.ranking).find(id=>e.ranking[id]===rank); if(other)e.ranking[other]=previous; }
+// Moving a top-three paper to a lower class leaves an explicit vacancy until another is selected.
+e.ranking[candidateId]=rank;
+return revision(s);
+}
+function cacheExamEssay(state,id,candidateId,essay) {
+editable(state);
+const s=clone(state),e=findExam(s,id,['grading','published']),c=e.candidates.find(c=>c.id===candidateId);
+if(!c)throw new Error('试卷不存在');
+if(c.essayFull)return s;
+if(typeof essay!=='string'||essay.trim().length<80||essay.length>12000)throw new Error('全文未完整送达，请重试');
+c.essayFull=essay;
+return revision(s);
+}
+function queueExamHook(state,examId,type,due=state.turn+1) {
+if(!['exam_fraud','failed_candidates_unrest'].includes(type)||!Number.isSafeInteger(due)||due<state.turn||!state.keju.exams.some(e=>e.id===examId&&e.status==='published'))throw new Error('科举事件参数无效');
+const s=clone(state);
+if(!s.keju.hooks.some(h=>h.examId===examId&&h.type===type))s.keju.hooks.push({examId,type,due,handled:false});
+return s;
+}
+function publishExam(state,id) {
+editable(state);
+const original=state.keju.exams.find(e=>e.id===id);
+if(original?.status==='published')return clone(state);
+let s=clone(state),e=findExam(s,id,['grading']);
+if(Object.keys(e.ranking).length!==EXAM_SIZE||Object.values(e.ranking).some(r=>!EXAM_RANKS.includes(r))||EXAM_RANKS.slice(0,3).some(r=>Object.values(e.ranking).filter(v=>v===r).length!==1))throw new Error('请为每卷定名次，一甲须各有一人');
+const top=e.candidates.filter(c=>EXAM_RANKS.slice(0,3).includes(e.ranking[c.id]));
+const commoners=top.filter(c=>c.origin==='commoner').length,nobles=top.filter(c=>c.origin==='noble').length;
+const clients=top.filter(c=>c.priorMentor===e.examiner).length;
+const bias=!e.blindGrading&&clients>=2;
+const rep=commoners*2-nobles-(bias?5:0);
+const influence={};
+for(const c of e.candidates.filter(c=>e.ranking[c.id]!=='黜落')) {
+const rank=e.ranking[c.id],h=c.hidden,oid='jinshi-'+c.id;
+influence[h.faction]=(influence[h.faction]||0)+(EXAM_RANKS.slice(0,3).includes(rank)?2:1);
+const title=rank==='状元'?'翰林院修撰':['榜眼','探花'].includes(rank)?'翰林院编修':null;
+const pid=title?'post-'+oid:null;
+if(title)s.court.posts.push({id:pid,title,rank:7,office:'翰林',tags:['政务'],provinceId:null,holder:oid});
+s.court.officials.push({id:oid,name:c.name,gender:'男',age:c.age,post:pid,faction:h.faction,abilities:{政:h.ability,军:Math.round(h.ability/2),才:c.literary,德:h.integrity,忠:Math.max(5,100-h.ambition),权谋:h.ambition},ambition:h.ambition,greed:100-h.integrity,favor:50,health:90,alive:true,inCapital:true,secret:'吏部已按任职实绩察明其操守。',secretKnown:false,memory:[],life:[{turn:s.turn,event:rank+'及第'+(title?'，授'+title:'，入人才库候补')}],banquetTurn:-1000000,relations:{[e.examiner]:60},keju:{examId:id,candidateId:c.id,mentor:e.examiner,origin:c.origin,hometown:c.hometown,rank,revealed:[],lastRevealTurn:s.turn}});
+const mentorIndex=s.court.officials.findIndex(o=>o.id===e.examiner),oldMentor=s.court.officials[mentorIndex];
+s.court.officials[mentorIndex]={...oldMentor,relations:{...oldMentor.relations,[oid]:60},examStudents:[...(oldMentor.examStudents||[]),oid]};
+}
+influence[e.examinerFaction]=(influence[e.examinerFaction]||0)+(bias?6:2);
+e.status='published';e.publishedTurn=s.turn;e.outcome={scholarReputation:rep,commoners,nobles,clients,biased:bias};
+s=applyPackage(s,{scholarReputation:rep,faction:influence},'科举放榜');
+s.court.factions=factionPowers(s);
+// The hook contract supports both cases; only the protest example is dispatched automatically.
+if(bias)s=queueExamHook(s,id,'failed_candidates_unrest');
+return revision(s);
+}
+function advanceExams(state) {
+let s=clone(state);s.keju??=defaultKeju(s.turn);
+if(!activeExam(s)&&s.turn>=s.keju.nextRegularTurn) {
+s=openExam(s,'regular');
+s.keju.nextRegularTurn=s.turn+s.keju.interval;
+}
+const exam=activeExam(s),start=exam?examGraceStart(s,exam):s.turn,age=s.turn-start;
+if(exam&&!s.regency&&start>exam.createdTurn){const receipt=examGraceReceipt(exam,start);if(!s.receipts.includes(receipt))s.receipts.push(receipt);}
+// Reuse existing receipts: no save shape change or replay of past periods.
+// Thirty-six turns are grace; the first complete overdue period ends at 48.
+if(exam&&!s.regency&&age>=48&&age%12===0) {
+const receipt='keju-delay:'+exam.id+':'+(start===exam.createdTurn?age:'grace:'+start+':'+age);
+if(!s.receipts.includes(receipt)) {
+s.receipts.push(receipt);
+s=applyPackage(s,{scholarReputation:-1},'科举迟未放榜：每十二旬士林声望下降');
+const reminder='keju-reminder:'+exam.id;
+if(!s.receipts.includes(reminder)) {
+s.receipts.push(reminder);
+s=addEvent(s,'科举催办','礼部催请钦定科举榜次','本届科举宽限已过，榜次久悬，士林议论渐起。礼部请尽早命题阅卷、钦定放榜。',[
+{label:'阅知，着即办理',effects:{}},
+],exam.examiner?[exam.examiner]:[]);
+s.memorials.at(-1).text='臣礼部谨奏：本届'+(exam.type==='enke'?'恩科':'常科')+(start>exam.createdTurn?'亲政后已过':'开科迄今已')+age+'旬，尚未放榜。士子久候京师，旅食日艰，士林亦有疑议。伏请陛下督促科场，尽早完成任主考、命题阅卷与钦定榜次，使取士之典有始有终。谨候圣裁。';
+}
+}
+}
+// Actual service, once per year per person, reveals one quality through an event.
+for(const original of s.court.officials.filter(o=>o.keju&&o.alive&&o.health>0&&!o.retired&&!o.jailed&&o.post&&s.court.posts.some(p=>p.id===o.post&&p.holder===o.id)&&s.turn-o.keju.lastRevealTurn>=36)) {
+const o=s.court.officials.find(o=>o.id===original.id),key=['ability','integrity','stance','ambition','faction'].find(k=>!o.keju.revealed.includes(k));
+if(!key)continue;
+o.keju.revealed.push(key);o.keju.lastRevealTurn=s.turn;
+const labels={ability:'才干',integrity:'操守',stance:'立场',ambition:'野心',faction:'派系'};
+o.life.push({turn:s.turn,event:'履职考察：'+labels[key]+'渐为人知'});
+if(key==='integrity')o.secretKnown=true;
+s=addEvent(s,'进士履职',o.name+'履职考察','吏部按任职实绩呈报，其'+labels[key]+'已可在人物名录查阅。',[{label:'阅知，继续察看',effects:{}}],[o.id]);
+}
+const due=s.keju.hooks.filter(h=>!h.handled&&h.due<=s.turn);
+for(const h of due) {
+s.keju.hooks.find(x=>x.examId===h.examId&&x.type===h.type).handled=true;
+if(h.type==='failed_candidates_unrest')s=addEvent(s,'落第举子闹事','落第举子聚集贡院','一甲多出主考旧门生，落第举子质疑取士有私，请求复核。',[{label:'命礼部复核，安抚举子',effects:{treasury:-5,scholarReputation:2}},{label:'维持原榜，令其散去',effects:{scholarReputation:-3}}]);
+// exam_fraud is deliberately reserved for the next event pack.
+}
+return s;
+}
+function examOfficialView(s,o) {
+if(!o.keju)return {abilities:o.abilities,faction:s.court.factions.find(f=>f.id===o.faction)?.name,ambition:o.ambition,stance:null};
+const known=new Set(o.keju.revealed),e=s.keju.exams.find(e=>e.id===o.keju.examId),c=e?.candidates.find(c=>c.id===o.keju.candidateId);
+return {abilities:Object.fromEntries(Object.entries(o.abilities).map(([k,v])=>[k,(k==='政'?known.has('ability'):k==='德'?known.has('integrity'):k==='权谋'||k==='忠'?known.has('ambition'):false)?v:'待察'])),faction:known.has('faction')?s.court.factions.find(f=>f.id===o.faction)?.name:'待察',ambition:known.has('ambition')?o.ambition:'待察',stance:known.has('stance')?c?.hidden.stance:'待察'};
+}
+
+return {activeExam,examiners,configureExams,enkeBlock,openEnke,appointExaminer,setExamTopics,fallbackTopics,chooseExamTopic,receiveExamPapers,setExamBlind,rankExamCandidate,cacheExamEssay,queueExamHook,publishExam,advanceExams,examOfficialView};
 },
 "src/core/freedom.js":function(__load){
 const { roll } = __load("src/core/rng.js");
@@ -8854,307 +10613,6 @@ function biographyMessages(state, record) {
 
 return {STYLES,LENGTHS,POVS,settlementDigest,worldRules,roster,FACT_WINDOW,systemPrompt,referencedPeople,dynastyBible,factWindow,historyBlock,situationBlock,turnMessages,memorialMessages,worldMessages,talkMessages,classifyMessages,biographyMessages};
 },
-"src/core/scenarios.js":function(__load){
-// 历史剧本：只提供开局的人物、官制显示名与局势，一切数值变化仍由引擎结算。
-// 史实只决定开局；之后的生死成败按引擎推进，不按史实预演。
-const { clone } = __load("src/core/state.js");
-const { clamp } = __load("src/core/effects.js");
-const { factionPowers } = __load("src/core/politics.js");
-// 官职显示名：引擎内部仍按原职名（内阁首辅、户部尚书……）匹配规则，只换给人看的名字。
-// 下标与 POST_NAMES 0–28 对应；省级职官另由 governor 拼接。
-const POSTS = {
-han: "丞相 大农令 太尉 丞相司直 奉常 廷尉 将作少府 御史大夫 郎中令 中尉 中书谒者令 侍中 尚书令 大农丞 太尉长史 丞相长史 博士祭酒 廷尉正 少府 博士 太子太傅 廷尉监 太常丞 谒者 宗正 北地将军 陇西将军 南境校尉 东境将军",
-tang: "尚书左仆射 户部尚书 兵部尚书 吏部尚书 礼部尚书 刑部尚书 工部尚书 御史大夫 内侍监 左右卫大将军 中书令 侍中 尚书右仆射 户部侍郎 兵部侍郎 吏部侍郎 礼部侍郎 刑部侍郎 工部侍郎 弘文馆学士 太子太傅 大理寺卿 太常寺卿 谏议大夫 宗正卿 朔方道行军总管 凉州都督 岭南道总管 营州都督",
-song: "同中书门下平章事 三司使 枢密使 吏部尚书 礼部尚书 刑部尚书 工部尚书 御史中丞 入内内侍省都知 殿前都指挥使 参知政事 枢密副使 尚书左丞 盐铁副使 同知枢密院事 吏部侍郎 礼部侍郎 刑部侍郎 工部侍郎 翰林学士 太子太傅 大理寺卿 太常博士 知谏院 大宗正 河北路安抚使 陕西路经略安抚使 广南路安抚使 河东路安抚使",
-ming: "内阁首辅 户部尚书 兵部尚书 吏部尚书 礼部尚书 刑部尚书 工部尚书 左都御史 司礼监掌印 京营戎政 内阁次辅 内阁大学士 詹事府詹事 户部侍郎 兵部侍郎 吏部侍郎 礼部侍郎 刑部侍郎 总理河道 翰林学士 太子太傅 大理寺卿 太常寺卿 通政使 宗人令 宣大总兵 甘肃总兵 两广总兵 蓟辽总兵",
-qing: "首席大学士 户部尚书 兵部尚书 吏部尚书 礼部尚书 刑部尚书 工部尚书 左都御史 内务府总管 领侍卫内大臣 议政大臣 大学士 协办大学士 户部侍郎 兵部侍郎 吏部侍郎 礼部侍郎 刑部侍郎 工部侍郎 翰林院掌院学士 太子太傅 大理寺卿 钦天监监正 通政使 宗人府宗令 北路将军 西路将军 南路将军 东路将军",
-};
-// 官员：姓名｜职位下标｜派系下标｜年龄｜性格｜秘密｜能力（政军才德忠谋）｜野心
-// 后宫：姓名｜位分｜家世｜年龄｜派系下标｜宠眷｜秘密
-// 皇嗣：姓名｜性别｜年龄｜母（后宫下标，可空）｜资质
-// 外邦：国名｜君主｜关系｜态度｜边境｜诉求
-const SCENARIOS = [
-{
-id: "han-wudi", power: "0 0 15 0 0 0", title: "汉武帝 · 建元新政", difficulty: "常制", dynasty: "汉", era: "建元", year: "前140年",
-emperor: ["刘彻", 16, "70 72 80 85 82", "多疑"], posts: "han", governor: "刺史",
-provinces: "司隶 豫州 扬州 荆州 青州 并州 凉州 益州 会稽 长沙 冀州 幽州",
-factions: "儒生:纳谏清议 军功列侯:军功封赏 外戚:家族恩荫 近侍郎官:亲近信任 郡国守相:钱粮自主 诸侯王:宗藩安稳",
-nation: { treasury: 620, morale: 66, governance: 58, prestige: 48 }, threat: [55, 30, 25, 25],
-dowager: "窦太皇太后",
-blurb: "少年天子初立，欲兴儒术、立明堂；太皇太后崇黄老，东宫一句话便能让新政夭折。北边匈奴岁岁索要和亲。",
-officials: [
-"窦婴|0|2|50|好儒术，任侠自喜|与太皇太后同族，却力推儒术，夹在两宫之间。|70 60 70 70 75 55|55",
-"田蚡|2|2|40|善辩，贪财好名|暗中收受诸侯馈赠，与淮南王有书信往来。|55 35 70 30 45 75|85",
-"赵绾|7|0|45|儒生，锐意更化|上书请勿奏事东宫，已触怒太皇太后。|65 30 75 75 80 40|50",
-"王臧|8|0|50|鲁诗名家，帝之旧师|与赵绾共议立明堂，东宫耳目已在查访。|60 25 80 75 80 40|45",
-"董仲舒|19|0|39|治公羊春秋，三年不窥园|私撰灾异之书，言辞多有讥刺。|70 20 90 85 80 40|35",
-"汲黯|23|0|40|好直谏，不拘礼|素轻田蚡，曾当众斥之。|70 30 65 85 85 35|30",
-"韩安国|1|1|45|多大略，善为人谋|旧为梁王属吏，曾以重金求官。|75 65 70 55 65 70|60",
-"李广|25|1|44|善射，爱士卒，不善治军簿|屡战而功不得封侯，心有不平。|35 85 50 70 80 30|60",
-"程不识|26|1|45|治军严整，号令分明|与李广治军之道相左，常受同僚讥其苛细。|50 80 50 70 80 40|40",
-"庄助|11|3|30|辩博，帝之近臣|与淮南王门客有旧交。|60 40 80 55 70 60|55",
-],
-consorts: ["陈阿娇|皇后|馆陶长公主之女|18|2|55|多年无子，心事渐重。", "卫子夫|嫔|平阳公主府讴者|17|3|60|其弟卫青在平阳侯家为骑奴。"],
-foreign: ["匈奴|军臣单于|冷淡|30|北|和亲岁币", "乌孙|猎骄靡|通好|45|西|远交共击匈奴", "南越|赵佗|通好|50|南|自治如故", "闽越|驺郢|冷淡|35|东|吞并东瓯", "东瓯|驺望|通好|55|东|求内附避闽越"],
-facts: ["太皇太后|好恶|崇黄老，不喜儒生", "明堂|议立|赵绾、王臧议立明堂，事在未定"],
-},
-{
-id: "tang-taizong", power: "0 0 0 10 0 0", title: "唐太宗 · 渭水之盟", difficulty: "常制", dynasty: "唐", era: "贞观", year: "626年",
-emperor: ["李世民", 28, "82 85 92 72 85", "勤政"], posts: "tang", governor: "刺史",
-provinces: "京畿 河南道 江南道 山南道 河北道 河东道 关内道 剑南道 淮南道 岭南道 陇右道 幽州",
-factions: "谏官清议:纳谏清议 秦府将帅:军功封赏 长孙外戚:家族恩荫 秦府谋臣:亲近信任 关陇勋旧:钱粮自主 宗室诸王:宗藩安稳",
-nation: { treasury: 280, morale: 55, governance: 56, prestige: 55, virtue: 50 }, threat: [92, 50, 20, 30],
-dowager: "",
-blurb: "玄武门之变方过两月，东宫旧臣惶惶不安；突厥颉利可汗率十余万骑直抵渭水便桥之北，长安震动。",
-officials: [
-"房玄龄|10|3|47|善谋，处事周密|玄武门前夜曾力劝先发制人。|90 40 80 75 90 80|40",
-"杜如晦|2|3|41|临机善断|体弱多病，自知天年不永。|85 55 80 75 90 75|35",
-"长孙无忌|3|2|32|通悟，有筹略|玄武门之变首谋之一，深知许多不可言之事。|75 50 75 60 85 85|65",
-"魏征|23|0|46|犯颜直谏|曾劝隐太子早除秦王。|80 30 85 90 70 55|30",
-"王珪|11|0|56|恬淡守正|原为东宫属官，曾因杨文干事流放。|75 25 75 85 75 40|30",
-"萧瑀|0|4|52|刚直，好佛|与房玄龄、杜如晦素来不睦。|70 30 70 75 70 50|50",
-"封德彝|12|4|58|阴持两端|曾私下替隐太子说话，事未泄露。|75 30 75 30 40 80|60",
-"高士廉|4|2|51|涉猎文史，持重|长孙皇后之舅，与外戚往来最密。|70 30 75 70 80 50|40",
-"戴胄|21|0|53|明于法令，敢于执法|常为断狱与上意相争。|80 25 70 80 80 40|30",
-"尉迟敬德|9|1|41|勇猛，性直好讼功|玄武门之日亲手斩杀齐王元吉。|30 90 40 60 85 40|60",
-"李靖|25|1|55|沉毅有谋|曾在隋末欲告发高祖起兵。|60 95 75 75 80 70|35",
-"李勣|28|1|32|善用兵，处事谨慎|玄武门之变时袖手不言，两不相助。|60 88 65 65 75 75|50",
-"李孝恭|24|5|35|宽恕退让|宗室中战功最著，难免招人猜忌。|55 80 55 60 80 45|45",
-],
-consorts: ["长孙氏|皇后|河南长孙氏|25|2|85|体有气疾，常隐忍不言。", "杨氏|妃|隋炀帝之女|26|5|65|前朝公主身份使她处处谨慎。", "韦珪|妃|京兆韦氏|29|4|55|曾嫁李珉，再入秦府。"],
-children: ["李承乾|男|8|0|60", "李泰|男|7|0|75", "李恪|男|7|1|70"], heir: 0,
-foreign: ["东突厥|颉利可汗|冷淡|15|北|岁币与劫掠", "吐谷浑|伏允|冷淡|35|西|互市与边地", "高句丽|高建武|通好|45|东|保辽东旧界", "百济|扶余璋|通好|50|东|求援以抗新罗", "薛延陀|夷男|通好|50|北|脱离突厥"],
-facts: ["颉利可汗|兵临|突厥大军已至渭水便桥北", "太上皇李渊|居处|退居太安宫，不复问政"],
-},
-{
-id: "song-renzong", power: "0 0 25 0 0 0", title: "宋仁宗 · 太后垂帘", difficulty: "宽和", dynasty: "宋", era: "天圣", year: "1022年",
-emperor: ["赵祯", 12, "60 50 40 70 75", "仁厚"], aptitude: 75, posts: "song", governor: "转运使",
-provinces: "开封府 京西路 两浙路 荆湖路 京东路 河东路 陕西路 川峡路 福建路 广南路 江南路 河北路",
-factions: "台谏清议:纳谏清议 将门勋旧:军功封赏 刘氏外戚:家族恩荫 内侍近臣:亲近信任 三司计臣:钱粮自主 宗室:宗藩安稳",
-nation: { treasury: 900, morale: 66, governance: 60, prestige: 50 }, threat: [35, 40, 20, 25],
-dowager: "刘太后", regent: "dowager", wedding: ["郭氏", "曹氏", "张氏"],
-blurb: "真宗新丧，十二岁的天子即位，刘太后垂帘听政。权相丁谓与内侍雷允恭擅移先帝陵穴，王曾正等一个开口的机会。",
-officials: [
-"丁谓|0|2|56|机敏多智，善揣上意|与内侍雷允恭擅移先帝陵穴，事将败露。|80 30 85 20 30 90|90",
-"王曾|10|0|44|端厚持重|已暗中搜集丁谓擅移皇陵的证据。|85 30 80 85 85 70|40",
-"吕夷简|12|4|43|深沉有城府|知道陛下生母实为李宸妃，此事宫中无人敢言。|85 30 75 60 70 85|60",
-"晏殊|19|0|31|文章典丽，少年神童|曾在东宫侍读，深知天子性情。|70 20 90 75 80 50|35",
-"鲁宗道|7|0|56|刚正，人称鱼头参政|屡与太后亲族争执，已结怨刘氏。|75 20 70 90 85 40|25",
-"曹利用|2|1|50|恃功骄横|家人仗势横行乡里。|60 70 55 40 60 65|75",
-"钱惟演|14|2|45|附势善文|以妹嫁太后之兄刘美，结为姻亲。|60 30 85 40 50 70|70",
-"张士逊|3|0|58|和易宽厚|曾为天子东宫旧臣。|65 25 65 70 75 45|40",
-"雷允恭|8|3|40|骄纵专擅|擅移山陵，罪证已在王曾手中。|30 10 30 15 40 60|80",
-"范仲淹|22|0|33|先忧后乐，慷慨敢言|幼年随母改嫁，长大后方知身世。|80 60 80 90 85 45|35",
-],
-foreign: ["辽|耶律隆绪|通好|60|北|岁币如约", "西夏|李德明|通好|50|西|互市与封爵", "唃厮啰|唃厮啰|通好|60|西|联宋抗夏", "交趾|李公蕴|通好|55|南|册封", "高丽|王询|通好|60|东|通使求书"],
-facts: ["李宸妃|身世|宫中讳言天子生母，众人皆以太后为母", "真宗|山陵|陵穴移位一事尚未查明"],
-},
-{
-id: "ming-wanli", power: "0 0 0 10 25 0", title: "明神宗 · 江陵柄国", difficulty: "常制", dynasty: "明", era: "万历", year: "1572年",
-emperor: ["朱翊钧", 9, "55 55 35 65 55", "节俭"], aptitude: 72, posts: "ming", governor: "巡抚",
-provinces: "北直隶 河南 南直隶 湖广 山东 山西 陕西 四川 福建 广东 云南 辽东",
-factions: "清流言官:纳谏清议 勋贵边将:军功封赏 外戚李氏:家族恩荫 司礼监:亲近信任 考成实务:钱粮自主 宗藩:宗藩安稳",
-nation: { treasury: 380, morale: 58, governance: 52, prestige: 50 }, threat: [30, 20, 25, 45],
-dowager: "李太后", regent: "张居正", wedding: ["王喜姐", "王氏", "郑氏"],
-blurb: "隆庆帝崩，十岁太子即位。张居正联手冯保逐走高拱，独掌内阁；李太后严于管教，考成、清丈、一条鞭，都在等一道旨意。",
-officials: [
-"张居正|0|4|47|刚毅果决，综核名实|与冯保内外相结，逐高拱出京。|95 60 85 60 75 90|85",
-"冯保|8|3|40|知书善琴，贪而有才|矫遗诏与内阁同受顾命，自加顾命之名。|60 20 70 30 60 80|80",
-"吕调阳|10|0|56|谨厚，凡事唯首辅是听|私下以为考成法太急。|70 20 75 75 75 40|30",
-"张四维|15|0|46|工于心计|家族世代经营盐业，与晋商往来密切。|75 25 75 50 60 80|75",
-"申时行|19|0|37|温和圆融|状元出身，与言官、阁臣皆不愿结怨。|80 25 85 70 70 70|55",
-"王锡爵|16|0|38|刚直有守|曾在高拱、张居正之间两不依附。|75 25 80 80 75 60|50",
-"王国光|1|4|60|精于理财|正着手编订《万历会计录》。|85 25 75 70 75 55|40",
-"杨博|3|1|70|老成知兵|年事已高，屡请致仕。|80 75 70 75 80 60|20",
-"谭纶|2|1|52|知兵，能任事|与戚继光同在东南抗倭，交情深厚。|70 85 70 70 80 55|40",
-"潘季驯|18|4|51|精于治河，主束水攻沙|屡被言官弹劾治河耗费。|80 30 80 75 75 45|35",
-"戚继光|28|1|44|治军严明|以重礼结交张居正，求在蓟镇专权练兵。|50 95 70 70 85 55|50",
-"李成梁|25|1|46|骁勇，善养家丁|冒功邀赏、纵容家丁之事不在少数。|50 88 50 40 65 70|70",
-],
-foreign: ["蒙古|俺答汗|朝贡|60|北|互市与封贡", "建州女真|王杲|冷淡|30|东|抚赏与马市", "朝鲜|李昖|朝贡|70|东|册封与书籍", "安南|莫茂洽|朝贡|50|南|册封", "日本|织田信长|冷淡|35|东|勘合贸易"],
-facts: ["高拱|去职|被逐出京，回籍闲住", "张居正|新政|拟行考成法，以六科稽查六部"],
-},
-{
-id: "ming-chongzhen", power: "-10 0 0 10 0 0", title: "明思宗 · 天启七年", difficulty: "艰危", dynasty: "明", era: "崇祯", year: "1627年",
-emperor: ["朱由检", 17, "65 60 45 65 50", "多疑"], posts: "ming", governor: "巡抚",
-provinces: "北直隶 河南 南直隶 湖广 山东 山西 陕西 四川 福建 广东 云南 辽东",
-factions: "东林清流:纳谏清议 勋戚边将:军功封赏 外戚:家族恩荫 阉党:亲近信任 督抚:钱粮自主 宗藩:宗藩安稳",
-nation: { treasury: 120, morale: 36, governance: 30, prestige: 42, grain: 140 }, threat: [60, 45, 20, 85],
-dowager: "懿安皇后",
-blurb: "天启帝崩，信王入继大统。魏忠贤的生祠遍布天下，阉党把持内外；陕西大旱，辽东后金虎视，国库几乎见底。",
-officials: [
-"魏忠贤|8|3|59|目不识丁而权倾朝野|生祠遍天下，各地督抚多有馈遗。|40 30 30 10 20 85|95",
-"崔呈秀|2|3|50|依附魏珰，人称五虎之首|贪墨军饷，账目可查。|50 40 55 15 25 75|85",
-"黄立极|0|3|62|庸懦依违|曾为魏忠贤生祠撰写颂词。|55 20 60 30 40 55|45",
-"温体仁|16|4|54|外示温谨，内实阴狠|欲借攻讦东林以邀圣眷。|75 20 75 35 50 90|85",
-"周延儒|15|0|34|机敏善揣|状元出身，与东林若即若离。|70 25 85 45 50 80|80",
-"毕自严|1|4|58|精于钱谷|深知太仓银库已入不敷出。|85 30 75 75 80 50|35",
-"王永光|3|3|66|圆滑持禄|曾附阉党，如今正四处撇清。|60 20 60 40 45 65|50",
-"袁崇焕|28|4|43|慷慨负胆略|曾私遣使与后金议和。|65 85 75 60 70 60|70",
-"洪承畴|26|4|34|沉毅多谋|在陕西督粮，眼见饥民渐成流寇。|75 85 75 55 60 75|60",
-"卢象升|25|1|27|文武兼资，忠勇|治大名府，练兵颇有成效。|70 85 70 85 95 50|40",
-],
-consorts: ["周氏|皇后|苏州周氏|16|0|80|出身寒微，家中曾以卖卜为生。", "田氏|妃|扬州田氏|18|2|70|多才艺，其父田弘遇骄横。", "袁氏|嫔|宛平袁氏|17|1|55|性情温顺，少与人争。"],
-foreign: ["察哈尔|林丹汗|冷淡|30|北|抚赏", "后金|皇太极|冷淡|5|东|入关劫掠", "朝鲜|李倧|朝贡|55|东|乞援抗金", "日本|德川家光|冷淡|30|东|闭关自守"],
-facts: ["陕西|灾情|连年大旱，饥民聚众", "魏忠贤|权势|东厂与锦衣卫皆在其手"],
-},
-{
-id: "qing-kangxi", power: "0 30 0 0 0 0", title: "清圣祖 · 四辅臣", difficulty: "常制", dynasty: "清", era: "康熙", year: "1661年",
-emperor: ["玄烨", 7, "50 50 50 60 55", "勤政"], aptitude: 88, surname: "爱新觉罗", children: [], posts: "qing", governor: "巡抚",
-provinces: "直隶 河南 江南 湖广 山东 山西 陕西 四川 福建 广东 云南 奉天",
-childNaming: { 男: "胤", 女: "和" },
-factions: "汉臣清议:纳谏清议 两黄旗勋旧:军功封赏 赫舍里外戚:家族恩荫 正白旗旧部:亲近信任 督抚:钱粮自主 宗室王公:宗藩安稳",
-nation: { treasury: 500, morale: 52, governance: 50, prestige: 45 }, threat: [35, 30, 40, 55],
-dowager: "孝庄太皇太后", regent: "索尼", wedding: ["赫舍里氏", "钮祜禄氏", "纳喇氏"],
-blurb: "顺治帝崩于天花，八岁的玄烨即位。索尼、苏克萨哈、遏必隆、鳌拜四人辅政，鳌拜日渐跋扈；南方三藩坐大，台湾郑氏尚在。",
-officials: [
-"索尼|0|2|61|老成，持重|年老多病，暗中为孙女谋后位。|80 50 70 70 80 80|50",
-"苏克萨哈|10|3|50|刚愎，与鳌拜积怨|曾首告多尔衮，两黄旗视之为仇。|65 70 55 55 70 60|60",
-"遏必隆|11|1|50|依违两可|女儿正待选入宫。|55 60 50 55 60 50|40",
-"鳌拜|9|1|51|骁勇善战，专横跋扈|已在暗中撤换两白旗圈地的官员。|60 90 50 35 35 75|95",
-"索额图|15|2|25|骄纵，好揽权|索尼之子，自视为天子外家。|65 40 65 40 70 75|75",
-"明珠|8|3|26|通敏，善揣上意|结交满汉士人，门下已有不少人。|75 40 75 45 65 85|80",
-"熊赐履|19|0|26|理学名儒|对辅臣专断多有腹诽。|75 20 85 85 85 40|35",
-"魏裔介|7|0|45|敢言，持论平正|屡上疏请减圈地之害。|75 20 75 80 80 45|35",
-"汤若望|22|0|69|精于历算|杨光先已在罗织历法之狱。|70 10 90 75 75 30|10",
-"杰书|24|5|16|宽厚，少年袭爵|康亲王府与诸王旧怨未解。|50 60 50 65 75 45|40",
-],
-foreign: ["沙俄|阿列克谢|冷淡|30|北|侵占黑龙江", "准噶尔|僧格|通好|45|西|贸易与西藏", "平西藩|吴三桂|通好|50|南|钱粮自主", "台湾郑氏|郑成功|冷淡|10|东|奉明正朔", "朝鲜|李棩|朝贡|60|东|册封"],
-facts: ["四辅臣|共政|先帝遗诏四大臣辅政", "圈地|旧事|两黄旗与两白旗为圈地积怨"],
-},
-{
-id: "qing-yongzheng", power: "0 0 10 0 0 15", title: "清世宗 · 九子夺嫡之后", difficulty: "常制", dynasty: "清", era: "雍正", year: "1722年",
-emperor: ["胤禛", 44, "88 85 55 70 50", "勤政"], surname: "爱新觉罗", posts: "qing", governor: "巡抚",
-provinces: "直隶 河南 江南 湖广 山东 山西 陕西 四川 福建 广东 云南 奉天",
-childNaming: { 男: "弘", 女: "和" },
-factions: "汉臣清流:纳谏清议 西北军功:军功封赏 佟佳外戚:家族恩荫 藩邸旧人:亲近信任 督抚:钱粮自主 八爷党:宗藩安稳",
-nation: { treasury: 800, morale: 55, governance: 38, prestige: 50 }, threat: [30, 70, 25, 20],
-dowager: "仁寿皇太后",
-blurb: "康熙帝崩于畅春园，四阿哥继位。八爷党党羽遍布六部，十四阿哥手握西北大军；国库虽有八百万两，亏空与积欠却查不胜查。",
-officials: [
-"允禩|0|5|41|宽仁得士心|党羽遍布六部，暗中仍有人称其八贤王。|80 50 80 60 40 85|90",
-"允祥|10|3|36|忠勤明练|曾被先帝圈禁多年，旧伤未愈。|85 70 75 80 95 60|20",
-"马齐|11|0|70|老成谨慎|先帝时曾因附议允禩被斥。|70 30 70 65 70 55|30",
-"隆科多|9|2|55|居功自傲|传位诏书一事，只有他最清楚。|65 60 55 40 55 80|85",
-"张廷玉|4|0|50|谨慎周密，过目不忘|从不留片纸私稿。|90 20 90 80 85 70|40",
-"年羹尧|26|1|43|才气凌厉，恃功而骄|与九阿哥门人有旧交。|70 92 75 40 60 75|85",
-"鄂尔泰|15|3|42|有识断，敢任事|久在内务府，四十余仍是员外郎。|85 70 75 70 85 60|50",
-"田文镜|13|3|60|苛察，勇于任事|监生出身，被科甲同僚视为异类。|85 30 55 65 85 50|50",
-"李卫|23|3|35|不学而有吏才|捐纳出身，常遭言官讥讽。|80 45 45 65 90 60|55",
-"允禟|24|5|39|富而好结纳|暗中经营商号，与西洋传教士往来。|55 30 70 40 30 80|75",
-"允禵|25|5|34|大将军王，素有人望|以为大位本该属于自己。|60 85 70 55 30 70|90",
-"岳钟琪|27|1|36|善用兵，持重|岳飞之后，在川陕军中声望日隆。|60 88 65 70 80 55|40",
-],
-consorts: ["乌拉那拉氏|皇后|乌拉那拉氏|41|0|60|嫡子早殇，膝下无子。", "年氏|妃|年羹尧之妹|25|1|85|兄长权势日重，她夜里常难安睡。", "钮祜禄氏|嫔|钮祜禄氏|30|3|55|处事极为低调，一心教子。", "李氏|嫔|知府李文烨之女|45|4|40|长子早年夭折，所余之子性情孤僻。"],
-children: ["弘时|男|18|3|50", "弘历|男|11|2|85", "福惠|男|1|1|60"],
-foreign: ["沙俄|彼得一世|冷淡|35|北|划界与通商", "准噶尔|策妄阿拉布坦|冷淡|20|西|西藏与哈密", "青海和硕特|罗卜藏丹津|通好|40|西|总管青海", "安南|黎维祹|朝贡|55|南|册封", "朝鲜|李昀|朝贡|60|东|册封"],
-facts: ["康熙|传位|遗诏传位四阿哥，朝野多有私议", "户部|亏空|各省钱粮亏空积年未清"],
-},
-];
-function scenarioById(id) {
-return SCENARIOS.find((x) => x.id === id) || null;
-}
-// 开局局势预览（开局界面使用）。
-function scenarioPreview(sc) {
-return {
-id: sc.id, title: sc.title, difficulty: sc.difficulty, year: sc.year, blurb: sc.blurb,
-emperor: sc.emperor[0], age: sc.emperor[1], era: sc.era, dynasty: sc.dynasty,
-cast: sc.officials.slice(0, 6).map((x) => x.split("|")[0]),
-};
-}
-function postTitle(state, post) {
-if (!post) return "";
-if (post.provinceId && state.governorTitle)
-return (state.nation.provinces.find((z) => z.id === post.provinceId)?.name || "") + state.governorTitle;
-return state.postNames?.[post.id] || post.title;
-}
-const split = (x) => x.split("|");
-const nums = (x) => x.trim().split(/\s+/).map(Number);
-function applyScenario(state, id) {
-const sc = scenarioById(id);
-if (!sc) throw new Error("未知剧本");
-let s = clone(state);
-s.scenario = sc.id;
-s.dynasty = sc.dynasty;
-s.imperialSurname = sc.surname || sc.emperor[0][0];
-s.childNaming = sc.childNaming || null;
-s.backstory = sc.blurb;
-s.era.name = s.reign.eraName = sc.era;
-// 官制与州郡
-const titles = POSTS[sc.posts].split(" ");
-s.postNames = Object.fromEntries(titles.map((t, i) => ["p" + i, t]));
-s.governorTitle = sc.governor;
-sc.provinces.split(" ").forEach((name, i) => { if (s.nation.provinces[i]) s.nation.provinces[i].name = name; });
-const mods = nums(sc.power || "0 0 0 0 0 0");
-sc.factions.split(" ").forEach((x, i) => { const [name, demand] = x.split(":"); Object.assign(s.court.factions[i], { name, demand, powerModifier: mods[i] }); });
-// 天子
-const [name, age, talents, tag] = sc.emperor;
-const t = nums(talents);
-s.emperor.name = name;
-s.emperor.age = age;
-s.emperor.lifespan = Math.max(s.emperor.lifespan, age + 25);
-s.emperor.talents = Object.fromEntries(Object.keys(s.emperor.talents).map((k, i) => [k, t[i]]));
-s.emperor.tags = [tag];
-for (const k of ["prestige", "virtue"]) if (sc.nation[k] !== undefined) s.emperor[k] = sc.nation[k];
-for (const k of ["treasury", "morale", "governance", "grain"]) if (sc.nation[k] !== undefined) s.nation[k] = sc.nation[k];
-s.reign.initialTreasury = s.stats.initialTreasury = s.nation.treasury;
-for (const z of s.nation.provinces) z.morale = clamp(s.nation.morale + (z.morale - 62));
-s.nation.army.frontiers.forEach((f, i) => { f.threat = sc.threat[i]; });
-// 官员：剧本人物按指定职位就任，其余原有官员依次补齐空缺
-const cast = sc.officials.map(split), taken = new Set(cast.map((c) => "p" + c[1]));
-const free = s.court.posts.filter((p) => !p.provinceId && !taken.has(p.id) && Number(p.id.slice(1)) < 25).map((p) => p.id);
-for (const p of s.court.posts) if (!p.provinceId) p.holder = null;
-s.court.officials.forEach((o, i) => {
-const c = cast[i];
-if (c) {
-const [n, post, faction, oage, personality, secret, abil, ambition] = c, a = nums(abil);
-Object.assign(o, { name: n, post: "p" + post, faction: "f" + faction, age: Number(oage), personality, secret, ambition: Number(ambition),
-abilities: { 政: a[0], 军: a[1], 才: a[2], 德: a[3], 忠: a[4], 权谋: a[5] } });
-o.life = [personality];
-} else {
-// 补缺的无名官员不抢剧本人物的戏：野心与权谋压低。
-o.post = free.shift() || null;
-o.ambition = Math.min(o.ambition, 35);
-o.abilities.权谋 = Math.min(o.abilities.权谋, 60);
-}
-if (o.post) s.court.posts.find((p) => p.id === o.post).holder = o.id;
-});
-// 后宫与皇嗣
-const child = age < 16;
-s.harem.consorts = (sc.consorts || []).map(split).map(([n, rank, family, cage, faction, favor, secret], i) => ({
-...s.harem.consorts[Math.min(i, s.harem.consorts.length - 1)], id: "c" + i, name: n, rank, family, age: Number(cage),
-faction: "f" + faction, favor: Number(favor), secret, preg: null, relations: {},
-}));
-s.harem.children = (sc.children || []).map(split).map(([n, sex, cage, mother, aptitude], i) => ({
-id: "child-" + s.runId + "-s" + i, name: n, sex, mother: mother === "" ? null : "c" + mother, fatherId: s.runId,
-legit: s.harem.consorts[Number(mother)]?.rank === "皇后", born: -Number(cage) * 36, aptitude: Number(aptitude), health: 85,
-tutor: null, education: Math.min(60, Number(cage) * 4), faction: s.harem.consorts[Number(mother)]?.faction || "f0", party: false,
-}));
-s.harem.heir = sc.heir !== undefined ? s.harem.children[sc.heir]?.id || null : null;
-s.harem.royalWomen = [];
-s.dowager = sc.dowager || null;
-s.weddingNames = sc.wedding || null;
-if (child) {
-// 幼帝以皇嗣身份记年龄，亲政时由 advanceRegency 撤摄政、行大婚。
-const id = "emperor-" + s.runId;
-s.harem.children.push({ id, name, sex: "男", mother: null, fatherId: "prior", legit: true, born: -age * 36,
-aptitude: sc.aptitude || 60, health: 85, tutor: null, education: age * 3, faction: "f0", party: false });
-s.reign.emperorId = id;
-s.reign.married = false;
-const regent = sc.regent === "dowager" ? "dowager" : s.court.officials.find((o) => o.name === sc.regent)?.id;
-s.regency = { regentId: regent || "dowager", until: (16 - age) * 36 };
-} else s.reign.married = s.harem.consorts.length > 0;
-// 外邦
-s.foreign = sc.foreign.map(split).map(([n, ruler, status, attitude, dir, demand], i) => ({
-...s.foreign[Math.min(i, s.foreign.length - 1)], id: "w" + i, name: n, ruler, status, attitude: Number(attitude), frontier: dir, demand, trade: null,
-}));
-s.court.factions = factionPowers(s);
-s.facts = (sc.facts || []).map((x) => { const [subject, key, value] = split(x); return { subject, key, value, turn: 0 }; });
-return s;
-}
-
-return {SCENARIOS,scenarioById,scenarioPreview,postTitle,applyScenario};
-},
 "src/llm/quantities.js":function(__load){
 // Quantities use base units. A 斛 needs explicit evidence: do not assume a dynasty's conversion.
 const NUMBER_SOURCE='[0-9０-９零〇一二两三四五六七八九十百千万亿点][0-9０-９零〇一二两三四五六七八九十百千万亿点.,，]*';
@@ -9339,281 +10797,6 @@ topic:e.topic,essaySummary:c.essaySummary,...writingProfile(c),
 }
 
 return {validateExamTopics,validateTopicReview,suggestedExamOrder,mockExamPapers,validateExamPapers,mockExamEssay,validateExamEssay,examTopicMessages,examTopicReviewMessages,examPaperMessages,examEssayMessages};
-},
-"src/ui/common.js":function(__load){
-const { initMobileViewport } = __load("src/ui/mobile.js");
-const $ = (selector) => document.querySelector(selector);
-// Display labels only; saves stay intact.
-function gameText(text) {
-const value = String(text ?? "");
-const status = Number(value.match(/^HTTP (\d+)/)?.[1]);
-if (status) return ({401:'密钥未通过验证，请在设置中检查。',402:'服务账户余额不足，请先补充余额。',
-403:'连接未获许可，请检查账户与地域。',404:'未找到所选服务，请检查连接设置。',
-429:'来信太密，请稍后再试。'})[status] || '暂未收到回音，请稍后再试。';
-if (/^(?:EMPTY|TRUNCATED|STREAM_INVALID|STREAM_ERROR|STREAM_CUT|TOO_LARGE)$/.test(value))
-return '故事未能完整送达，请重试。';
-if (/^(?:Failed to fetch|Load failed|NetworkError)/.test(value)) return '连接未通，请检查网络后再试。';
-return value
-.replace(/^本旬引擎结算：人物、政务与岁时变化$/, "本旬变化")
-.replace(/^模型人物反应建议：引擎限额采纳$/, "人物态度变化")
-.replace(/^引擎结算$/, "本旬变化")
-.replace(/宫闱事件：引擎判定小产/g, "宫中小产")
-.replace(/；面谈结果已落账/g, "；已在面谈中议定")
-.replace(/^本旬面谈已落账，午槽须保留对应人物的召见$/, "午间已召见此人，请先过完本旬。")
-.replace(/^预演已过期，不能提交到此存档$/, "这次安排已过期，请刷新后重试。")
-.replace(/^本回合请求已达 (?:90|240) 秒预算，请保留预演结果后重试$/, "故事续写超时，请重试本旬。")
-.replace(/^模型回复未完成或格式有误，原有进度已保留$/, "这次没能续完故事，请重试本旬。")
-.replace(/^存档处于只读保护模式$/, "此存档暂时无法保存，请先导出备份。");
-}
-function esc(text) {
-return String(text ?? "").replace(
-/[&<>"']/g,
-(c) =>
-({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[
-c
-],
-);
-}
-// Full re-renders replace the DOM. Keep inner scroll positions (the phone
-// layout scrolls inside fixed-height containers) and the focused control.
-function nodePath(node, root) {
-const path = [];
-while (node && node !== root) {
-const parent = node.parentElement;
-if (!parent) return null;
-path.unshift([...parent.children].indexOf(node));
-node = parent;
-}
-return node === root ? path : null;
-}
-function nodeAt(root, path) {
-let node = root;
-for (const i of path) { node = node?.children?.[i]; if (!node) return null; }
-return node;
-}
-function keyOf(el, root) {
-if (el.id) return { id: el.id };
-for (const name of ["scrollKey", "command", "action", "slot", "panel", "clear"])
-if (el.dataset?.[name]) return { data: name, value: el.dataset[name] };
-return { path: nodePath(el, root) };
-}
-function find(root, key) {
-if (key.id) return root.querySelector("#" + CSS.escape(key.id));
-if (key.data) return root.querySelector("[data-" + key.data.replace(/[A-Z]/g, (c) => "-" + c.toLowerCase()) + '="' + CSS.escape(key.value) + '"]');
-return key.path ? nodeAt(root, key.path) : null;
-}
-function captureView(root) {
-if (!root) return { scrolls: [], focus: null };
-const scrolls = [];
-for (const el of root.querySelectorAll("*"))
-if (el.scrollTop > 0 || el.scrollLeft > 0)
-scrolls.push({ key: keyOf(el, root), top: el.scrollTop, left: el.scrollLeft });
-const active = document.activeElement;
-const focus = active && active !== document.body && root.contains(active)
-? { key: keyOf(active, root), start: active.selectionStart ?? null, end: active.selectionEnd ?? null }
-: null;
-return { scrolls, focus };
-}
-function restoreView(root, view) {
-if (!root || !view) return;
-for (const s of view.scrolls) {
-const el = find(root, s.key);
-if (el) { el.scrollTop = s.top; el.scrollLeft = s.left; }
-}
-if (view.focus) {
-const el = find(root, view.focus.key);
-if (el && !el.disabled) {
-el.focus({ preventScroll: true });
-if (view.focus.start !== null && typeof el.setSelectionRange === "function")
-try { el.setSelectionRange(view.focus.start, view.focus.end); } catch {}
-}
-}
-}
-function throttleFrame(fn, schedule = (f) => requestAnimationFrame(f)) {
-let queued = false, latest;
-return (...args) => {
-latest = args;
-if (queued) return;
-queued = true;
-schedule(() => { queued = false; fn(...latest); });
-};
-}
-// Back gestures close the open dialog instead of leaving the game. One history
-// entry is pushed per dialog session; replacing the dialog content reuses it.
-let modalEntry = false, closingFromHistory = false, pendingBack = 0, leaveGuard = () => false;
-function setLeaveGuard(fn) { leaveGuard = fn; }
-function pushModalEntry() {
-if (modalEntry) return;
-try { history.pushState({ ...(history.state || {}), yujiModal: true }, ""); modalEntry = true; } catch {}
-}
-let toastTimer;
-function toast(text) {
-text = gameText(text);
-$("#notice").textContent = text;
-$("#notice").classList.add("show");
-const dialog=$("#modal");
-if(dialog?.open){
-let status=dialog.querySelector('.dialog-notice');
-if(!status){
-status=document.createElement('p');
-status.className='dialog-notice';
-status.setAttribute('role','status');
-status.setAttribute('aria-live','polite');
-const header=dialog.querySelector('.dialog-head');
-if(header)header.insertAdjacentElement('afterend',status);
-else dialog.prepend(status);
-}
-status.textContent=text;
-}
-clearTimeout(toastTimer);
-toastTimer = setTimeout(() => $("#notice").classList.remove("show"), 6000);
-}
-let returnFocus, returnSelector;
-function openDialog(title, body, className = "") {
-const d = $("#modal");
-const active=document.activeElement;
-if (d.open) d.close();
-if (!active?.closest?.('#modal')) {
-returnFocus=active;returnSelector=null;
-for (const key of ['command','action','slot','panel']) if(active?.dataset?.[key]) returnSelector='[data-'+key+'="'+CSS.escape(active.dataset[key])+'"]';
-}
-d.onkeydown=null;
-if (className === 'action-shell') body='<div class="dual-content"><article id="action-document" class="paper action-document"><h3>'+esc(title)+'</h3><p>御案上的事，请逐项裁定。</p></article><section class="action-options">'+body+'</section></div>';
-d.className = className;
-d.innerHTML =
-'<div class="dialog-head"><h2 id="modal-title">' +
-esc(title) +
-'</h2><button type="button" id="close-modal" aria-label="关闭窗口">×</button></div>' +
-body;
-$("#close-modal").onclick = () => d.close();
-d.showModal();
-pushModalEntry();
-document.documentElement.classList.add("modal-open");
-d.scrollTop = 0;
-}
-function closeDialog() {
-$("#modal").close();
-}
-function download(name, data, type = "application/json") {
-const url = URL.createObjectURL(new Blob([data], { type })),
-a = document.createElement("a");
-a.href = url;
-a.download = name;
-a.click();
-setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
-function fitBrandText() {
-for(const date of document.querySelectorAll('.brand .date,.brand h1')) {
-date.style.removeProperty('font-size');
-const css=getComputedStyle(date),minimum=Number.parseFloat(css.getPropertyValue(date.matches('h1')?'--font-ui':'--font-minor'))||10;
-let size=Number.parseFloat(css.fontSize);
-while(date.scrollWidth>date.clientWidth&&size>minimum){size=Math.max(minimum,size-.5);date.style.fontSize=size+'px';}
-}
-}
-function initCommon() {
-initMobileViewport();
-// Refit after rendering, viewport changes and the optional web fonts settle.
-new MutationObserver(fitBrandText).observe($('#app'),{childList:true});
-window.addEventListener('resize',fitBrandText);
-document.fonts?.ready.then(fitBrandText);
-$("#modal").addEventListener("keydown", e => {
-if(e.key!=='Tab')return;
-const d=$("#modal"),items=[...d.querySelectorAll('button:not(:disabled),input:not(:disabled),select:not(:disabled),textarea:not(:disabled),summary,[tabindex="0"]')].filter(x=>x.tabIndex>=0&&x.getClientRects().length&&(!x.checkVisibility||x.checkVisibility()));
-if(!items.length){e.preventDefault();return;}
-const at=items.indexOf(document.activeElement);
-if((e.shiftKey&&at<=0)||(!e.shiftKey&&(at===items.length-1||at<0))){e.preventDefault();items[e.shiftKey?items.length-1:0].focus();}
-});
-window.addEventListener("popstate", () => {
-if (pendingBack > 0) {
-// Our own history.back() after a close. If a new dialog opened before the
-// traversal landed, the entry we arrived on still belongs to a dialog.
-pendingBack--;
-modalEntry = $("#modal").open;
-return;
-}
-if (!modalEntry) return;
-modalEntry = false;
-if ($("#modal").open) { closingFromHistory = true; $("#modal").close(); }
-});
-window.addEventListener("beforeunload", (e) => {
-if (!leaveGuard()) return;
-e.preventDefault();
-e.returnValue = "";
-});
-$("#modal").addEventListener("close", () => {
-if($("#modal").open)return;
-if (closingFromHistory) closingFromHistory = false;
-else if (modalEntry) { modalEntry = false; pendingBack++; try { history.back(); } catch { pendingBack--; } }
-document.documentElement.classList.remove("modal-open");
-if (returnFocus?.isConnected) returnFocus.focus();
-else if(returnSelector) document.querySelector(returnSelector)?.focus();
-});
-}
-
-return {$,gameText,esc,captureView,restoreView,throttleFrame,setLeaveGuard,toast,openDialog,closeDialog,download,initCommon};
-},
-"src/ui/mobile.js":function(__load){
-// Keep the game at its intended scale without delaying ordinary scrolling.
-// Android pinch is stopped by touch-action: pan-x pan-y; only iOS gesture
-// events need a non-passive listener, and they fire for pinches alone.
-const GUARDED_EVENTS = ["gesturestart", "gesturechange"];
-function blockPinch(event) {
-if ((event.touches?.length || 0) > 1 || GUARDED_EVENTS.includes(event.type)) {
-if (event.cancelable) event.preventDefault();
-}
-}
-// Coalesce viewport writes to one per frame and skip unchanged values, so a
-// visualViewport scroll does not restyle the whole document on every event.
-function createViewportUpdater(read, write, schedule = (f) => requestAnimationFrame(f)) {
-let queued = false, last = "";
-return () => {
-if (queued) return;
-queued = true;
-schedule(() => {
-queued = false;
-const { height, top } = read(), key = height + "|" + top;
-if (key === last) return;
-last = key;
-write(height, top);
-});
-};
-}
-const FONT_SCALES = { m: "标准", l: "较大", xl: "特大" };
-function applyFontScale(value, root = document.documentElement, storage = globalThis.localStorage) {
-const scale = FONT_SCALES[value] ? value : "m";
-if (scale === "m") root.removeAttribute("data-font");
-else root.setAttribute("data-font", scale);
-try { storage?.setItem("yuji:font", scale); } catch {}
-return scale;
-}
-function storedFontScale(storage = globalThis.localStorage) {
-try { return FONT_SCALES[storage?.getItem("yuji:font")] ? storage.getItem("yuji:font") : "m"; } catch { return "m"; }
-}
-let installed = false;
-function initMobileViewport() {
-if (installed) return;
-installed = true;
-for (const type of GUARDED_EVENTS)
-document.addEventListener(type, blockPinch, { passive: false });
-const root = document.documentElement;
-const update = createViewportUpdater(
-() => ({
-height: window.visualViewport?.height || window.innerHeight,
-top: window.visualViewport?.offsetTop || 0,
-}),
-(height, top) => {
-root.style.setProperty("--app-height", height + "px");
-root.style.setProperty("--viewport-top", top + "px");
-},
-);
-window.addEventListener("resize", update);
-window.visualViewport?.addEventListener("resize", update);
-window.visualViewport?.addEventListener("scroll", update);
-update();
-applyFontScale(storedFontScale());
-}
-
-return {GUARDED_EVENTS,blockPinch,createViewportUpdater,FONT_SCALES,applyFontScale,storedFontScale,initMobileViewport};
 },
 "src/ui/request-scope.js":function(__load){
 // A native dialog's queued close event may belong to the window it previously held.
@@ -11805,6 +12988,7 @@ const theme=document.createElement('meta');theme.name='theme-color';theme.conten
 return {APP_ICONS,createAppManifest,initAppIcon};
 },
 "src/ui/settings.js":function(__load){
+const { illustrationsEnabled, setIllustrations } = __load("src/ui/art.js");
 const { createDialogRequestScope, probeErrorMessage } = __load("src/ui/request-scope.js");
 const { $, esc, gameText, openDialog, toast } = __load("src/ui/common.js");
 const { FONT_SCALES, applyFontScale, storedFontScale } = __load("src/ui/mobile.js");
@@ -11845,7 +13029,7 @@ return '<p>' + esc(new Date(m.at).toLocaleTimeString('zh-CN')) + ' · ' + result
 function openSettings(config, metrics, onSave, recordMetric = null) {
 openDialog(
 "御前设置",
-'<label for="font-scale">正文字号</label><select id="font-scale">' +
+'<label class="check"><input id="show-illustrations" type="checkbox"' + (illustrationsEnabled() ? ' checked' : '') + '>显示插图</label><p class="muted">仅保存在这台设备上。</p><label for="font-scale">正文字号</label><select id="font-scale">' +
 Object.entries(FONT_SCALES).map(([id, label]) => '<option value="' + id + '"' + (id === storedFontScale() ? " selected" : "") + ">" + label + "</option>").join("") +
 '</select><p class="muted">字号立即生效。</p><p class="muted">连接 API，让故事随你的选择继续。密钥只发往所填地址，不随存档导出。</p><form id="settings-form"><label for="provider">服务商与地域</label><select id="provider">' +
 Object.entries(PRESETS)
@@ -11880,6 +13064,7 @@ metrics
 "</div></details>",
 );
 $("#font-scale").onchange = (e) => applyFontScale(e.target.value);
+$('#show-illustrations').onchange = e => setIllustrations(e.target.checked);
 const read = () => ({
 provider: $("#provider").value,
 base: $("#api-base").value.trim(),
@@ -12126,6 +13311,7 @@ const { evaluateAmbitions } = __load("src/core/ambitions.js");
 const { unlockAchievements, sealChronicle } = __load("src/core/chronicles.js");
 const { auditChanges } = __load("src/core/audit.js");
 const { clone, assertState, SLOTS, withDraft, migrate, VERSION } = __load("src/core/state.js");
+const { assignFaces } = __load("src/core/faces.js");
 const { roll, fateLabel } = __load("src/core/rng.js");
 const { applyPackage, growTalent } = __load("src/core/effects.js");
 const {
@@ -12248,7 +13434,7 @@ let s = generateCandidates(seedMemorials(state));
 s.harem.royalWomen ??= [
 { id: "royal-1", name: "萧静宜", age: 22, married: null },
 ];
-return advanceExams(unlockAchievements(evaluateAmbitions(s)));
+return assignFaces(advanceExams(unlockAchievements(evaluateAmbitions(s))));
 }
 function forecastTurn(
 state,
@@ -12649,7 +13835,7 @@ s = sealChronicle(s);
 // Sealed volumes were validated when archived/imported; check only active
 // state and recent chapters on each turn. Public assertState still checks all.
 assertState({...s,volumes:[]});
-return s;
+return assignFaces(s);
 }
 
 return {ACTIONS,scheduleCost,validateSchedule,initialTurn,forecastTurn,commitTurn};
@@ -13686,6 +14872,7 @@ return scenarioGoals(id);
 return {DIFFICULTIES,scenarioDifficulty,scenarioRecommendations};
 },
 "src/ui/render.js":function(__load){
+const { sceneHTML, sceneKey, memorialPortraitHTML } = __load("src/ui/art.js");
 const {sceneChapterHTML} = __load("src/ui/scene-view.js");
 const {briefingsHTML} = __load("src/ui/briefings.js");
 const { esc, gameText } = __load("src/ui/common.js");
@@ -13941,8 +15128,12 @@ h.era.month +
 '月</div><div class="prose">' +
 ["朝", "午", "夜"]
 .map(
-(slot) =>
-"<h3>" + slot + "</h3><p>" + esc(h.chapter[slot] || "略。") + "</p>" + sceneChapterHTML(h,slot,sceneActive,sceneState),
+(slot) => {
+const scene=h.scenes?.find(r=>r.slot===slot);
+const key=h.artScenes?.[slot] || sceneKey(scene?{kind:'自拟情节',place:scene.place}:null,slot);
+return sceneHTML(key,'chapter',slot==='夜') + '<h3>' + slot + '</h3><p>' +
+esc(h.chapter[slot] || '略。') + '</p>' + sceneChapterHTML(h,slot,sceneActive,sceneState);
+},
 )
 .join("") +
 (h.hook ? '<p class="chapter-hook">' + esc(h.hook) + "</p>" : "") +
@@ -13994,7 +15185,7 @@ esc(m.title) +
 "</span>" +
 (m.urgent ? '<span class="stamp">急</span>' : "") +
 '</strong><small class="memorial-byline"><span class="memorial-from">' +
-esc(m.from) +
+memorialPortraitHTML(s,m) + esc(m.from) +
 "</span><span>剩 " +
 Math.max(0, m.due - (m.currentTurn || 0)) +
 " 旬</span></small>" +
@@ -14135,7 +15326,7 @@ const palaces = HALLS.map(
 (p) => '<button data-panel="' + p + '">' + p + "</button>",
 ).join("");
 const opening = s
-? '<div class="chapter-head"><span class="eyebrow">御极 · 序章</span><h2>' +
+? sceneHTML(s.ending ? 'ending' : 'accession') + '<div class="chapter-head"><span class="eyebrow">御极 · 序章</span><h2>' +
 esc(s.era.name) +
 '新政</h2><span class="chapter-fate">' +
 esc(s.dynasty) +
@@ -14306,6 +15497,7 @@ esc(s.ending.cause) +
 ? '<p class="onboarding">幼帝摄政 · 年满十六岁亲政；现可批折、召见、自拟情节、经筵、歇息。</p>'
 : "") +
 '<article class="scroll" id="scroll" tabindex="0" aria-label="本旬正文章节">' +
+(s?.ending ? sceneHTML('ending') : '') +
 (last ? chapterHTML(last, s.ambitions,!locked&&!s.talks.some(t=>t.turn===s.turn),s) : opening) +
 '<div id="stream" class="streaming" aria-live="polite"></div></article><div class="saved-status">' +
 esc(gameText(
@@ -14555,6 +15747,7 @@ return "";
 return {ACTION_GROUPS,HALLS,GLYPHS,selectionDescription,actionAvailability,actionMeta,actionCaption,energyView,metricGroups,scheduleEstimate,REPEATABLE,repeatSchedule,delegateSchedule,DELEGATE_STOPS,delegateStop};
 },
 "src/ui/memorials.js":function(__load){
+const { memorialPortraitHTML, sceneHTML } = __load("src/ui/art.js");
 const {developmentChoiceBlock} = __load("src/core/development-choices.js");
 const { TEXT_LIMITS } = __load("src/core/text.js");
 const { memorialParagraphHTML, memorialAuthor, memorialSignature } = __load("src/ui/memorial-document.js");
@@ -14966,7 +16159,7 @@ pickerItems +
 '<h3 id="memorial-title" tabindex="-1">' +
 esc(m.title) +
 '</h3></div><div class="memorial-meta"><div class="memorial-author"><span>' +
-esc(memorialAuthor(m,postTitle(s,post))) +
+memorialPortraitHTML(s,m) + esc(memorialAuthor(m,postTitle(s,post))) +
 (faction ? "（" + esc(faction.name) + "）" : "") +
 "</span>" +
 (person?.alive
@@ -15102,6 +16295,7 @@ kind + " · 御前批阅",
 );
 const root = $("#review-root"),
 d = $("#modal");
+d.querySelector('.dialog-head').insertAdjacentHTML('beforebegin',sceneHTML(kind==='上朝'?'court':'desk-day','action'));
 const mobile = matchMedia("(max-width:899px)");
 const revealCurrent = () => {
 if (!d.open) return;
@@ -15312,6 +16506,7 @@ return [m.fromPost??fallbackPost,m.from,m.fromRole==='转奏'?'谨转奏':'谨�
 return {memorialParagraphHTML,memorialAuthor,memorialSignature};
 },
 "src/ui/memorial-archive.js":function(__load){
+const { memorialPortraitHTML } = __load("src/ui/art.js");
 const { memorialParagraphHTML, memorialAuthor, memorialSignature } = __load("src/ui/memorial-document.js");
 const { memorialArchive, memorialReviewDate } = __load("src/core/memorial-records.js");
 const { esc, openDialog, toast, download } = __load("src/ui/common.js");
@@ -15329,10 +16524,10 @@ return records.slice(page*20,page*20+20).map(r =>
 esc(memorialReviewDate(r)+' · '+(r.from||'旧折摘录'))+'</small><span>'+esc(r.decision)+'</span>'+
 (r.remark?'<p class="archive-remark-preview">'+esc(r.remark)+'</p>':'')+'</button>').join('');
 }
-function memorialArchiveDetailHTML(r) {
+function memorialArchiveDetailHTML(r, state=null) {
 return '<p><button data-archive-back>‹ 返回档案</button></p><article class="paper archive-document"><p class="muted">'+
 esc([r.dynasty,r.emperor,memorialReviewDate(r),r.slot&&r.slot+'间'].filter(Boolean).join(' · '))+'</p><h3>'+esc(r.title)+
-'</h3><p>'+esc([memorialAuthor(r),r.type].filter(Boolean).join(' · '))+'</p><div class="archive-original">'+
+'</h3><p>'+memorialPortraitHTML(state,r)+esc([memorialAuthor(r),r.type].filter(Boolean).join(' · '))+'</p><div class="archive-original">'+
 memorialParagraphHTML(r.text||'旧卷未留存奏折全文，以下为起居注中留下的批阅记录。')+'</div><p class="memorial-signature">'+esc(memorialSignature(r))+'</p><section class="archive-verdict"><h4>御批</h4><p>'+esc(r.decision)+
 '</p>'+(r.consequence?'<p>'+esc(r.consequence)+'</p>':'')+(r.remark?'<blockquote class="archive-brush">'+esc(r.remark)+
 '</blockquote>':'<p class="muted">未另写朱批。</p>')+'</section></article><div class="dialog-actions">'+
@@ -15362,7 +16557,7 @@ root.innerHTML='<p class="muted">每次亲批，留一份底稿。留中和再�
 '<p id="archive-count"></p><div id="archive-results"></div>';
 paintResults();
 };
-const detail = record => {clearImages();selected=record;root.innerHTML=memorialArchiveDetailHTML(record);dialog.scrollTop=0;};
+const detail = record => {clearImages();selected=record;root.innerHTML=memorialArchiveDetailHTML(record,state);dialog.scrollTop=0;};
 root.oninput = e => { if(e.target.id==='archive-search'){query=e.target.value;page=0;paintResults();} };
 root.onchange = e => {
 if(e.target.id==='archive-type')type=e.target.value;
@@ -15489,6 +16684,7 @@ return images;
 return {wrapMemorialText,memorialImageLayout,createMemorialImages};
 },
 "src/ui/actions.js":function(__load){
+const { portraitHTML, sceneHTML, sceneKey } = __load("src/ui/art.js");
 const { examiners } = __load("src/core/keju.js");
 const {researchFields,industryFields,developmentAction,updateDevelopmentPreview} = __load("src/ui/technology.js");
 const {sceneActionFields,sceneActionLabel} = __load("src/ui/scene-view.js");
@@ -15645,10 +16841,12 @@ fields +
 "</button></div></form>",
 "action-shell",
 );
+$('#modal .dialog-head').insertAdjacentHTML('beforebegin','<div id="action-art">' + sceneHTML(sceneKey({kind},preferred),'action',preferred==='夜') + '</div>');
 if(kind==='自拟情节')$('#modal').classList.add('scene-dialog');
 document.querySelectorAll('[data-form-slot]').forEach(b=>b.onclick=()=>{
 $('#action-slot').value=b.dataset.formSlot;
 document.querySelectorAll('[data-form-slot]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
+paper();
 });
 let breachTarget="";
 const estimate = () => {
@@ -15719,7 +16917,9 @@ show("selection-candidates",$("#selection-operation")?.value!=="举荐");
 estimate();
 const paper=()=>{
 const person=s.court.officials.find(o=>o.id===$('#person')?.value)||s.harem.consorts.find(o=>o.id===$('#person')?.value)||s.foreign.find(o=>o.id===$('#country')?.value)||s.harem.candidates.find(o=>o.id===$('#person')?.value);
-let html='<div class="eyebrow">'+kind+' · 待定</div><h3>'+esc(person?.name||$('#edict-type')?.value||kind)+'</h3>';
+const slot=$('#action-slot').value;
+$('#action-art').innerHTML=sceneHTML(sceneKey({kind,place:$('#scene-place')?.value,edictType:$('#edict-type')?.value},slot),'action',slot==='夜');
+let html=(person?portraitHTML(s,person,'paper'):'')+'<div class="eyebrow">'+kind+' · 待定</div><h3>'+esc(person?.ruler||person?.name||$('#edict-type')?.value||kind)+'</h3>';
 if(person)html+='<p>'+esc(person.family||person.personality||postTitle(s,s.court.posts.find(p=>p.holder===person.id))||person.status||'御前候命')+'</p><p>'+esc(person.age?person.age+' 岁':'')+(person.favor!==undefined?' · 好感 '+person.favor:'')+'</p>';
 if(kind==='下旨'){
 const r={...EDICTS[$('#edict-type').value],cost:edictCost(s,$('#edict-type').value)};
@@ -15821,6 +17021,7 @@ toast(error.message);
 return {actionDialog};
 },
 "src/ui/panels.js":function(__load){
+const { portraitHTML, hallArtHTML } = __load("src/ui/art.js");
 const { examOfficialView } = __load("src/core/keju.js");
 const {technologyHTML} = __load("src/ui/technology.js");
 const {INDUSTRIES} = __load("src/core/tech-rules.js");
@@ -15904,9 +17105,7 @@ esc(p.tags.join(" / ")) +
 fold(
 s.court.officials.filter(o=>o.alive).map(
 (o) =>
-'<div class="card"><div class="row"><span class="portrait" aria-hidden="true">' +
-esc(o.name[0]) +
-"</span><h3>" +
+'<div class="card"><div class="row">' + portraitHTML(s,o,'card') + '<h3>' +
 esc(o.name) +
 "</h3></div><p>" +
 o.age +
@@ -15947,9 +17146,7 @@ s.harem.consorts.filter((c) => c.rank === r && !c.cold).length +
 s.harem.consorts
 .map(
 (c) =>
-'<div class="card"><div class="row"><span class="portrait" aria-hidden="true">' +
-esc(c.name[0]) +
-"</span><h3>" +
+'<div class="card"><div class="row">' + portraitHTML(s,c,'card') + '<h3>' +
 esc(c.name) +
 "</h3></div><p>" +
 esc(c.rank) +
@@ -16002,7 +17199,7 @@ s.harem.candidates
 .slice(0, 10)
 .map(
 (c) =>
-'<div class="card"><h3>' +
+'<div class="card">' + portraitHTML(s,c,'card') + '<h3>' +
 esc(c.name) +
 "</h3><p>" +
 c.age +
@@ -16043,7 +17240,7 @@ f.dir +
 s.foreign
 .map(
 (f) =>
-'<div class="card"><h3>' +
+'<div class="card">' + portraitHTML(s,f,'card') + '<h3>' +
 esc(f.name) +
 "</h3><p>" +
 esc(f.ruler) +
@@ -16109,12 +17306,12 @@ esc(
 s.harem.children.find((c) => c.id === s.harem.heir)?.name || "尚未册立",
 ) +
 '</h3><p class="muted">慈宁宫：' +
-esc(s.dowager || "慈宁太后") +
+portraitHTML(s,s.harem.consorts.find(c=>c.name===s.dowager)||{name:s.dowager||'慈宁太后',faceNo:0},'card','dowager') + esc(s.dowager || '慈宁太后') +
 '。皇嗣满六岁显资质，十五岁后可能结党。</p><div class="grid">' +
 s.harem.children
 .map(
 (c) =>
-'<div class="card"><h3>' +
+'<div class="card">' + portraitHTML(s,c,'card') + '<h3>' +
 esc(c.name) +
 " · " +
 (c.sex === "男" ? "皇子" : "公主") +
@@ -16141,7 +17338,7 @@ c.id +
 (s.harem.royalWomen || [])
 .map(
 (w) =>
-"<p>" +
+'<p>' + portraitHTML(s,w,'card') +
 esc(w.name) +
 " · " +
 w.age +
@@ -16235,6 +17432,7 @@ name + "殿",
 html || '<p class="muted">本旬尚无记录。</p>',
 "palace",
 );
+document.querySelector('#modal .dialog-head').insertAdjacentHTML('beforebegin',hallArtHTML(name));
 }
 function fold(cards) {
 return (
@@ -16727,6 +17925,7 @@ function sameEnvelope(a,b){return JSON.stringify(envelopeIdentity(a))===JSON.str
 return {storedLayout,recoveryState,envelopeIdentity,sameEnvelope};
 },
 "src/ui/nation-overview.js":function(__load){
+const { hallArtHTML } = __load("src/ui/art.js");
 const {INDUSTRIES} = __load("src/core/tech-rules.js");
 const { esc, gameText, openDialog } = __load("src/ui/common.js");
 const { campaignsHTML, treatyHTML } = __load("src/ui/campaigns.js");
@@ -16807,6 +18006,7 @@ section('圣躬与储位',palace);
 function openNationOverview(state) {
 let span=12,expanded=false;
 openDialog('国势全览','<div id="nation-overview">'+nationOverviewHTML(state,span,expanded)+'</div>','nation-shell');
+document.querySelector('#modal .dialog-head').insertAdjacentHTML('beforebegin',hallArtHTML('国势全览'));
 const root=document.querySelector('#nation-overview');
 root.onclick=e=>{
 const b=e.target.closest('button');if(!b)return;

@@ -17,6 +17,7 @@ import { evaluateAmbitions } from "./ambitions.js";
 import { unlockAchievements, sealChronicle } from "./chronicles.js";
 import { auditChanges } from "./audit.js";
 import { clone, assertState, SLOTS, withDraft, migrate, VERSION } from "./state.js";
+import { assignFaces } from './faces.js';
 import { roll, fateLabel } from "./rng.js";
 import { applyPackage, growTalent } from "./effects.js";
 import {
@@ -139,7 +140,7 @@ export function initialTurn(state) {
   s.harem.royalWomen ??= [
     { id: "royal-1", name: "萧静宜", age: 22, married: null },
   ];
-  return advanceExams(unlockAchievements(evaluateAmbitions(s)));
+  return assignFaces(advanceExams(unlockAchievements(evaluateAmbitions(s))));
 }
 export function forecastTurn(
   state,
@@ -541,5 +542,5 @@ function commitDraft(state, forecast, narrative = {}) {
   // Sealed volumes were validated when archived/imported; check only active
   // state and recent chapters on each turn. Public assertState still checks all.
   assertState({...s,volumes:[]});
-  return s;
+  return assignFaces(s);
 }

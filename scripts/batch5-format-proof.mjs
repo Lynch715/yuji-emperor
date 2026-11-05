@@ -18,7 +18,9 @@ for(const [name,c] of Object.entries(CASES)){
  delete f.state.keju;
  for(const p of f.state.nation.provinces){delete p.prosperity;delete p.industries;}
  // Keep the complete current forecast and retain historical hashes in summary.json.
- proof[name]=createHash('sha256').update(JSON.stringify(f)).digest('hex');
+ // v24 adds display identities only. Compare every pre-existing field unchanged.
+ proof[name]=createHash('sha256').update(JSON.stringify(f,(key,value)=>
+   key==='faceNo'||key==='faceCounters'?undefined:value)).digest('hex');
 }
 if(process.argv[2]!=='--stdout')writeFileSync(process.argv[2]||'qa/batch5/format-after.json',JSON.stringify(proof,null,2));
 console.log(JSON.stringify(proof));

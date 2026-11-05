@@ -1,3 +1,4 @@
+import { portraitHTML, sceneHTML, sceneKey } from './art.js';
 import { examiners } from '../core/keju.js';
 import {researchFields,industryFields,developmentAction,updateDevelopmentPreview} from './technology.js';
 import {sceneActionFields,sceneActionLabel} from './scene-view.js';
@@ -154,10 +155,12 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
       "</button></div></form>",
     "action-shell",
   );
+  $('#modal .dialog-head').insertAdjacentHTML('beforebegin','<div id="action-art">' + sceneHTML(sceneKey({kind},preferred),'action',preferred==='夜') + '</div>');
   if(kind==='自拟情节')$('#modal').classList.add('scene-dialog');
   document.querySelectorAll('[data-form-slot]').forEach(b=>b.onclick=()=>{
     $('#action-slot').value=b.dataset.formSlot;
     document.querySelectorAll('[data-form-slot]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
+    paper();
   });
   let breachTarget="";
   const estimate = () => {
@@ -228,7 +231,9 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
   estimate();
   const paper=()=>{
     const person=s.court.officials.find(o=>o.id===$('#person')?.value)||s.harem.consorts.find(o=>o.id===$('#person')?.value)||s.foreign.find(o=>o.id===$('#country')?.value)||s.harem.candidates.find(o=>o.id===$('#person')?.value);
-    let html='<div class="eyebrow">'+kind+' · 待定</div><h3>'+esc(person?.name||$('#edict-type')?.value||kind)+'</h3>';
+    const slot=$('#action-slot').value;
+    $('#action-art').innerHTML=sceneHTML(sceneKey({kind,place:$('#scene-place')?.value,edictType:$('#edict-type')?.value},slot),'action',slot==='夜');
+    let html=(person?portraitHTML(s,person,'paper'):'')+'<div class="eyebrow">'+kind+' · 待定</div><h3>'+esc(person?.ruler||person?.name||$('#edict-type')?.value||kind)+'</h3>';
     if(person)html+='<p>'+esc(person.family||person.personality||postTitle(s,s.court.posts.find(p=>p.holder===person.id))||person.status||'御前候命')+'</p><p>'+esc(person.age?person.age+' 岁':'')+(person.favor!==undefined?' · 好感 '+person.favor:'')+'</p>';
     if(kind==='下旨'){
       const r={...EDICTS[$('#edict-type').value],cost:edictCost(s,$('#edict-type').value)};

@@ -1,3 +1,4 @@
+import { memorialPortraitHTML } from './art.js';
 import { memorialParagraphHTML, memorialAuthor, memorialSignature } from './memorial-document.js';
 import { memorialArchive, memorialReviewDate } from '../core/memorial-records.js';
 import { esc, openDialog, toast, download } from './common.js';
@@ -16,10 +17,10 @@ export function memorialArchiveListHTML(records, page=0) {
     esc(memorialReviewDate(r)+' · '+(r.from||'旧折摘录'))+'</small><span>'+esc(r.decision)+'</span>'+
     (r.remark?'<p class="archive-remark-preview">'+esc(r.remark)+'</p>':'')+'</button>').join('');
 }
-export function memorialArchiveDetailHTML(r) {
+export function memorialArchiveDetailHTML(r, state=null) {
   return '<p><button data-archive-back>‹ 返回档案</button></p><article class="paper archive-document"><p class="muted">'+
     esc([r.dynasty,r.emperor,memorialReviewDate(r),r.slot&&r.slot+'间'].filter(Boolean).join(' · '))+'</p><h3>'+esc(r.title)+
-    '</h3><p>'+esc([memorialAuthor(r),r.type].filter(Boolean).join(' · '))+'</p><div class="archive-original">'+
+    '</h3><p>'+memorialPortraitHTML(state,r)+esc([memorialAuthor(r),r.type].filter(Boolean).join(' · '))+'</p><div class="archive-original">'+
     memorialParagraphHTML(r.text||'旧卷未留存奏折全文，以下为起居注中留下的批阅记录。')+'</div><p class="memorial-signature">'+esc(memorialSignature(r))+'</p><section class="archive-verdict"><h4>御批</h4><p>'+esc(r.decision)+
     '</p>'+(r.consequence?'<p>'+esc(r.consequence)+'</p>':'')+(r.remark?'<blockquote class="archive-brush">'+esc(r.remark)+
     '</blockquote>':'<p class="muted">未另写朱批。</p>')+'</section></article><div class="dialog-actions">'+
@@ -50,7 +51,7 @@ export function openMemorialArchive(state) {
       '<p id="archive-count"></p><div id="archive-results"></div>';
     paintResults();
   };
-  const detail = record => {clearImages();selected=record;root.innerHTML=memorialArchiveDetailHTML(record);dialog.scrollTop=0;};
+  const detail = record => {clearImages();selected=record;root.innerHTML=memorialArchiveDetailHTML(record,state);dialog.scrollTop=0;};
   root.oninput = e => { if(e.target.id==='archive-search'){query=e.target.value;page=0;paintResults();} };
   root.onchange = e => {
     if(e.target.id==='archive-type')type=e.target.value;

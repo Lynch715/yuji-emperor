@@ -1,0 +1,901 @@
+// ART-SPEC: empty slots are intentional; never request an unproduced file.
+// Paths are relative to index.html so project GitHub Pages subpaths work.
+export const ART_FOCUS = {
+  "avatar": "50% 32%",
+  "card": "50% 25%",
+  "paper": "50% 50%"
+};
+export const ART_POOLS = {
+  "ming/official-mature": [
+    "assets/art/portraits/ming/official-mature-01.webp",
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+  ],
+  "ming/official-old": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+  ],
+  "ming/general-all": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "ming/eunuch-all": [
+    null,
+    null
+  ],
+  "ming/consort-high": [
+    null,
+    null,
+    null
+  ],
+  "ming/consort-regular": [
+    "assets/art/portraits/ming/consort-regular-01.webp",
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+  ],
+  "ming/dowager-all": [
+    null
+  ],
+  "ming/emperor-young": [
+    null,
+    null
+  ],
+  "ming/emperor-old": [
+    null,
+    null
+  ],
+  "ming/prince-teen": [
+    null,
+    null
+  ],
+  "ming/prince-adult": [
+    null,
+    null
+  ],
+  "ming/princess-teen": [
+    null,
+    null
+  ],
+  "ming/princess-adult": [
+    null,
+    null
+  ],
+  "qing/official-mature": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+  ],
+  "qing/official-old": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+  ],
+  "qing/general-all": [
+    null,
+    null,
+    null
+  ],
+  "qing/consort-high": [
+    null,
+    null
+  ],
+  "qing/consort-regular": [
+    null,
+    null,
+    null,
+    null,
+    null
+  ],
+  "qing/emperor-young": [
+    null
+  ],
+  "qing/emperor-old": [
+    null
+  ],
+  "qing/prince-teen": [
+    null
+  ],
+  "qing/prince-adult": [
+    null
+  ],
+  "qing/princess-teen": [
+    null
+  ],
+  "qing/princess-adult": [
+    null
+  ],
+  "han/official-mature": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+  ],
+  "han/official-old": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+  ],
+  "han/general-all": [
+    null,
+    null,
+    null
+  ],
+  "han/eunuch-all": [
+    null
+  ],
+  "han/consort-high": [
+    null,
+    null
+  ],
+  "han/consort-regular": [
+    null,
+    null,
+    null,
+    null,
+    null
+  ],
+  "han/emperor-young": [
+    null
+  ],
+  "han/emperor-old": [
+    null
+  ],
+  "han/prince-teen": [
+    null
+  ],
+  "han/prince-adult": [
+    null
+  ],
+  "han/princess-teen": [
+    null
+  ],
+  "han/princess-adult": [
+    null
+  ],
+  "tang/official-mature": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+  ],
+  "tang/official-old": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+  ],
+  "tang/general-all": [
+    null,
+    null,
+    null
+  ],
+  "tang/eunuch-all": [
+    null
+  ],
+  "tang/consort-high": [
+    null,
+    null
+  ],
+  "tang/consort-regular": [
+    null,
+    null,
+    null,
+    null,
+    null
+  ],
+  "tang/emperor-young": [
+    null
+  ],
+  "tang/emperor-old": [
+    null
+  ],
+  "tang/prince-teen": [
+    null
+  ],
+  "tang/prince-adult": [
+    null
+  ],
+  "tang/princess-teen": [
+    null
+  ],
+  "tang/princess-adult": [
+    null
+  ],
+  "song/official-mature": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+  ],
+  "song/official-old": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+  ],
+  "song/general-all": [
+    null,
+    null,
+    null
+  ],
+  "song/eunuch-all": [
+    null
+  ],
+  "song/consort-high": [
+    null,
+    null
+  ],
+  "song/consort-regular": [
+    null,
+    null,
+    null,
+    null,
+    null
+  ],
+  "song/emperor-young": [
+    null
+  ],
+  "song/emperor-old": [
+    null
+  ],
+  "song/prince-teen": [
+    null
+  ],
+  "song/prince-adult": [
+    null
+  ],
+  "song/princess-teen": [
+    null
+  ],
+  "song/princess-adult": [
+    null
+  ],
+  "shared/foreign-north": [
+    null,
+    null
+  ],
+  "shared/foreign-west": [
+    null,
+    null
+  ],
+  "shared/foreign-south": [
+    null,
+    null
+  ],
+  "shared/foreign-east": [
+    null,
+    null
+  ],
+  "shared/boy-young": [
+    null,
+    null
+  ],
+  "shared/girl-young": [
+    null,
+    null
+  ],
+  "shared/scholar-young": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "shared/scholar-mature": [
+    null,
+    null,
+    null,
+    null
+  ]
+};
+export const ART_UNIQUE = {
+  "han-wudi": {
+    "刘彻": {
+      "base": null,
+      "old": null
+    },
+    "窦婴": {
+      "base": null
+    },
+    "田蚡": {
+      "base": null
+    },
+    "赵绾": {
+      "base": null
+    },
+    "王臧": {
+      "base": null
+    },
+    "董仲舒": {
+      "base": null
+    },
+    "汲黯": {
+      "base": null
+    },
+    "韩安国": {
+      "base": null
+    },
+    "李广": {
+      "base": null
+    },
+    "程不识": {
+      "base": null
+    },
+    "庄助": {
+      "base": null
+    },
+    "陈阿娇": {
+      "base": null
+    },
+    "卫子夫": {
+      "base": null
+    },
+    "军臣单于": {
+      "base": null
+    },
+    "猎骄靡": {
+      "base": null
+    },
+    "赵佗": {
+      "base": null
+    },
+    "驺郢": {
+      "base": null
+    },
+    "驺望": {
+      "base": null
+    },
+    "窦太皇太后": {
+      "base": null
+    }
+  },
+  "tang-taizong": {
+    "李世民": {
+      "base": null,
+      "old": null
+    },
+    "房玄龄": {
+      "base": null
+    },
+    "杜如晦": {
+      "base": null
+    },
+    "长孙无忌": {
+      "base": null
+    },
+    "魏征": {
+      "base": null
+    },
+    "王珪": {
+      "base": null
+    },
+    "萧瑀": {
+      "base": null
+    },
+    "封德彝": {
+      "base": null
+    },
+    "高士廉": {
+      "base": null
+    },
+    "戴胄": {
+      "base": null
+    },
+    "尉迟敬德": {
+      "base": null
+    },
+    "李靖": {
+      "base": null
+    },
+    "李勣": {
+      "base": null
+    },
+    "李孝恭": {
+      "base": null
+    },
+    "长孙氏": {
+      "base": null
+    },
+    "杨氏": {
+      "base": null
+    },
+    "韦珪": {
+      "base": null
+    },
+    "李承乾": {
+      "base": null,
+      "adult": null
+    },
+    "李泰": {
+      "base": null,
+      "adult": null
+    },
+    "李恪": {
+      "base": null,
+      "adult": null
+    },
+    "颉利可汗": {
+      "base": null
+    },
+    "伏允": {
+      "base": null
+    },
+    "高建武": {
+      "base": null
+    },
+    "扶余璋": {
+      "base": null
+    },
+    "夷男": {
+      "base": null
+    }
+  },
+  "song-renzong": {
+    "赵祯": {
+      "base": null,
+      "old": null
+    },
+    "丁谓": {
+      "base": null
+    },
+    "王曾": {
+      "base": null
+    },
+    "吕夷简": {
+      "base": null
+    },
+    "晏殊": {
+      "base": null
+    },
+    "鲁宗道": {
+      "base": null
+    },
+    "曹利用": {
+      "base": null
+    },
+    "钱惟演": {
+      "base": null
+    },
+    "张士逊": {
+      "base": null
+    },
+    "雷允恭": {
+      "base": null
+    },
+    "范仲淹": {
+      "base": null
+    },
+    "耶律隆绪": {
+      "base": null
+    },
+    "李德明": {
+      "base": null
+    },
+    "唃厮啰": {
+      "base": null
+    },
+    "李公蕴": {
+      "base": null
+    },
+    "王询": {
+      "base": null
+    },
+    "刘太后": {
+      "base": null
+    }
+  },
+  "ming-wanli": {
+    "朱翊钧": {
+      "base": null,
+      "old": null
+    },
+    "张居正": {
+      "base": null
+    },
+    "冯保": {
+      "base": null
+    },
+    "吕调阳": {
+      "base": null
+    },
+    "张四维": {
+      "base": null
+    },
+    "申时行": {
+      "base": null
+    },
+    "王锡爵": {
+      "base": null
+    },
+    "王国光": {
+      "base": null
+    },
+    "杨博": {
+      "base": null
+    },
+    "谭纶": {
+      "base": null
+    },
+    "潘季驯": {
+      "base": null
+    },
+    "戚继光": {
+      "base": null
+    },
+    "李成梁": {
+      "base": null
+    },
+    "俺答汗": {
+      "base": null
+    },
+    "王杲": {
+      "base": null
+    },
+    "李昖": {
+      "base": null
+    },
+    "莫茂洽": {
+      "base": null
+    },
+    "织田信长": {
+      "base": null
+    },
+    "李太后": {
+      "base": null
+    }
+  },
+  "ming-chongzhen": {
+    "朱由检": {
+      "base": null,
+      "old": null
+    },
+    "魏忠贤": {
+      "base": null
+    },
+    "崔呈秀": {
+      "base": null
+    },
+    "黄立极": {
+      "base": null
+    },
+    "温体仁": {
+      "base": null
+    },
+    "周延儒": {
+      "base": null
+    },
+    "毕自严": {
+      "base": null
+    },
+    "王永光": {
+      "base": null
+    },
+    "袁崇焕": {
+      "base": null
+    },
+    "洪承畴": {
+      "base": null
+    },
+    "卢象升": {
+      "base": null
+    },
+    "周氏": {
+      "base": null
+    },
+    "田氏": {
+      "base": null
+    },
+    "袁氏": {
+      "base": null
+    },
+    "林丹汗": {
+      "base": null
+    },
+    "皇太极": {
+      "base": null
+    },
+    "李倧": {
+      "base": null
+    },
+    "德川家光": {
+      "base": null
+    },
+    "懿安皇后": {
+      "base": null
+    }
+  },
+  "qing-kangxi": {
+    "玄烨": {
+      "base": null,
+      "old": null
+    },
+    "索尼": {
+      "base": null
+    },
+    "苏克萨哈": {
+      "base": null
+    },
+    "遏必隆": {
+      "base": null
+    },
+    "鳌拜": {
+      "base": null
+    },
+    "索额图": {
+      "base": null
+    },
+    "明珠": {
+      "base": null
+    },
+    "熊赐履": {
+      "base": null
+    },
+    "魏裔介": {
+      "base": null
+    },
+    "汤若望": {
+      "base": null
+    },
+    "杰书": {
+      "base": null
+    },
+    "阿列克谢": {
+      "base": null
+    },
+    "僧格": {
+      "base": null
+    },
+    "吴三桂": {
+      "base": null
+    },
+    "郑成功": {
+      "base": null
+    },
+    "李棩": {
+      "base": null
+    },
+    "孝庄太皇太后": {
+      "base": null
+    }
+  },
+  "qing-yongzheng": {
+    "胤禛": {
+      "base": null,
+      "old": null
+    },
+    "允禩": {
+      "base": null
+    },
+    "允祥": {
+      "base": null
+    },
+    "马齐": {
+      "base": null
+    },
+    "隆科多": {
+      "base": null
+    },
+    "张廷玉": {
+      "base": null
+    },
+    "年羹尧": {
+      "base": null
+    },
+    "鄂尔泰": {
+      "base": null
+    },
+    "田文镜": {
+      "base": null
+    },
+    "李卫": {
+      "base": null
+    },
+    "允禟": {
+      "base": null
+    },
+    "允禵": {
+      "base": null
+    },
+    "岳钟琪": {
+      "base": null
+    },
+    "乌拉那拉氏": {
+      "base": null
+    },
+    "年氏": {
+      "base": null
+    },
+    "钮祜禄氏": {
+      "base": null
+    },
+    "李氏": {
+      "base": null
+    },
+    "弘时": {
+      "base": null
+    },
+    "弘历": {
+      "base": null,
+      "adult": null
+    },
+    "福惠": {
+      "base": null,
+      "adult": null
+    },
+    "彼得一世": {
+      "base": null
+    },
+    "策妄阿拉布坦": {
+      "base": null
+    },
+    "罗卜藏丹津": {
+      "base": null
+    },
+    "黎维祹": {
+      "base": null
+    },
+    "李昀": {
+      "base": null
+    },
+    "仁寿皇太后": {
+      "base": null
+    }
+  }
+};
+export const ART_SCENES = {
+  "desk-day": {
+    "src": null,
+    "small": null,
+    "focus": "50% 50%"
+  },
+  "desk-night": {
+    "src": "assets/art/scenes/desk-night-1440.webp",
+    "small": "assets/art/scenes/desk-night-720.webp",
+    "focus": "50% 50%"
+  },
+  "court": {
+    "src": "assets/art/scenes/court-1440.webp",
+    "small": "assets/art/scenes/court-720.webp",
+    "focus": "50% 50%"
+  },
+  "audience": {
+    "src": null,
+    "small": null,
+    "focus": "50% 50%"
+  },
+  "banquet": {
+    "src": null,
+    "small": null,
+    "focus": "50% 50%"
+  },
+  "palace": {
+    "src": null,
+    "small": null,
+    "focus": "50% 50%"
+  },
+  "garden": {
+    "src": null,
+    "small": null,
+    "focus": "50% 50%"
+  },
+  "study": {
+    "src": null,
+    "small": null,
+    "focus": "50% 50%"
+  },
+  "exam": {
+    "src": null,
+    "small": null,
+    "focus": "50% 50%"
+  },
+  "tour": {
+    "src": null,
+    "small": null,
+    "focus": "50% 50%"
+  },
+  "camp": {
+    "src": null,
+    "small": null,
+    "focus": "50% 50%"
+  },
+  "accession": {
+    "src": null,
+    "small": null,
+    "focus": "50% 50%"
+  },
+  "ending": {
+    "src": null,
+    "small": null,
+    "focus": "50% 50%"
+  }
+};
+export const ART_HALLS = {
+  "hall-realm": {
+    "src": null,
+    "small": null,
+    "focus": "50% 50%"
+  },
+  "hall-treasury": {
+    "src": null,
+    "small": null,
+    "focus": "50% 50%"
+  },
+  "hall-archive": {
+    "src": null,
+    "small": null,
+    "focus": "50% 50%"
+  }
+};
+export const HALL_SCENES = {
+  "朝堂": "court",
+  "后宫": "garden",
+  "宗室": "accession",
+  "格物": "study",
+  "科举": "exam",
+  "天下": "hall-realm",
+  "国势全览": "hall-realm",
+  "内库": "hall-treasury",
+  "史馆": "hall-archive"
+};

@@ -1,3 +1,4 @@
+import { sceneHTML, sceneKey, memorialPortraitHTML } from './art.js';
 import {sceneChapterHTML} from './scene-view.js';
 import {briefingsHTML} from './briefings.js';
 import { esc, gameText } from "./common.js";
@@ -253,8 +254,12 @@ export function chapterHTML(h, ambitions = [], sceneActive = false, sceneState =
     '月</div><div class="prose">' +
     ["朝", "午", "夜"]
       .map(
-        (slot) =>
-          "<h3>" + slot + "</h3><p>" + esc(h.chapter[slot] || "略。") + "</p>" + sceneChapterHTML(h,slot,sceneActive,sceneState),
+        (slot) => {
+          const scene=h.scenes?.find(r=>r.slot===slot);
+          const key=h.artScenes?.[slot] || sceneKey(scene?{kind:'自拟情节',place:scene.place}:null,slot);
+          return sceneHTML(key,'chapter',slot==='夜') + '<h3>' + slot + '</h3><p>' +
+            esc(h.chapter[slot] || '略。') + '</p>' + sceneChapterHTML(h,slot,sceneActive,sceneState);
+        },
       )
       .join("") +
     (h.hook ? '<p class="chapter-hook">' + esc(h.hook) + "</p>" : "") +
@@ -306,7 +311,7 @@ export function memorialHTML(m, s = null) {
     "</span>" +
     (m.urgent ? '<span class="stamp">急</span>' : "") +
     '</strong><small class="memorial-byline"><span class="memorial-from">' +
-    esc(m.from) +
+    memorialPortraitHTML(s,m) + esc(m.from) +
     "</span><span>剩 " +
     Math.max(0, m.due - (m.currentTurn || 0)) +
     " 旬</span></small>" +
@@ -447,7 +452,7 @@ export function renderApp(
     (p) => '<button data-panel="' + p + '">' + p + "</button>",
   ).join("");
   const opening = s
-    ? '<div class="chapter-head"><span class="eyebrow">御极 · 序章</span><h2>' +
+    ? sceneHTML(s.ending ? 'ending' : 'accession') + '<div class="chapter-head"><span class="eyebrow">御极 · 序章</span><h2>' +
       esc(s.era.name) +
       '新政</h2><span class="chapter-fate">' +
       esc(s.dynasty) +
@@ -618,6 +623,7 @@ export function renderApp(
       ? '<p class="onboarding">幼帝摄政 · 年满十六岁亲政；现可批折、召见、自拟情节、经筵、歇息。</p>'
       : "") +
     '<article class="scroll" id="scroll" tabindex="0" aria-label="本旬正文章节">' +
+    (s?.ending ? sceneHTML('ending') : '') +
     (last ? chapterHTML(last, s.ambitions,!locked&&!s.talks.some(t=>t.turn===s.turn),s) : opening) +
     '<div id="stream" class="streaming" aria-live="polite"></div></article><div class="saved-status">' +
     esc(gameText(

@@ -1,3 +1,4 @@
+import { memorialPortraitHTML, sceneHTML } from './art.js';
 import {developmentChoiceBlock} from '../core/development-choices.js';
 import { TEXT_LIMITS } from '../core/text.js';
 import { memorialParagraphHTML, memorialAuthor, memorialSignature } from './memorial-document.js';
@@ -409,7 +410,7 @@ export function memorialHTML(s, session) {
     '<h3 id="memorial-title" tabindex="-1">' +
     esc(m.title) +
     '</h3></div><div class="memorial-meta"><div class="memorial-author"><span>' +
-    esc(memorialAuthor(m,postTitle(s,post))) +
+    memorialPortraitHTML(s,m) + esc(memorialAuthor(m,postTitle(s,post))) +
     (faction ? "（" + esc(faction.name) + "）" : "") +
     "</span>" +
     (person?.alive
@@ -545,6 +546,7 @@ export function memorialDialog(
   );
   const root = $("#review-root"),
     d = $("#modal");
+  d.querySelector('.dialog-head').insertAdjacentHTML('beforebegin',sceneHTML(kind==='上朝'?'court':'desk-day','action'));
   const mobile = matchMedia("(max-width:899px)");
   const revealCurrent = () => {
     if (!d.open) return;

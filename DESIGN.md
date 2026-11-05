@@ -464,7 +464,7 @@ kind 从这里选：上朝议题、批折、召见、宴请、下旨、任命、
 3. src/core 与 src/llm/prompts、src/llm/validate 不得访问 DOM、localStorage、fetch；全部可在 Node 里 `node --test` 运行。
 4. 随机数一律走 core/rng.js，可注入种子，测试必须可复现。
 5. 存档向后兼容：任何结构改动都要升 S.v 并在 migrate() 里补字段；读档失败进入只读保护模式，不得覆盖原存档。
-6. 最终产物是单文件 index.html（scripts/build.mjs 把 src 拼进去），可直接部署到 GitHub Pages；不引入框架和构建依赖。
+6. index.html 由 scripts/build.mjs 把 src 拼成；美术资产以 WebP 放在 assets/art/，与 index.html 一起发布到 GitHub Pages、按需加载，缺图时界面照常可用；不引入框架和构建依赖。
 7. 界面全部中文；触控目标 ≥44px；手机宽度 360px 下无横向滚动。
 8. 每阶段结束：跑测试、跑 200 年无模型模拟（mock LLM）、更新 CHANGELOG.md。
 ```

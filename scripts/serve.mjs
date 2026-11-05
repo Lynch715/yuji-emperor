@@ -26,6 +26,7 @@ createServer(async (req, res) => {
         ".html": "text/html; charset=utf-8",
         ".js": "text/javascript; charset=utf-8",
         ".css": "text/css; charset=utf-8",
+        ".webp": "image/webp",
       }[extname(path)] || "text/plain; charset=utf-8",
     );
     res.setHeader("Cache-Control", "no-store");

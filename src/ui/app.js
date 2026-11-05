@@ -1,3 +1,5 @@
+import { initArt, portraitHTML, sceneHTML, sceneKey, scenarioArtHTML, withChapterArt, withPortraitArt } from './art.js';
+import { assignFaces } from '../core/faces.js';
 import { openKeju } from './keju.js';
 import {industryForm,developmentAction,updateDevelopmentPreview} from './technology.js';
 import {configureResearch} from '../core/tech.js';
@@ -77,6 +79,7 @@ import {
 import { DIFFICULTIES, scenarioDifficulty, scenarioRecommendations } from "./opening-options.js";
 import { openNationOverview } from "./nation-overview.js";
 initCommon();
+initArt();
 setLeaveGuard(() => busy);
 initAppIcon();
 const store = createSaveStore({
@@ -101,6 +104,7 @@ let state = null,
 const scheduleSave=createDebouncedSave(()=>persist());
 window.addEventListener("pagehide",()=>scheduleSave.flush());
 function render() {
+  if(state)state = withPortraitArt(assignFaces(state));
   const y = window.scrollY, kept = captureView($("#app"));
   const canRepeat = !!state && Object.values(repeatSchedule(state, lastScheduleFor(state))).some(Boolean);
   $("#app").innerHTML = renderApp(state, { readOnly, busy, saveStatus, canRepeat, scheduleCollapsed });
@@ -363,7 +367,7 @@ async function newGame() {
     const panel=$("#goal-recommendations"); panel.hidden=!sc;
     if(sc){
       const v=scenarioPreview(sc);$("#emperor-name").value=v.emperor;$("#era-name").value=v.era;$("#difficulty").value=scenarioDifficulty(sc);
-      card.innerHTML='<strong>'+esc(v.dynasty+' · '+v.year+' · '+v.emperor+' '+v.age+' 岁')+'</strong><p>'+esc(v.blurb)+
+      card.innerHTML=scenarioArtHTML(sc)+'<strong>'+esc(v.dynasty+' · '+v.year+' · '+v.emperor+' '+v.age+' 岁')+'</strong><p>'+esc(v.blurb)+
         '</p><small>朝中：'+esc(v.cast.join('、'))+'等</small>';
       panel.innerHTML='<h3>这位皇帝的宏愿与心事</h3><p class="muted">每项都有自己的达成条件，也可以换选其他目标。</p><div class="goal-recommend-grid">'+
         recommended.map(g=>'<div><strong>'+esc(g.kind+' · '+g.title)+'</strong><p>'+esc(g.reason)+'</p>'+goalConditionsHTML(g)+'</div>').join('')+
@@ -506,6 +510,7 @@ async function advance(local = false) {
       });
     }
     state = commitTurn(state, f, narrative);
+    state = withChapterArt(state, f);
     lastSchedule = { runId: state.runId, turn: state.turn, schedule: f.schedule };
     if (state.ending && !state.settings.demo) {
       try {
@@ -558,6 +563,7 @@ function openScene(id,local=false,auto=false){
     [h.chapter[r.slot],...r.steps.slice(-3).map(t=>t.prose)].map(p=>'<p>'+esc(p).replace(/\n+/g,'</p><p>')+'</p>').join('')+
     '</div><p class="muted">'+esc(sceneOutcomeText(pending?.outcome||r.steps.at(-1)?.outcome||r.outcome))+'</p><form id="scene-form"><label for="scene-follow">接下来想发生什么（选填）</label><textarea id="scene-follow" maxlength="8000" rows="4" '+(pending?'readonly':'')+' placeholder="留空会接着描写；也可以写下新的想法。">'+esc(pending?.request||'')+'</textarea><p class="muted">续写不另耗精力。写下新的心意，让这段故事继续。</p><div class="dialog-actions"><button type="submit" class="primary">'+(pending?'重试续写':'接着写')+'</button></div><p id="scene-status" role="status"></p></form></div>','action-shell');
   $('#modal').classList.add('scene-dialog');
+  $('#modal .dialog-head').insertAdjacentHTML('beforebegin',sceneHTML(sceneKey({kind:'自拟情节',place:r.place},r.slot),'action',r.slot==='夜'));
   if($('#action-document'))$('#action-document').innerHTML='<h3>'+esc(r.place||'自拟情节')+'</h3><p>'+esc(r.people.map(p=>p.name).join('、')||'独处')+'</p><p>'+esc(r.text)+'</p>';
   const dialog=$('#modal'),owner=$('#scene-owner'),scope=createDialogRequestScope(dialog,owner),form=$('#scene-form');
   form.onsubmit=async event=>{
@@ -624,8 +630,9 @@ function startTalk(person) {
   const refreshTalkPaper=()=>{
     if(!$('#talk-form')||!$('#action-document'))return;
     const live=state.court.officials.find(o=>o.id===person)||state.harem.consorts.find(o=>o.id===person)||state.foreign.find(o=>o.id===person)||npc;
-    $('#action-document').innerHTML='<span class="portrait" aria-hidden="true">'+esc(live.name[0])+'</span><h3>'+esc(live.name)+'</h3><p>'+esc(postTitle(state,state.court.posts.find(p=>p.holder===person))||live.family||live.status||'御前候见')+'</p><p>'+esc(live.age?live.age+' 岁':'')+(live.favor!==undefined?' · 好感 '+live.favor:'')+'</p><p class="muted">可以继续垂询，也可稍后召见别人。聊天不限轮数，办事仍须核对钱粮和职权。</p>';
+    $('#action-document').innerHTML=portraitHTML(state,live,'paper')+'<h3>'+esc(live.ruler||live.name)+'</h3><p>'+esc(postTitle(state,state.court.posts.find(p=>p.holder===person))||live.family||live.status||'御前候见')+'</p><p>'+esc(live.age?live.age+' 岁':'')+(live.favor!==undefined?' · 好感 '+live.favor:'')+'</p><p class="muted">可以继续垂询，也可稍后召见别人。聊天不限轮数，办事仍须核对钱粮和职权。</p>';
   };
+  $('#modal .dialog-head')?.insertAdjacentHTML('beforebegin',sceneHTML('audience','action'));
   refreshTalkPaper();
   $("#talk-form").onsubmit = async (e) => {
     e.preventDefault();
@@ -947,7 +954,7 @@ async function command(name) {
     openDialog(
       "天子心事",
       state
-        ? "<h3>" +
+        ? portraitHTML(state,state.emperor,'card') + '<h3>' +
             esc(state.emperor.name) +
             " · " +
             state.emperor.age +

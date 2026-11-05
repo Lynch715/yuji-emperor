@@ -18,12 +18,15 @@ jobs:
           node-version: 24
       - name: Run tests
         run: npm test
-      - name: Build single-file game
+      - name: Build game
         run: npm run build
       - name: Package public website
         run: |
           mkdir -p _site
           cp index.html _site/index.html
+          if [ -d assets/art ]; then
+            find assets/art -type f -name '*.webp' -exec sh -c 'mkdir -p "_site/$(dirname "$1")"; cp "$1" "_site/$1"' _ {} \;
+          fi
           touch _site/.nojekyll
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4
