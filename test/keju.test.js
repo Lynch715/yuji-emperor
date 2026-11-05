@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {createState,migrate,assertState,VERSION} from '../src/core/state.js';
 import {initialTurn,forecastTurn,commitTurn} from '../src/core/turn.js';
 import {activeExam,advanceExams,configureExams,appointExaminer,setExamTopics,chooseExamTopic,receiveExamPapers,setExamBlind,rankExamCandidate,publishExam,cacheExamEssay,openEnke,queueExamHook,examOfficialView} from '../src/core/keju.js';
-import {mockExamPapers,mockExamEssay,validateExamPapers,validateExamEssay,validateExamTopics,validateTopicReview,examPaperMessages} from '../src/llm/keju.js';
+import {mockExamPapers,mockExamEssay,validateExamPapers,validateExamEssay,validateExamTopics,validateTopicReview,examPaperMessages,examEssayMessages} from '../src/llm/keju.js';
 import {issueEdict} from '../src/core/edicts.js';
 import {resolveMemorial} from '../src/core/events.js';
 import {pack,unpack} from '../src/store/save.js';
@@ -36,7 +36,9 @@ test('自拟题三档：严格劝谏、最自由原样采用、中档复用可�
 });
 test('收卷一次涵盖全部人、数值不受模型篡改、失败保留名册与原骰',()=>{
  const s=writing(),e=activeExam(s),before=structuredClone(s),data={candidates:mockExamPapers(e)};
- data.candidates[0].hidden.ability=999999;assert.throws(()=>validateExamPapers(data,e));assert.deepEqual(s,before);
+ assert.ok(data.candidates.every(c=>!Object.hasOwn(c,'hidden')));
+ data.candidates[0].hidden={ability:999999,integrity:-50,faction:'invented'};
+ const checked=validateExamPapers(data,e);assert.ok(checked.every(c=>!Object.hasOwn(c,'hidden')));assert.deepEqual(s,before);
  assert.throws(()=>validateExamPapers({candidates:mockExamPapers(e).slice(1)},e));
  const wrong={candidates:mockExamPapers(e)};wrong.candidates[0].essayPosition='随机立场';assert.throws(()=>validateExamPapers(wrong,e));
  const n=receiveExamPapers(s,e.id,validateExamPapers({candidates:mockExamPapers(e)},e));assert.equal(activeExam(n).status,'grading');assert.equal(n.rng,s.rng);assertState(n);
@@ -111,4 +113,67 @@ test('真实请求通路只发一次九卷JSON，坏格式及服务失败不自�
  const papers=await requestExamJSON(config,examPaperMessages(s,e),d=>validateExamPapers(d,e),{fetcher});assert.equal(calls,1);assert.equal(papers.length,9);
  calls=0;await assert.rejects(()=>requestExamJSON(config,examPaperMessages(s,e),d=>validateExamPapers(d,e),{fetcher:async()=>{calls++;return new Response('',{status:500});}}));assert.equal(calls,1);
  calls=0;await assert.rejects(()=>requestExamJSON(config,examPaperMessages(s,e),d=>validateExamPapers(d,e),{fetcher:async()=>{calls++;return new Response(JSON.stringify({choices:[{message:{content:'{"candidates":[]}'}}]}),{headers:{'content-type':'application/json'}});}}));assert.equal(calls,1);assert.equal(activeExam(s).status,'writing');
+});
+
+test('文章请求只包含立场文笔及高低语气，师承只在评卷部分',()=>{
+ const s=writing(),e=activeExam(s),c=e.candidates[0];
+ const paper=JSON.parse(examPaperMessages(s,e)[1].content),essay=JSON.parse(examEssayMessages(e,c)[1].content);
+ assert.deepEqual(Object.keys(paper).sort(),['grading','writing']);
+ assert.deepEqual(Object.keys(paper.writing.candidates[0]).sort(),['ambitionTone','id','literary','stance']);
+ assert.deepEqual(Object.keys(paper.grading).sort(),['blindGrading','candidates','examiner']);
+ assert.deepEqual(paper.grading.candidates,e.candidates.map(c=>({id:c.id,priorMentor:c.priorMentor??null})));
+ assert.deepEqual(Object.keys(essay).sort(),['ambitionTone','essaySummary','literary','stance','topic']);
+ const forbidden=new Set(['hidden','ability','integrity','faction','ambition']);
+ const walk=value=>{if(!value||typeof value!=='object')return;for(const [k,v]of Object.entries(value)){assert.ok(!forbidden.has(k),k);walk(v);}};
+ walk(paper);walk(essay);
+ const altered=structuredClone(e);for(const person of altered.candidates){person.hidden.ability=0;person.hidden.integrity=100;person.hidden.faction='different';}
+ assert.deepEqual(examPaperMessages(s,altered),examPaperMessages(s,e));assert.deepEqual(examEssayMessages(altered,altered.candidates[0]),examEssayMessages(e,c));
+ const changed=structuredClone(e);changed.candidates[0].priorMentor='o19';
+ assert.deepEqual(JSON.parse(examPaperMessages(s,changed)[1].content).writing,paper.writing);
+ assert.notDeepEqual(JSON.parse(examPaperMessages(s,changed)[1].content).grading,paper.grading);
+ assert.deepEqual(examEssayMessages(changed,changed.candidates[0]),examEssayMessages(e,c));
+ const tones=[20,21,90].map(ambition=>JSON.parse(examEssayMessages(e,{...c,hidden:{...c.hidden,ambition}})[1].content));
+ assert.deepEqual(tones[0],tones[1]);assert.notEqual(tones[0].ambitionTone,tones[2].ambitionTone);
+});
+test('五字段卷宗接受无hidden，拒绝错号重复号、错立场、空文与坏拟次',()=>{
+ const s=writing(),e=activeExam(s),data=()=>({candidates:mockExamPapers(e)});
+ assert.doesNotThrow(()=>validateExamPapers(data(),e));
+ const variants=[d=>{d.candidates[0].id='unknown';},d=>{d.candidates[1].id=d.candidates[0].id;},d=>{d.candidates[0].essayPosition='不符';},d=>{d.candidates[0].essaySummary='';},d=>{d.candidates[0].reviewerComment='';},d=>{d.candidates[0].reviewerSuggestedRank=1.5;},d=>{d.candidates[1].reviewerSuggestedRank=d.candidates[0].reviewerSuggestedRank;}];
+ for(const change of variants){const d=data();change(d);assert.throws(()=>validateExamPapers(d,e));}
+});
+test('迟榜第48旬首次扣分、以后每12旬扣1，本届礼部只催办一次',()=>{
+ let s=fresh();const id=activeExam(s).id;
+ for(const turn of [36,37,47]){s.turn=turn;s=advanceExams(s);assert.equal(s.keju.scholarReputation,50);assert.equal(s.memorials.filter(m=>m.type==='科举催办').length,0);}
+ s.turn=48;const before=JSON.stringify(s);const first=advanceExams(s);assert.equal(JSON.stringify(s),before);assert.equal(first.keju.scholarReputation,49);
+ const m=first.memorials.find(m=>m.type==='科举催办');assert.ok(m.text.includes('48旬'));assert.equal(m.fromId,'o4');assert.equal(m.fromPost,'礼部尚书');
+ assert.equal(first.ledger.at(-1).path,'keju.scholarReputation');assert.deepEqual(advanceExams(first),first);
+ s=migrate(unpack(pack(first)).state);s=resolveMemorial(s,m.id,'opt0').state;s.turn=59;s=advanceExams(s);assert.equal(s.keju.scholarReputation,49);
+ s.turn=60;s=advanceExams(s);assert.equal(s.keju.scholarReputation,48);assert.equal(s.memorials.filter(m=>m.type==='科举催办').length,0);assert.deepEqual(advanceExams(s),s);
+ s.turn=72;s=advanceExams(s);assert.equal(s.keju.scholarReputation,47);assert.equal(s.threads.filter(t=>t.type==='科举催办').length,1);assertState(s);
+ // The reminder remains per exam even after it expires or is resolved.
+ assert.ok(s.receipts.includes('keju-reminder:'+id));
+});
+test('迟榜按开科时间计期，放榜后停止，声望不低于零且读档不追扣',()=>{
+ let s=grading(),id=activeExam(s).id;activeExam(s).createdTurn=5;s.turn=48;assert.equal(advanceExams(s).keju.scholarReputation,50);
+ s.turn=53;s=advanceExams(s);assert.equal(s.keju.scholarReputation,49);s=publishExam(s,id);const reputation=s.keju.scholarReputation;s.turn=65;s=advanceExams(s);assert.equal(s.keju.scholarReputation,reputation);
+ const legacy=fresh();legacy.turn=100;const oldReputation=legacy.keju.scholarReputation;assert.equal(migrate(legacy).keju.scholarReputation,oldReputation);assert.equal(advanceExams(legacy).keju.scholarReputation,oldReputation);
+ const zero=fresh();zero.keju.scholarReputation=0;zero.turn=48;const n=advanceExams(zero);assert.equal(n.keju.scholarReputation,0);assert.deepEqual(advanceExams(n),n);
+});
+test('糊名放榜不判偏私：免偏私扣分、额外派系加成和举子闹事',()=>{
+ const blind=grading(),e=activeExam(blind);for(const c of e.candidates){c.origin='noble';c.hidden.faction=e.examinerFaction;c.priorMentor=e.examiner;}
+ const open=setExamBlind(blind,e.id,false),a=publishExam(blind,e.id),b=publishExam(open,e.id);
+ assert.equal(a.keju.exams[0].outcome.clients,3);assert.equal(a.keju.exams[0].outcome.biased,false);assert.equal(b.keju.exams[0].outcome.biased,true);
+ assert.equal(a.keju.scholarReputation,47);assert.equal(b.keju.scholarReputation,42);assert.equal(a.keju.hooks.length,0);assert.equal(b.keju.hooks.length,1);
+ const power=s=>s.court.factions.find(f=>f.id===e.examinerFaction).powerModifier;assert.equal(power(b)-power(a),1);
+ assert.deepEqual(publishExam(a,e.id),a);assertState(a);assertState(b);
+});
+
+test('迟榜真实预演失败重试与提交只扣一次，不修改原档和原骰',()=>{
+ const s=fresh('free');s.turn=47;s.revision=47;const before=JSON.stringify(s),f=forecastTurn(s);
+ assert.equal(JSON.stringify(s),before);assert.equal(f.state.keju.scholarReputation,49);assert.equal(f.state.memorials.filter(m=>m.type==='科举催办').length,1);
+ assert.ok(f.entries.some(e=>e.path==='keju.scholarReputation'&&e.delta===-1));
+ const pending={...s,pending:{forecast:f}},restored=migrate(unpack(pack(pending)).state);
+ assert.equal(restored.keju.scholarReputation,50);assert.equal(restored.pending.forecast.die,f.die);
+ const n=commitTurn(restored,restored.pending.forecast,{});assert.equal(n.keju.scholarReputation,49);assert.equal(n.rng,f.state.rng);assert.deepEqual(commitTurn(n,f,{}),n);assert.deepEqual(advanceExams(n),n);
+ assert.ok(kejuHTML(n).includes('每再满12旬士林声望减1'));assert.ok(kejuHTML(grading()).includes('放榜时仍糊名，不判门生偏私'));
 });

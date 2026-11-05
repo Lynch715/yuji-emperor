@@ -151,7 +151,7 @@ export function publishExam(state,id) {
   const top=e.candidates.filter(c=>EXAM_RANKS.slice(0,3).includes(e.ranking[c.id]));
   const commoners=top.filter(c=>c.origin==='commoner').length,nobles=top.filter(c=>c.origin==='noble').length;
   const clients=top.filter(c=>c.priorMentor===e.examiner).length;
-  const bias=clients>=2;
+  const bias=!e.blindGrading&&clients>=2;
   const rep=commoners*2-nobles-(bias?5:0);
   const influence={};
   for(const c of e.candidates.filter(c=>e.ranking[c.id]!=='黜落')) {
@@ -177,6 +177,24 @@ export function advanceExams(state) {
   if(!activeExam(s)&&s.turn>=s.keju.nextRegularTurn) {
     s=openExam(s,'regular');
     s.keju.nextRegularTurn=s.turn+s.keju.interval;
+  }
+  const exam=activeExam(s),age=exam?s.turn-exam.createdTurn:0;
+  // Reuse existing receipts: no save shape change or replay of past periods.
+  // Thirty-six turns are grace; the first complete overdue period ends at 48.
+  if(exam&&age>=48&&age%12===0) {
+    const receipt='keju-delay:'+exam.id+':'+age;
+    if(!s.receipts.includes(receipt)) {
+      s.receipts.push(receipt);
+      s=applyPackage(s,{scholarReputation:-1},'科举迟未放榜：每十二旬士林声望下降');
+      const reminder='keju-reminder:'+exam.id;
+      if(!s.receipts.includes(reminder)) {
+        s.receipts.push(reminder);
+        s=addEvent(s,'科举催办','礼部催请钦定科举榜次','本届开科已逾一年，榜次久悬，士林议论渐起。礼部请尽早命题阅卷、钦定放榜。',[
+          {label:'阅知，着即办理',effects:{}},
+        ],exam.examiner?[exam.examiner]:[]);
+        s.memorials.at(-1).text='臣礼部谨奏：本届'+(exam.type==='enke'?'恩科':'常科')+'开科迄今已'+age+'旬，尚未放榜。士子久候京师，旅食日艰，士林亦有疑议。伏请陛下督促科场，尽早完成任主考、命题阅卷与钦定榜次，使取士之典有始有终。谨候圣裁。';
+      }
+    }
   }
   // Actual service, once per year per person, reveals one quality through an event.
   for(const original of s.court.officials.filter(o=>o.keju&&o.alive&&o.health>0&&!o.retired&&!o.jailed&&o.post&&s.court.posts.some(p=>p.id===o.post&&p.holder===o.id)&&s.turn-o.keju.lastRevealTurn>=36)) {
