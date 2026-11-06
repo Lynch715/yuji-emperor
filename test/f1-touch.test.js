@@ -1,13 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {GUARDED_EVENTS,createViewportUpdater,applyFontScale,storedFontScale} from '../src/ui/mobile.js';
+import {createViewportUpdater,applyFontScale,storedFontScale} from '../src/ui/mobile.js';
 
-test('F1-U1 只为 iOS 手势注册非被动监听，滚动所用的 touch 事件不被阻塞',()=>{
-  assert.deepEqual(GUARDED_EVENTS,['gesturestart','gesturechange']);
+test('F1-U1 不拦截滚动与用户缩放，视口保留安全区域',()=>{
   const src=readFileSync('src/ui/mobile.js','utf8');
-  assert.doesNotMatch(src,/['"]touch(start|move)['"]\s*[,\]]/);
-  assert.match(readFileSync('src/ui/style.css','utf8'),/html,\nbody \{\n  touch-action: pan-x pan-y;/);
+  assert.doesNotMatch(src,/['"](?:touch(?:start|move)|gesture(?:start|change))['"]/);
+  assert.match(readFileSync('src/ui/style.css','utf8'),/html,\nbody \{\n  touch-action: manipulation;/);
+  const shell=readFileSync('src/ui/shell.html','utf8');assert.doesNotMatch(shell,/user-scalable=no|maximum-scale=1/);assert.match(shell,/viewport-fit=cover/);
 });
 test('F1-U2 悬停样式只在可悬停设备生效，按钮有按压反馈',()=>{
   const css=readFileSync('src/ui/style.css','utf8');

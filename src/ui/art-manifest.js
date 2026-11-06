@@ -314,28 +314,28 @@ export const ART_POOLS = {
     null
   ],
   "shared/foreign-north": [
-    null,
-    null
+    "assets/art/portraits/shared/foreign-north-01.webp",
+    "assets/art/portraits/shared/foreign-north-02.webp"
   ],
   "shared/foreign-west": [
-    null,
-    null
+    "assets/art/portraits/shared/foreign-west-01.webp",
+    "assets/art/portraits/shared/foreign-west-02.webp"
   ],
   "shared/foreign-south": [
-    null,
-    null
+    "assets/art/portraits/shared/foreign-south-01.webp",
+    "assets/art/portraits/shared/foreign-south-02.webp"
   ],
   "shared/foreign-east": [
-    null,
-    null
+    "assets/art/portraits/shared/foreign-east-01.webp",
+    "assets/art/portraits/shared/foreign-east-02.webp"
   ],
   "shared/boy-young": [
-    null,
-    null
+    "assets/art/portraits/shared/boy-young-01.webp",
+    "assets/art/portraits/shared/boy-young-02.webp"
   ],
   "shared/girl-young": [
-    null,
-    null
+    "assets/art/portraits/shared/girl-young-01.webp",
+    "assets/art/portraits/shared/girl-young-02.webp"
   ],
   "shared/scholar-young": [
     "assets/art/portraits/shared/scholar-young-01.webp",
@@ -344,10 +344,10 @@ export const ART_POOLS = {
     "assets/art/portraits/shared/scholar-young-04.webp"
   ],
   "shared/scholar-mature": [
-    null,
-    null,
-    null,
-    null
+    "assets/art/portraits/shared/scholar-mature-01.webp",
+    "assets/art/portraits/shared/scholar-mature-02.webp",
+    "assets/art/portraits/shared/scholar-mature-03.webp",
+    "assets/art/portraits/shared/scholar-mature-04.webp"
   ]
 };
 export const ART_UNIQUE = {
@@ -548,122 +548,122 @@ export const ART_UNIQUE = {
   },
   "ming-wanli": {
     "朱翊钧": {
-      "base": null,
-      "old": null
+      "base": "assets/art/portraits/unique/ming-wanli/emperor-01.webp",
+      "old": "assets/art/portraits/unique/ming-wanli/emperor-01-old.webp"
     },
     "张居正": {
-      "base": null
+      "base": "assets/art/portraits/unique/ming-wanli/official-01.webp"
     },
     "冯保": {
-      "base": null
+      "base": "assets/art/portraits/unique/ming-wanli/official-02.webp"
     },
     "吕调阳": {
-      "base": null
+      "base": "assets/art/portraits/unique/ming-wanli/official-03.webp"
     },
     "张四维": {
-      "base": null
+      "base": "assets/art/portraits/unique/ming-wanli/official-04.webp"
     },
     "申时行": {
-      "base": null
+      "base": "assets/art/portraits/unique/ming-wanli/official-05.webp"
     },
     "王锡爵": {
-      "base": null
+      "base": "assets/art/portraits/unique/ming-wanli/official-06.webp"
     },
     "王国光": {
-      "base": null
+      "base": "assets/art/portraits/unique/ming-wanli/official-07.webp"
     },
     "杨博": {
-      "base": null
+      "base": "assets/art/portraits/unique/ming-wanli/official-08.webp"
     },
     "谭纶": {
-      "base": null
+      "base": "assets/art/portraits/unique/ming-wanli/official-09.webp"
     },
     "潘季驯": {
-      "base": null
+      "base": "assets/art/portraits/unique/ming-wanli/official-10.webp"
     },
     "戚继光": {
-      "base": null
+      "base": "assets/art/portraits/unique/ming-wanli/official-11.webp"
     },
     "李成梁": {
-      "base": null
+      "base": "assets/art/portraits/unique/ming-wanli/official-12.webp"
     },
     "俺答汗": {
-      "base": null
+      "base": "assets/art/portraits/unique/ming-wanli/foreign-01.webp"
     },
     "王杲": {
-      "base": null
+      "base": "assets/art/portraits/unique/ming-wanli/foreign-02.webp"
     },
     "李昖": {
-      "base": null
+      "base": "assets/art/portraits/unique/ming-wanli/foreign-03.webp"
     },
     "莫茂洽": {
-      "base": null
+      "base": "assets/art/portraits/unique/ming-wanli/foreign-04.webp"
     },
     "织田信长": {
-      "base": null
+      "base": "assets/art/portraits/unique/ming-wanli/foreign-05.webp"
     },
     "李太后": {
-      "base": null
+      "base": "assets/art/portraits/unique/ming-wanli/dowager-01.webp"
     }
   },
   "ming-chongzhen": {
     "朱由检": {
-      "base": null,
-      "old": null
+      "base": "assets/art/portraits/unique/ming-chongzhen/emperor-01.webp",
+      "old": "assets/art/portraits/unique/ming-chongzhen/emperor-01-old.webp"
     },
     "魏忠贤": {
-      "base": null
+      "base": "assets/art/portraits/unique/ming-chongzhen/official-01.webp"
     },
     "崔呈秀": {
-      "base": null
+      "base": "assets/art/portraits/unique/ming-chongzhen/official-02.webp"
     },
     "黄立极": {
-      "base": null
+      "base": "assets/art/portraits/unique/ming-chongzhen/official-03.webp"
     },
     "温体仁": {
-      "base": null
+      "base": "assets/art/portraits/unique/ming-chongzhen/official-04.webp"
     },
     "周延儒": {
-      "base": null
+      "base": "assets/art/portraits/unique/ming-chongzhen/official-05.webp"
     },
     "毕自严": {
-      "base": null
+      "base": "assets/art/portraits/unique/ming-chongzhen/official-06.webp"
     },
     "王永光": {
-      "base": null
+      "base": "assets/art/portraits/unique/ming-chongzhen/official-07.webp"
     },
     "袁崇焕": {
-      "base": null
+      "base": "assets/art/portraits/unique/ming-chongzhen/official-08.webp"
     },
     "洪承畴": {
-      "base": null
+      "base": "assets/art/portraits/unique/ming-chongzhen/official-09.webp"
     },
     "卢象升": {
-      "base": null
+      "base": "assets/art/portraits/unique/ming-chongzhen/official-10.webp"
     },
     "周氏": {
-      "base": null
+      "base": "assets/art/portraits/unique/ming-chongzhen/consort-01.webp"
     },
     "田氏": {
-      "base": null
+      "base": "assets/art/portraits/unique/ming-chongzhen/consort-02.webp"
     },
     "袁氏": {
-      "base": null
+      "base": "assets/art/portraits/unique/ming-chongzhen/consort-03.webp"
     },
     "林丹汗": {
-      "base": null
+      "base": "assets/art/portraits/unique/ming-chongzhen/foreign-01.webp"
     },
     "皇太极": {
-      "base": null
+      "base": "assets/art/portraits/unique/ming-chongzhen/foreign-02.webp"
     },
     "李倧": {
-      "base": null
+      "base": "assets/art/portraits/unique/ming-chongzhen/foreign-03.webp"
     },
     "德川家光": {
-      "base": null
+      "base": "assets/art/portraits/unique/ming-chongzhen/foreign-04.webp"
     },
     "懿安皇后": {
-      "base": null
+      "base": "assets/art/portraits/unique/ming-chongzhen/dowager-01.webp"
     }
   },
   "qing-kangxi": {
@@ -806,8 +806,8 @@ export const ART_UNIQUE = {
 };
 export const ART_SCENES = {
   "desk-day": {
-    "src": null,
-    "small": null,
+    "src": "assets/art/scenes/desk-day-1440.webp",
+    "small": "assets/art/scenes/desk-day-720.webp",
     "focus": "50% 50%"
   },
   "desk-night": {
@@ -821,69 +821,69 @@ export const ART_SCENES = {
     "focus": "50% 50%"
   },
   "audience": {
-    "src": null,
-    "small": null,
+    "src": "assets/art/scenes/audience-1440.webp",
+    "small": "assets/art/scenes/audience-720.webp",
     "focus": "50% 50%"
   },
   "banquet": {
-    "src": null,
-    "small": null,
+    "src": "assets/art/scenes/banquet-1440.webp",
+    "small": "assets/art/scenes/banquet-720.webp",
     "focus": "50% 50%"
   },
   "palace": {
-    "src": null,
-    "small": null,
+    "src": "assets/art/scenes/palace-1440.webp",
+    "small": "assets/art/scenes/palace-720.webp",
     "focus": "50% 50%"
   },
   "garden": {
-    "src": null,
-    "small": null,
+    "src": "assets/art/scenes/garden-1440.webp",
+    "small": "assets/art/scenes/garden-720.webp",
     "focus": "50% 50%"
   },
   "study": {
-    "src": null,
-    "small": null,
+    "src": "assets/art/scenes/study-1440.webp",
+    "small": "assets/art/scenes/study-720.webp",
     "focus": "50% 50%"
   },
   "exam": {
-    "src": null,
-    "small": null,
+    "src": "assets/art/scenes/exam-1440.webp",
+    "small": "assets/art/scenes/exam-720.webp",
     "focus": "50% 50%"
   },
   "tour": {
-    "src": null,
-    "small": null,
+    "src": "assets/art/scenes/tour-1440.webp",
+    "small": "assets/art/scenes/tour-720.webp",
     "focus": "50% 50%"
   },
   "camp": {
-    "src": null,
-    "small": null,
+    "src": "assets/art/scenes/camp-1440.webp",
+    "small": "assets/art/scenes/camp-720.webp",
     "focus": "50% 50%"
   },
   "accession": {
-    "src": null,
-    "small": null,
+    "src": "assets/art/scenes/accession-1440.webp",
+    "small": "assets/art/scenes/accession-720.webp",
     "focus": "50% 50%"
   },
   "ending": {
-    "src": null,
-    "small": null,
-    "focus": "50% 50%"
+    "src": "assets/art/scenes/ending-1440.webp",
+    "small": "assets/art/scenes/ending-720.webp",
+    "focus": "50% 70%"
   }
 };
 export const ART_HALLS = {
   "hall-realm": {
-    "src": null,
+    "src": "assets/art/halls/hall-realm-1440.webp",
     "small": null,
     "focus": "50% 50%"
   },
   "hall-treasury": {
-    "src": null,
+    "src": "assets/art/halls/hall-treasury-1440.webp",
     "small": null,
     "focus": "50% 50%"
   },
   "hall-archive": {
-    "src": null,
+    "src": "assets/art/halls/hall-archive-1440.webp",
     "small": null,
     "focus": "50% 50%"
   }

@@ -349,6 +349,7 @@ export function memorialListHTML(s) {
 }
 export function mobileNavHTML(s) {
   const count = memorialCounts(s);
+  const badge = count.pending ? (count.pending > 99 ? '99+' : String(count.pending)) : '';
   return (
     '<nav class="mobile-nav" aria-label="移动导航">' +
     [
@@ -363,7 +364,7 @@ export function mobileNavHTML(s) {
           command +
           '"' +
           (command === "memorials"
-            ? ' aria-label="奏报 · 待批 ' +
+            ? ' aria-label="折' + badge + '奏报 · 待批 ' +
               count.pending +
               " 本，已拟批 " +
               count.queued +
@@ -373,7 +374,7 @@ export function mobileNavHTML(s) {
           glyph +
           (command === "memorials" && count.pending
             ? '<small class="nav-count">' +
-              (count.pending > 99 ? "99+" : count.pending) +
+              badge +
               "</small>"
             : "") +
           '</span><span class="nav-label">' +

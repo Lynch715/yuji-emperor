@@ -1,12 +1,3 @@
-// Keep the game at its intended scale without delaying ordinary scrolling.
-// Android pinch is stopped by touch-action: pan-x pan-y; only iOS gesture
-// events need a non-passive listener, and they fire for pinches alone.
-export const GUARDED_EVENTS = ["gesturestart", "gesturechange"];
-export function blockPinch(event) {
-  if ((event.touches?.length || 0) > 1 || GUARDED_EVENTS.includes(event.type)) {
-    if (event.cancelable) event.preventDefault();
-  }
-}
 // Coalesce viewport writes to one per frame and skip unchanged values, so a
 // visualViewport scroll does not restyle the whole document on every event.
 export function createViewportUpdater(read, write, schedule = (f) => requestAnimationFrame(f)) {
@@ -38,8 +29,6 @@ let installed = false;
 export function initMobileViewport() {
   if (installed) return;
   installed = true;
-  for (const type of GUARDED_EVENTS)
-    document.addEventListener(type, blockPinch, { passive: false });
   const root = document.documentElement;
   const update = createViewportUpdater(
     () => ({

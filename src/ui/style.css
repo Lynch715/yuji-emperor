@@ -2701,7 +2701,7 @@ textarea.brush-input::placeholder {
 /* Mobile scroll, safe-area and keyboard viewport audit. */
 html,
 body {
-  touch-action: pan-x pan-y;
+  touch-action: manipulation;
   overscroll-behavior: none;
 }
 html.modal-open,

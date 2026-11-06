@@ -1,19 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {blockPinch} from '../src/ui/mobile.js';
 import {APP_ICONS,createAppManifest} from '../src/ui/icon.js';
 import {introHTML,chapterTitle,chapterHTML,renderApp} from '../src/ui/render.js';
 import {createState} from '../src/core/state.js';
 import {initialTurn,forecastTurn,commitTurn} from '../src/core/turn.js';
 import {mockNarrative} from '../src/llm/validate.js';
 
-test('双指和 Safari 缩放手势被阻止，单指滚动与不可取消事件不受干扰（Android 双指由 touch-action 阻止）',()=>{
-  for(const [type,count,cancelable,expected]of [['touchstart',2,true,true],['touchmove',2,true,true],['touchmove',1,true,false],['gesturestart',0,true,true],['gesturechange',0,true,true],['touchmove',2,false,false]]){
-    let prevented=false;blockPinch({type,touches:Array(count),cancelable,preventDefault(){prevented=true;}});assert.equal(prevented,expected,type+' '+count);
-  }
-  const shell=readFileSync('src/ui/shell.html','utf8');assert.match(shell,/user-scalable=no/);assert.match(shell,/viewport-fit=cover/);
-});
 test('桌面图标内嵌真实 PNG，安装清单不携带页面参数，保持同源目录',()=>{
   const manifest=createAppManifest('https://example.test/yuji/index.html?private=test#scroll','#1C1714');
   assert.equal(manifest.start_url,'https://example.test/yuji/');assert.equal(manifest.scope,manifest.start_url);assert.equal(manifest.display,'standalone');

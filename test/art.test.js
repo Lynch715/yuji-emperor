@@ -101,10 +101,26 @@ test('场景按行动和地点取图，章节可选显示元数据不改结算�
  assert.equal(JSON.stringify(f),raw);assert.deepEqual(art.nation,done.nation);assert.deepEqual(withChapterArt(art,f),art);
  assert.equal(sceneHTML('不存在'), '');
 });
+test('万历与崇祯全部开局人物优先取专属像，40岁切换老年像，同名不串剧本',()=>{
+ for(const id of ['ming-wanli','ming-chongzhen']){
+  const sc=SCENARIOS.find(x=>x.id===id),s=initialTurn(applyScenario(createState({seed:'专属取图'}),id)),before=JSON.stringify(s);
+  const base=`assets/art/portraits/unique/${id}/emperor-01.webp`,old=`assets/art/portraits/unique/${id}/emperor-01-old.webp`;
+  assert.equal(portraitSource(s,s.emperor),base);
+  for(const p of [s.emperor,...s.court.officials.slice(0,sc.officials.length),...s.harem.consorts,...s.harem.children,...s.foreign]){
+   const name=p.ruler||p.name;assert.equal(portraitSource(s,p),ART_UNIQUE[id][name].base,name);assert.ok(portraitSource(s,p)?.includes(`/unique/${id}/`),name);
+  }
+  assert.equal(portraitSource(s,{name:s.dowager}),ART_UNIQUE[id][s.dowager].base);
+  for(const age of [39,40]){const aged=structuredClone(s);aged.emperor.age=age;assert.equal(portraitSource(aged,aged.emperor),age<40?base:old);}
+  const custom=start('同名不串剧本');custom.emperor.name=s.emperor.name;assert.notEqual(portraitSource(custom,custom.emperor),base);
+  assert.equal(JSON.stringify(s),before,'取图不修改状态');
+ }
+});
 test('清单仅引用已导出的WebP，尺寸体积预算与文件一一对应',()=>{
  const paths=[...Object.values(ART_POOLS).flat(),...Object.values(ART_UNIQUE).flatMap(s=>Object.values(s).flatMap(p=>Object.values(p))),
   ...Object.values({...ART_SCENES,...ART_HALLS}).flatMap(s=>[s.src,s.small])].filter(Boolean);
  const actual=[];function walk(dir){for(const e of readdirSync(dir,{withFileTypes:true})){const path=dir+'/'+e.name;if(e.isDirectory())walk(path);else actual.push(path);}}
  walk('assets/art');assert.deepEqual([...new Set(paths)].sort(),actual.sort());
- for(const path of actual){assert.match(path,/\.webp$/);assert.ok(statSync(path).size<=(path.includes('/portraits/')?30000:path.endsWith('-720.webp')?60000:150000));}
+ assert.equal(actual.length,145,'一期132张内容：116人物、13场景两档、3殿阁题图');
+ assert.ok(actual.reduce((sum,path)=>sum+statSync(path).size,0)<=12000000);
+ for(const path of actual){assert.match(path,/\.webp$/);assert.ok(statSync(path).size<=(path.includes('/portraits/')?30000:path.includes('/halls/')?100000:path.endsWith('-720.webp')?60000:150000));}
 });
