@@ -1,4 +1,5 @@
 {
+  "date": "2026-11-07",
   "tests": {
     "command": "npm test -- --test-concurrency=4",
     "total": 608,
@@ -15,8 +16,7 @@
     "finalTreasury": 2040
   },
   "build": {
-    "command": "npm run build",
     "htmlBytes": 855007,
-    "budget": 860000
+    "command": "npm run build"
   }
 }

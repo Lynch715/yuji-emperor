@@ -1,0 +1,183 @@
+{
+  "date": "2026-11-07",
+  "baseline": "bf98707",
+  "revisedPortraits": 19,
+  "unchangedWebPs": 205,
+  "allCodeAndHtmlUnchanged": true,
+  "summary": {
+    "contentPortraitsPhase2": 79,
+    "poolPortraits": 32,
+    "uniqueKangxi": 18,
+    "uniqueYongzheng": 29,
+    "phase2Bytes": 727074,
+    "phase2MaximumBytes": 15242,
+    "totalWebPFiles": 224,
+    "totalBytes": 3676234,
+    "maximumPortraitBudget": 30000,
+    "totalBudget": 12000000,
+    "headTopRange": [
+      0.1,
+      0.1399
+    ],
+    "eyeRange": [
+      0.36,
+      0.3999
+    ],
+    "poolCardsPairwiseFourDimensions": true
+  },
+  "changes": [
+    {
+      "file": "assets/art/portraits/qing/consort-regular-02.webp",
+      "beforeBytes": 9226,
+      "afterBytes": 9918,
+      "beforeSha256": "105bf26e9864b80cd21aee20db80f711afd9bb1be7a68d207493c3b8b58087e4",
+      "afterSha256": "3b263cc984178dbcb998bb3d6160d87db289a023faecfa6daaae0e8abe783e63"
+    },
+    {
+      "file": "assets/art/portraits/qing/consort-regular-03.webp",
+      "beforeBytes": 8282,
+      "afterBytes": 8954,
+      "beforeSha256": "a2afa2eaf30b6f987717adceee809954d39d2a96a23caad4ecce0e8969995e9f",
+      "afterSha256": "b910fd6204f9b34c14860d2042affbf3b60c9060623a270ef17e3a0199ad03ac"
+    },
+    {
+      "file": "assets/art/portraits/qing/princess-adult-01.webp",
+      "beforeBytes": 8218,
+      "afterBytes": 8264,
+      "beforeSha256": "881115975de46851cb2f85ba256d6b71fb0e8880731a0567f2e8d1ca3c93e2bd",
+      "afterSha256": "317d0f74ba670064a53d5cb53446c5b79d01e5c1b416e38f5d7479961f0182db"
+    },
+    {
+      "file": "assets/art/portraits/qing/consort-regular-04.webp",
+      "beforeBytes": 8138,
+      "afterBytes": 10766,
+      "beforeSha256": "3adc557caebf840b32c42c75514f1848b6e5d9273a265e4b0ad461b7ac9a676f",
+      "afterSha256": "9af88acd65be11a7ea692653fee058d8dc92c20ed3d0e09eedaaf14e345a941b"
+    },
+    {
+      "file": "assets/art/portraits/qing/consort-regular-05.webp",
+      "beforeBytes": 8264,
+      "afterBytes": 10532,
+      "beforeSha256": "de6653cddebafd2ce6adc10b5d875cd19fb11e8cb25ba2e9966231944149ee0d",
+      "afterSha256": "6512b4a355e54f318fda3185f55ee5c432e5b17af9373fdc290a4fc2f1c14e49"
+    },
+    {
+      "file": "assets/art/portraits/qing/princess-teen-01.webp",
+      "beforeBytes": 8566,
+      "afterBytes": 7938,
+      "beforeSha256": "a0133be6691d9c35bd56adc46fadc5e775f9e63e16e2f620b51ad23018ef8bfa",
+      "afterSha256": "0863a482293fd5f9feb95b66ef3f56d86fa7c59205dc6c450930829111adf585"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-kangxi/official-05.webp",
+      "beforeBytes": 8566,
+      "afterBytes": 8782,
+      "beforeSha256": "5c06b6ff1026d47bcbce2de572e4c5230397acef2037d6c30fd6ca913d42b44a",
+      "afterSha256": "8c80debf05408a70ff2fe9a1b582244ab771a7a995cd9498c548d1ce03b82621"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-kangxi/dowager-01.webp",
+      "beforeBytes": 7180,
+      "afterBytes": 8556,
+      "beforeSha256": "8f70d79f29724d4de3c6834645efcb84901f2555e1fdbc62c38c67ad6b294ea8",
+      "afterSha256": "1ffbfe72d2dc3a10bd472aeb192748231aef6a2e5464ced07ca37dc85308aff8"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-kangxi/official-07.webp",
+      "beforeBytes": 7920,
+      "afterBytes": 8774,
+      "beforeSha256": "adc345870a27bec7aef8776a6ab9bb1a1113d7a34a0670fd9284f6502ad344db",
+      "afterSha256": "fb372786b34c605bf39f3c469c3d305029851f5ae342eb2e1e4e1839cb54aa31"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-kangxi/emperor-01-old.webp",
+      "beforeBytes": 13328,
+      "afterBytes": 13832,
+      "beforeSha256": "c675ef0294489d3261a7522ee5c9f912ee008c80120699efee853803e50cd987",
+      "afterSha256": "59594e33af548ae6f8436b273c522c181027be93de0220e61ec579474451bc2f"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-kangxi/official-10.webp",
+      "beforeBytes": 8704,
+      "afterBytes": 7494,
+      "beforeSha256": "0d7dcefaa4a210c03ea0942661ffc0b9685fbbf336011bd639fb3e161386b74b",
+      "afterSha256": "5f96662b475c6dc92e82d42ff6cb1cf6f31e579f566ed22fde7dbcc96ef72346"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-kangxi/official-06.webp",
+      "beforeBytes": 8290,
+      "afterBytes": 7290,
+      "beforeSha256": "a0410d5d6d04e02c0fb6442d30fe79d83fc6f919530054b8e59be1577a290754",
+      "afterSha256": "3202afa44a9a380d5a31bf1dd9dcd50447fb93422b042aec5472d7c32880af6b"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-yongzheng/official-02.webp",
+      "beforeBytes": 8870,
+      "afterBytes": 8666,
+      "beforeSha256": "8ca94be2c0bf54acfe451337cf129da73bf8aa81d91af6077a089993963864ef",
+      "afterSha256": "7e9d7ffe131c3fde26b89c0d64b062db4e26f61717f7c756f96ba3a992e38eb1"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-yongzheng/child-03-adult.webp",
+      "beforeBytes": 7274,
+      "afterBytes": 6100,
+      "beforeSha256": "e3baea7901b84ba0a1630cbde647ae163faa0cd53a79b8210401c47f1735cfb5",
+      "afterSha256": "0fa45f2ab97b37d803759e46e3809f77f50809118b6efe4f39cd97cfa47e3667"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-yongzheng/official-09.webp",
+      "beforeBytes": 8968,
+      "afterBytes": 9452,
+      "beforeSha256": "1c9987415f0b1bdd1acf3f94431dd10f91f032ce54f90300e8f3976b44374e2e",
+      "afterSha256": "5d9bbb365fac831a81d1af9d5dabc6e0492f24700c19769317708c425df69820"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-yongzheng/official-11.webp",
+      "beforeBytes": 8518,
+      "afterBytes": 9246,
+      "beforeSha256": "a9c2148f2211c95dfa11a55123c2a23dc3d84b6a35522a665bb883ec9fb29e8b",
+      "afterSha256": "6136a1beb962063efd359ddf7eb13777cce4005a37398d6ce180e12bfb841d16"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-yongzheng/official-10.webp",
+      "beforeBytes": 8170,
+      "afterBytes": 7286,
+      "beforeSha256": "79d9997fe8180fa51fbd10b114beed779e414a6b29a13be3e16dc00bf7052278",
+      "afterSha256": "d8a753c9da4d9bd7ffdf8fac2bc7cb5f9ee120b05473cff00f73af48ddb3ed49"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-yongzheng/child-01.webp",
+      "beforeBytes": 6404,
+      "afterBytes": 5994,
+      "beforeSha256": "5f75cffb1aa8fb3680b4b6f7f393bc56448df2555896fc6e1e116d410f297f4b",
+      "afterSha256": "a1b877497000f8ef9de8d5740f1aee7b945d12e99261e4b888a6d69c86e32cbd"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-yongzheng/official-01.webp",
+      "beforeBytes": 8670,
+      "afterBytes": 9406,
+      "beforeSha256": "53697e0986b7d6c2520c629a57797489d7aa9abcf614f7c86a1aad484fa3c095",
+      "afterSha256": "0c4ca1a678807617d7773a3880b11b69e0d57431f8b0992d5fde1f772144c767"
+    }
+  ],
+  "tests": {
+    "command": "npm test -- --test-concurrency=4",
+    "total": 608,
+    "passed": 608,
+    "failed": 0
+  },
+  "simulation": {
+    "seed": "御极·两百年",
+    "years": 200,
+    "actualYears": 200,
+    "turns": 7200,
+    "reigns": 6,
+    "ending": null,
+    "finalTreasury": 2040
+  },
+  "build": {
+    "htmlBytes": 855007,
+    "command": "npm run build"
+  },
+  "lighthouse": "沿用bf98707六项可访问性100记录，本轮资产修订未重复运行。"
+}

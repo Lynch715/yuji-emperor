@@ -1,0 +1,563 @@
+{
+  "browser": "Codex In-app Browser",
+  "checks": [
+    {
+      "images": [
+        {
+          "loaded": true,
+          "opacity": "1",
+          "size": [
+            120,
+            150
+          ],
+          "src": "assets/art/portraits/unique/qing-kangxi/dowager-01.webp"
+        },
+        {
+          "loaded": true,
+          "opacity": "1",
+          "size": [
+            44,
+            44
+          ],
+          "src": "assets/art/portraits/unique/qing-kangxi/dowager-01.webp"
+        },
+        {
+          "loaded": true,
+          "opacity": "1",
+          "size": [
+            120,
+            150
+          ],
+          "src": "assets/art/portraits/unique/qing-kangxi/official-05.webp"
+        },
+        {
+          "loaded": true,
+          "opacity": "1",
+          "size": [
+            44,
+            44
+          ],
+          "src": "assets/art/portraits/unique/qing-kangxi/official-05.webp"
+        },
+        {
+          "loaded": true,
+          "opacity": "1",
+          "size": [
+            120,
+            150
+          ],
+          "src": "assets/art/portraits/unique/qing-kangxi/official-06.webp"
+        },
+        {
+          "loaded": true,
+          "opacity": "1",
+          "size": [
+            44,
+            44
+          ],
+          "src": "assets/art/portraits/unique/qing-kangxi/official-06.webp"
+        },
+        {
+          "loaded": true,
+          "opacity": "1",
+          "size": [
+            120,
+            150
+          ],
+          "src": "assets/art/portraits/unique/qing-kangxi/official-07.webp"
+        },
+        {
+          "loaded": true,
+          "opacity": "1",
+          "size": [
+            44,
+            44
+          ],
+          "src": "assets/art/portraits/unique/qing-kangxi/official-07.webp"
+        },
+        {
+          "loaded": true,
+          "opacity": "1",
+          "size": [
+            120,
+            150
+          ],
+          "src": "assets/art/portraits/unique/qing-kangxi/official-10.webp"
+        },
+        {
+          "loaded": true,
+          "opacity": "1",
+          "size": [
+            44,
+            44
+          ],
+          "src": "assets/art/portraits/unique/qing-kangxi/official-10.webp"
+        },
+        {
+          "loaded": true,
+          "opacity": "1",
+          "size": [
+            120,
+            150
+          ],
+          "src": "assets/art/portraits/unique/qing-kangxi/emperor-01-old.webp"
+        },
+        {
+          "loaded": true,
+          "opacity": "1",
+          "size": [
+            44,
+            44
+          ],
+          "src": "assets/art/portraits/unique/qing-kangxi/emperor-01-old.webp"
+        },
+        {
+          "loaded": true,
+          "opacity": "1",
+          "size": [
+            120,
+            150
+          ],
+          "src": "assets/art/portraits/unique/qing-yongzheng/official-01.webp"
+        },
+        {
+          "loaded": true,
+          "opacity": "1",
+          "size": [
+            44,
+            44
+          ],
+          "src": "assets/art/portraits/unique/qing-yongzheng/official-01.webp"
+        },
+        {
+          "loaded": true,
+          "opacity": "1",
+          "size": [
+            120,
+            150
+          ],
+          "src": "assets/art/portraits/unique/qing-yongzheng/official-02.webp"
+        },
+        {
+          "loaded": true,
+          "opacity": "1",
+          "size": [
+            44,
+            44
+          ],
+          "src": "assets/art/portraits/unique/qing-yongzheng/official-02.webp"
+        },
+        {
+          "loaded": true,
+          "opacity": "1",
+          "size": [
+            120,
+            150
+          ],
+          "src": "assets/art/portraits/unique/qing-yongzheng/official-09.webp"
+        },
+        {
+          "loaded": true,
+          "opacity": "1",
+          "size": [
+            44,
+            44
+          ],
+          "src": "assets/art/portraits/unique/qing-yongzheng/official-09.webp"
+        },
+        {
+          "loaded": true,
+          "opacity": "1",
+          "size": [
+            120,
+            150
+          ],
+          "src": "assets/art/portraits/unique/qing-yongzheng/official-10.webp"
+        },
+        {
+          "loaded": true,
+          "opacity": "1",
+          "size": [
+            44,
+            44
+          ],
+          "src": "assets/art/portraits/unique/qing-yongzheng/official-10.webp"
+        },
+        {
+          "loaded": true,
+          "opacity": "1",
+          "size": [
+            120,
+            150
+          ],
+          "src": "assets/art/portraits/unique/qing-yongzheng/official-11.webp"
+        },
+        {
+          "loaded": true,
+          "opacity": "1",
+          "size": [
+            44,
+            44
+          ],
+          "src": "assets/art/portraits/unique/qing-yongzheng/official-11.webp"
+        },
+        {
+          "loaded": true,
+          "opacity": "1",
+          "size": [
+            120,
+            150
+          ],
+          "src": "assets/art/portraits/unique/qing-yongzheng/child-01.webp"
+        },
+        {
+          "loaded": true,
+          "opacity": "1",
+          "size": [
+            44,
+            44
+          ],
+          "src": "assets/art/portraits/unique/qing-yongzheng/child-01.webp"
+        },
+        {
+          "loaded": true,
+          "opacity": "1",
+          "size": [
+            120,
+            150
+          ],
+          "src": "assets/art/portraits/unique/qing-yongzheng/child-03-adult.webp"
+        },
+        {
+          "loaded": true,
+          "opacity": "1",
+          "size": [
+            44,
+            44
+          ],
+          "src": "assets/art/portraits/unique/qing-yongzheng/child-03-adult.webp"
+        },
+        {
+          "loaded": true,
+          "opacity": "1",
+          "size": [
+            120,
+            150
+          ],
+          "src": "assets/art/portraits/qing/consort-regular-02.webp"
+        },
+        {
+          "loaded": true,
+          "opacity": "1",
+          "size": [
+            44,
+            44
+          ],
+          "src": "assets/art/portraits/qing/consort-regular-02.webp"
+        },
+        {
+          "loaded": true,
+          "opacity": "1",
+          "size": [
+            120,
+            150
+          ],
+          "src": "assets/art/portraits/qing/consort-regular-03.webp"
+        },
+        {
+          "loaded": true,
+          "opacity": "1",
+          "size": [
+            44,
+            44
+          ],
+          "src": "assets/art/portraits/qing/consort-regular-03.webp"
+        },
+        {
+          "loaded": true,
+          "opacity": "1",
+          "size": [
+            120,
+            150
+          ],
+          "src": "assets/art/portraits/qing/consort-regular-04.webp"
+        },
+        {
+          "loaded": true,
+          "opacity": "1",
+          "size": [
+            44,
+            44
+          ],
+          "src": "assets/art/portraits/qing/consort-regular-04.webp"
+        },
+        {
+          "loaded": true,
+          "opacity": "1",
+          "size": [
+            120,
+            150
+          ],
+          "src": "assets/art/portraits/qing/consort-regular-05.webp"
+        },
+        {
+          "loaded": true,
+          "opacity": "1",
+          "size": [
+            44,
+            44
+          ],
+          "src": "assets/art/portraits/qing/consort-regular-05.webp"
+        },
+        {
+          "loaded": true,
+          "opacity": "1",
+          "size": [
+            120,
+            150
+          ],
+          "src": "assets/art/portraits/qing/princess-adult-01.webp"
+        },
+        {
+          "loaded": true,
+          "opacity": "1",
+          "size": [
+            44,
+            44
+          ],
+          "src": "assets/art/portraits/qing/princess-adult-01.webp"
+        },
+        {
+          "loaded": true,
+          "opacity": "1",
+          "size": [
+            120,
+            150
+          ],
+          "src": "assets/art/portraits/qing/princess-teen-01.webp"
+        },
+        {
+          "loaded": true,
+          "opacity": "1",
+          "size": [
+            44,
+            44
+          ],
+          "src": "assets/art/portraits/qing/princess-teen-01.webp"
+        }
+      ],
+      "scrollWidth": 1280,
+      "view": "production-preview-1280",
+      "width": 1280
+    },
+    {
+      "images": [
+        {
+          "loaded": true,
+          "size": [
+            120,
+            150
+          ],
+          "src": "assets/art/portraits/unique/qing-yongzheng/official-09.webp"
+        },
+        {
+          "loaded": true,
+          "size": [
+            44,
+            44
+          ],
+          "src": "assets/art/portraits/unique/qing-yongzheng/official-09.webp"
+        },
+        {
+          "loaded": true,
+          "size": [
+            120,
+            150
+          ],
+          "src": "assets/art/portraits/unique/qing-yongzheng/official-10.webp"
+        },
+        {
+          "loaded": true,
+          "size": [
+            44,
+            44
+          ],
+          "src": "assets/art/portraits/unique/qing-yongzheng/official-10.webp"
+        },
+        {
+          "loaded": true,
+          "size": [
+            120,
+            150
+          ],
+          "src": "assets/art/portraits/unique/qing-yongzheng/official-11.webp"
+        },
+        {
+          "loaded": true,
+          "size": [
+            44,
+            44
+          ],
+          "src": "assets/art/portraits/unique/qing-yongzheng/official-11.webp"
+        },
+        {
+          "loaded": true,
+          "size": [
+            120,
+            150
+          ],
+          "src": "assets/art/portraits/unique/qing-yongzheng/child-01.webp"
+        },
+        {
+          "loaded": true,
+          "size": [
+            44,
+            44
+          ],
+          "src": "assets/art/portraits/unique/qing-yongzheng/child-01.webp"
+        },
+        {
+          "loaded": true,
+          "size": [
+            120,
+            150
+          ],
+          "src": "assets/art/portraits/unique/qing-yongzheng/child-03-adult.webp"
+        },
+        {
+          "loaded": true,
+          "size": [
+            44,
+            44
+          ],
+          "src": "assets/art/portraits/unique/qing-yongzheng/child-03-adult.webp"
+        },
+        {
+          "loaded": true,
+          "size": [
+            120,
+            150
+          ],
+          "src": "assets/art/portraits/qing/consort-regular-02.webp"
+        },
+        {
+          "loaded": true,
+          "size": [
+            44,
+            44
+          ],
+          "src": "assets/art/portraits/qing/consort-regular-02.webp"
+        },
+        {
+          "loaded": true,
+          "size": [
+            120,
+            150
+          ],
+          "src": "assets/art/portraits/qing/consort-regular-03.webp"
+        },
+        {
+          "loaded": true,
+          "size": [
+            120,
+            150
+          ],
+          "src": "assets/art/portraits/qing/consort-regular-04.webp"
+        }
+      ],
+      "scrollWidth": 390,
+      "view": "production-preview-390",
+      "width": 390
+    },
+    {
+      "scrollWidth": 360,
+      "view": "production-preview-360",
+      "width": 360
+    },
+    {
+      "view": "preview-console",
+      "logs": []
+    },
+    {
+      "portraits": [
+        {
+          "loaded": true,
+          "src": "assets/art/portraits/unique/qing-yongzheng/official-01.webp"
+        }
+      ],
+      "scrollWidth": 390,
+      "view": "yongzheng-court-390",
+      "width": 390
+    },
+    {
+      "portraits": [
+        {
+          "loaded": true,
+          "src": "assets/art/portraits/unique/qing-kangxi/official-02.webp"
+        },
+        {
+          "loaded": true,
+          "src": "assets/art/portraits/unique/qing-kangxi/official-03.webp"
+        }
+      ],
+      "scrollWidth": 390,
+      "view": "kangxi-court-390",
+      "width": 390
+    },
+    {
+      "portraits": [
+        {
+          "loaded": true,
+          "src": "assets/art/portraits/unique/qing-kangxi/dowager-01.webp"
+        },
+        {
+          "loaded": true,
+          "src": "assets/art/portraits/unique/qing-kangxi/emperor-01.webp"
+        }
+      ],
+      "scrollWidth": 390,
+      "view": "kangxi-dowager-390",
+      "width": 390
+    },
+    {
+      "scrollWidth": 360,
+      "view": "game-360",
+      "width": 360
+    },
+    {
+      "view": "game-console",
+      "logs": []
+    },
+    {
+      "images": [
+        {
+          "loaded": true,
+          "src": "assets/art/portraits/unique/qing-kangxi/official-04.webp"
+        },
+        {
+          "loaded": true,
+          "src": "assets/art/portraits/unique/qing-kangxi/official-05.webp"
+        },
+        {
+          "loaded": true,
+          "src": "assets/art/portraits/unique/qing-kangxi/official-06.webp"
+        }
+      ],
+      "scrollWidth": 390,
+      "view": "kangxi-revised-suoetu-390",
+      "width": 390
+    },
+    {
+      "images": [
+        {
+          "loaded": true,
+          "src": "assets/art/portraits/unique/qing-yongzheng/official-01.webp"
+        }
+      ],
+      "scrollWidth": 390,
+      "view": "yongzheng-revised-yinsi-390",
+      "width": 390
+    }
+  ],
+  "logs": []
+}
