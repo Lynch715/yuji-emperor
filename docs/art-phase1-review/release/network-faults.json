@@ -1,0 +1,20 @@
+{
+  "method": "同一发布HTML和WebP在隔离localhost中加载；服务端主动断开所有图片请求的连接，页面本身保持可读；无系统断网、无线上网络拦截。",
+  "htmlSha256": "5d4fbf3062aea53435edb485bcc9800e2d7e16e3bcf7023dbb324c4ca6a22530",
+  "htmlMatchesPublished": true,
+  "faultedRequests": 14,
+  "faultedPaths": {
+    "/assets/art/halls/hall-archive-1440.webp": 2,
+    "/assets/art/portraits/ming/official-old-04.webp": 1,
+    "/assets/art/portraits/unique/ming-wanli/official-01.webp": 1,
+    "/assets/art/portraits/unique/ming-wanli/official-02.webp": 1,
+    "/assets/art/portraits/unique/ming-wanli/official-03.webp": 1,
+    "/assets/art/portraits/unique/ming-wanli/official-04.webp": 1,
+    "/assets/art/portraits/unique/ming-wanli/official-05.webp": 1,
+    "/assets/art/portraits/unique/ming-wanli/official-06.webp": 1,
+    "/assets/art/portraits/unique/ming-wanli/official-07.webp": 1,
+    "/assets/art/scenes/accession-1440.webp": 2,
+    "/assets/art/scenes/accession-720.webp": 1,
+    "/assets/art/scenes/court-1440.webp": 1
+  }
+}

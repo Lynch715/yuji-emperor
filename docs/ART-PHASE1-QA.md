@@ -1,8 +1,40 @@
 # 美术一期 · 最终验收
 
+## 主线发布验收 · 2026-11-06
+
+玩家已批准合并发布，[PR #5](https://github.com/Lynch715/yuji-emperor/pull/5)已合并为`f2f5cd9f21e6cf3be0d2cab88db65cc00ec8fc24`。[Pages工作流42337682484](https://github.com/Lynch715/yuji-emperor/actions/runs/42337682484)的测试、构建、WebP打包与部署全部成功。入口：[御极](https://lynch715.github.io/yuji-emperor/)。本节覆盖此前“草稿待测／未发布”的分支状态；下方记录保留为美术制作历史。
+
+合并main现有摄政修复后，正式存档v25，兼容两类独立v24，具体迁移规则见下一节。合并版607／607 Node测试、200年／7200旬mock模拟通过，5次继位、0亡国、终局国库2040；七项政务格式哈希与已验收分支一致。145个WebP保持已验收内容，总计2,949,160字节。
+
+线上HTTP验收逐一获取HTML及全部145张WebP，均200；图片`Content-Type: image/webp`，全部SHA-256与合并提交逐字节一致。HTML为850,916字节，SHA-256为`5d4fbf3062aea53435edb485bcc9800e2d7e16e3bcf7023dbb324c4ca6a22530`。明细见[http-checks.json](art-phase1-review/release/http-checks.json)。
+
+应用内浏览器通过真实线上URL实走新局、朝堂和史馆，使用原本空白的第3卷试读，未覆盖已有玩家旧档、未调用外部模型。三类抽查均`naturalWidth > 0`、`art-loaded`且透明度1：
+
+| 类别 | 线上文件 | 实际表现 |
+| --- | --- | --- |
+| 头像 | `assets/art/portraits/unique/ming-wanli/official-01.webp` | 张居正上奏人28px、人物卡64×80均加载 |
+| 章节头 | `assets/art/scenes/accession-1440.webp`／`accession-720.webp` | 桌面120px；390宽取720档、头图96px |
+| 殿阁题图 | `assets/art/halls/hall-archive-1440.webp` | 桌面180px、390宽120px，完整覆盖 |
+
+线上复核1280×900、390×844；360×800时页面`scrollWidth=360`。线上与资源中断验收均无脚本错误。DOM读数见[browser-results.json](art-phase1-review/release/browser-results.json)。
+
+断网回退使用与线上哈希完全相同的HTML及同一份WebP，在隔离`127.0.0.1:4209`运行；服务器主动断开所有图片请求，HTML作为已可读页面保留，不使用404或改UI模拟。实际中断14次请求，包含上述三类文件，见[network-faults.json](art-phase1-review/release/network-faults.json)。这验证的是图片资源连接中断，未进行整机物理断网，也未承诺首次离线访问能下载页面。
+
+中断后头像图片透明度0，张居正人物卡退回44×44首字圆章；章节及史馆图片透明度0，保留纯色头部，文字与导航正常。390宽回退正常，360宽无横向滚动；恢复连接并刷新，原试读进度保留，章节720档重新加载。服务器只影响该隔离端口，没有改系统网络或线上服务。
+
+![线上人物卡](art-phase1-review/release/online-court.jpg)
+
+![连接中断后首字圆章](art-phase1-review/release/offline-court.jpg)
+
+![线上手机史馆题图](art-phase1-review/release/online-hall-390.jpg)
+
+![连接中断后手机纯色史馆头部](art-phase1-review/release/offline-hall-390.jpg)
+
+原工作目录中的海报、推广文案、审计与方案草稿均保留，未带入本次发布。合并与发布使用独立工作区，未切换或清理原目录。
+
 ## 主线合并兼容准备
 
-玩家已验收并授权发布。合并main的摄政修复时，两分支独立使用的v24统一升级至v25：主线摄政旧档只补脸号、保留成长基准；美术预览旧档按完整合法脸号标记识别，补摄政字段而不追算五才。冻结预演逐字保留，提交时迁移结果；损坏主线旧档仍只读保护。合并版607／607测试、200年／7200旬mock模拟通过，七项政务格式哈希与已验收版本一致，145个WebP未修改。下文的v24和未发布状态为此前分支验收记录，线上结果完成后补入发布段落。
+玩家已验收并授权发布。合并main的摄政修复时，两分支独立使用的v24统一升级至v25：主线摄政旧档只补脸号、保留成长基准；美术预览旧档按完整合法脸号标记识别，补摄政字段而不追算五才。冻结预演逐字保留，提交时迁移结果；损坏主线旧档仍只读保护。合并版607／607测试、200年／7200旬mock模拟通过，七项政务格式哈希与已验收版本一致，145个WebP未修改。上方已补入发布结果，下文的v24和未发布状态为此前分支验收记录。
 
 日期：2026-11-06。基线main／093eaad，分支feat/art-phase1。一期132／132张内容完成，145个WebP。保持草稿PR待玩家测试，未合并、未发布Pages。
 
