@@ -1,0 +1,210 @@
+[
+  {
+    "file": "assets/art/portraits/unique/ming-wanli/official-04.webp",
+    "source": "art-source/batch-finals/review2-ming-wanli-official-04.png",
+    "record": "art-source/batch-results/review2-ming-wanli-official-04.json",
+    "originalSize": [
+      1122,
+      1402
+    ],
+    "size": [
+      400,
+      500
+    ],
+    "quality": 75,
+    "bytes": 7096,
+    "limit": 30000
+  },
+  {
+    "file": "assets/art/portraits/unique/ming-wanli/official-05.webp",
+    "source": "art-source/batch-finals/review2-ming-wanli-official-05.png",
+    "record": "art-source/batch-results/review2-ming-wanli-official-05.json",
+    "originalSize": [
+      1122,
+      1402
+    ],
+    "size": [
+      400,
+      500
+    ],
+    "quality": 75,
+    "bytes": 7176,
+    "limit": 30000
+  },
+  {
+    "file": "assets/art/portraits/unique/ming-wanli/official-06.webp",
+    "source": "art-source/batch-finals/review2-ming-wanli-official-06.png",
+    "record": "art-source/batch-results/review2-ming-wanli-official-06.json",
+    "originalSize": [
+      1122,
+      1402
+    ],
+    "size": [
+      400,
+      500
+    ],
+    "quality": 75,
+    "bytes": 8804,
+    "limit": 30000
+  },
+  {
+    "file": "assets/art/portraits/unique/ming-wanli/official-09.webp",
+    "source": "art-source/batch-finals/review2-ming-wanli-official-09.png",
+    "record": "art-source/batch-results/review2-ming-wanli-official-09.json",
+    "originalSize": [
+      1122,
+      1402
+    ],
+    "size": [
+      400,
+      500
+    ],
+    "quality": 75,
+    "bytes": 8388,
+    "limit": 30000
+  },
+  {
+    "file": "assets/art/portraits/unique/ming-chongzhen/official-02.webp",
+    "source": "art-source/batch-finals/review2-ming-chongzhen-official-02.png",
+    "record": "art-source/batch-results/review2-ming-chongzhen-official-02.json",
+    "originalSize": [
+      1122,
+      1402
+    ],
+    "size": [
+      400,
+      500
+    ],
+    "quality": 75,
+    "bytes": 9670,
+    "limit": 30000
+  },
+  {
+    "file": "assets/art/portraits/unique/ming-chongzhen/official-04.webp",
+    "source": "art-source/batch-finals/review2-ming-chongzhen-official-04.png",
+    "record": "art-source/batch-results/review2-ming-chongzhen-official-04.json",
+    "originalSize": [
+      1122,
+      1402
+    ],
+    "size": [
+      400,
+      500
+    ],
+    "quality": 75,
+    "bytes": 7328,
+    "limit": 30000
+  },
+  {
+    "file": "assets/art/portraits/unique/ming-chongzhen/official-05.webp",
+    "source": "art-source/batch-finals/review2-ming-chongzhen-official-05.png",
+    "record": "art-source/batch-results/review2-ming-chongzhen-official-05.json",
+    "originalSize": [
+      1122,
+      1402
+    ],
+    "size": [
+      400,
+      500
+    ],
+    "quality": 75,
+    "bytes": 7752,
+    "limit": 30000
+  },
+  {
+    "file": "assets/art/portraits/unique/ming-wanli/emperor-01.webp",
+    "source": "art-source/batch-finals/review2-wanli-emperor-young.png",
+    "record": "art-source/batch-results/review2-wanli-emperor-young-final.json",
+    "originalSize": [
+      1122,
+      1402
+    ],
+    "size": [
+      400,
+      500
+    ],
+    "quality": 75,
+    "bytes": 9536,
+    "limit": 30000
+  },
+  {
+    "file": "assets/art/portraits/unique/ming-wanli/emperor-01-old.webp",
+    "source": "art-source/batch-finals/review2-wanli-emperor-old.png",
+    "record": "art-source/batch-results/review2-wanli-emperor-old-final.json",
+    "originalSize": [
+      1122,
+      1402
+    ],
+    "size": [
+      400,
+      500
+    ],
+    "quality": 75,
+    "bytes": 9164,
+    "limit": 30000
+  },
+  {
+    "file": "assets/art/scenes/camp-1440.webp",
+    "source": "art-source/batch-finals/review2-scene-camp.png",
+    "record": "art-source/batch-results/review2-scene-camp.json",
+    "originalSize": [
+      1672,
+      941
+    ],
+    "size": [
+      1440,
+      810
+    ],
+    "quality": 72,
+    "bytes": 65314,
+    "limit": 150000
+  },
+  {
+    "file": "assets/art/scenes/camp-720.webp",
+    "source": "art-source/batch-finals/review2-scene-camp.png",
+    "record": "art-source/batch-results/review2-scene-camp.json",
+    "originalSize": [
+      1672,
+      941
+    ],
+    "size": [
+      720,
+      405
+    ],
+    "quality": 72,
+    "bytes": 20250,
+    "limit": 60000
+  },
+  {
+    "file": "assets/art/scenes/tour-1440.webp",
+    "source": "art-source/batch-finals/review2-scene-tour.png",
+    "record": "art-source/batch-results/review2-scene-tour.json",
+    "originalSize": [
+      1672,
+      941
+    ],
+    "size": [
+      1440,
+      810
+    ],
+    "quality": 72,
+    "bytes": 117772,
+    "limit": 150000
+  },
+  {
+    "file": "assets/art/scenes/tour-720.webp",
+    "source": "art-source/batch-finals/review2-scene-tour.png",
+    "record": "art-source/batch-results/review2-scene-tour.json",
+    "originalSize": [
+      1672,
+      941
+    ],
+    "size": [
+      720,
+      405
+    ],
+    "quality": 72,
+    "bytes": 33616,
+    "limit": 60000
+  }
+]

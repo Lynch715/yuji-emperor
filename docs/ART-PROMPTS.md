@@ -1842,3 +1842,186 @@ Use case: historical-scene. ONE 3:1 panoramic QINGLU Chinese MOUNTAIN-AND-RIVER 
 ~~~text
 Use case: precise-object-edit. Image1 is the garden EDIT TARGET. Images2–5 are the four approved STYLE reference images. Keep exact garden identity and layout: curved white stone bridge, small open pavilion, rockery, quiet pond, red distant wall, overhanging Chinese timber eaves. SIMPLIFY DETAIL STRONGLY for a small compressed game image: trees drawn with just a few large flat cloud-like leaf masses and10–15 short twig strokes each; remove individually drawn little leaves and dense reed detail; water is a mostly smooth flat muted green area with only8–12 long simple ripple lines; rocks have only a few contour strokes. NO granular or mottled paper noise, background almost perfectly smooth pale paper with extremely faint texture only. Clean Chinese baimiao ink contours and flat light muted color washes, at most one faint shading layer. Retain daylight, objects in central30–70% band. FULL-BLEED painting to all4edges; roof timbers top, stone pavement/water bottom. No words,seals,watermark,frames,bars,blank strips,people,3D or photo.
 ~~~
+
+## b87b457审阅后修订：专属像辨识度与野外场景
+
+本节为这些文件的最新长相卡，覆盖此前同名文件的视觉设定。姓名、年龄、角色性格与秘密依据src/core/scenarios.js；脸型、胡须与体态为依据这些资料作的视觉设计，不作为史实肖像断言。两组全部7人重出，分别保证4人与3人在脸型、胡须、体态、神情等维度明显不同。万历两张只调整翼善冠，保留已确认身份与年龄。文件名、取图逻辑和玩法不变。
+
+### ming-wanli/official-04 · 张四维（46岁）
+
+剧本依据：工于心计；盐业家族，与晋商往来密切。
+
+|脸型|胡须|眉眼|鼻口|体态|肤色|标记|神情|
+|---|---|---|---|---|---|---|---|
+|狭尖倒三角，颧骨高、面颊凹|细八字短髭、尖而细的山羊须|细斜眉、狭小警觉眼|长窄鼻、紧抿薄唇|窄肩细颈，清瘦挺直|浅橄榄肤|左鬓近处小痣，深法令纹|克制精算、礼貌但疏离|
+
+### ming-wanli/official-05 · 申时行（37岁）
+
+剧本依据：温和圆融；状元出身，不愿与言官阁臣结怨。
+
+|脸型|胡须|眉眼|鼻口|体态|肤色|标记|神情|
+|---|---|---|---|---|---|---|---|
+|宽圆梨形，下颊丰厚、下巴圆|完全无须，颌线洁净|柔弧细眉、放松下垂眼|短圆鼻、较厚唇、温和微笑|富态宽肩、短颈、轻微双下颌|暖象牙肤|右颊浅酒窝|亲和、圆融、从容|
+
+### ming-wanli/official-06 · 王锡爵（38岁）
+
+剧本依据：刚直有守；高拱与张居正间两不依附。
+
+|脸型|胡须|眉眼|鼻口|体态|肤色|标记|神情|
+|---|---|---|---|---|---|---|---|
+|宽方脸，宽下颌、平直下巴|浓黑短络腮胡，连腮连颌|粗平眉、大而直的警醒眼|宽直鼻、紧闭薄唇|壮实厚颈、宽直肩|偏深金褐肤|右眉小缺口|正直、严肃、自持|
+
+### ming-wanli/official-09 · 谭纶（52岁）
+
+剧本依据：知兵能任事；曾与戚继光在东南抗倭，交情深厚。
+
+|脸型|胡须|眉眼|鼻口|体态|肤色|标记|神情|
+|---|---|---|---|---|---|---|---|
+|宽颧五角脸、直短下巴|浓下垂髭，颏颊无须|浓压眉、眼袋及鱼尾纹|宽鼻、宽而紧的嘴|粗壮颈肩、干练|深褐风霜肤|灰鬓、横额纹|沉着务实、坚决|
+
+### ming-chongzhen/official-02 · 崔呈秀（50岁）
+
+剧本依据：依附魏珰，五虎之首；贪墨军饷，账目可查。
+
+|脸型|胡须|眉眼|鼻口|体态|肤色|标记|神情|
+|---|---|---|---|---|---|---|---|
+|短宽梯形，下颊丰厚、下颌宽|浓密扇形短颏髯连腮，有灰丝|八字粗眉、小而近的眯眼|短宽鼻、宽薄唇|富态双下颌、粗短颈、微收肩|暖棕肤|右眉旁痣、深颊纹|审视、逢迎而戒备|
+
+### ming-chongzhen/official-04 · 温体仁（54岁）
+
+剧本依据：外示温谨，内实阴狠；欲借攻讦东林邀圣眷。
+
+|脸型|胡须|眉眼|鼻口|体态|肤色|标记|神情|
+|---|---|---|---|---|---|---|---|
+|极清瘦长矩形，颊凹、下巴窄|三绺稀疏长髯、细短髭|低平细眉、细长重睑眼|长高窄鼻、薄且平直嘴|细颈、削肩、端直|冷浅肤|花白鬓、眉间细竖纹|外表温谨，冷静深藏|
+
+### ming-chongzhen/official-05 · 周延儒（34岁）
+
+剧本依据：机敏善揣；状元出身，与东林若即若离。
+
+|脸型|胡须|眉眼|鼻口|体态|肤色|标记|神情|
+|---|---|---|---|---|---|---|---|
+|短卵圆脸，圆颧、紧凑下巴|完全无须，显年轻成年|上扬短眉、明亮较大眼|短小微翘鼻、圆润微弯唇|清俊细颈、轻盈松肩|暖浅米肤|左嘴角浅窝|机敏、专注、擅应对|
+
+### 实际生成提示词与参照角色
+
+每条均为内置imagegen，参照图1是待修原图，2–5为四张定调样张（仅画风）。专属像单张生成；导出仅裁切、等比缩放、转WebP。
+
+#### review2-ming-wanli-official-04
+
+目标：assets/art/portraits/unique/ming-wanli/official-04.webp
+
+~~~text
+Use case: historical-scene. ONE single Chinese Ming civil minister game portrait,1024x1280,HEAD AND SHOULDERS,plain solid #E3D7BE. Image1 is EDIT TARGET: preserve its correct flat-top Ming WUSHAMAO construction but REPLACE FACE, facial hair, neck/build and expression with the specified NEW distinct identity. Images2–5 are the four approved STYLE references ONLY, never copy their faces or locations. Chinese baimiao CLEAN INK contours and light FLAT muted washes, at most one faint shading layer, simplified main folds, extremely faint smooth paper grain. Compact black WUSHAMAO: FLAT TOP,low front close to forehead,higher flat rear, two thin FLAT OVAL wings projecting HORIZONTALLY from BACK. No dome or continuous hat brim. Hat/head top at12%,eye centers EXACTLY38% (strict36–40%),face centered,three-quarter view,gaze slightly off-camera. Crop just below shoulders, no hands or props. Costume is Ming round-collar official robe with only simple rank-patch top edge. NO yellow,ochre or gold robes. No text,names,seals,watermarks,frames,guides,actors,TV likeness,anime,photo,3D,glow or intricate embroidery. Render face-shape,beard,build and expression differences VERY CLEARLY even at44px.
+Subject NEW face card: very NARROW INVERTED TRIANGLE face, high projecting cheekbones, noticeably hollow cheeks and sharp tapering chin; thin separated downward moustache and one very narrow pointed GOATEE with completely bare jaw sides; fine slanted brows and small close watchful eyes; long narrow slightly hooked nose, thin tightly pursed lips; skinny neck and narrow upright shoulders; pale olive skin, tiny left-temple mole and deep nose-mouth folds; controlled polished calculating reserve.
+Age46; facingLEFT. Robe muted dark GREEN. No text/name in image.
+~~~
+
+#### review2-ming-wanli-official-05
+
+目标：assets/art/portraits/unique/ming-wanli/official-05.webp
+
+~~~text
+Use case: historical-scene. ONE single Chinese Ming civil minister game portrait,1024x1280,HEAD AND SHOULDERS,plain solid #E3D7BE. Image1 is EDIT TARGET: preserve its correct flat-top Ming WUSHAMAO construction but REPLACE FACE, facial hair, neck/build and expression with the specified NEW distinct identity. Images2–5 are the four approved STYLE references ONLY, never copy their faces or locations. Chinese baimiao CLEAN INK contours and light FLAT muted washes, at most one faint shading layer, simplified main folds, extremely faint smooth paper grain. Compact black WUSHAMAO: FLAT TOP,low front close to forehead,higher flat rear, two thin FLAT OVAL wings projecting HORIZONTALLY from BACK. No dome or continuous hat brim. Hat/head top at12%,eye centers EXACTLY38% (strict36–40%),face centered,three-quarter view,gaze slightly off-camera. Crop just below shoulders, no hands or props. Costume is Ming round-collar official robe with only simple rank-patch top edge. NO yellow,ochre or gold robes. No text,names,seals,watermarks,frames,guides,actors,TV likeness,anime,photo,3D,glow or intricate embroidery. Render face-shape,beard,build and expression differences VERY CLEARLY even at44px.
+Subject NEW face card: noticeably PLUMP PEAR-ROUND face with wide full lower cheeks, rounded jaw and slight DOUBLE CHIN; COMPLETELY CLEAN-SHAVEN, absolutely no moustache, stubble or chin tuft; softly curved fine eyebrows, relaxed slightly downturned eyes; short rounded nose and full lips in a gentle tactful closed-mouth smile; short thick neck, soft broad rounded shoulders; warm ivory skin, shallow right-cheek dimple; approachable conciliatory warmth, visibly a mature man of37, not a teenager.
+Age37; facingRIGHT. Robe muted BLUE. No text/name in image.
+~~~
+
+#### review2-ming-wanli-official-06
+
+目标：assets/art/portraits/unique/ming-wanli/official-06.webp
+
+~~~text
+Use case: historical-scene. ONE single Chinese Ming civil minister game portrait,1024x1280,HEAD AND SHOULDERS,plain solid #E3D7BE. Image1 is EDIT TARGET: preserve its correct flat-top Ming WUSHAMAO construction but REPLACE FACE, facial hair, neck/build and expression with the specified NEW distinct identity. Images2–5 are the four approved STYLE references ONLY, never copy their faces or locations. Chinese baimiao CLEAN INK contours and light FLAT muted washes, at most one faint shading layer, simplified main folds, extremely faint smooth paper grain. Compact black WUSHAMAO: FLAT TOP,low front close to forehead,higher flat rear, two thin FLAT OVAL wings projecting HORIZONTALLY from BACK. No dome or continuous hat brim. Hat/head top at12%,eye centers EXACTLY38% (strict36–40%),face centered,three-quarter view,gaze slightly off-camera. Crop just below shoulders, no hands or props. Costume is Ming round-collar official robe with only simple rank-patch top edge. NO yellow,ochre or gold robes. No text,names,seals,watermarks,frames,guides,actors,TV likeness,anime,photo,3D,glow or intricate embroidery. Render face-shape,beard,build and expression differences VERY CLEARLY even at44px.
+Subject NEW face card: BROAD SQUARE face with massive rectangular jaw corners and blunt horizontal chin; dense BLACK FULL BEARD across BOTH CHEEKS, entire jaw and chin, with thick connected moustache, short even beard length, NOT a small goatee; thick straight level brows and large steady alert eyes; broad straight nose, firm closed thin lips; sturdy thick neck and broad squared shoulders; deeper golden-brown skin, small natural notch in right eyebrow; upright direct unbending integrity, adult38 without gray hair.
+Age38; facingLEFT. Robe muted RED. No text/name in image.
+~~~
+
+#### review2-ming-wanli-official-09
+
+目标：assets/art/portraits/unique/ming-wanli/official-09.webp
+
+~~~text
+Use case: historical-scene. ONE single Chinese Ming civil minister game portrait,1024x1280,HEAD AND SHOULDERS,plain solid #E3D7BE. Image1 is EDIT TARGET: preserve its correct flat-top Ming WUSHAMAO construction but REPLACE FACE, facial hair, neck/build and expression with the specified NEW distinct identity. Images2–5 are the four approved STYLE references ONLY, never copy their faces or locations. Chinese baimiao CLEAN INK contours and light FLAT muted washes, at most one faint shading layer, simplified main folds, extremely faint smooth paper grain. Compact black WUSHAMAO: FLAT TOP,low front close to forehead,higher flat rear, two thin FLAT OVAL wings projecting HORIZONTALLY from BACK. No dome or continuous hat brim. Hat/head top at12%,eye centers EXACTLY38% (strict36–40%),face centered,three-quarter view,gaze slightly off-camera. Crop just below shoulders, no hands or props. Costume is Ming round-collar official robe with only simple rank-patch top edge. NO yellow,ochre or gold robes. No text,names,seals,watermarks,frames,guides,actors,TV likeness,anime,photo,3D,glow or intricate embroidery. Render face-shape,beard,build and expression differences VERY CLEARLY even at44px.
+Subject NEW face card: WIDE CHEEKBONE PENTAGON face with a short blunt clean jaw; thick downward-curving MOUSTACHE ONLY with slightly gray ends, completely bare chin and bare cheeks, NO goatee or full beard; heavy low brows, narrow steady eyes, visible crow-feet and eye bags; broad flattened nose and a wide firmly set mouth; muscular thick neck and practical broad shoulders; dark weathered sun-browned skin, gray temples and clear horizontal forehead creases; calm seasoned determined competence, visibly52, a civil minister experienced in military affairs.
+Age52; facingRIGHT. Robe muted dark GREEN. No text/name in image.
+~~~
+
+#### review2-ming-chongzhen-official-02
+
+目标：assets/art/portraits/unique/ming-chongzhen/official-02.webp
+
+~~~text
+Use case: historical-scene. ONE single Chinese Ming civil minister game portrait,1024x1280,HEAD AND SHOULDERS,plain solid #E3D7BE. Image1 is EDIT TARGET: preserve its correct flat-top Ming WUSHAMAO construction but REPLACE FACE, facial hair, neck/build and expression with the specified NEW distinct identity. Images2–5 are the four approved STYLE references ONLY, never copy their faces or locations. Chinese baimiao CLEAN INK contours and light FLAT muted washes, at most one faint shading layer, simplified main folds, extremely faint smooth paper grain. Compact black WUSHAMAO: FLAT TOP,low front close to forehead,higher flat rear, two thin FLAT OVAL wings projecting HORIZONTALLY from BACK. No dome or continuous hat brim. Hat/head top at12%,eye centers EXACTLY38% (strict36–40%),face centered,three-quarter view,gaze slightly off-camera. Crop just below shoulders, no hands or props. Costume is Ming round-collar official robe with only simple rank-patch top edge. NO yellow,ochre or gold robes. No text,names,seals,watermarks,frames,guides,actors,TV likeness,anime,photo,3D,glow or intricate embroidery. Render face-shape,beard,build and expression differences VERY CLEARLY even at44px.
+Subject NEW face card: VERY SHORT WIDE TRAPEZOID face with heavy fleshy lower cheeks, broad jaw and a clear DOUBLE CHIN; broad dense FAN-SHAPED SHORT FULL CHIN AND CHEEK BEARD with gray flecks and thick separated drooping moustache, NOT a pointed goatee; bushy downward-splayed brows and small close-set hooded eyes; short broad nose and broad thin closed lips; very short thick neck, plump bulky shoulders held slightly inward; warm tan-brown skin, small mole beside right brow and deep cheek folds; guarded ingratiating calculation and wary attention, adult50, restrained human expression without caricature.
+Age50; facingRIGHT. Robe muted RED. No text/name in image.
+~~~
+
+#### review2-ming-chongzhen-official-04
+
+目标：assets/art/portraits/unique/ming-chongzhen/official-04.webp
+
+~~~text
+Use case: historical-scene. ONE single Chinese Ming civil minister game portrait,1024x1280,HEAD AND SHOULDERS,plain solid #E3D7BE. Image1 is EDIT TARGET: preserve its correct flat-top Ming WUSHAMAO construction but REPLACE FACE, facial hair, neck/build and expression with the specified NEW distinct identity. Images2–5 are the four approved STYLE references ONLY, never copy their faces or locations. Chinese baimiao CLEAN INK contours and light FLAT muted washes, at most one faint shading layer, simplified main folds, extremely faint smooth paper grain. Compact black WUSHAMAO: FLAT TOP,low front close to forehead,higher flat rear, two thin FLAT OVAL wings projecting HORIZONTALLY from BACK. No dome or continuous hat brim. Hat/head top at12%,eye centers EXACTLY38% (strict36–40%),face centered,three-quarter view,gaze slightly off-camera. Crop just below shoulders, no hands or props. Costume is Ming round-collar official robe with only simple rank-patch top edge. NO yellow,ochre or gold robes. No text,names,seals,watermarks,frames,guides,actors,TV likeness,anime,photo,3D,glow or intricate embroidery. Render face-shape,beard,build and expression differences VERY CLEARLY even at44px.
+Subject NEW face card: EXTREMELY LEAN LONG RECTANGULAR face, long hollow cheeks, narrow elongated chin and visible cheekbone planes; THREE DISTINCT LONG SPARSE WISPY BEARD STRANDS with a fine short moustache, some gray, bare upper cheeks, never thick full beard; low fine straight brows and very narrow heavily lidded calm eyes; long high narrow nose and very thin horizontal closed lips; thin long neck and narrow sloping shoulders held rigidly straight; cool pale skin, clearly gray-flecked temples and one fine vertical brow crease; outwardly courteous mildness with cold deeply guarded composure, visibly54.
+Age54; facingRIGHT. Robe muted BLUE. No text/name in image.
+~~~
+
+#### review2-ming-chongzhen-official-05
+
+目标：assets/art/portraits/unique/ming-chongzhen/official-05.webp
+
+~~~text
+Use case: historical-scene. ONE single Chinese Ming civil minister game portrait,1024x1280,HEAD AND SHOULDERS,plain solid #E3D7BE. Image1 is EDIT TARGET: preserve its correct flat-top Ming WUSHAMAO construction but REPLACE FACE, facial hair, neck/build and expression with the specified NEW distinct identity. Images2–5 are the four approved STYLE references ONLY, never copy their faces or locations. Chinese baimiao CLEAN INK contours and light FLAT muted washes, at most one faint shading layer, simplified main folds, extremely faint smooth paper grain. Compact black WUSHAMAO: FLAT TOP,low front close to forehead,higher flat rear, two thin FLAT OVAL wings projecting HORIZONTALLY from BACK. No dome or continuous hat brim. Hat/head top at12%,eye centers EXACTLY38% (strict36–40%),face centered,three-quarter view,gaze slightly off-camera. Crop just below shoulders, no hands or props. Costume is Ming round-collar official robe with only simple rank-patch top edge. NO yellow,ochre or gold robes. No text,names,seals,watermarks,frames,guides,actors,TV likeness,anime,photo,3D,glow or intricate embroidery. Render face-shape,beard,build and expression differences VERY CLEARLY even at44px.
+Subject NEW face card: SHORT COMPACT OVAL face with rounded upper cheekbones and a small tidy chin, not long triangular; COMPLETELY CLEAN-SHAVEN adult34, no moustache, stubble or chin hair; short lifted eyebrows and large bright observant eyes; small slightly upturned nose, full gently curved lips and subtle knowing closed-mouth smile; slender neck and light relaxed narrow shoulders; warm light beige skin, tiny dimple near left mouth corner; quick socially attentive intelligence and easy self-confidence, adult male rather than boyish or feminine.
+Age34; facingLEFT. Robe muted dark GREEN. No text/name in image.
+~~~
+
+#### review2-wanli-emperor-young
+
+目标：assets/art/portraits/unique/ming-wanli/emperor-01.webp
+
+~~~text
+Use case: precise-object-edit. Image1 is the imperial portrait EDIT TARGET; images2–5 are the four approved STYLE references ONLY. Change ONLY the black headwear to an unmistakable Chinese Ming YISHANGUAN 翼善冠: a low dark crown in front and TWO clearly shaped stiff thin black wings attached at the REAR, folded UPWARD and slightly backward together behind the crown; compact but visibly taller angular folded rear wings, not two small rounded bumps, bunny ears, a cap with horizontal official wings, or a western hat. Complete crown top10–12% from canvas top, preserve eye centers38% (strict36–40%). Keep EXACT same existing face,eye/nose/lip identity,skin,head angle,facing LEFT,yellow round-collar dragon robe,simple motifs,shoulders,solid #E3D7BE background and clean baimiao flat light washes. Preserve true9-year-old CHILD face and child-sized shoulders,round cheeks,clean-shaven,NO aging or adultification. No new objects,words,seals,watermarks,borders,glow,photo or3D. Portrait1024x1280.
+~~~
+
+#### review2-wanli-emperor-old
+
+目标：assets/art/portraits/unique/ming-wanli/emperor-01-old.webp
+
+~~~text
+Use case: precise-object-edit. Image1 is the imperial portrait EDIT TARGET; images2–5 are the four approved STYLE references ONLY. Change ONLY the black headwear to an unmistakable Chinese Ming YISHANGUAN 翼善冠: a low dark crown in front and TWO clearly shaped stiff thin black wings attached at the REAR, folded UPWARD and slightly backward together behind the crown; compact but visibly taller angular folded rear wings, not two small rounded bumps, bunny ears, a cap with horizontal official wings, or a western hat. Complete crown top10–12% from canvas top, preserve eye centers38% (strict36–40%). Keep EXACT same existing face,eye/nose/lip identity,skin,head angle,facing LEFT,yellow round-collar dragon robe,simple motifs,shoulders,solid #E3D7BE background and clean baimiao flat light washes. Preserve the PLUMP adult48 identity,full round cheeks,obvious double chin,thick neck,existing moustache and chin tuft and gray temples. No new objects,words,seals,watermarks,borders,glow,photo or3D. Portrait1024x1280.
+~~~
+
+#### review2-scene-camp
+
+目标：assets/art/scenes/camp-1440.webp、assets/art/scenes/camp-720.webp
+
+~~~text
+Use case: historical-scene. Image1 is the scene EDIT TARGET to be compositionally REBUILT per request; images2–5 are STYLE references ONLY, ABSOLUTELY DO NOT COPY their palace framing or portrait people. REBUILD as a truly OUTDOOR WILDERNESS MILITARY ENCAMPMENT, camera standing on open rough earth and short grass. Center band: a large simple canvas command TENT,2–3 smaller canvas tents further back,plain unmarked red cloth flags on thin freestanding poles,one small fire brazier,low distant hills. Foreground ONLY natural dusty earth,grass,small stones and a few tent pegs/ropes; top edge ONLY open pale sky and distant landscape. Remove ALL palace roof,eaves,timber beams,veranda,red columns,stone column bases,throne,wooden pavilion and grand stone palace terrace. NO foreground table needed. Tent poles must be slim functional tent supports,not palace columns. Chinese baimiao clean INK OUTLINES with light FLAT muted cinnabar/azurite/malachite/beige/ink-gray washes,on nearly smooth pale paper,one faint shading layer at most. Keep detail SIMPLIFIED for small game WebP: no granular paper noise,dense tiny leaves or intricate brick texture. Daytime even pale light. FULL BLEED to every edge,no blank beige strips,black letterbox bars,frame or baked-in gradient. Important scene elements inside horizontal middle30–70% height for112px mobile cover crops. No people,battle,blood,weapons,text,readable marks,plaques,seals,watermarks,photo,3D,glow or fantasy. Landscape16:9,1536x864.
+~~~
+
+#### review2-scene-tour
+
+目标：assets/art/scenes/tour-1440.webp、assets/art/scenes/tour-720.webp
+
+~~~text
+Use case: historical-scene. Image1 is the scene EDIT TARGET to be compositionally REBUILT per request; images2–5 are STYLE references ONLY, ABSOLUTELY DO NOT COPY their palace framing or portrait people. REBUILD viewpoint FROM INSIDE A THICK BRICK-AND-STONE CITY GATE TUNNEL LOOKING OUTWARD. Foreground top and left/right edges are the dark simple brick vault/arched stone opening and thick rough masonry inner walls; bottom edge is worn stone paving leading OUT into a winding pale dirt post road toward distant soft hills and sparse roadside trees. The view is framed ONLY by a real STONE ARCH and BRICK GATE PASSAGE. Central band30–70% shows the bright opening and outgoing road. NO palace eaves,red wooden columns,timber beams,veranda,decorative brackets,throne or foreground palace roof; no exterior gate-tower facade viewed from a courtyard. Chinese baimiao clean INK OUTLINES with light FLAT muted cinnabar/azurite/malachite/beige/ink-gray washes,on nearly smooth pale paper,one faint shading layer at most. Keep detail SIMPLIFIED for small game WebP: no granular paper noise,dense tiny leaves or intricate brick texture. Daytime even pale light. FULL BLEED to every edge,no blank beige strips,black letterbox bars,frame or baked-in gradient. Important scene elements inside horizontal middle30–70% height for112px mobile cover crops. No people,battle,blood,weapons,text,readable marks,plaques,seals,watermarks,photo,3D,glow or fantasy. Landscape16:9,1536x864.
+~~~
+
+
+### 万历两像冠高复核：只收短后翼
+
+上折冠翼保持可辨，冠顶留白恢复约10%，五官、眼位、年龄及衣袍不动。
+
+#### review2-wanli-emperor-young-final
+
+~~~text
+Use case: precise-object-edit. Image1 is EDIT TARGET. Images2–5 are approved STYLE references only. Change ONLY the HEIGHT of the TWO angular raised REAR WINGS of the black Ming YISHANGUAN: SHORTEN them so their highest top is at y140 of this1402px portrait (10% from top), with clear plain paper headroom above. KEEP the wings recognizably separate, stiff, folded upward/backward at REAR, never round bumps. Keep front crown EXACTLY where it is. Do NOT move or resize the face,eyes,head,shoulders,robe or canvas. Keep the exact same 9-year-old child,clean-shaven round child face identity, same mole,facing LEFT,background #E3D7BE,flat baimiao lines/colors and simplified dragon motifs. No added text,marks,frames or props.
+~~~
+
+#### review2-wanli-emperor-old-final
+
+~~~text
+Use case: precise-object-edit. Image1 is EDIT TARGET. Images2–5 are approved STYLE references only. Change ONLY the HEIGHT of the TWO angular raised REAR WINGS of the black Ming YISHANGUAN: SHORTEN them so their highest top is at y140 of this1402px portrait (10% from top), with clear plain paper headroom above. KEEP the wings recognizably separate, stiff, folded upward/backward at REAR, never round bumps. Keep front crown EXACTLY where it is. Do NOT move or resize the face,eyes,head,shoulders,robe or canvas. Keep the exact same plump48-year-old adult,full cheeks,double chin,moustache and beard identity, same mole,facing LEFT,background #E3D7BE,flat baimiao lines/colors and simplified dragon motifs. No added text,marks,frames or props.
+~~~

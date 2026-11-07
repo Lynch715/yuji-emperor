@@ -1,0 +1,92 @@
+{
+  "scope": "生产渲染函数与CSS的静态对照页，设置成功加载样式；未读写存档",
+  "mobile": {
+    "headers": [
+      {
+        "fit": "cover",
+        "height": 112,
+        "loaded": true,
+        "opacity": "1",
+        "src": "http://127.0.0.1:4197/assets/art/scenes/camp-720.webp",
+        "width": 340
+      },
+      {
+        "fit": "cover",
+        "height": 112,
+        "loaded": true,
+        "opacity": "1",
+        "src": "http://127.0.0.1:4197/assets/art/scenes/tour-720.webp",
+        "width": 340
+      }
+    ],
+    "scrollWidth": 390,
+    "visiblePortraits": [
+      {
+        "height": 80,
+        "loaded": true,
+        "opacity": "1",
+        "width": 64
+      },
+      {
+        "height": 44,
+        "loaded": true,
+        "opacity": "1",
+        "width": 44
+      },
+      {
+        "height": 80,
+        "loaded": true,
+        "opacity": "1",
+        "width": 64
+      },
+      {
+        "height": 44,
+        "loaded": true,
+        "opacity": "1",
+        "width": 44
+      },
+      {
+        "height": 80,
+        "loaded": true,
+        "opacity": "1",
+        "width": 64
+      },
+      {
+        "height": 44,
+        "loaded": true,
+        "opacity": "1",
+        "width": 44
+      },
+      {
+        "height": 80,
+        "loaded": true,
+        "opacity": "1",
+        "width": 64
+      },
+      {
+        "height": 44,
+        "loaded": true,
+        "opacity": "1",
+        "width": 44
+      },
+      {
+        "height": 80,
+        "loaded": true,
+        "opacity": "1",
+        "width": 64
+      },
+      {
+        "height": 80,
+        "loaded": true,
+        "opacity": "1",
+        "width": 64
+      }
+    ],
+    "width": 390
+  },
+  "narrow": {
+    "scrollWidth": 360,
+    "width": 360
+  },
+  "errors": []
+}
