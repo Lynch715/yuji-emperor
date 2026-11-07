@@ -1,6 +1,96 @@
-# 御极 · 美术一期实际提示词
+# 御极 · 美术实际提示词
 
 工具：内置 `imagegen`，未使用 CLI / 外部 API。画风方向已确认；先修订四张定调样张与明制服饰约束，再继续一期批量生成。历史提示词保留以便追溯。
+
+## 美术二期 · 清制定调样张（第1步，待确认）
+
+从最新main／34bdb82建立feat/art-phase2。二期79张，本步只出4张池图定调样张，不生成其余75张；待玩家确认后才继续。定调样张逐张生成，批量池图继续按一期2×2同池四人、专属像单张执行。每池未开始的其余长相卡在确认后、该池生成前补齐。
+
+### 清制服饰要点（全部清制生成共同约束）
+
+- 文官：暖帽或凉帽，帽顶有顶珠；石青色补褂，胸前方补，挂朝珠。官服深色可以统一，长相差异靠脸型、胡须、体态、神情拉开。
+- 武将：甲胄或补褂，戴顶戴。
+- 皇帝：明黄龙袍、吉服冠；不戴明制翼善冠。
+- 后妃正位戴钿子或朝冠；常位梳两把头，配扁方和簪花，穿立领旗装。正位冠体和常位横向发髻一眼可辨，女性眉眼柔和、面貌明确。
+- 皇子：马褂或袍，戴小帽；公主穿旗装，梳两把头或小两把头。
+- 男子头肩像只露前额剃发的轮廓，不画辫子垂到胸前，不夸张、不丑化。
+- 所有画面禁用满文、汉字、匾额等任何文字。服饰只保留朝代辨识要件，不铺繁复刺绣、珠串或灯光特效。
+- 清制不建宦官池、太后池：内务府总管共用文官池；两剧本太后各用专属像。
+
+### 参考与构图
+
+沿用一期批准四张的最新版：明文官壮01、明常位后妃01、style-v2/desk-night、style-v2/court，只作线条、平涂和纸底参考，不复制明制服饰或人物。四张清制定调样张确认后，后续每次调用都显式传入含这四张一期参照与四张清制参照的两块参照板，完整保留8张画面。内置工具最多接收5个参照文件，因而各4张仅缩放拼接成一板，单张编辑另传目标；此技术处理先在草稿PR说明，不修图，不减少参考内容。头顶10–14%、眼位36–40%（目标38%）、4:5头肩像、四分之三侧、底色#E3D7BE；导出仅裁切、等比缩放、转WebP，不修图。人物400×500/q75。
+
+### 四张样张长相卡
+
+| 池／编号 | 脸型 | 胡须／发型与发际线 | 眉眼 | 鼻口 | 体态 | 肤色 | 标记 | 神情／朝向 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| qing/official-mature/01 | 宽方脸，厚下颌 | 短浓圆形络腮须连短髭 | 平直浓眉、小而略垂的深眼 | 宽圆鼻、厚下唇紧合 | 富态厚颈、宽肩 | 暖黄偏麦肤 | 左颊一颗小痣 | 沉着持重／向左 |
+| qing/consort-regular/01 | 心形脸，细尖圆下巴 | 低平圆发际线、低两把头 | 细平眉、柔和宽杏眼 | 小直鼻、较丰圆唇 | 纤细挺直肩颈 | 暖白肤 | 右眉尾小痣 | 温柔含蓄／向右 |
+| qing/consort-high/01 | 饱满宽鹅蛋脸、圆下颌 | 较高圆弧发际线、紧整高髻藏钿子下 | 柔弯长眉、细长沉静眼 | 高而小的鼻梁、薄弓唇 | 丰润端正肩颈 | 浅米偏冷肤 | 左嘴角浅酒窝 | 端庄自持／向左 |
+| qing/emperor-young/01 | 修长卵圆脸、收窄下巴 | 淡短八字髭、下巴无须 | 清晰微挑眉、较大细长眼 | 高直鼻、薄唇紧合 | 瘦长挺拔肩颈 | 浅金米肤 | 右眉间一条浅竖纹 | 警醒而有决断／向右 |
+
+本步每池仅一人，四张为虚构池图，不作为历史人物长相史料。后续同池长相卡逐对校验至少四维不同，男性脸型或胡须不同，女性脸型、发际线或发髻高低不同。
+
+### 定调样张实际提示词
+
+#### qing/official-mature/01
+
+内置imagegen，逐张生成；参照上述一期四张，均仅作画风参考。原始PNG：`art-source/phase2/official-mature-01.png`。
+
+```text
+Use case: historical-scene. Asset type: one game character portrait for 御极, Chinese Qing dynasty. The FOUR supplied images are the approved Phase1 STYLE AND FRAMING references ONLY: image1 Ming official, image2 Ming consort, image3 night desk, image4 court. Do not copy their people, Ming hats, hair or clothing, and do not depict a setting. Match the same clean restrained Chinese BAIMIAO ink outlines, light FLAT muted washes, at most one very faint flat shading layer and nearly smooth pale paper. Simple illustrated character atlas, not concept art. One SINGLE distinct person, HEAD AND SHOULDERS ONLY, crop just below shoulders; no hands, props or full torso. Face horizontally centered. The very TOP of the hat/headdress is exactly12% down from the canvas top (allowed10–14%). BOTH eye centers are exactly38% down (strict36–40%). Adjust the COMPACT height of headdress to satisfy both lines, never push eyes to the middle. Three-quarter view, gaze slightly off-camera, never directly at viewer. Plain solid #E3D7BE background to every edge with EXTREMELY faint paper grain. No perspective frame, no scenery, no border. Do NOT draw composition guides. No Chinese or Manchu writing or ANY text, insignia lettering, plaques, seals, signature, watermark, glow, photo, 3D, anime, cinematic light, detailed embroidery, actor or TV likeness. Portrait4:5,1024x1280.
+Subject / face card: 44-year-old mature adult male, BROAD SQUARE face and heavy jaw, short dense rounded full beard connected to a short moustache, thick level eyebrows, small deep-set slightly downturned eyes, broad rounded nose, thick lower lip softly closed, distinctly PLUMP thick neck and broad shoulders, warm wheat-beige skin, one tiny mole on left cheek, composed steady patience, facing LEFT.
+Period costume: Clearly QING civil official: compact winter court WARM HAT with black fur rolled rim, low rounded red tassel crown and one small round RED FINIAL BEAD at its top; no horizontal Ming wings. The hat allows a restrained curved SHAVEN FRONT-FOREHEAD outline just above the brows, no hair hanging on chest, no exaggerated baldness. Dark STONE-BLUE (near navy) BUFU overrobe with standing neckline, upper portion of a clear SQUARE CIVIL RANK PATCH on the upper chest at the bottom of portrait, simply suggested pale bird/cloud motif with no characters. A clear COURT BEAD NECKLACE drapes over both shoulders as discrete small subdued pale beads, simplified, partly cropped at lower edge. The rank patch and beads must be readable while remaining head-and-shoulders framing; no full-length robe or elaborate embroidery.
+```
+
+#### qing/consort-regular/01
+
+内置imagegen，逐张生成；参照上述一期四张，均仅作画风参考。原始PNG：`art-source/phase2/consort-regular-01.png`。
+
+```text
+Use case: historical-scene. Asset type: one game character portrait for 御极, Chinese Qing dynasty. The FOUR supplied images are the approved Phase1 STYLE AND FRAMING references ONLY: image1 Ming official, image2 Ming consort, image3 night desk, image4 court. Do not copy their people, Ming hats, hair or clothing, and do not depict a setting. Match the same clean restrained Chinese BAIMIAO ink outlines, light FLAT muted washes, at most one very faint flat shading layer and nearly smooth pale paper. Simple illustrated character atlas, not concept art. One SINGLE distinct person, HEAD AND SHOULDERS ONLY, crop just below shoulders; no hands, props or full torso. Face horizontally centered. The very TOP of the hat/headdress is exactly12% down from the canvas top (allowed10–14%). BOTH eye centers are exactly38% down (strict36–40%). Adjust the COMPACT height of headdress to satisfy both lines, never push eyes to the middle. Three-quarter view, gaze slightly off-camera, never directly at viewer. Plain solid #E3D7BE background to every edge with EXTREMELY faint paper grain. No perspective frame, no scenery, no border. Do NOT draw composition guides. No Chinese or Manchu writing or ANY text, insignia lettering, plaques, seals, signature, watermark, glow, photo, 3D, anime, cinematic light, detailed embroidery, actor or TV likeness. Portrait4:5,1024x1280.
+Subject / face card: 24-year-old ADULT WOMAN, clearly feminine HEART-SHAPED face with a softly tapered small rounded chin, LOW smooth rounded hairline, fine level eyebrows and soft wide almond eyes, small straight nose, softly full rounded closed lips, slender straight shoulders and fine neck, pale WARM skin, tiny beauty mark near RIGHT eyebrow tail, gentle thoughtful reserve, facing RIGHT. Soft brows and eyes, no angular masculine jaw, no moustache or beard.
+Period costume: Clearly QING regular-rank palace consort: LOW and COMPACT authentic LIANGBATOU / TWO-HANDLE HAIRSTYLE, hair swept into TWO NEAT HORIZONTAL lateral hair rolls built around one visible flat BI ANFANG horizontal hairpin, not a towering winged theatre headdress or a huge late-Qing board. One small plain gold pin and one muted rose-colored flower on one side, no crown. Fully covered muted PALE JADE standing-collar QING QIPAO / banner robe, asymmetric side fastening indicated at collar and shoulder, restrained dark green edging and tiny simple knots. No Ming jiujibun or small Ming crown, no Ming crossed-collar ao, no phoenix crown. Only shoulders and collar visible.
+```
+
+#### qing/consort-high/01
+
+内置imagegen，逐张生成；参照上述一期四张，均仅作画风参考。原始PNG：`art-source/phase2/consort-high-01.png`。
+
+```text
+Use case: historical-scene. Asset type: one game character portrait for 御极, Chinese Qing dynasty. The FOUR supplied images are the approved Phase1 STYLE AND FRAMING references ONLY: image1 Ming official, image2 Ming consort, image3 night desk, image4 court. Do not copy their people, Ming hats, hair or clothing, and do not depict a setting. Match the same clean restrained Chinese BAIMIAO ink outlines, light FLAT muted washes, at most one very faint flat shading layer and nearly smooth pale paper. Simple illustrated character atlas, not concept art. One SINGLE distinct person, HEAD AND SHOULDERS ONLY, crop just below shoulders; no hands, props or full torso. Face horizontally centered. The very TOP of the hat/headdress is exactly12% down from the canvas top (allowed10–14%). BOTH eye centers are exactly38% down (strict36–40%). Adjust the COMPACT height of headdress to satisfy both lines, never push eyes to the middle. Three-quarter view, gaze slightly off-camera, never directly at viewer. Plain solid #E3D7BE background to every edge with EXTREMELY faint paper grain. No perspective frame, no scenery, no border. Do NOT draw composition guides. No Chinese or Manchu writing or ANY text, insignia lettering, plaques, seals, signature, watermark, glow, photo, 3D, anime, cinematic light, detailed embroidery, actor or TV likeness. Portrait4:5,1024x1280.
+Subject / face card: 36-year-old ADULT WOMAN, clearly feminine FULL BROAD OVAL face with rounded cheeks and chin, HIGH smooth arched hairline, gently curved long eyebrows and narrow serene almond eyes, fine high nose bridge, thin softly shaped cupid-bow closed lips, full graceful neck and rounded upright shoulders, pale COOL beige skin, shallow dimple near left mouth corner, calm dignified self-possession, facing LEFT. Feminine gentle eyes and mouth, no masculine beard or angular male jaw.
+Period costume: Clearly QING HIGH-RANK QUEEN CONSORT: a COMPACT BLACK SATIN DIANZI crown, a visibly arched rounded FAN-SHAPED diadem covering the tidy raised bun, with THREE simple turquoise-and-dull-gold floral shapes across the front and TWO SHORT tiny pearl pendant strands by the temples. Headdress top at12%, EYES at38%; keep the diadem compact and naturally fitted. This upright CROWN silhouette must be immediately distinct from the regular consort horizontal two-handle hair; no two-handle hairstyle, no Ming phoenix bird crown. Fully covered muted plum-red STANDING-COLLAR QING banner robe with stone-blue collar edge and simple side fastening. Jewelry restrained and flat, no intricate embroidery or excessive beadwork.
+```
+
+#### qing/emperor-young/01
+
+内置imagegen，逐张生成；参照上述一期四张，均仅作画风参考。原始PNG：`art-source/phase2/emperor-young-01.png`。
+
+```text
+Use case: historical-scene. Asset type: one game character portrait for 御极, Chinese Qing dynasty. The FOUR supplied images are the approved Phase1 STYLE AND FRAMING references ONLY: image1 Ming official, image2 Ming consort, image3 night desk, image4 court. Do not copy their people, Ming hats, hair or clothing, and do not depict a setting. Match the same clean restrained Chinese BAIMIAO ink outlines, light FLAT muted washes, at most one very faint flat shading layer and nearly smooth pale paper. Simple illustrated character atlas, not concept art. One SINGLE distinct person, HEAD AND SHOULDERS ONLY, crop just below shoulders; no hands, props or full torso. Face horizontally centered. The very TOP of the hat/headdress is exactly12% down from the canvas top (allowed10–14%). BOTH eye centers are exactly38% down (strict36–40%). Adjust the COMPACT height of headdress to satisfy both lines, never push eyes to the middle. Three-quarter view, gaze slightly off-camera, never directly at viewer. Plain solid #E3D7BE background to every edge with EXTREMELY faint paper grain. No perspective frame, no scenery, no border. Do NOT draw composition guides. No Chinese or Manchu writing or ANY text, insignia lettering, plaques, seals, signature, watermark, glow, photo, 3D, anime, cinematic light, detailed embroidery, actor or TV likeness. Portrait4:5,1024x1280.
+Subject / face card: 28-year-old young ADULT MALE emperor, LONG SLIM OVAL face and neat tapered chin, delicate SHORT SEPARATED MOUSTACHE tips, no chin beard, clearly masculine but youthful, clean lifted fine eyebrows, larger long observant eyes, high STRAIGHT NARROW nose and thin firmly closed lips, lean long neck and upright narrow shoulders, light golden-beige skin, one faint short vertical crease between right brow and bridge, alert disciplined resolve, facing RIGHT. Must look distinctly different from the broad plump full-bearded official.
+Period costume: Unmistakably QING emperor: compact QING JIFUGUAN auspicious crown, low black rounded rim with RED TASSEL cap above, a small GOLD finial with modest red jewel at its very top. No Ming Yishanguan, no folded rear wings, no horizontal wings, no western crown. Show only a restrained curved SHAVEN FRONT-FOREHEAD outline under the hat, no braid on chest, no exaggerated baldness. Muted but unmistakably BRIGHT IMPERIAL YELLOW standing-collar QING DRAGON ROBE, dark blue collar and a few simple coiling dragon/cloud outline marks on shoulder and upper chest, clearly decorative unlettered motifs, not detailed embroidery. One simplified discreet amber court-bead arc can show near lower crop. Head-and-shoulders only.
+```
+
+### 定调男像帽顶留白复检
+
+首稿两张男像眼位合格、顶珠上沿留白偏小，使用内置imagegen只压缩帽冠及顶珠的竖向高度，脸部与眼位不动；首次尝试直接传入8张被工具以最多5文件拒绝，未生成图；改以一期4张、清制首稿4张各拼成一块参照板并另传编辑目标，全部8张画面仍在。下列为首次尝试提示词，后附实际采用的参照板版。女性样张采用裁切调整，不修脸或补画。
+
+#### official-mature-01 帽顶修订
+
+```text
+Use case: precise-object-edit. There are EIGHT references: images1–4 approved Phase1 STYLE references, images5–8 Qing tone samples (official,regularconsort,highconsort,youngemperor). Image5 is the ONLY EDIT TARGET; preserve its exact same face identity, facial hair, forehead, gaze, shoulders, costume, collar, necklace, skin, flat baimiao style and #E3D7BE paper background. Other seven images are style references ONLY, never copy their people or dress.
+Change ONLY the VERTICAL HEIGHT of the red warm hat and round finial. The current very top of the finial is too high, near8% of canvas height. Make the UPPER CAP / FINIAL more COMPACT vertically, bringing its very top DOWN to12% of total image height (strict10–14%, target12%). Keep the LOWER edge of the hat next to forehead fixed. Keep both eye centers exactly where they are, at38% image height (strict36–40%), keep head anatomy and all face/body positions fixed. Do not move the person down or enlarge the face. This is a compact Qing hat, no Ming wings, no continuous wide Western hat brim. Retain the existing period costume, rank patch/dragon outline and court beads unchanged. No new elements or text, no composition lines, no Manchu or Han writing,seals,watermarks,frames,photo,3D,glow. Single4:5 portrait,1024x1280.
+```
+
+#### emperor-young-01 帽顶修订
+
+```text
+Use case: precise-object-edit. There are EIGHT references: images1–4 approved Phase1 STYLE references, images5–8 Qing tone samples (official,regularconsort,highconsort,youngemperor). Image8 is the ONLY EDIT TARGET; preserve its exact same face identity, facial hair, forehead, gaze, shoulders, costume, collar, necklace, skin, flat baimiao style and #E3D7BE paper background. Other seven images are style references ONLY, never copy their people or dress.
+Change ONLY the VERTICAL HEIGHT of the red JIFUGUAN upper cap and gold/red finial. The current very top of the finial is too high, near8% of canvas height. Make the UPPER CAP / FINIAL more COMPACT vertically, bringing its very top DOWN to12% of total image height (strict10–14%, target12%). Keep the LOWER edge of the hat next to forehead fixed. Keep both eye centers exactly where they are, at38% image height (strict36–40%), keep head anatomy and all face/body positions fixed. Do not move the person down or enlarge the face. This is a compact Qing hat, no Ming wings, no continuous wide Western hat brim. Retain the existing period costume, rank patch/dragon outline and court beads unchanged. No new elements or text, no composition lines, no Manchu or Han writing,seals,watermarks,frames,photo,3D,glow. Single4:5 portrait,1024x1280.
+```
 
 ## 明制服饰要点（本轮修订，后续明 / 大晟人物全部沿用）
 
