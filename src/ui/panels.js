@@ -1,3 +1,4 @@
+import { portraitHTML, hallArtHTML } from './art.js';
 import { examOfficialView } from '../core/keju.js';
 import {technologyHTML} from './technology.js';
 import {INDUSTRIES} from '../core/tech-rules.js';
@@ -81,9 +82,7 @@ export function palacePanel(s, name) {
       fold(
         s.court.officials.filter(o=>o.alive).map(
           (o) =>
-            '<div class="card"><div class="row"><span class="portrait" aria-hidden="true">' +
-            esc(o.name[0]) +
-            "</span><h3>" +
+            '<div class="card"><div class="row">' + portraitHTML(s,o,'card') + '<h3>' +
             esc(o.name) +
             "</h3></div><p>" +
             o.age +
@@ -124,9 +123,7 @@ export function palacePanel(s, name) {
       s.harem.consorts
         .map(
           (c) =>
-            '<div class="card"><div class="row"><span class="portrait" aria-hidden="true">' +
-            esc(c.name[0]) +
-            "</span><h3>" +
+            '<div class="card"><div class="row">' + portraitHTML(s,c,'card') + '<h3>' +
             esc(c.name) +
             "</h3></div><p>" +
             esc(c.rank) +
@@ -179,7 +176,7 @@ export function palacePanel(s, name) {
         .slice(0, 10)
         .map(
           (c) =>
-            '<div class="card"><h3>' +
+            '<div class="card">' + portraitHTML(s,c,'card') + '<h3>' +
             esc(c.name) +
             "</h3><p>" +
             c.age +
@@ -220,7 +217,7 @@ export function palacePanel(s, name) {
       s.foreign
         .map(
           (f) =>
-            '<div class="card"><h3>' +
+            '<div class="card">' + portraitHTML(s,f,'card') + '<h3>' +
             esc(f.name) +
             "</h3><p>" +
             esc(f.ruler) +
@@ -286,12 +283,12 @@ export function palacePanel(s, name) {
         s.harem.children.find((c) => c.id === s.harem.heir)?.name || "尚未册立",
       ) +
       '</h3><p class="muted">慈宁宫：' +
-      esc(s.dowager || "慈宁太后") +
+      portraitHTML(s,s.harem.consorts.find(c=>c.name===s.dowager)||{name:s.dowager||'慈宁太后',faceNo:0},'card','dowager') + esc(s.dowager || '慈宁太后') +
       '。皇嗣满六岁显资质，十五岁后可能结党。</p><div class="grid">' +
       s.harem.children
         .map(
           (c) =>
-            '<div class="card"><h3>' +
+            '<div class="card">' + portraitHTML(s,c,'card') + '<h3>' +
             esc(c.name) +
             " · " +
             (c.sex === "男" ? "皇子" : "公主") +
@@ -318,7 +315,7 @@ export function palacePanel(s, name) {
       (s.harem.royalWomen || [])
         .map(
           (w) =>
-            "<p>" +
+            '<p>' + portraitHTML(s,w,'card') +
             esc(w.name) +
             " · " +
             w.age +
@@ -412,6 +409,7 @@ export function palacePanel(s, name) {
     html || '<p class="muted">本旬尚无记录。</p>',
     "palace",
   );
+  document.querySelector('#modal .dialog-head').insertAdjacentHTML('beforebegin',hallArtHTML(name));
 }
 export function fold(cards) {
   return (

@@ -1,3 +1,4 @@
+import { portraitHTML, sceneHTML, withChapterArt } from '../src/ui/art.js';
 import { talkPeople } from '../src/core/text.js';
 import {requestPlayerIntents,requestScheduleIntents} from '../src/ui/intent-request.js';
 import {resolveTalkIntents} from '../src/core/intents.js';
@@ -29,7 +30,7 @@ function controller(state,extra={}){
   const oldBudget=source.includes('function budget()')?source.slice(source.indexOf('function budget()'),source.indexOf('function loadMetrics()')):'';
   const elements=Object.fromEntries(['#talk-form','#talk-form button','#talk-line','#talk-log','#action-document'].map(id=>[id,{value:'说说近况',disabled:false,insertAdjacentHTML(){}}]));
   const errors=[],saves=[];
-  const context={scheduleSave:{cancel(){},schedule(){},flush:async()=>{}},classifyMemorialSchedule,talkPeople,state,readOnly:false,busy:false,config,AbortController,createBudget,forecastTurn,commitTurn,validateSchedule,talkAttempt,talkMessages,turnMessages,biographyMessages,validateTalk,
+  const context={portraitHTML,sceneHTML,withChapterArt,scheduleSave:{cancel(){},schedule(){},flush:async()=>{}},classifyMemorialSchedule,talkPeople,state,readOnly:false,busy:false,config,AbortController,createBudget,forecastTurn,commitTurn,validateSchedule,talkAttempt,talkMessages,turnMessages,biographyMessages,validateTalk,
     requestTurnContent:(c,s,f,o)=>context.requestTurnNarrative(c,s,f,o),
     requestPlayerIntents:(c,s,i,o)=>requestPlayerIntents(c,s,i,{...o,fetcher:async()=>response({actions:[]})}),requestScheduleIntents,resolveTalkIntents,gameText:x=>x,streamDraft(){},lastSchedule:null,postTitle,$:id=>elements[id],esc:x=>String(x),openDialog(){},closeDialog(){},render(){},toast:m=>errors.push(m),markMetric(){},persist:async()=>{saves.push(structuredClone(context.state));return true;},
     callJSON:(c,m,o)=>callJSON(c,m,{...o,fetcher:async()=>response({reply:'臣尚须查核旧档，此事未敢轻允。'})}),

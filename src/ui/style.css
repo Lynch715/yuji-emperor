@@ -1266,6 +1266,38 @@ dd {
   color: var(--ink-muted);
   flex: none;
 }
+/* Art stays on paper. Names and headings always follow the image. */
+.art-portrait { position: relative; overflow: hidden; display: inline-grid; vertical-align: middle; }
+.art-portrait img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; }
+.art-portrait img.art-loaded { opacity: 1; }
+.art-card { width: 64px; height: 80px; border-radius: 6px; }
+.art-paper { width: 200px; height: 250px; max-width: 100%; border-radius: 6px; margin-bottom: var(--s5); }
+.art-paper img { object-fit: contain; }
+.art-byline { width: 28px; height: 28px; font-size: 14px; margin-right: 6px; }
+.art-dead { filter: grayscale(1); opacity: .7; }
+.art-muted { filter: saturate(.4); }
+.art-gold { box-shadow: 0 0 0 2px var(--gold); }
+.art-scene { position: relative; overflow: hidden; height: 120px; width: 100%; background: var(--paper); margin: 0 0 var(--s4); }
+.art-scene img { display: block; width: 100%; height: 100%; object-fit: cover; opacity: 0; }
+.art-scene img.art-loaded { opacity: 1; }
+.art-scene::after { content: ''; position: absolute; inset: 60% 0 0; background: linear-gradient(transparent, var(--paper)); pointer-events: none; }
+.art-action { height: 160px; background: var(--desk-shade); }
+.art-action::after { background: linear-gradient(transparent, var(--desk-shade)); }
+.art-hall { height: 180px; background: var(--desk); }
+.art-hall::after { background: linear-gradient(transparent, var(--desk)); }
+.art-night img { filter: brightness(.85); }
+.art-off .art-scene, .art-off .art-portrait img { display: none; }
+.art-off .art-card, .art-off .art-paper { width: 44px; height: 44px; border-radius: 50%; }
+.art-portrait.art-failed { width: 44px; height: 44px; border-radius: 50%; }
+.art-byline.art-failed { width: 28px; height: 28px; }
+.memorial-author > span { display: inline-flex; align-items: center; flex-wrap: wrap; }
+.memorial-from { display: inline-flex; align-items: center; }
+@media (max-width: 600px) {
+  .art-scene { height: 96px; }
+  .art-action { height: 112px; }
+  .art-hall { height: 120px; }
+  .art-paper { width: 120px; height: 150px; }
+}
 .map-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -2669,7 +2701,7 @@ textarea.brush-input::placeholder {
 /* Mobile scroll, safe-area and keyboard viewport audit. */
 html,
 body {
-  touch-action: pan-x pan-y;
+  touch-action: manipulation;
   overscroll-behavior: none;
 }
 html.modal-open,

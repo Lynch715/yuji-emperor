@@ -1,0 +1,24 @@
+{
+  "content": 132,
+  "files": 145,
+  "bytes": 2949160,
+  "replaced": 13,
+  "overBudget": [],
+  "baseline": "b87b45703b444afee81b166ddbb045858773ea12",
+  "tests": {
+    "pass": 593,
+    "fail": 0
+  },
+  "simulation": {
+    "seed": "御极·两百年",
+    "years": 200,
+    "turns": 7200,
+    "successionCount": 5,
+    "collapseCount": 0,
+    "finalTreasury": 2040
+  },
+  "browser": "1280/390 static renderer preview; 360 no overflow",
+  "codeChanged": false,
+  "merged": false,
+  "published": false
+}

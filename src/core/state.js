@@ -1,3 +1,4 @@
+import { assignFaces } from './faces.js';
 import { defaultKeju, validateKeju } from './keju-schema.js';
 import {validateDevelopment} from './tech-schema.js';
 import {validateSocialState} from './social-schema.js';
@@ -10,7 +11,7 @@ import { seedNumber, random, DRAFT } from "./rng.js";
 import { uniqueName } from "./names.js";
 import { chooseRegent, legacyDowagerFaction } from "./regency-info.js";
 import {factionPowers} from './politics.js';
-export const VERSION = 24;
+export const VERSION = 25;
 export const TALENTS = ["政略", "权谋", "武略", "文采", "魅力"];
 export const SLOTS = ["朝", "午", "夜"];
 export const POST_NAMES = [
@@ -432,6 +433,14 @@ export function createState(options = {}) {
   state.court.factions=factionPowers(state);
   return state;
 }
+// The reviewed art branch and published regency fix independently used v24.
+// Only the complete art identity marker identifies the pre-regency preview.
+function artPreviewV24(s) {
+  return s.v===24 && s.dowagerFaction===undefined && (!s.regency || s.regency.growth===undefined) &&
+    s.faceCounters && typeof s.faceCounters==='object' && !Array.isArray(s.faceCounters) &&
+    ['emperor','official','consort','child','royalWoman','foreign'].every(k=>Number.isSafeInteger(s.faceCounters[k])&&s.faceCounters[k]>=0) &&
+    Number.isSafeInteger(s.emperor?.faceNo) && s.emperor.faceNo>=0 && s.faceCounters.emperor>s.emperor.faceNo;
+}
 export function migrate(input) {
   if (
     !input ||
@@ -572,7 +581,7 @@ export function migrate(input) {
   s.regency ??= s.emperor.age < 16 ? {regentId:chooseRegent(s).id,until:Number.isFinite(child?.born)?child.born+16*36:s.turn+Math.ceil((16-s.emperor.age)*36)} : null;
   // v24 starts tracking future growth from the loaded values. Never reconstruct
   // old talents or mutate a frozen forecast; its resulting state upgrades on commit.
-  if(input.v<24){
+  if(input.v<24 || artPreviewV24(input)){
     s.dowagerFaction ??= legacyDowagerFaction(s);
     if(s.regency)s.regency.growth={age:s.emperor.age,education:child?.education || 0};
   }
@@ -602,7 +611,7 @@ export function migrate(input) {
   }
   for(const a of s.ambitions) if(s.receipts.includes('goal:'+a.id)&&!s.receipts.includes('goal:'+reignId(s)+':'+a.id)) s.receipts.push('goal:'+reignId(s)+':'+a.id);
   assertState(s);
-  return s;
+  return assignFaces(s);
 }
 export function assertState(s) {
   validateKeju(s);
@@ -654,7 +663,7 @@ export function assertState(s) {
   if(s.v>=5){
     if(typeof s.imperialSurname!=='string'||!s.imperialSurname.trim())throw new Error('皇姓资料无效');
     if(!Number.isSafeInteger(s.era.startTurn)||s.era.startTurn<0)throw new Error('纪年起点无效');
-    if(s.v>=24){
+    if(s.v>=24 && !artPreviewV24(s)){
       if(s.dowagerFaction!==null&&!s.court.factions.some(f=>f.id===s.dowagerFaction))throw new Error('太后派系无效');
       if(s.regency){
         const g=s.regency.growth;

@@ -1,3 +1,4 @@
+import { hallArtHTML } from './art.js';
 import {INDUSTRIES} from '../core/tech-rules.js';
 import { esc, gameText, openDialog } from './common.js';
 import { campaignsHTML, treatyHTML } from './campaigns.js';
@@ -80,6 +81,7 @@ export function nationOverviewHTML(s,span=12,expanded=false) {
 export function openNationOverview(state) {
   let span=12,expanded=false;
   openDialog('国势全览','<div id="nation-overview">'+nationOverviewHTML(state,span,expanded)+'</div>','nation-shell');
+  document.querySelector('#modal .dialog-head').insertAdjacentHTML('beforebegin',hallArtHTML('国势全览'));
   const root=document.querySelector('#nation-overview');
   root.onclick=e=>{
     const b=e.target.closest('button');if(!b)return;

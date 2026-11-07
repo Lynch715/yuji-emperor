@@ -1,3 +1,4 @@
+import { illustrationsEnabled, setIllustrations } from './art.js';
 import { createDialogRequestScope, probeErrorMessage } from "./request-scope.js";
 import { $, esc, gameText, openDialog, toast } from "./common.js";
 import { FONT_SCALES, applyFontScale, storedFontScale } from "./mobile.js";
@@ -38,7 +39,7 @@ export function requestMetricHTML(m) {
 export function openSettings(config, metrics, onSave, recordMetric = null) {
   openDialog(
     "御前设置",
-    '<label for="font-scale">正文字号</label><select id="font-scale">' +
+    '<label class="check"><input id="show-illustrations" type="checkbox"' + (illustrationsEnabled() ? ' checked' : '') + '>显示插图</label><p class="muted">仅保存在这台设备上。</p><label for="font-scale">正文字号</label><select id="font-scale">' +
       Object.entries(FONT_SCALES).map(([id, label]) => '<option value="' + id + '"' + (id === storedFontScale() ? " selected" : "") + ">" + label + "</option>").join("") +
       '</select><p class="muted">字号立即生效。</p><p class="muted">连接 API，让故事随你的选择继续。密钥只发往所填地址，不随存档导出。</p><form id="settings-form"><label for="provider">服务商与地域</label><select id="provider">' +
       Object.entries(PRESETS)
@@ -73,6 +74,7 @@ export function openSettings(config, metrics, onSave, recordMetric = null) {
       "</div></details>",
   );
   $("#font-scale").onchange = (e) => applyFontScale(e.target.value);
+  $('#show-illustrations').onchange = e => setIllustrations(e.target.checked);
   const read = () => ({
     provider: $("#provider").value,
     base: $("#api-base").value.trim(),

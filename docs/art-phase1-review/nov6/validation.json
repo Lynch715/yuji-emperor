@@ -1,0 +1,24 @@
+{
+  "date": "2026-11-06",
+  "content": 132,
+  "webpFiles": 145,
+  "bytes": 2994276,
+  "htmlBytes": 848124,
+  "tests": 593,
+  "simulation": {
+    "years": 200,
+    "turns": 7200,
+    "successionCount": 5,
+    "collapseCount": 0,
+    "finalTreasury": 2040
+  },
+  "lighthouse": {
+    "version": "13.6.0",
+    "intro": 100,
+    "custom": 100,
+    "ming-wanli": 100,
+    "ming-chongzhen": 100
+  },
+  "branch": "feat/art-phase1",
+  "published": false
+}

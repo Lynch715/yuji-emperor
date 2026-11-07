@@ -2,7 +2,7 @@
 
 [开始游戏](https://lynch715.github.io/yuji-emperor/) · [源码仓库](https://github.com/Lynch715/yuji-emperor) · [游戏海报](docs/POSTERS.md)
 
-本地可运行的单文件帝王文字经营游戏。设计源为 [DESIGN.md](DESIGN.md)，源码分模块放在 `src/`，`index.html` 是可直接放到 GitHub Pages 的构建产物。运行不需要安装依赖，不含统计服务或预置密钥。「夜御案」界面按规格通过 Google Fonts 加载字体；离线或加载失败时使用系统字体，游戏仍可用，没有外部运行脚本。
+本地可运行的帝王文字经营游戏。设计源为 [DESIGN.md](DESIGN.md)，源码分模块放在 `src/`，`index.html` 与 `assets/art/` 下的 WebP 一起部署到 GitHub Pages。运行不需要安装依赖，不含统计服务或预置密钥。「夜御案」界面按规格通过 Google Fonts 加载字体；离线或加载失败时使用系统字体，插图缺失时回退圆章与纯色章节头，游戏仍可用，没有外部运行脚本。
 
 ## 开始
 
@@ -56,6 +56,6 @@ node scripts/simulate.mjs 200 自定种子
 - `scripts/build.mjs`：零依赖拼接器；生成内联 CSS/JS 的 `index.html`。
 - 本机参考源码与历史调试 / 验收文件不随公开仓库发布；仓库保留运行测试必需的固定种子材料。
 
-推送 main 后，GitHub Actions 先运行全部测试，再构建并发布 Pages；站点产物仅含单文件游戏，不包含源码、参考文件、调试存档或接口密钥。
+推送 main 后，GitHub Actions 先运行全部测试，再构建并发布 Pages；站点产物包含 `index.html` 和 `assets/art/` 下原路径的 `*.webp`，不包含源码、生成原图、参考文件、调试存档或接口密钥。原图只保留在本机 `art-source/`，不会提交。本地使用 `npm run serve`，通过 `http://127.0.0.1:4173` 访问页面与同站插图。仅上传 `index.html` 也可无图运行；设置里的「显示插图」仅影响本机。
 
 历史验收文档中的部分 qa 链接仅对应本机留档；本次公开发布结果见 [发布记录](docs/RELEASE.md)。
