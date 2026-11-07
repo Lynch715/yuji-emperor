@@ -1,0 +1,26 @@
+{
+  "date": "2026-11-06",
+  "baseline": "093eaad",
+  "testedEngine": "e1604aa",
+  "saveVersion": 24,
+  "testPass": 595,
+  "testFail": 0,
+  "simulationYears": 200,
+  "simulationTurns": 7200,
+  "buildBytes": 817494,
+  "sha256": "29362331ee0923acbf11b75b37c26f7030a0b0a273906ce4214d0195163bbf53",
+  "browser": {
+    "origin": "http://127.0.0.1:49638",
+    "oldProgressHeader": "5月 上旬 · 第 13 旬　赵祯 在位",
+    "oldTreasuryDisplay": 947,
+    "afterUpgradeHeader": "5月 上旬 · 第 13 旬　赵祯 在位",
+    "afterUpgradeTreasuryDisplay": 947,
+    "pendingDie": 1,
+    "resumedHeader": "5月 中旬 · 第 14 旬　赵祯 在位",
+    "resumedChapter": 13,
+    "resumedTreasuryDisplay": 931,
+    "refreshPreserved": true,
+    "consoleErrors": [],
+    "consoleWarnings": []
+  }
+}

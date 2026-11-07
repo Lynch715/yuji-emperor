@@ -2,7 +2,7 @@ import { examGraceReceipt } from './keju-schema.js';
 import { clone, reignId, TALENTS } from './state.js';
 import { roll } from './rng.js';
 import { succession } from './harem.js';
-import { clamp } from './effects.js';
+import { clamp, growTalent } from './effects.js';
 import { uniqueName, IMPERIAL_CHARS } from './names.js';
 import { chooseRegent } from './regency-info.js';
 import { selectAmbitions } from './ambitions.js';
@@ -32,8 +32,24 @@ export function advanceRegency(state) {
   const child=s.harem.children.find(c=>c.id===s.reign.emperorId);
   const age=child?Math.max(0,Math.floor((s.turn-child.born)/36)):s.emperor.age;
   s.emperor.age=age;
-  const aptitude=child?.aptitude ?? 58,education=(child?.education || 0)/10;
-  s.emperor.talents=Object.fromEntries(TALENTS.map(t=>[t,clamp(aptitude*Math.min(1,age/16)+education)]));
+  const aptitude=child?.aptitude ?? 58,education=child?.education || 0;
+  const previous=s.regency.growth;
+  if(previous){
+    const delta=Math.max(0,aptitude*(Math.min(1,age/16)-Math.min(1,previous.age/16)))+Math.max(0,education-previous.education)/10;
+    // Historical openings already have authored talents. Their later maturation
+    // shares the annual study budget; newborn successors retain natural maturation.
+    const historical=s.reign.number===1&&!!s.scenario;
+    for(const t of TALENTS)if(delta>0){
+      if(historical)s=growTalent(s,t,delta);
+      else {
+        const before=s.emperor.talents[t];
+        s.emperor.talents[t]=clamp(before+delta);
+        s.ledger.push({turn:s.turn,path:'emperor.talents.'+t,before,after:s.emperor.talents[t],delta:s.emperor.talents[t]-before,source:'幼帝自然成熟：年龄与教养增量'});
+      }
+    }
+  }
+  // Consume even capped growth; it cannot be banked and claimed in another year.
+  s.regency.growth={age:Math.min(16,age),education};
   if(age>=16){
     s.regency=null;
     const exam=s.keju?.exams.find(e=>e.status!=='published');
@@ -67,8 +83,9 @@ export function succeedEmperor(state) {
   s.emperor={name,age,lifespan,health:Math.max(55,child?.health||85),energy:9,mood:65,depressedMonths:0,prestige:50,virtue:55,
     talents,tags:[tag],status:[],growth:Object.fromEntries(TALENTS.map(t=>[t,0]))};
   const mother=s.harem.consorts.find(c=>c.id===child?.mother&&c.health>0);if(mother)s.dowager=mother.name;
+  s.dowagerFaction=mother?.faction || null;
   for(const c of s.harem.consorts)c.retired=true;
-  if(age<16){s.regency={regentId:chooseRegent(s).id,until:child.born+16*36};}
+  if(age<16){s.regency={regentId:chooseRegent(s).id,until:child.born+16*36,growth:{age,education:child?.education || 0}};}
   else {s.regency=null;s=imperialWedding(s);}
   s.harem.heir=null;s.harem.candidates=[];s.harem.selectionYear=0;
   s.ending=null;s.pending=null;s.turnBudget=null;s.schedule={朝:null,午:null,夜:null};s.interimEntries=[];

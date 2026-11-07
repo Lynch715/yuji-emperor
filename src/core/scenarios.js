@@ -75,7 +75,7 @@ export const SCENARIOS = [
     provinces: "开封府 京西路 两浙路 荆湖路 京东路 河东路 陕西路 川峡路 福建路 广南路 江南路 河北路",
     factions: "台谏清议:纳谏清议 将门勋旧:军功封赏 刘氏外戚:家族恩荫 内侍近臣:亲近信任 三司计臣:钱粮自主 宗室:宗藩安稳",
     nation: { treasury: 900, morale: 66, governance: 60, prestige: 50 }, threat: [35, 40, 20, 25],
-    dowager: "刘太后", regent: "dowager", wedding: ["郭氏", "曹氏", "张氏"],
+    dowager: "刘太后", dowagerFaction: "f2", regent: "dowager", wedding: ["郭氏", "曹氏", "张氏"],
     blurb: "真宗新丧，十二岁的天子即位，刘太后垂帘听政。权相丁谓与内侍雷允恭擅移先帝陵穴，王曾正等一个开口的机会。",
     officials: [
       "丁谓|0|2|56|机敏多智，善揣上意|与内侍雷允恭擅移先帝陵穴，事将败露。|80 30 85 20 30 90|90",
@@ -276,6 +276,7 @@ export function applyScenario(state, id) {
   s.harem.heir = sc.heir !== undefined ? s.harem.children[sc.heir]?.id || null : null;
   s.harem.royalWomen = [];
   s.dowager = sc.dowager || null;
+  s.dowagerFaction = sc.dowagerFaction || null;
   s.weddingNames = sc.wedding || null;
   if (child) {
     // 幼帝以皇嗣身份记年龄，亲政时由 advanceRegency 撤摄政、行大婚。
@@ -285,7 +286,7 @@ export function applyScenario(state, id) {
     s.reign.emperorId = id;
     s.reign.married = false;
     const regent = sc.regent === "dowager" ? "dowager" : s.court.officials.find((o) => o.name === sc.regent)?.id;
-    s.regency = { regentId: regent || "dowager", until: (16 - age) * 36 };
+    s.regency = { regentId: regent || "dowager", until: (16 - age) * 36, growth: {age,education:age*3} };
   } else s.reign.married = s.harem.consorts.length > 0;
   // 外邦
   s.foreign = sc.foreign.map(split).map(([n, ruler, status, attitude, dir, demand], i) => ({

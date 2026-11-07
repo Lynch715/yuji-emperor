@@ -46,7 +46,7 @@ import {
 import { memorialDialog, scheduledMemorialDialog } from "./memorials.js";
 import { memorialAssignments } from "./memorial-state.js";
 import { openMemorialArchive } from "./memorial-archive.js";
-import { actionAvailability, repeatSchedule, delegateSchedule, delegateStop } from "./view-model.js";
+import { memorialEntryKind, actionAvailability, repeatSchedule, delegateSchedule, delegateStop } from "./view-model.js";
 import { actionDialog } from "./actions.js";
 import { palacePanel } from "./panels.js";
 import { createSaveStore, createIDB } from "../store/save.js";
@@ -1018,7 +1018,7 @@ document.addEventListener("click", async (e) => {
       }
       const sl=['朝','午'].find(k=>!state.schedule[k]);
       if(!sl)throw new Error('朝、午已有安排，请先撤下行动');
-      memorialDialog(state,sl==='朝'?'上朝':'批折',sl,(which,a)=>arrange(which,a),b.dataset.memorial);
+      memorialDialog(state,memorialEntryKind(state,sl),sl,(which,a)=>arrange(which,a),b.dataset.memorial);
     } else if (b.dataset.editReviewSlot) {
       guard();
       const sl=b.dataset.editReviewSlot,a=state.schedule[sl];

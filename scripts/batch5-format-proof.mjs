@@ -16,9 +16,11 @@ for(const [name,c] of Object.entries(CASES)){
  delete f.state.tech;
  // v22 exam scheduling is neutral until the player appoints an examiner.
  delete f.state.keju;
+ // v24 dowager affiliation is neutral in these adult, non-regency paths.
+ delete f.state.dowagerFaction;
  for(const p of f.state.nation.provinces){delete p.prosperity;delete p.industries;}
  // Keep the complete current forecast and retain historical hashes in summary.json.
- // v24 adds display identities only. Compare every pre-existing field unchanged.
+ // v25 adds display identities to the published v24. Compare every pre-existing field unchanged.
  proof[name]=createHash('sha256').update(JSON.stringify(f,(key,value)=>
    key==='faceNo'||key==='faceCounters'?undefined:value)).digest('hex');
 }

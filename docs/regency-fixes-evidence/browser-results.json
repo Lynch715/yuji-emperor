@@ -1,0 +1,57 @@
+{
+  "origin": "http://127.0.0.1:49637",
+  "mode": "新建宋仁宗试读第1卷，无模型",
+  "desktop": {
+    "viewport": [
+      1280,
+      900
+    ],
+    "documentScrollWidth": 1280,
+    "reviewScrollWidth": 1280,
+    "result": "奏报匣→批折→入日程→起驾结案",
+    "talentsAfterFirstTurn": {
+      "政略": 60.2,
+      "权谋": 50,
+      "武略": 40,
+      "文采": 70,
+      "魅力": 75
+    }
+  },
+  "mobile": {
+    "viewport": [
+      360,
+      800
+    ],
+    "documentScrollWidth": 360,
+    "reviewModalWidth": 360,
+    "reviewModalScrollWidth": 360,
+    "overviewModalWidth": 334,
+    "overviewModalScrollWidth": 334,
+    "result": "奏报匣→批折→入日程→起驾结案，刷新续读成功",
+    "talentsAfterSecondTurn": {
+      "政略": 60.4,
+      "权谋": 50,
+      "武略": 40,
+      "文采": 70,
+      "魅力": 75
+    }
+  },
+  "consoleErrors": [],
+  "consoleWarnings": [],
+  "proxy": {
+    "note": "刘太后摄政代批：户部请裁盐课与民间行盐之禁 · 试宽行盐，以核课代禁",
+    "optionOrder": [
+      "试宽行盐，以核课代禁",
+      "保留专引，整饬缉私"
+    ],
+    "f2Scores": [
+      0,
+      0
+    ],
+    "f0Scores": [
+      0.2,
+      0.5
+    ],
+    "explanation": "刘氏外戚最高分并列时取原顺序首项；台谏清议则偏好次项。"
+  }
+}

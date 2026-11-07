@@ -35,6 +35,9 @@ export function actionAvailability(s, kind) {
   if (s.campaigns.some(w=>w.personal&&!w.done) && !["亲征","歇息"].includes(kind)&&kind!=='批折') return "御驾在外";
   return "";
 }
+export function memorialEntryKind(s, slot) {
+  return slot==='朝'&&!actionAvailability(s,'上朝')?'上朝':'批折';
+}
 export function actionMeta(kind, s = null) {
   const rule = ACTIONS[kind];
   if (!rule) return "";

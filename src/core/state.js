@@ -9,9 +9,9 @@ import { validateScenarioAmbitions } from "./scenario-goals.js";
 import { validateCampaignState } from './campaign-rules.js';
 import { seedNumber, random, DRAFT } from "./rng.js";
 import { uniqueName } from "./names.js";
-import { chooseRegent } from "./regency-info.js";
+import { chooseRegent, legacyDowagerFaction } from "./regency-info.js";
 import {factionPowers} from './politics.js';
-export const VERSION = 24;
+export const VERSION = 25;
 export const TALENTS = ["政略", "权谋", "武略", "文采", "魅力"];
 export const SLOTS = ["朝", "午", "夜"];
 export const POST_NAMES = [
@@ -291,6 +291,7 @@ export function createState(options = {}) {
     weddingNames: null,
     imperialSurname: emperor.name[0],
     regency: null,
+    dowagerFaction: null,
     edictCooldowns: {},
     era: {
       name: String(options.era || "永宁").slice(0, 8),
@@ -432,6 +433,14 @@ export function createState(options = {}) {
   state.court.factions=factionPowers(state);
   return state;
 }
+// The reviewed art branch and published regency fix independently used v24.
+// Only the complete art identity marker identifies the pre-regency preview.
+function artPreviewV24(s) {
+  return s.v===24 && s.dowagerFaction===undefined && (!s.regency || s.regency.growth===undefined) &&
+    s.faceCounters && typeof s.faceCounters==='object' && !Array.isArray(s.faceCounters) &&
+    ['emperor','official','consort','child','royalWoman','foreign'].every(k=>Number.isSafeInteger(s.faceCounters[k])&&s.faceCounters[k]>=0) &&
+    Number.isSafeInteger(s.emperor?.faceNo) && s.emperor.faceNo>=0 && s.faceCounters.emperor>s.emperor.faceNo;
+}
 export function migrate(input) {
   if (
     !input ||
@@ -570,6 +579,12 @@ export function migrate(input) {
   s.reign.married ??= s.emperor.age >= 16 && s.harem.consorts.some(c=>!c.retired);
   const child=s.harem.children.find(c=>c.id===s.reign.emperorId);
   s.regency ??= s.emperor.age < 16 ? {regentId:chooseRegent(s).id,until:Number.isFinite(child?.born)?child.born+16*36:s.turn+Math.ceil((16-s.emperor.age)*36)} : null;
+  // v24 starts tracking future growth from the loaded values. Never reconstruct
+  // old talents or mutate a frozen forecast; its resulting state upgrades on commit.
+  if(input.v<24 || artPreviewV24(input)){
+    s.dowagerFaction ??= legacyDowagerFaction(s);
+    if(s.regency)s.regency.growth={age:s.emperor.age,education:child?.education || 0};
+  }
   if(s.emperor.age<16)s.reign.married=false;
   if (s.regency && !s.reign.married) for (const c of s.harem.consorts) c.retired=true;
   for (const p of s.nation.provinces) {p.taxRelief ??= null;p.taxSurge ??= null;}
@@ -648,6 +663,13 @@ export function assertState(s) {
   if(s.v>=5){
     if(typeof s.imperialSurname!=='string'||!s.imperialSurname.trim())throw new Error('皇姓资料无效');
     if(!Number.isSafeInteger(s.era.startTurn)||s.era.startTurn<0)throw new Error('纪年起点无效');
+    if(s.v>=24 && !artPreviewV24(s)){
+      if(s.dowagerFaction!==null&&!s.court.factions.some(f=>f.id===s.dowagerFaction))throw new Error('太后派系无效');
+      if(s.regency){
+        const g=s.regency.growth;
+        if(!g||!Number.isInteger(g.age)||g.age<0||g.age>16||!Number.isFinite(g.education)||g.education<0||g.education>100)throw new Error('摄政成长基准无效');
+      }
+    }
     if(s.regency&&(!s.regency.regentId||!Number.isSafeInteger(s.regency.until)||s.regency.until<0))throw new Error('摄政资料无效');
     for(const f of s.foreign)if(!s.nation.army.frontiers.some(b=>b.dir===f.frontier))throw new Error('外邦边境资料无效');
     for(const p of s.nation.provinces)for(const k of ['taxRelief','taxSurge'])if(p[k]!==null&&(!p[k]||!Number.isFinite(p[k].factor)||p[k].factor<=0||!Number.isSafeInteger(p[k].untilQuarter)||p[k].untilQuarter<0))throw new Error('州税政策资料无效');
