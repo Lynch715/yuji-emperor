@@ -1,0 +1,47 @@
+{
+  "origin": "http://127.0.0.1:49639",
+  "checks": [
+    {
+      "accountButtons": 0,
+      "mode": "desktop-batch",
+      "scrollWidth": 1280,
+      "title": "批折 · 御前批阅",
+      "width": 1280
+    },
+    {
+      "accountButtons": 0,
+      "mode": "mobile-batch",
+      "scrollWidth": 360,
+      "title": "批折 · 御前批阅",
+      "width": 360
+    },
+    {
+      "accountButtons": 1,
+      "help": "已排当廷问责：裴廷玉。起驾后当廷问话。",
+      "mode": "desktop-court",
+      "pressed": "true",
+      "scrollWidth": 1280,
+      "title": "上朝 · 御前批阅",
+      "width": 1280
+    },
+    {
+      "accountButtons": 1,
+      "mode": "mobile-court",
+      "pressed": "true",
+      "scrollWidth": 360,
+      "targetHeight": 44,
+      "title": "上朝 · 御前批阅",
+      "width": 360
+    },
+    {
+      "accountButtons": 0,
+      "mode": "regency-batch",
+      "scrollWidth": 1280,
+      "title": "批折 · 御前批阅",
+      "width": 1280
+    }
+  ],
+  "batchScheduledAndSettled": true,
+  "refreshRestored": true,
+  "console": []
+}
