@@ -66,3 +66,17 @@
 - [手机五才](regency-fixes-evidence/mobile-talents.jpg)
 
 真实模型叙事与真实手机触控留给玩家测试；本次使用应用内浏览器的两种指定视窗和试读引擎验收。
+
+## 主线发布复核 · 2026-11-06
+
+玩家确认测试通过并授权合并、部署后，在原独立工作区将 `main` 从 `093eaad` 快进到 `e1604aa`。本次发布记录只新增文档和验证证据，游戏代码与玩家通过的版本相同；原美术分支不受影响。
+
+- 重新运行 `npm test`：595/595，约146秒；[`发布测试日志`](regency-fixes-evidence/release/npm-test.log)。
+- 重新运行 `node scripts/simulate.mjs 200 '摄政修复两百年'`：200年／7200旬、6朝、5次继位，状态断言通过；[`模拟结果`](regency-fixes-evidence/release/simulate-200.json)。
+- 从 `093eaad` 的原代码生成已完成12旬的宋仁宗v23档，严格比对迁移前后旬数、revision、随机数、朝代、钱粮、人物、五才、目标、历史、账目、凭据、奏报与日程，完全保留；只读载入不会写回或替换原始信封。
+- 从同一旧引擎生成冻结待续，迁移后预演27057字节内容保持，原骰1、原随机数与钱粮人物结算不变；提交后再次提交不重复结算。v1–7旧待续逐一验证同样性质。完整断言摘要：[`save-compatibility.json`](regency-fixes-evidence/release/save-compatibility.json)。
+- 新端口 `127.0.0.1:49638`、新空白卷位，用合成档验证真实浏览器存储。先由v23页面载入12旬旧进度，界面显示“第13旬、国库947”；同一端口切换为v24构建并刷新，显示完全相同。第2卷冻结待续显示“天命1”，继续后为第14旬、第13章“大凶（1）”；刷新仍是第14旬和同一章。控制台error/warn均0。三张截图依次为：[升级前](regency-fixes-evidence/release/v23-before-upgrade.jpg)、[升级后](regency-fixes-evidence/release/v24-after-upgrade.jpg)、[待续结案并刷新](regency-fixes-evidence/release/v24-pending-resumed.jpg)。
+- 本地浏览器导入控件使用临时脱离DOM的文件输入，自动化文件选择器未能完成；转为同一独立端口的临时验收页面，仅向空卷装入合成测试信封，再通过游戏正常载入。该临时页面不入库、不部署，未修改游戏导入功能。
+- 数据库仍为 `yuji-emperor`／3，卷位仍为1–3，恢复键仍为 `yuji:slot:1` 至 `yuji:slot:3`；线上更新只替换静态页面，不清理浏览器数据。原玩家卷位、密钥设置和缓存未被本次验收操作。
+
+本节记录发布前复核；正式推送后的部署完成状态，以GitHub Actions对应main提交及线上页面字节校验为准。正式地址为 https://lynch715.github.io/yuji-emperor/ 。
