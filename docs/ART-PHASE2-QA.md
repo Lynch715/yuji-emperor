@@ -1,4 +1,94 @@
-# 美术二期 · 清制 · 第1步定调样张
+# 美术二期 · 清制 · 完整验收
+
+完成日期：2026-11-07。分支`feat/art-phase2`，基于main／`34bdb82`；前提PR #5已合并并发布。[草稿PR #6](https://github.com/Lynch715/yuji-emperor/pull/6)本轮更新为二期79／79张完成，仍待玩家测试，不合并、不发布。
+
+## 交付与体积
+
+| 项目 | 张数 | 内容 |
+| --- | ---: | --- |
+| 清制池 | 32 | 文官壮10、文官老6、武将3、后妃正位2、常位5、皇帝青老各1、皇子少成各1、公主少成各1 |
+| 康熙专属 | 18 | 17位开局人物＋玄烨老年像 |
+| 雍正专属 | 29 | 26位开局人物＋胤禛老年像＋弘历、福惠成年像 |
+| 二期合计 | **79** | 已有四张定调样张＋本轮其余75张；常位01按要求重出 |
+
+二期WebP共 **721,380字节**，单张最大 **15,242字节**；全部400×500、q75，低于人物30KB预算。`assets/art/`累计 **224个WebP、3,670,540字节（约3.67MB）**，低于12MB总预算。一期132张内容因场景双分辨率共145个文件；加二期79张，累计211张内容／224个文件。后续朝代166张清单仍留空。
+
+清单引用与实际文件一一对应。原一期145个文件逐字节比对一致，大晟、明朝及其他朝代配置、场景、题图、焦点保持一致；`src/core`无改动，存档仍v25。清制未建宦官池或太后池，内务府总管继续取文官池，两位太后均使用专属像。证据：[资产明细](art-phase2-review/final/asset-checks.json)、[隔离比对](art-phase2-review/final/isolation-checks.json)。
+
+## 生成、长相与构图
+
+全部使用内置imagegen。每池先写长相卡，逐对校验至少四维差异，脸型或胡须／发际线维度不同。池图按同池2×2生成，尾组空格留白，切开后仅裁切、等比缩放与转WebP；构图不合格的单人送回imagegen重出。专属像单张生成，依据`scenarios.js`中的年龄、性格、秘密与已列史料安排气质，八维五官设定属于创作，不冒充史实外貌。福惠成年像是游戏续玩所需的假想成年形象。
+
+后续每次调用同时传入一期四张板、清制四张板，完整保留八张参照；工具最多五个参照文件的两板处理已在PR #6第1步事先说明。年龄变体另传本人基底像；福惠成年前两稿偏幼，最终v3保留完整八图风格板，依据本人圆脸、鼻口、暖白肤和左颊酒窝的文字线索重画成人骨相，去掉婴儿第三参照造成的比例干扰。实际提示词、每次修订理由均见[ART-PROMPTS](ART-PROMPTS.md)，可机读卡片见[face-cards.json](art-phase2-review/final/face-cards.json)。
+
+`qing/consort-regular-01`已改为头顶左右对称横展的扁平两把头，配扁方和少量簪花。后续常位五张、成年公主及历史常位均沿用；正位钿子／朝冠与横向发髻可直接区分。常位04另在生成端柔化眉眼，保留宽脸、鼻口、体态和小痣。全部人物无文字、胸前垂辫或演员借脸。
+
+最终帽／发顶为10.00%–13.99%，双眼36.00%–39.99%；批量像使用Vision CPU眼部定位与像素帽顶辅助并人工查看，样张沿用人工测量，误差约±5px。44px圆章按生产CSS焦点50%／32%裁切。各池与两剧本均已查看全图、44px条；以脸型、胡须、体态、神情拉开，年龄变体保留本人身份线索。最终PNG原图、所有未选稿在本机`/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/`；仓库美术资产只提交WebP。
+
+![常位01修订前后，含44px](art-phase2-review/regular-hair-before-after.png)
+
+![常位后妃44px](art-phase2-review/final/qing-consort-regular-44.png)
+
+![清池完整图](art-phase2-review/final/qing-pools-full.png)
+
+![康熙剧本44px对照条](art-phase2-review/final/qing-kangxi-44.png)
+
+![康熙剧本完整图](art-phase2-review/final/qing-kangxi-full.png)
+
+![雍正剧本44px对照条](art-phase2-review/final/qing-yongzheng-44.png)
+
+![雍正剧本完整图](art-phase2-review/final/qing-yongzheng-full.png)
+
+每池独立44px条：[壮官](art-phase2-review/final/qing-official-mature-44.png)、[老官](art-phase2-review/final/qing-official-old-44.png)、[武将](art-phase2-review/final/qing-general-all-44.png)、[正位](art-phase2-review/final/qing-consort-high-44.png)、[常位](art-phase2-review/final/qing-consort-regular-44.png)、[帝青](art-phase2-review/final/qing-emperor-young-44.png)、[帝老](art-phase2-review/final/qing-emperor-old-44.png)、[皇子少](art-phase2-review/final/qing-prince-teen-44.png)、[皇子成](art-phase2-review/final/qing-prince-adult-44.png)、[公主少](art-phase2-review/final/qing-princess-teen-44.png)、[公主成](art-phase2-review/final/qing-princess-adult-44.png)。本机`qa/art/`保留同样副本。
+
+## 取图、回归与模拟
+
+**608／608测试通过**（`npm test -- --test-concurrency=4`）。既有脸号确定性、迁移补号、同池前N人、大晟25名官员不重复、亡者占脸与其余人不换脸均通过。扩展明清四剧本开局专属像取图测试，验证同名不串剧本、皇帝39／40岁切图；新增弘历、福惠15／16岁成年切图及取图纯函数检查。雍正开局44岁按既有规则直接使用老年档，未改年龄阈值。康熙17位、雍正26位开局历史人物（含两位太后）全部有专属像。
+
+**200年／7200旬mock无模型模拟通过**：种子`御极·两百年`，6朝、5次继位、无亡国，终局国库2040。`npm run build`成功，生成HTML **855,007字节**，低于860,000字节预算。摘要见[test-summary.json](art-phase2-review/final/test-summary.json)；完整日志留本机`qa/art/phase2-tests.log`、`phase2-simulate.log`。
+
+## 应用内浏览器与退回
+
+通过Codex In-app Browser访问隔离`http://127.0.0.1:4210/`。沿用第3卷雍正试读，在已确认空白的第2卷新建康熙试读；两卷保持开局0旬，未使用外部模型或覆盖玩家存档。实际实走朝堂、后宫、宗室、召见、设置和存档切换。
+
+1280×900、768×1024、390×844均已截图；360×800下两剧本`scrollWidth=360`。实际后宫四位专属像、候选清池、宗室三皇子和仁寿皇太后均加载；朝堂可见专属卡为64×80，召见纸面120×150（手机），圆章44×44。对照条之外，折起或视口外的`loading=lazy`图片未加载属正常按需行为。详细读数见[browser-results.json](art-phase2-review/final/browser-results.json)。
+
+| 视图 | 1280 | 768 | 390 |
+| --- | --- | --- | --- |
+| 康熙朝堂 | [截图](art-phase2-review/final/kangxi-court-1280.jpg) | [截图](art-phase2-review/final/kangxi-court-768.jpg) | [截图](art-phase2-review/final/kangxi-court-390.jpg) |
+| 雍正后宫 | [截图](art-phase2-review/final/yongzheng-harem-1280.jpg) | [截图](art-phase2-review/final/yongzheng-harem-768.jpg) | [截图](art-phase2-review/final/yongzheng-harem-390.jpg) |
+| 雍正御案 | [截图](art-phase2-review/final/yongzheng-game-1280.jpg) | [截图](art-phase2-review/final/yongzheng-game-768.jpg) | [截图](art-phase2-review/final/yongzheng-game-390.jpg) |
+
+![1280雍正后宫](art-phase2-review/final/yongzheng-harem-1280.jpg)
+
+![390常位年氏](art-phase2-review/final/yongzheng-regular-390.jpg)
+
+![390福惠幼年](art-phase2-review/final/yongzheng-fuhui-390.jpg)
+
+390宽召见浮层头图实测340×112，使用`audience-720.webp`、`object-fit:cover`，上下左右填满裁切区，未露源画面边缘。[行动截图](art-phase2-review/final/action-390.jpg)。
+
+图片连接中断验收：本地服务对WebP请求直接中断连接，响应正常时设置`Cache-Control:no-store`，避免缓存掩盖失败；页面和脚本继续可读，属于**图片资源断网模拟，未做整机物理断网**。本次记录17次图片连接失败，首屏头像退回圆章、章节纯色，后宫11个人物均退回44×44首字圆章，殿阁题图纯色，文字与导航可用。中断当时读取脚本控制台无error／warn，恢复连接并刷新后正常显示。见[故障请求记录](art-phase2-review/final/offline-requests.json)。
+
+![断图退回](art-phase2-review/final/offline-harem-390.jpg)
+
+实际设置关闭「显示插图」后刷新，`art-off`保持、所有图片去掉src／srcset，后宫圆章44×44；重新勾选并刷新恢复。此设置仅存本机，不进入人物状态。验收后已恢复显示插图及默认视口。
+
+![关闭插图退回](art-phase2-review/final/off-harem-390.jpg)
+
+本轮不发布Pages；线上清制资源核验留待玩家验收并授权合并发布后进行。
+
+## 请求、对比度与Lighthouse
+
+1280×900雍正御案单次刷新新增 **4个图片请求**（章节1＋奏折上奏人3），≤6；浮层打开后按需加载。见[首屏请求明细](art-phase2-review/final/first-screen-requests.json)。
+
+生产CSS未修改，图片底部渐变内不放文字；实际章节文字起点比图片底部低10px，无叠压。计算浏览器实际颜色：墨／纸12.34:1，淡墨／纸4.83:1，正文浅色／案面13.97:1，金／案面7.48:1，浅色／浮层15.09:1，金／浮层8.08:1，均≥4.5:1。[对比度依据](art-phase2-review/final/contrast.json)。
+
+官方Lighthouse **13.6.0**隔离无头Chrome审计：开局页，以及大晟、万历、崇祯、康熙、雍正五个游戏首屏快照，可访问性均 **100**，无失败审计项。游戏快照由当前`renderApp`与真实初始状态生成，使用生产CSS与实际插图；实际交互另由上述应用内浏览器实走。完整JSON留本机`qa/art/`，[审计摘要](art-phase2-review/final/lighthouse-summary.json)随PR提交。
+
+---
+
+# 第1步定调历史记录（画风已确认，以下为当时证据）
+
 
 日期：2026-11-06。分支`feat/art-phase2`，从当时最新main／`34bdb82`建立。PR #5此前已合并并成功发布；本分支[草稿PR #6](https://github.com/Lynch715/yuji-emperor/pull/6)仅供样张审阅，不合并、不发布。
 

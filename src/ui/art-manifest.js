@@ -90,57 +90,57 @@ export const ART_POOLS = {
   ],
   "qing/official-mature": [
     "assets/art/portraits/qing/official-mature-01.webp",
-    null,
-    null,
-    null,
-    null,
-    null,
-    null,
-    null,
-    null,
-    null
+    "assets/art/portraits/qing/official-mature-02.webp",
+    "assets/art/portraits/qing/official-mature-03.webp",
+    "assets/art/portraits/qing/official-mature-04.webp",
+    "assets/art/portraits/qing/official-mature-05.webp",
+    "assets/art/portraits/qing/official-mature-06.webp",
+    "assets/art/portraits/qing/official-mature-07.webp",
+    "assets/art/portraits/qing/official-mature-08.webp",
+    "assets/art/portraits/qing/official-mature-09.webp",
+    "assets/art/portraits/qing/official-mature-10.webp"
   ],
   "qing/official-old": [
-    null,
-    null,
-    null,
-    null,
-    null,
-    null
+    "assets/art/portraits/qing/official-old-01.webp",
+    "assets/art/portraits/qing/official-old-02.webp",
+    "assets/art/portraits/qing/official-old-03.webp",
+    "assets/art/portraits/qing/official-old-04.webp",
+    "assets/art/portraits/qing/official-old-05.webp",
+    "assets/art/portraits/qing/official-old-06.webp"
   ],
   "qing/general-all": [
-    null,
-    null,
-    null
+    "assets/art/portraits/qing/general-all-01.webp",
+    "assets/art/portraits/qing/general-all-02.webp",
+    "assets/art/portraits/qing/general-all-03.webp"
   ],
   "qing/consort-high": [
     "assets/art/portraits/qing/consort-high-01.webp",
-    null
+    "assets/art/portraits/qing/consort-high-02.webp"
   ],
   "qing/consort-regular": [
     "assets/art/portraits/qing/consort-regular-01.webp",
-    null,
-    null,
-    null,
-    null
+    "assets/art/portraits/qing/consort-regular-02.webp",
+    "assets/art/portraits/qing/consort-regular-03.webp",
+    "assets/art/portraits/qing/consort-regular-04.webp",
+    "assets/art/portraits/qing/consort-regular-05.webp"
   ],
   "qing/emperor-young": [
     "assets/art/portraits/qing/emperor-young-01.webp"
   ],
   "qing/emperor-old": [
-    null
+    "assets/art/portraits/qing/emperor-old-01.webp"
   ],
   "qing/prince-teen": [
-    null
+    "assets/art/portraits/qing/prince-teen-01.webp"
   ],
   "qing/prince-adult": [
-    null
+    "assets/art/portraits/qing/prince-adult-01.webp"
   ],
   "qing/princess-teen": [
-    null
+    "assets/art/portraits/qing/princess-teen-01.webp"
   ],
   "qing/princess-adult": [
-    null
+    "assets/art/portraits/qing/princess-adult-01.webp"
   ],
   "han/official-mature": [
     null,
@@ -668,139 +668,139 @@ export const ART_UNIQUE = {
   },
   "qing-kangxi": {
     "玄烨": {
-      "base": null,
-      "old": null
+      "base": "assets/art/portraits/unique/qing-kangxi/emperor-01.webp",
+      "old": "assets/art/portraits/unique/qing-kangxi/emperor-01-old.webp"
     },
     "索尼": {
-      "base": null
+      "base": "assets/art/portraits/unique/qing-kangxi/official-01.webp"
     },
     "苏克萨哈": {
-      "base": null
+      "base": "assets/art/portraits/unique/qing-kangxi/official-02.webp"
     },
     "遏必隆": {
-      "base": null
+      "base": "assets/art/portraits/unique/qing-kangxi/official-03.webp"
     },
     "鳌拜": {
-      "base": null
+      "base": "assets/art/portraits/unique/qing-kangxi/official-04.webp"
     },
     "索额图": {
-      "base": null
+      "base": "assets/art/portraits/unique/qing-kangxi/official-05.webp"
     },
     "明珠": {
-      "base": null
+      "base": "assets/art/portraits/unique/qing-kangxi/official-06.webp"
     },
     "熊赐履": {
-      "base": null
+      "base": "assets/art/portraits/unique/qing-kangxi/official-07.webp"
     },
     "魏裔介": {
-      "base": null
+      "base": "assets/art/portraits/unique/qing-kangxi/official-08.webp"
     },
     "汤若望": {
-      "base": null
+      "base": "assets/art/portraits/unique/qing-kangxi/official-09.webp"
     },
     "杰书": {
-      "base": null
+      "base": "assets/art/portraits/unique/qing-kangxi/official-10.webp"
     },
     "阿列克谢": {
-      "base": null
+      "base": "assets/art/portraits/unique/qing-kangxi/foreign-01.webp"
     },
     "僧格": {
-      "base": null
+      "base": "assets/art/portraits/unique/qing-kangxi/foreign-02.webp"
     },
     "吴三桂": {
-      "base": null
+      "base": "assets/art/portraits/unique/qing-kangxi/foreign-03.webp"
     },
     "郑成功": {
-      "base": null
+      "base": "assets/art/portraits/unique/qing-kangxi/foreign-04.webp"
     },
     "李棩": {
-      "base": null
+      "base": "assets/art/portraits/unique/qing-kangxi/foreign-05.webp"
     },
     "孝庄太皇太后": {
-      "base": null
+      "base": "assets/art/portraits/unique/qing-kangxi/dowager-01.webp"
     }
   },
   "qing-yongzheng": {
     "胤禛": {
-      "base": null,
-      "old": null
+      "base": "assets/art/portraits/unique/qing-yongzheng/emperor-01.webp",
+      "old": "assets/art/portraits/unique/qing-yongzheng/emperor-01-old.webp"
     },
     "允禩": {
-      "base": null
+      "base": "assets/art/portraits/unique/qing-yongzheng/official-01.webp"
     },
     "允祥": {
-      "base": null
+      "base": "assets/art/portraits/unique/qing-yongzheng/official-02.webp"
     },
     "马齐": {
-      "base": null
+      "base": "assets/art/portraits/unique/qing-yongzheng/official-03.webp"
     },
     "隆科多": {
-      "base": null
+      "base": "assets/art/portraits/unique/qing-yongzheng/official-04.webp"
     },
     "张廷玉": {
-      "base": null
+      "base": "assets/art/portraits/unique/qing-yongzheng/official-05.webp"
     },
     "年羹尧": {
-      "base": null
+      "base": "assets/art/portraits/unique/qing-yongzheng/official-06.webp"
     },
     "鄂尔泰": {
-      "base": null
+      "base": "assets/art/portraits/unique/qing-yongzheng/official-07.webp"
     },
     "田文镜": {
-      "base": null
+      "base": "assets/art/portraits/unique/qing-yongzheng/official-08.webp"
     },
     "李卫": {
-      "base": null
+      "base": "assets/art/portraits/unique/qing-yongzheng/official-09.webp"
     },
     "允禟": {
-      "base": null
+      "base": "assets/art/portraits/unique/qing-yongzheng/official-10.webp"
     },
     "允禵": {
-      "base": null
+      "base": "assets/art/portraits/unique/qing-yongzheng/official-11.webp"
     },
     "岳钟琪": {
-      "base": null
+      "base": "assets/art/portraits/unique/qing-yongzheng/official-12.webp"
     },
     "乌拉那拉氏": {
-      "base": null
+      "base": "assets/art/portraits/unique/qing-yongzheng/consort-01.webp"
     },
     "年氏": {
-      "base": null
+      "base": "assets/art/portraits/unique/qing-yongzheng/consort-02.webp"
     },
     "钮祜禄氏": {
-      "base": null
+      "base": "assets/art/portraits/unique/qing-yongzheng/consort-03.webp"
     },
     "李氏": {
-      "base": null
+      "base": "assets/art/portraits/unique/qing-yongzheng/consort-04.webp"
     },
     "弘时": {
-      "base": null
+      "base": "assets/art/portraits/unique/qing-yongzheng/child-01.webp"
     },
     "弘历": {
-      "base": null,
-      "adult": null
+      "base": "assets/art/portraits/unique/qing-yongzheng/child-02.webp",
+      "adult": "assets/art/portraits/unique/qing-yongzheng/child-02-adult.webp"
     },
     "福惠": {
-      "base": null,
-      "adult": null
+      "base": "assets/art/portraits/unique/qing-yongzheng/child-03.webp",
+      "adult": "assets/art/portraits/unique/qing-yongzheng/child-03-adult.webp"
     },
     "彼得一世": {
-      "base": null
+      "base": "assets/art/portraits/unique/qing-yongzheng/foreign-01.webp"
     },
     "策妄阿拉布坦": {
-      "base": null
+      "base": "assets/art/portraits/unique/qing-yongzheng/foreign-02.webp"
     },
     "罗卜藏丹津": {
-      "base": null
+      "base": "assets/art/portraits/unique/qing-yongzheng/foreign-03.webp"
     },
     "黎维祹": {
-      "base": null
+      "base": "assets/art/portraits/unique/qing-yongzheng/foreign-04.webp"
     },
     "李昀": {
-      "base": null
+      "base": "assets/art/portraits/unique/qing-yongzheng/foreign-05.webp"
     },
     "仁寿皇太后": {
-      "base": null
+      "base": "assets/art/portraits/unique/qing-yongzheng/dowager-01.webp"
     }
   }
 };

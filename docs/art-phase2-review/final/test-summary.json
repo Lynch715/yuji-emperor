@@ -1,0 +1,22 @@
+{
+  "tests": {
+    "command": "npm test -- --test-concurrency=4",
+    "total": 608,
+    "passed": 608,
+    "failed": 0
+  },
+  "simulation": {
+    "seed": "御极·两百年",
+    "years": 200,
+    "actualYears": 200,
+    "turns": 7200,
+    "reigns": 6,
+    "ending": null,
+    "finalTreasury": 2040
+  },
+  "build": {
+    "command": "npm run build",
+    "htmlBytes": 855007,
+    "budget": 860000
+  }
+}
