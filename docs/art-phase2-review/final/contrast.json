@@ -1,0 +1,61 @@
+{
+  "pairs": [
+    {
+      "foreground": "--ink",
+      "background": "--paper",
+      "colors": [
+        "#2a2420",
+        "#efe6d3"
+      ],
+      "ratio": 12.34
+    },
+    {
+      "foreground": "--ink-muted",
+      "background": "--paper",
+      "colors": [
+        "#6e6155",
+        "#efe6d3"
+      ],
+      "ratio": 4.83
+    },
+    {
+      "foreground": "--text",
+      "background": "--desk",
+      "colors": [
+        "#ede3d1",
+        "#1c1714"
+      ],
+      "ratio": 13.97
+    },
+    {
+      "foreground": "--gold",
+      "background": "--desk",
+      "colors": [
+        "#c8a35a",
+        "#1c1714"
+      ],
+      "ratio": 7.48
+    },
+    {
+      "foreground": "--text",
+      "background": "--desk-shade",
+      "colors": [
+        "#ede3d1",
+        "#120e0c"
+      ],
+      "ratio": 15.09
+    },
+    {
+      "foreground": "--gold",
+      "background": "--desk-shade",
+      "colors": [
+        "#c8a35a",
+        "#120e0c"
+      ],
+      "ratio": 8.08
+    }
+  ],
+  "chapterTextDoesNotOverlapImage": true,
+  "chapterTextGapPixels": 10,
+  "method": "WCAG relative luminance from actual computed CSS variables; image fades contain no text; existing production CSS unchanged"
+}

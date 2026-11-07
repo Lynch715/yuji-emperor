@@ -1,0 +1,55 @@
+{
+  "tool": "official Lighthouse CLI; isolated headless Chrome; production CSS and renderApp initial-state snapshots; IAB used separately for all UI interactions",
+  "reports": [
+    {
+      "page": "custom",
+      "score": 100,
+      "lighthouseVersion": "13.6.0",
+      "fetchTime": "2026-11-07T07:18:54.032Z",
+      "failedAudits": [],
+      "warning": []
+    },
+    {
+      "page": "ming-chongzhen",
+      "score": 100,
+      "lighthouseVersion": "13.6.0",
+      "fetchTime": "2026-11-07T07:18:55.206Z",
+      "failedAudits": [],
+      "warning": [
+        "The tested device appears to have a slower CPU than  Lighthouse expects. This can negatively affect your performance score. Learn more about [calibrating an appropriate CPU slowdown multiplier](https://github.com/GoogleChrome/lighthouse/blob/main/docs/throttling.md#cpu-throttling)."
+      ]
+    },
+    {
+      "page": "ming-wanli",
+      "score": 100,
+      "lighthouseVersion": "13.6.0",
+      "fetchTime": "2026-11-07T07:18:56.006Z",
+      "failedAudits": [],
+      "warning": []
+    },
+    {
+      "page": "opening",
+      "score": 100,
+      "lighthouseVersion": "13.6.0",
+      "fetchTime": "2026-11-07T07:18:54.004Z",
+      "failedAudits": [],
+      "warning": []
+    },
+    {
+      "page": "qing-kangxi",
+      "score": 100,
+      "lighthouseVersion": "13.6.0",
+      "fetchTime": "2026-11-07T15:38:21.086Z",
+      "failedAudits": [],
+      "warning": []
+    },
+    {
+      "page": "qing-yongzheng",
+      "score": 100,
+      "lighthouseVersion": "13.6.0",
+      "fetchTime": "2026-11-07T15:38:20.754Z",
+      "failedAudits": [],
+      "warning": []
+    }
+  ]
+}

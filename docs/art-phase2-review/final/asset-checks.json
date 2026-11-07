@@ -1,0 +1,3120 @@
+{
+  "summary": {
+    "contentPortraitsPhase2": 79,
+    "poolPortraits": 32,
+    "uniqueKangxi": 18,
+    "uniqueYongzheng": 29,
+    "phase2Bytes": 727074,
+    "phase2MaximumBytes": 15242,
+    "totalWebPFiles": 224,
+    "totalBytes": 3676234,
+    "maximumPortraitBudget": 30000,
+    "totalBudget": 12000000,
+    "headTopRange": [
+      0.1,
+      0.1399
+    ],
+    "eyeRange": [
+      0.36,
+      0.3999
+    ],
+    "poolCardsPairwiseFourDimensions": true
+  },
+  "measurement": "批量像由Apple Vision CPU眼部定位与帽顶像素轮廓辅助，最终人工对照；约±5px，非人物身份判定。四张定调样张人工测量。只裁切、等比缩放、转WebP。",
+  "assets": [
+    {
+      "id": "qing/official-mature-01",
+      "file": "assets/art/portraits/qing/official-mature-01.webp",
+      "bytes": 9884,
+      "dimensions": [
+        400,
+        500
+      ],
+      "quality": 75,
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/official-mature-01.png",
+      "crop": [
+        1,
+        1,
+        1121,
+        1401
+      ],
+      "sourceHeadTopApprox": 170,
+      "sourceEyeYApprox": 532,
+      "headTopRatio": 0.1207,
+      "eyeRatio": 0.3793,
+      "measurement": "人工定位头顶与眼线，约±5px；仅裁切缩放，无修图",
+      "sha256": "77f89d3b152ea76b86f41a394e2850a1af8b07adad92d3458628d79f8f62b605"
+    },
+    {
+      "id": "qing/official-mature-02",
+      "file": "assets/art/portraits/qing/official-mature-02.webp",
+      "job": "frame-pool-official-mature-02-05-v2",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/frame-pool-official-mature-02-05-v2.png",
+      "cellBox": [
+        5,
+        5,
+        556,
+        696
+      ],
+      "rawSize": [
+        551,
+        691
+      ],
+      "eyeY": 287.74,
+      "headTop": 109,
+      "faceBox": [
+        260.26355347037315,
+        231.70315170288086,
+        189.91862052679062,
+        189.91861858963966
+      ],
+      "status": "exported",
+      "crop": [
+        6,
+        19,
+        544,
+        691
+      ],
+      "eyeRatio": 0.3999,
+      "headTopRatio": 0.1339,
+      "bytes": 8814,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "017135b5e3acd16aab96e4d2ba1596d3d997be35246f1dfc15c57e53bb646daf"
+    },
+    {
+      "id": "qing/official-mature-03",
+      "file": "assets/art/portraits/qing/official-mature-03.webp",
+      "job": "frame-pool-official-mature-02-05-v2",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/frame-pool-official-mature-02-05-v2.png",
+      "cellBox": [
+        566,
+        5,
+        1117,
+        696
+      ],
+      "rawSize": [
+        551,
+        691
+      ],
+      "eyeY": 291.28,
+      "headTop": 116,
+      "faceBox": [
+        119.99833670258522,
+        235.48564532399178,
+        202.1533758044243,
+        202.1533868908882
+      ],
+      "status": "exported",
+      "crop": [
+        9,
+        25,
+        542,
+        691
+      ],
+      "eyeRatio": 0.3998,
+      "headTopRatio": 0.1366,
+      "bytes": 9936,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "3e7f7e5131c6e9db16768a1a28d1314a78d2c327e83b9c5b8bc199910b68850d"
+    },
+    {
+      "id": "qing/official-mature-04",
+      "file": "assets/art/portraits/qing/official-mature-04.webp",
+      "job": "frame-pool-official-mature-02-05-v2",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/frame-pool-official-mature-02-05-v2.png",
+      "cellBox": [
+        5,
+        706,
+        556,
+        1397
+      ],
+      "rawSize": [
+        551,
+        691
+      ],
+      "eyeY": 268.34,
+      "headTop": 90,
+      "faceBox": [
+        247.31850439310074,
+        208.33847185969353,
+        202.40087431669235,
+        202.40087842941284
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        3,
+        550,
+        691
+      ],
+      "eyeRatio": 0.3857,
+      "headTopRatio": 0.1265,
+      "bytes": 9088,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "bcf0212f9045845f7b3f1dbe815bdd0e8c0c3cdf2242ebce1ef2d829c85d8c92"
+    },
+    {
+      "id": "qing/official-mature-05",
+      "file": "assets/art/portraits/qing/official-mature-05.webp",
+      "job": "frame-pool-official-mature-02-05-v2",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/frame-pool-official-mature-02-05-v2.png",
+      "cellBox": [
+        566,
+        706,
+        1117,
+        1397
+      ],
+      "rawSize": [
+        551,
+        691
+      ],
+      "eyeY": 267.47,
+      "headTop": 90,
+      "faceBox": [
+        120.55814772844315,
+        209.09892451763153,
+        203.9249311387539,
+        203.92493453621864
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        3,
+        550,
+        691
+      ],
+      "eyeRatio": 0.3844,
+      "headTopRatio": 0.1265,
+      "bytes": 9552,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "a73a6f184a5ab71b287426c50617467e581b507e255284bbc301249d820191c5"
+    },
+    {
+      "id": "qing/official-mature-06",
+      "file": "assets/art/portraits/qing/official-mature-06.webp",
+      "job": "frame-pool-official-mature-06-09-v2",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/frame-pool-official-mature-06-09-v2.png",
+      "cellBox": [
+        5,
+        5,
+        556,
+        696
+      ],
+      "rawSize": [
+        551,
+        691
+      ],
+      "eyeY": 288.66,
+      "headTop": 97,
+      "faceBox": [
+        121.39859500527382,
+        222.27998036146164,
+        223.11715006828308,
+        223.11716404557228
+      ],
+      "status": "exported",
+      "crop": [
+        7,
+        21,
+        543,
+        691
+      ],
+      "eyeRatio": 0.3995,
+      "headTopRatio": 0.1134,
+      "bytes": 11994,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "cd0f36a491cf6f9a34fc11060bd1a084f47ad9b5862fd0c0acb0254ed5cefbf2"
+    },
+    {
+      "id": "qing/official-mature-07",
+      "file": "assets/art/portraits/qing/official-mature-07.webp",
+      "job": "frame-pool-official-mature-06-09-v2",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/frame-pool-official-mature-06-09-v2.png",
+      "cellBox": [
+        566,
+        5,
+        1117,
+        696
+      ],
+      "rawSize": [
+        551,
+        691
+      ],
+      "eyeY": 296.52,
+      "headTop": 101,
+      "faceBox": [
+        115.12458489835262,
+        235.5209218263626,
+        210.96686482429504,
+        210.96684929728508
+      ],
+      "status": "exported",
+      "crop": [
+        12,
+        34,
+        538,
+        691
+      ],
+      "eyeRatio": 0.3996,
+      "headTopRatio": 0.102,
+      "bytes": 9788,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "24fe0fbe7180ea4d033b2a800b4710114b68e30a2d9c2aaaf6ff28fc438396d7"
+    },
+    {
+      "id": "qing/official-mature-08",
+      "file": "assets/art/portraits/qing/official-mature-08.webp",
+      "job": "frame-pool-official-mature-06-09-v2",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/frame-pool-official-mature-06-09-v2.png",
+      "cellBox": [
+        5,
+        706,
+        556,
+        1397
+      ],
+      "rawSize": [
+        551,
+        691
+      ],
+      "eyeY": 272.88,
+      "headTop": 75,
+      "faceBox": [
+        245.4827590584755,
+        210.51585373282433,
+        207.53674760460854,
+        207.53675001859665
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        2,
+        550,
+        690
+      ],
+      "eyeRatio": 0.3937,
+      "headTopRatio": 0.1061,
+      "bytes": 9312,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "d2c8041b3bae7709fe94de6e186df09a92a2553e16631d6ee3b5e1665200126c"
+    },
+    {
+      "id": "qing/official-mature-09",
+      "file": "assets/art/portraits/qing/official-mature-09.webp",
+      "job": "frame-pool-official-mature-06-09-v2",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/frame-pool-official-mature-06-09-v2.png",
+      "cellBox": [
+        566,
+        706,
+        1117,
+        1397
+      ],
+      "rawSize": [
+        551,
+        691
+      ],
+      "eyeY": 273.39,
+      "headTop": 82,
+      "faceBox": [
+        117.66747118532658,
+        214.61509451270103,
+        211.58817279338837,
+        211.58817291259766
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        3,
+        550,
+        691
+      ],
+      "eyeRatio": 0.393,
+      "headTopRatio": 0.1148,
+      "bytes": 10094,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "fe363b45cf10147e7b389e5dcbd348eac99c04892553f9c5c132269db5a82818"
+    },
+    {
+      "id": "qing/official-mature-10",
+      "file": "assets/art/portraits/qing/official-mature-10.webp",
+      "job": "frame-pool-official-mature-10-10-v2",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/frame-pool-official-mature-10-10-v2.png",
+      "cellBox": [
+        5,
+        5,
+        556,
+        696
+      ],
+      "rawSize": [
+        551,
+        691
+      ],
+      "eyeY": 285.29,
+      "headTop": 87,
+      "faceBox": [
+        115.9997956007719,
+        216.85924020409584,
+        235.40898501873016,
+        235.40897607803345
+      ],
+      "status": "exported",
+      "crop": [
+        5,
+        15,
+        546,
+        691
+      ],
+      "eyeRatio": 0.3998,
+      "headTopRatio": 0.1065,
+      "bytes": 11954,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "2b0cda02dd1ffb2d3d79416f8aeb4e393395c3a8b997a975c3cc9f3b06082595"
+    },
+    {
+      "id": "qing/official-old-01",
+      "file": "assets/art/portraits/qing/official-old-01.webp",
+      "job": "frame-pool-official-old-01-04-v2",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/frame-pool-official-old-01-04-v2.png",
+      "cellBox": [
+        5,
+        5,
+        556,
+        696
+      ],
+      "rawSize": [
+        551,
+        691
+      ],
+      "eyeY": 277.61,
+      "headTop": 80,
+      "faceBox": [
+        135.9368172287941,
+        221.48293322324753,
+        199.09233877062798,
+        199.09232142567635
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        3,
+        550,
+        691
+      ],
+      "eyeRatio": 0.3991,
+      "headTopRatio": 0.1119,
+      "bytes": 10368,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "8545faf6b573f429126f91b5099290918e15dde549c567fb93b4445ce7909db0"
+    },
+    {
+      "id": "qing/official-old-02",
+      "file": "assets/art/portraits/qing/official-old-02.webp",
+      "job": "frame-pool-official-old-01-04-v2",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/frame-pool-official-old-01-04-v2.png",
+      "cellBox": [
+        566,
+        5,
+        1117,
+        696
+      ],
+      "rawSize": [
+        551,
+        691
+      ],
+      "eyeY": 280.43,
+      "headTop": 90,
+      "faceBox": [
+        224.4620036482811,
+        212.79364904761314,
+        193.6214097738266,
+        193.62141573429108
+      ],
+      "status": "exported",
+      "crop": [
+        2,
+        7,
+        549,
+        691
+      ],
+      "eyeRatio": 0.3997,
+      "headTopRatio": 0.1213,
+      "bytes": 9994,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "d5e0cc059848d28edaf2904750732804975de967dbf4642ae5d9cdf09d4f3da1"
+    },
+    {
+      "id": "qing/official-old-03",
+      "file": "assets/art/portraits/qing/official-old-03.webp",
+      "job": "frame-pool-official-old-01-04-v2",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/frame-pool-official-old-01-04-v2.png",
+      "cellBox": [
+        5,
+        706,
+        556,
+        1397
+      ],
+      "rawSize": [
+        551,
+        691
+      ],
+      "eyeY": 264.33,
+      "headTop": 72,
+      "faceBox": [
+        119.6507270783186,
+        209.36867752671242,
+        208.12393257021904,
+        208.12392976880074
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        0,
+        550,
+        688
+      ],
+      "eyeRatio": 0.3842,
+      "headTopRatio": 0.1047,
+      "bytes": 11652,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "8a78d225a33315f12d60a09979078b5ac5ffe6b22cb90f2b3209bb5723fef9ea"
+    },
+    {
+      "id": "qing/official-old-04",
+      "file": "assets/art/portraits/qing/official-old-04.webp",
+      "job": "frame-pool-official-old-01-04-v2",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/frame-pool-official-old-01-04-v2.png",
+      "cellBox": [
+        566,
+        706,
+        1117,
+        1397
+      ],
+      "rawSize": [
+        551,
+        691
+      ],
+      "eyeY": 276.92,
+      "headTop": 78,
+      "faceBox": [
+        217.87555786967278,
+        213.39231991767883,
+        191.4456495642662,
+        191.44564014673233
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        3,
+        550,
+        691
+      ],
+      "eyeRatio": 0.3981,
+      "headTopRatio": 0.109,
+      "bytes": 9712,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "a428f60c471d77750cf67940d5e32d682109323eeae95dd4c2b3353209bba139"
+    },
+    {
+      "id": "qing/official-old-05",
+      "file": "assets/art/portraits/qing/official-old-05.webp",
+      "job": "pool-official-old-05-06",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/pool-official-old-05-06.png",
+      "cellBox": [
+        5,
+        5,
+        556,
+        696
+      ],
+      "rawSize": [
+        551,
+        691
+      ],
+      "eyeY": 245.94,
+      "headTop": 69,
+      "faceBox": [
+        134.4279499053955,
+        185.25046440958977,
+        210.40117505192757,
+        210.40116906166077
+      ],
+      "status": "exported",
+      "crop": [
+        2,
+        0,
+        548,
+        683
+      ],
+      "eyeRatio": 0.3601,
+      "headTopRatio": 0.101,
+      "bytes": 12100,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "7ca6fbedb9a4934e6439a4e17887527bc3bd3aa1fecaa5dbd69c534ba87917d4"
+    },
+    {
+      "id": "qing/official-old-06",
+      "file": "assets/art/portraits/qing/official-old-06.webp",
+      "job": "pool-official-old-05-06",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/pool-official-old-05-06.png",
+      "cellBox": [
+        566,
+        5,
+        1117,
+        696
+      ],
+      "rawSize": [
+        551,
+        691
+      ],
+      "eyeY": 245.29,
+      "headTop": 70,
+      "faceBox": [
+        231.15057212114334,
+        187.43002918362617,
+        197.1874278485775,
+        197.18743148446083
+      ],
+      "status": "exported",
+      "crop": [
+        3,
+        0,
+        548,
+        681
+      ],
+      "eyeRatio": 0.3602,
+      "headTopRatio": 0.1028,
+      "bytes": 11018,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "478169a58329e93522a6eef1f8b6984acc26fbdc5276b70f8f39b2bfb797f751"
+    },
+    {
+      "id": "qing/general-all-01",
+      "file": "assets/art/portraits/qing/general-all-01.webp",
+      "job": "frame-qing-general-all-01-single-v2",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/frame-qing-general-all-01-single-v2.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 552.14,
+      "headTop": 177,
+      "faceBox": [
+        273.0057624578476,
+        433.3483839035034,
+        418.5256236791611,
+        418.52562326192856
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "eyeRatio": 0.3938,
+      "headTopRatio": 0.1262,
+      "bytes": 11640,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "d60aa9c0bc9a8a1205cac4b4868474fe1557fd64ffcb9c394e100ea59b74f9a6"
+    },
+    {
+      "id": "qing/general-all-02",
+      "file": "assets/art/portraits/qing/general-all-02.webp",
+      "job": "pool-general-all-01-03",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/pool-general-all-01-03.png",
+      "cellBox": [
+        566,
+        5,
+        1117,
+        696
+      ],
+      "rawSize": [
+        551,
+        691
+      ],
+      "eyeY": 247.02,
+      "headTop": 64,
+      "faceBox": [
+        252.7536025941372,
+        196.02089747786522,
+        178.51746493577957,
+        178.51747131347656
+      ],
+      "status": "exported",
+      "crop": [
+        19,
+        0,
+        531,
+        640
+      ],
+      "eyeRatio": 0.386,
+      "headTopRatio": 0.1,
+      "bytes": 9306,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "b14cc264f64c418bf9aa7ba1f25bebba295f8da5f6c8ab11d9ca5659050dee54"
+    },
+    {
+      "id": "qing/general-all-03",
+      "file": "assets/art/portraits/qing/general-all-03.webp",
+      "job": "frame-qing-general-all-03-single-v2",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/frame-qing-general-all-03-single-v2.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 545.57,
+      "headTop": 172,
+      "faceBox": [
+        286.17014998197556,
+        417.93410336971283,
+        419.737591445446,
+        419.7375767827034
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "eyeRatio": 0.3891,
+      "headTopRatio": 0.1227,
+      "bytes": 9442,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "f1cb8bc65f53dfc3262ed7c7768bd4c7a5400556a992ef187e3321152474ce5a"
+    },
+    {
+      "id": "qing/consort-high-01",
+      "file": "assets/art/portraits/qing/consort-high-01.webp",
+      "bytes": 8284,
+      "dimensions": [
+        400,
+        500
+      ],
+      "quality": 75,
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/consort-high-01.png",
+      "crop": [
+        17,
+        32,
+        1105,
+        1392
+      ],
+      "sourceHeadTopApprox": 180,
+      "sourceEyeYApprox": 562,
+      "headTopRatio": 0.1088,
+      "eyeRatio": 0.3897,
+      "measurement": "人工定位头顶与眼线，约±5px；仅裁切缩放，无修图",
+      "sha256": "aedff5130cd9e1f22e5c3d6a7bc57769b2e8a54521360b3c39f1f1947580bfdd"
+    },
+    {
+      "id": "qing/consort-high-02",
+      "file": "assets/art/portraits/qing/consort-high-02.webp",
+      "job": "pool-consort-high-02-02",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/pool-consort-high-02-02.png",
+      "cellBox": [
+        5,
+        5,
+        556,
+        696
+      ],
+      "rawSize": [
+        551,
+        691
+      ],
+      "eyeY": 268.67,
+      "headTop": 74,
+      "faceBox": [
+        263.63138553500175,
+        212.97485041618347,
+        187.8415510058403,
+        187.84154719114304
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        0,
+        550,
+        688
+      ],
+      "eyeRatio": 0.3905,
+      "headTopRatio": 0.1076,
+      "bytes": 8840,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "7b3017b45191e09633f7d564a3310d7b6eefaa1a4d8f642d53848d304a17ae07"
+    },
+    {
+      "id": "qing/consort-regular-01",
+      "file": "assets/art/portraits/qing/consort-regular-01.webp",
+      "bytes": 8298,
+      "dimensions": [
+        400,
+        500
+      ],
+      "quality": 75,
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/consort-regular-01.png",
+      "crop": [
+        1,
+        1,
+        1121,
+        1401
+      ],
+      "sourceHeadTopApprox": 223,
+      "sourceEyeYApprox": 564,
+      "headTopRatio": 0.13,
+      "eyeRatio": 0.37870796878435165,
+      "measurement": "本轮最终WebP：Vision眼线与像素帽顶定位，人工对照；约±5px",
+      "sha256": "53db49056a032a1612dc47052727b967245b2ddfb38120af2180277c5817a982",
+      "headTop": 65,
+      "eyeY": 189.35
+    },
+    {
+      "id": "qing/consort-regular-02",
+      "file": "assets/art/portraits/qing/consort-regular-02.webp",
+      "job": "rev-20261107-qing-consort-regular-02-05-grid",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/rev-20261107-qing-consort-regular-02-05-grid.png",
+      "cellBox": [
+        5,
+        5,
+        556,
+        696
+      ],
+      "rawSize": [
+        551,
+        691
+      ],
+      "eyeY": 245.11,
+      "headTop": 69,
+      "faceBox": [
+        114.44727283716202,
+        180.33319181203842,
+        231.05808860063553,
+        231.0580838918686
+      ],
+      "status": "exported",
+      "crop": [
+        3,
+        0,
+        547,
+        680
+      ],
+      "eyeRatio": 0.3605,
+      "headTopRatio": 0.1015,
+      "bytes": 9918,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "3b263cc984178dbcb998bb3d6160d87db289a023faecfa6daaae0e8abe783e63"
+    },
+    {
+      "id": "qing/consort-regular-03",
+      "file": "assets/art/portraits/qing/consort-regular-03.webp",
+      "job": "rev-frame-20261107-qing-consort-regular-03-v2",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/rev-frame-20261107-qing-consort-regular-03-v2.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 562.32,
+      "headTop": 193,
+      "faceBox": [
+        512.3255086541176,
+        441.95836812257767,
+        415.93947941064835,
+        415.9394733905792
+      ],
+      "status": "exported",
+      "crop": [
+        1,
+        3,
+        1120,
+        1402
+      ],
+      "eyeRatio": 0.3998,
+      "headTopRatio": 0.1358,
+      "bytes": 8954,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "b910fd6204f9b34c14860d2042affbf3b60c9060623a270ef17e3a0199ad03ac"
+    },
+    {
+      "id": "qing/consort-regular-04",
+      "file": "assets/art/portraits/qing/consort-regular-04.webp",
+      "job": "rev-20261107-qing-consort-regular-02-05-grid",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/rev-20261107-qing-consort-regular-02-05-grid.png",
+      "cellBox": [
+        5,
+        706,
+        556,
+        1397
+      ],
+      "rawSize": [
+        551,
+        691
+      ],
+      "eyeY": 232.08,
+      "headTop": 60,
+      "faceBox": [
+        236.43850460648537,
+        165.48419374227524,
+        220.98423245549202,
+        220.9842433333397
+      ],
+      "status": "exported",
+      "crop": [
+        35,
+        0,
+        515,
+        600
+      ],
+      "eyeRatio": 0.3868,
+      "headTopRatio": 0.1,
+      "bytes": 10766,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "9af88acd65be11a7ea692653fee058d8dc92c20ed3d0e09eedaaf14e345a941b"
+    },
+    {
+      "id": "qing/consort-regular-05",
+      "file": "assets/art/portraits/qing/consort-regular-05.webp",
+      "job": "rev-20261107-qing-consort-regular-02-05-grid",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/rev-20261107-qing-consort-regular-02-05-grid.png",
+      "cellBox": [
+        566,
+        706,
+        1117,
+        1397
+      ],
+      "rawSize": [
+        551,
+        691
+      ],
+      "eyeY": 246.53,
+      "headTop": 63,
+      "faceBox": [
+        124.48585650324821,
+        176.0344833135605,
+        223.6001104414463,
+        223.60012057423592
+      ],
+      "status": "exported",
+      "crop": [
+        23,
+        0,
+        527,
+        630
+      ],
+      "eyeRatio": 0.3913,
+      "headTopRatio": 0.1,
+      "bytes": 10532,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "6512b4a355e54f318fda3185f55ee5c432e5b17af9373fdc290a4fc2f1c14e49"
+    },
+    {
+      "id": "qing/emperor-young-01",
+      "file": "assets/art/portraits/qing/emperor-young-01.webp",
+      "bytes": 13648,
+      "dimensions": [
+        400,
+        500
+      ],
+      "quality": 75,
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/emperor-young-01.png",
+      "crop": [
+        17,
+        32,
+        1105,
+        1392
+      ],
+      "sourceHeadTopApprox": 199,
+      "sourceEyeYApprox": 535,
+      "headTopRatio": 0.1228,
+      "eyeRatio": 0.3699,
+      "measurement": "人工定位头顶与眼线，约±5px；仅裁切缩放，无修图",
+      "sha256": "8fb17bf73954364a69a7de6b28bcb0ac078c01f4cd32abb02dfc221a0d340f30"
+    },
+    {
+      "id": "qing/emperor-old-01",
+      "file": "assets/art/portraits/qing/emperor-old-01.webp",
+      "job": "pool-emperor-old-01-01",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/pool-emperor-old-01-01.png",
+      "cellBox": [
+        5,
+        5,
+        556,
+        696
+      ],
+      "rawSize": [
+        551,
+        691
+      ],
+      "eyeY": 243.52,
+      "headTop": 62,
+      "faceBox": [
+        116.31488327682018,
+        184.0449059009552,
+        218.96611461043358,
+        218.9661102592945
+      ],
+      "status": "exported",
+      "crop": [
+        27,
+        0,
+        523,
+        620
+      ],
+      "eyeRatio": 0.3928,
+      "headTopRatio": 0.1,
+      "bytes": 15242,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "f6440dbf8ae3ae71333ee70145de2872437b4697653b472abad2fb8fad02a3dc"
+    },
+    {
+      "id": "qing/prince-teen-01",
+      "file": "assets/art/portraits/qing/prince-teen-01.webp",
+      "job": "pool-prince-teen-01-01",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/pool-prince-teen-01-01.png",
+      "cellBox": [
+        5,
+        5,
+        556,
+        696
+      ],
+      "rawSize": [
+        551,
+        691
+      ],
+      "eyeY": 269.69,
+      "headTop": 74,
+      "faceBox": [
+        120.45588545501232,
+        209.1494401395321,
+        206.57540833950043,
+        206.5754086971283
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        0,
+        550,
+        688
+      ],
+      "eyeRatio": 0.392,
+      "headTopRatio": 0.1076,
+      "bytes": 7798,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "1e13dbd1f6bbb607073b6b28e671b0774c0461c8a7a96e9ca5296295f3b62a67"
+    },
+    {
+      "id": "qing/prince-adult-01",
+      "file": "assets/art/portraits/qing/prince-adult-01.webp",
+      "job": "pool-prince-adult-01-01",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/pool-prince-adult-01-01.png",
+      "cellBox": [
+        5,
+        5,
+        556,
+        696
+      ],
+      "rawSize": [
+        551,
+        691
+      ],
+      "eyeY": 245.97,
+      "headTop": 69,
+      "faceBox": [
+        133.78701874613762,
+        192.27930235862732,
+        186.35224118828773,
+        186.35223215818405
+      ],
+      "status": "exported",
+      "crop": [
+        2,
+        0,
+        548,
+        683
+      ],
+      "eyeRatio": 0.3601,
+      "headTopRatio": 0.101,
+      "bytes": 7470,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "e2c0a5d4425c953578f36ca077f2a157e513978f639568b53216011beea6e1c3"
+    },
+    {
+      "id": "qing/princess-teen-01",
+      "file": "assets/art/portraits/qing/princess-teen-01.webp",
+      "job": "rev-20261107-qing-princess-teen-01",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/rev-20261107-qing-princess-teen-01.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 549.28,
+      "headTop": 187,
+      "faceBox": [
+        272.6895707845688,
+        433.9139566421509,
+        408.204386472702,
+        408.20438039302826
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "eyeRatio": 0.3918,
+      "headTopRatio": 0.1334,
+      "bytes": 7938,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "0863a482293fd5f9feb95b66ef3f56d86fa7c59205dc6c450930829111adf585"
+    },
+    {
+      "id": "qing/princess-adult-01",
+      "file": "assets/art/portraits/qing/princess-adult-01.webp",
+      "job": "rev-20261107-qing-princess-adult-01",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/rev-20261107-qing-princess-adult-01.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 508.48,
+      "headTop": 180,
+      "faceBox": [
+        510.0153298974037,
+        386.7160425186157,
+        415.8107088804245,
+        415.8106986284256
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "eyeRatio": 0.3627,
+      "headTopRatio": 0.1284,
+      "bytes": 8264,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "317d0f74ba670064a53d5cb53446c5b79d01e5c1b416e38f5d7479961f0182db"
+    },
+    {
+      "id": "qing-kangxi/emperor-01",
+      "file": "assets/art/portraits/unique/qing-kangxi/emperor-01.webp",
+      "job": "frame-qing-kangxi-emperor-01-single-v2",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/frame-qing-kangxi-emperor-01-single-v2.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 541.85,
+      "headTop": 163,
+      "faceBox": [
+        254.83527427911758,
+        425.48606210947037,
+        398.51633512973785,
+        398.5163149237633
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "eyeRatio": 0.3865,
+      "headTopRatio": 0.1163,
+      "bytes": 12426,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "7c5cace215216bc8bbb3123e4a468def8c14dc5d061701c3181063b689aba729"
+    },
+    {
+      "id": "qing-kangxi/emperor-01-old",
+      "file": "assets/art/portraits/unique/qing-kangxi/emperor-01-old.webp",
+      "job": "rev-20261107-qing-kangxi-emperor-01-old",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/rev-20261107-qing-kangxi-emperor-01-old.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 525.29,
+      "headTop": 160,
+      "faceBox": [
+        220.51827907562256,
+        401.02416372299194,
+        435.20232689380646,
+        435.20233100652695
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "eyeRatio": 0.3747,
+      "headTopRatio": 0.1141,
+      "bytes": 13832,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "59594e33af548ae6f8436b273c522c181027be93de0220e61ec579474451bc2f"
+    },
+    {
+      "id": "qing-kangxi/official-01",
+      "file": "assets/art/portraits/unique/qing-kangxi/official-01.webp",
+      "job": "unique-qing-kangxi-official-01",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/unique-qing-kangxi-official-01.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 502.87,
+      "headTop": 127,
+      "faceBox": [
+        244.54871249198914,
+        389.3282648921013,
+        403.48973321914673,
+        403.4897282719612
+      ],
+      "status": "exported",
+      "crop": [
+        53,
+        0,
+        1069,
+        1270
+      ],
+      "eyeRatio": 0.396,
+      "headTopRatio": 0.1,
+      "bytes": 9076,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "c3095955b3c64a5e5479d0ef139369a8056c80754486fc03ea065d46f1581012"
+    },
+    {
+      "id": "qing-kangxi/official-02",
+      "file": "assets/art/portraits/unique/qing-kangxi/official-02.webp",
+      "job": "unique-qing-kangxi-official-02",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/unique-qing-kangxi-official-02.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 479.59,
+      "headTop": 122,
+      "faceBox": [
+        483.0820255279541,
+        367.95102763175964,
+        401.94217962026596,
+        401.9421748518944
+      ],
+      "status": "exported",
+      "crop": [
+        73,
+        0,
+        1049,
+        1220
+      ],
+      "eyeRatio": 0.3931,
+      "headTopRatio": 0.1,
+      "bytes": 8022,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "9d1593d6bd379170ea29458b6313bae76ff06d3793e5175039ea00ccf9b66124"
+    },
+    {
+      "id": "qing-kangxi/official-03",
+      "file": "assets/art/portraits/unique/qing-kangxi/official-03.webp",
+      "job": "frame-qing-kangxi-official-03-single-v2",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/frame-qing-kangxi-official-03-single-v2.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 568.11,
+      "headTop": 186,
+      "faceBox": [
+        220.51324662566185,
+        442.0408056974411,
+        438.2544994354248,
+        438.2544850707054
+      ],
+      "status": "exported",
+      "crop": [
+        5,
+        13,
+        1116,
+        1402
+      ],
+      "eyeRatio": 0.3996,
+      "headTopRatio": 0.1246,
+      "bytes": 9140,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "4be90eb7a2ce0e9e6969aff731976b8e83978d16cb42044ecce6574611be8c23"
+    },
+    {
+      "id": "qing-kangxi/official-04",
+      "file": "assets/art/portraits/unique/qing-kangxi/official-04.webp",
+      "job": "frame-qing-kangxi-official-04-single-v2",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/frame-qing-kangxi-official-04-single-v2.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 562.23,
+      "headTop": 177,
+      "faceBox": [
+        460.0559086203575,
+        436.48017609119415,
+        417.507630944252,
+        417.5076257586479
+      ],
+      "status": "exported",
+      "crop": [
+        1,
+        3,
+        1120,
+        1402
+      ],
+      "eyeRatio": 0.3997,
+      "headTopRatio": 0.1244,
+      "bytes": 8680,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "ba59f153664ea2d14c1773b4c04e482d3bf840c7aa7ae4e68d6c6e3dfeb6632d"
+    },
+    {
+      "id": "qing-kangxi/official-05",
+      "file": "assets/art/portraits/unique/qing-kangxi/official-05.webp",
+      "job": "rev-20261107-qing-kangxi-official-05",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/rev-20261107-qing-kangxi-official-05.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 486.54,
+      "headTop": 148,
+      "faceBox": [
+        259.2450881302357,
+        370.9288082122803,
+        386.51954287290573,
+        386.5195377469063
+      ],
+      "status": "exported",
+      "crop": [
+        20,
+        0,
+        1101,
+        1351
+      ],
+      "eyeRatio": 0.3601,
+      "headTopRatio": 0.1095,
+      "bytes": 8782,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "8c80debf05408a70ff2fe9a1b582244ab771a7a995cd9498c548d1ce03b82621"
+    },
+    {
+      "id": "qing-kangxi/official-06",
+      "file": "assets/art/portraits/unique/qing-kangxi/official-06.webp",
+      "job": "rev-20261107-qing-kangxi-official-06",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/rev-20261107-qing-kangxi-official-06.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 484.29,
+      "headTop": 124,
+      "faceBox": [
+        492.6977500319481,
+        382.7490110397339,
+        352.12025624513626,
+        352.12025558948517
+      ],
+      "status": "exported",
+      "crop": [
+        65,
+        0,
+        1057,
+        1240
+      ],
+      "eyeRatio": 0.3906,
+      "headTopRatio": 0.1,
+      "bytes": 7290,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "3202afa44a9a380d5a31bf1dd9dcd50447fb93422b042aec5472d7c32880af6b"
+    },
+    {
+      "id": "qing-kangxi/official-07",
+      "file": "assets/art/portraits/unique/qing-kangxi/official-07.webp",
+      "job": "rev-20261107-qing-kangxi-official-07",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/rev-20261107-qing-kangxi-official-07.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 504.02,
+      "headTop": 144,
+      "faceBox": [
+        264.9280951023102,
+        398.627916932106,
+        377.6573483347893,
+        377.6573522090912
+      ],
+      "status": "exported",
+      "crop": [
+        1,
+        0,
+        1121,
+        1400
+      ],
+      "eyeRatio": 0.36,
+      "headTopRatio": 0.1029,
+      "bytes": 8774,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "fb372786b34c605bf39f3c469c3d305029851f5ae342eb2e1e4e1839cb54aa31"
+    },
+    {
+      "id": "qing-kangxi/official-08",
+      "file": "assets/art/portraits/unique/qing-kangxi/official-08.webp",
+      "job": "unique-qing-kangxi-official-08",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/unique-qing-kangxi-official-08.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 498.25,
+      "headTop": 133,
+      "faceBox": [
+        493.78679895401,
+        385.8684355020523,
+        382.209525346756,
+        382.20955258607864
+      ],
+      "status": "exported",
+      "crop": [
+        29,
+        0,
+        1093,
+        1330
+      ],
+      "eyeRatio": 0.3746,
+      "headTopRatio": 0.1,
+      "bytes": 8322,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "391a31123f1db02e70fdf3d53e8e492944c18cb23358ab9704b68df96d9ed153"
+    },
+    {
+      "id": "qing-kangxi/official-09",
+      "file": "assets/art/portraits/unique/qing-kangxi/official-09.webp",
+      "job": "unique-qing-kangxi-official-09",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/unique-qing-kangxi-official-09.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 514.22,
+      "headTop": 147,
+      "faceBox": [
+        274.5817886888981,
+        406.31989002227783,
+        386.0024544596672,
+        386.0024331212044
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "eyeRatio": 0.3668,
+      "headTopRatio": 0.1049,
+      "bytes": 10158,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "f6c982f5741c4f9edf44373aee09171ed28a6aab8478b23e78cfc3d61fb66795"
+    },
+    {
+      "id": "qing-kangxi/official-10",
+      "file": "assets/art/portraits/unique/qing-kangxi/official-10.webp",
+      "job": "rev-20261107-qing-kangxi-official-10",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/rev-20261107-qing-kangxi-official-10.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 510.94,
+      "headTop": 132,
+      "faceBox": [
+        483.8020169734955,
+        396.25866186618805,
+        386.3034651875496,
+        386.30347859859467
+      ],
+      "status": "exported",
+      "crop": [
+        33,
+        0,
+        1089,
+        1320
+      ],
+      "eyeRatio": 0.3871,
+      "headTopRatio": 0.1,
+      "bytes": 7494,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "5f96662b475c6dc92e82d42ff6cb1cf6f31e579f566ed22fde7dbcc96ef72346"
+    },
+    {
+      "id": "qing-kangxi/foreign-01",
+      "file": "assets/art/portraits/unique/qing-kangxi/foreign-01.webp",
+      "job": "unique-qing-kangxi-foreign-01",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/unique-qing-kangxi-foreign-01.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 546.64,
+      "headTop": 142,
+      "faceBox": [
+        492.7787708044052,
+        430.9569003582001,
+        389.6571165919304,
+        389.6570959687233
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "eyeRatio": 0.3899,
+      "headTopRatio": 0.1013,
+      "bytes": 8770,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "c55c98bf714f229caa874ada21495b3d1127e71d227d9ddb069a1c86934e10b4"
+    },
+    {
+      "id": "qing-kangxi/foreign-02",
+      "file": "assets/art/portraits/unique/qing-kangxi/foreign-02.webp",
+      "job": "unique-qing-kangxi-foreign-02",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/unique-qing-kangxi-foreign-02.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 521.7,
+      "headTop": 156,
+      "faceBox": [
+        228.9789643585682,
+        407.4082916378975,
+        405.47840362787247,
+        405.4783833026886
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "eyeRatio": 0.3721,
+      "headTopRatio": 0.1113,
+      "bytes": 7782,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "d4348e8561ee68093fdd6800fc37e50605c81c760bcfb32aad36220126066520"
+    },
+    {
+      "id": "qing-kangxi/foreign-03",
+      "file": "assets/art/portraits/unique/qing-kangxi/foreign-03.webp",
+      "job": "frame-qing-kangxi-foreign-03-single-v2",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/frame-qing-kangxi-foreign-03-single-v2.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 525.97,
+      "headTop": 170,
+      "faceBox": [
+        469.5659683942795,
+        400.1762224435806,
+        420.73899883031845,
+        420.738986492157
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "eyeRatio": 0.3752,
+      "headTopRatio": 0.1213,
+      "bytes": 8522,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "0f7f8b781ced91898f8c27a8c019b45a74b52435bed17b89601c5ace154beafc"
+    },
+    {
+      "id": "qing-kangxi/foreign-04",
+      "file": "assets/art/portraits/unique/qing-kangxi/foreign-04.webp",
+      "job": "unique-qing-kangxi-foreign-04",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/unique-qing-kangxi-foreign-04.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 529.59,
+      "headTop": 171,
+      "faceBox": [
+        254.7557247877121,
+        420.84912610054016,
+        380.16859102249146,
+        380.16858541965485
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "eyeRatio": 0.3777,
+      "headTopRatio": 0.122,
+      "bytes": 7192,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "626b2ef928ef93406453d114558001bc98716d5483de20097449da2c14ddd05b"
+    },
+    {
+      "id": "qing-kangxi/foreign-05",
+      "file": "assets/art/portraits/unique/qing-kangxi/foreign-05.webp",
+      "job": "unique-qing-kangxi-foreign-05",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/unique-qing-kangxi-foreign-05.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 559.09,
+      "headTop": 150,
+      "faceBox": [
+        529.6698056459427,
+        462.1761938035488,
+        328.88301050662994,
+        328.8829918205738
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "eyeRatio": 0.3988,
+      "headTopRatio": 0.107,
+      "bytes": 9100,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "0497a290eb39f4decffe6a40c50db6d7cbc5ef9aa91b22aaa5a9bc4a312c6928"
+    },
+    {
+      "id": "qing-kangxi/dowager-01",
+      "file": "assets/art/portraits/unique/qing-kangxi/dowager-01.webp",
+      "job": "rev-20261107-qing-kangxi-dowager-01",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/rev-20261107-qing-kangxi-dowager-01.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 521.7,
+      "headTop": 132,
+      "faceBox": [
+        498.6248057484627,
+        411.75575602054596,
+        358.4487710595131,
+        358.4487705230713
+      ],
+      "status": "exported",
+      "crop": [
+        33,
+        0,
+        1089,
+        1320
+      ],
+      "eyeRatio": 0.3952,
+      "headTopRatio": 0.1,
+      "bytes": 8556,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "1ffbfe72d2dc3a10bd472aeb192748231aef6a2e5464ced07ca37dc85308aff8"
+    },
+    {
+      "id": "qing-yongzheng/emperor-01",
+      "file": "assets/art/portraits/unique/qing-yongzheng/emperor-01.webp",
+      "job": "unique-qing-yongzheng-emperor-01",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/unique-qing-yongzheng-emperor-01.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 515.55,
+      "headTop": 149,
+      "faceBox": [
+        277.0571856200695,
+        410.9579123854637,
+        378.75074422359467,
+        378.75072598457336
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "eyeRatio": 0.3677,
+      "headTopRatio": 0.1063,
+      "bytes": 12668,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "4ddd3c7293019b6485f6442559dd1be3e1576c45acff5572c5f7c83e9034b6db"
+    },
+    {
+      "id": "qing-yongzheng/emperor-01-old",
+      "file": "assets/art/portraits/unique/qing-yongzheng/emperor-01-old.webp",
+      "job": "unique-qing-yongzheng-emperor-01-old",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/unique-qing-yongzheng-emperor-01-old.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 517.63,
+      "headTop": 146,
+      "faceBox": [
+        249.65282052755356,
+        409.0227394104004,
+        395.88357800245285,
+        395.8835771679878
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "eyeRatio": 0.3692,
+      "headTopRatio": 0.1041,
+      "bytes": 13450,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "6582d8f93518107dc023e834e7a1623bf236f4b570d173f58ef0f5ef61f369f7"
+    },
+    {
+      "id": "qing-yongzheng/official-01",
+      "file": "assets/art/portraits/unique/qing-yongzheng/official-01.webp",
+      "job": "rev-20261107-qing-yongzheng-official-01",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/rev-20261107-qing-yongzheng-official-01.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 502.1,
+      "headTop": 136,
+      "faceBox": [
+        256.56896165013313,
+        377.9327430129051,
+        422.50349950790405,
+        422.50351828336716
+      ],
+      "status": "exported",
+      "crop": [
+        17,
+        0,
+        1105,
+        1360
+      ],
+      "eyeRatio": 0.3692,
+      "headTopRatio": 0.1,
+      "bytes": 9406,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "0c4ca1a678807617d7773a3880b11b69e0d57431f8b0992d5fde1f772144c767"
+    },
+    {
+      "id": "qing-yongzheng/official-02",
+      "file": "assets/art/portraits/unique/qing-yongzheng/official-02.webp",
+      "job": "rev-frame-20261107-qing-yongzheng-official-02-v2",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/rev-frame-20261107-qing-yongzheng-official-02-v2.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 537.73,
+      "headTop": 159,
+      "faceBox": [
+        471.77793914079666,
+        425.16571295261383,
+        405.3222806453705,
+        405.3222825527191
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "eyeRatio": 0.3835,
+      "headTopRatio": 0.1134,
+      "bytes": 8666,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "7e9d7ffe131c3fde26b89c0d64b062db4e26f61717f7c756f96ba3a992e38eb1"
+    },
+    {
+      "id": "qing-yongzheng/official-03",
+      "file": "assets/art/portraits/unique/qing-yongzheng/official-03.webp",
+      "job": "unique-qing-yongzheng-official-03",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/unique-qing-yongzheng-official-03.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 526.09,
+      "headTop": 150,
+      "faceBox": [
+        257.14837887883186,
+        412.154865860939,
+        403.87861955165863,
+        403.8786430954933
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "eyeRatio": 0.3752,
+      "headTopRatio": 0.107,
+      "bytes": 9384,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "3afd735da36ce41616fd35e27ba0315c0d467448e2f4e1b8d1b51af0bf05a9a9"
+    },
+    {
+      "id": "qing-yongzheng/official-04",
+      "file": "assets/art/portraits/unique/qing-yongzheng/official-04.webp",
+      "job": "unique-qing-yongzheng-official-04",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/unique-qing-yongzheng-official-04.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 502.62,
+      "headTop": 136,
+      "faceBox": [
+        478.6309322118759,
+        386.5218775868416,
+        388.45802253484726,
+        388.4580533504486
+      ],
+      "status": "exported",
+      "crop": [
+        17,
+        0,
+        1105,
+        1360
+      ],
+      "eyeRatio": 0.3696,
+      "headTopRatio": 0.1,
+      "bytes": 9256,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "203f36dcdf47f0fc75899e875f44a1715ebe9b7f5576976c290f132c28700766"
+    },
+    {
+      "id": "qing-yongzheng/official-05",
+      "file": "assets/art/portraits/unique/qing-yongzheng/official-05.webp",
+      "job": "unique-qing-yongzheng-official-05",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/unique-qing-yongzheng-official-05.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 504.55,
+      "headTop": 137,
+      "faceBox": [
+        264.900391548872,
+        402.4420649409294,
+        373.73417741060257,
+        373.7341927289963
+      ],
+      "status": "exported",
+      "crop": [
+        13,
+        0,
+        1109,
+        1370
+      ],
+      "eyeRatio": 0.3683,
+      "headTopRatio": 0.1,
+      "bytes": 8018,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "9bee6bfe800951d136f46cbb1cbcc637dc8fc2ef70de25cd85ace372b5ea0da5"
+    },
+    {
+      "id": "qing-yongzheng/official-06",
+      "file": "assets/art/portraits/unique/qing-yongzheng/official-06.webp",
+      "job": "unique-qing-yongzheng-official-06",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/unique-qing-yongzheng-official-06.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 525.01,
+      "headTop": 154,
+      "faceBox": [
+        492.1195031404495,
+        409.6254153251648,
+        385.192246735096,
+        385.1922217607498
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "eyeRatio": 0.3745,
+      "headTopRatio": 0.1098,
+      "bytes": 8162,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "ef47639bcbf2153e65867349edc992203aefbd2eaf3f5b5f79eacb2f598c8a99"
+    },
+    {
+      "id": "qing-yongzheng/official-07",
+      "file": "assets/art/portraits/unique/qing-yongzheng/official-07.webp",
+      "job": "unique-qing-yongzheng-official-07",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/unique-qing-yongzheng-official-07.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 484.55,
+      "headTop": 134,
+      "faceBox": [
+        244.32176738977432,
+        369.84057372808456,
+        405.7971031665802,
+        405.7971029281616
+      ],
+      "status": "exported",
+      "crop": [
+        25,
+        0,
+        1097,
+        1340
+      ],
+      "eyeRatio": 0.3616,
+      "headTopRatio": 0.1,
+      "bytes": 9062,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "9f90085bb5db1f3cd745a2d381aafc553b95742ba84f4985a9051c5dbde942e2"
+    },
+    {
+      "id": "qing-yongzheng/official-08",
+      "file": "assets/art/portraits/unique/qing-yongzheng/official-08.webp",
+      "job": "unique-qing-yongzheng-official-08",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/unique-qing-yongzheng-official-08.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 514.91,
+      "headTop": 152,
+      "faceBox": [
+        453.60584592819214,
+        413.312627017498,
+        359.25265896320343,
+        359.25267267227173
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "eyeRatio": 0.3673,
+      "headTopRatio": 0.1084,
+      "bytes": 9330,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "4345cc3ca3a622aff850df30139b5003f3920ee23b60741a9cb4b536b48b22f6"
+    },
+    {
+      "id": "qing-yongzheng/official-09",
+      "file": "assets/art/portraits/unique/qing-yongzheng/official-09.webp",
+      "job": "rev-frame-20261107-qing-yongzheng-official-09-v2",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/rev-frame-20261107-qing-yongzheng-official-09-v2.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 566.28,
+      "headTop": 197,
+      "faceBox": [
+        279.60922291874886,
+        468.3787125349045,
+        359.6546530723572,
+        359.65466552972794
+      ],
+      "status": "exported",
+      "crop": [
+        4,
+        10,
+        1118,
+        1402
+      ],
+      "eyeRatio": 0.3996,
+      "headTopRatio": 0.1343,
+      "bytes": 9452,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "5d9bbb365fac831a81d1af9d5dabc6e0492f24700c19769317708c425df69820"
+    },
+    {
+      "id": "qing-yongzheng/official-10",
+      "file": "assets/art/portraits/unique/qing-yongzheng/official-10.webp",
+      "job": "rev-20261107-qing-yongzheng-official-10",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/rev-20261107-qing-yongzheng-official-10.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 517.62,
+      "headTop": 130,
+      "faceBox": [
+        487.67476308345795,
+        406.93769133090973,
+        359.4059396982193,
+        359.40593218803406
+      ],
+      "status": "exported",
+      "crop": [
+        41,
+        0,
+        1081,
+        1300
+      ],
+      "eyeRatio": 0.3982,
+      "headTopRatio": 0.1,
+      "bytes": 7286,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "d8a753c9da4d9bd7ffdf8fac2bc7cb5f9ee120b05473cff00f73af48ddb3ed49"
+    },
+    {
+      "id": "qing-yongzheng/official-11",
+      "file": "assets/art/portraits/unique/qing-yongzheng/official-11.webp",
+      "job": "rev-20261107-qing-yongzheng-official-11",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/rev-20261107-qing-yongzheng-official-11.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 467.17,
+      "headTop": 118,
+      "faceBox": [
+        254.72945907711983,
+        362.6196187734604,
+        363.0527438521385,
+        363.0527398586273
+      ],
+      "status": "exported",
+      "crop": [
+        89,
+        0,
+        1033,
+        1180
+      ],
+      "eyeRatio": 0.3959,
+      "headTopRatio": 0.1,
+      "bytes": 9246,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "6136a1beb962063efd359ddf7eb13777cce4005a37398d6ce180e12bfb841d16"
+    },
+    {
+      "id": "qing-yongzheng/official-12",
+      "file": "assets/art/portraits/unique/qing-yongzheng/official-12.webp",
+      "job": "unique-qing-yongzheng-official-12",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/unique-qing-yongzheng-official-12.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 514.13,
+      "headTop": 149,
+      "faceBox": [
+        497.0005114674568,
+        415.09715190529823,
+        332.32226371765137,
+        332.3222640454769
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "eyeRatio": 0.3667,
+      "headTopRatio": 0.1063,
+      "bytes": 7336,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "15f8e1c34c1c86ea2e98e717d2e1d8bee510a0720aec87f22b484003d600a128"
+    },
+    {
+      "id": "qing-yongzheng/consort-01",
+      "file": "assets/art/portraits/unique/qing-yongzheng/consort-01.webp",
+      "job": "unique-qing-yongzheng-consort-01",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/unique-qing-yongzheng-consort-01.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 523.39,
+      "headTop": 160,
+      "faceBox": [
+        512.71814006567,
+        419.49882954359055,
+        334.54740911722183,
+        334.54738914966583
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "eyeRatio": 0.3733,
+      "headTopRatio": 0.1141,
+      "bytes": 7280,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "8691552f21bccb216647c4a3c9c42b59ac75289a1d490398c962f655520fd9c6"
+    },
+    {
+      "id": "qing-yongzheng/consort-02",
+      "file": "assets/art/portraits/unique/qing-yongzheng/consort-02.webp",
+      "job": "unique-qing-yongzheng-consort-02",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/unique-qing-yongzheng-consort-02.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 535.86,
+      "headTop": 197,
+      "faceBox": [
+        315.0536039471626,
+        432.47140353918076,
+        360.21303766965866,
+        360.21305161714554
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        1,
+        1121,
+        1402
+      ],
+      "eyeRatio": 0.3818,
+      "headTopRatio": 0.1399,
+      "bytes": 7284,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "04e073c5e937173e38ffa73c07df452f308ef707d7942f674e14cbe4cdc1e0e8"
+    },
+    {
+      "id": "qing-yongzheng/consort-03",
+      "file": "assets/art/portraits/unique/qing-yongzheng/consort-03.webp",
+      "job": "unique-qing-yongzheng-consort-03",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/unique-qing-yongzheng-consort-03.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 501.14,
+      "headTop": 177,
+      "faceBox": [
+        492.3354470729828,
+        387.96163123846054,
+        390.8945642709732,
+        390.89457881450653
+      ],
+      "status": "exported",
+      "crop": [
+        4,
+        0,
+        1118,
+        1392
+      ],
+      "eyeRatio": 0.36,
+      "headTopRatio": 0.1272,
+      "bytes": 7724,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "478eb5ed9f88df29f95e8c760005cd0b73e2790df85cd27b051843c9955d849f"
+    },
+    {
+      "id": "qing-yongzheng/consort-04",
+      "file": "assets/art/portraits/unique/qing-yongzheng/consort-04.webp",
+      "job": "unique-qing-yongzheng-consort-04",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/unique-qing-yongzheng-consort-04.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 538.29,
+      "headTop": 199,
+      "faceBox": [
+        254.70005017518997,
+        422.53435403108597,
+        401.74288791418076,
+        401.74287062883377
+      ],
+      "status": "exported",
+      "crop": [
+        2,
+        4,
+        1120,
+        1402
+      ],
+      "eyeRatio": 0.3822,
+      "headTopRatio": 0.1395,
+      "bytes": 7258,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "ef4876755e13cbe3094e4ea3a5dc9ceab4cae7d27707a03f1a8c4bd67f9a4452"
+    },
+    {
+      "id": "qing-yongzheng/child-01",
+      "file": "assets/art/portraits/unique/qing-yongzheng/child-01.webp",
+      "job": "rev-20261107-qing-yongzheng-child-01",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/rev-20261107-qing-yongzheng-child-01.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 501.81,
+      "headTop": 137,
+      "faceBox": [
+        497.5541478395462,
+        395.94796454906464,
+        348.8264926671982,
+        348.8265130519867
+      ],
+      "status": "exported",
+      "crop": [
+        13,
+        0,
+        1109,
+        1370
+      ],
+      "eyeRatio": 0.3663,
+      "headTopRatio": 0.1,
+      "bytes": 5994,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "a1b877497000f8ef9de8d5740f1aee7b945d12e99261e4b888a6d69c86e32cbd"
+    },
+    {
+      "id": "qing-yongzheng/child-02",
+      "file": "assets/art/portraits/unique/qing-yongzheng/child-02.webp",
+      "job": "unique-qing-yongzheng-child-02",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/unique-qing-yongzheng-child-02.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 569.55,
+      "headTop": 186,
+      "faceBox": [
+        502.37048667669296,
+        458.1747750341892,
+        346.38664054870605,
+        346.3866240680218
+      ],
+      "status": "exported",
+      "crop": [
+        6,
+        15,
+        1116,
+        1402
+      ],
+      "eyeRatio": 0.3998,
+      "headTopRatio": 0.1233,
+      "bytes": 7074,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "50ca73085de78c2397093b84fcc160640606601fa098dba467a25c7792ff9f4d"
+    },
+    {
+      "id": "qing-yongzheng/child-02-adult",
+      "file": "assets/art/portraits/unique/qing-yongzheng/child-02-adult.webp",
+      "job": "unique-qing-yongzheng-child-02-adult",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/unique-qing-yongzheng-child-02-adult.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 565.27,
+      "headTop": 186,
+      "faceBox": [
+        504.65709149837494,
+        457.0516309738159,
+        351.89347833395004,
+        351.89345824718475
+      ],
+      "status": "exported",
+      "crop": [
+        3,
+        8,
+        1118,
+        1402
+      ],
+      "eyeRatio": 0.3998,
+      "headTopRatio": 0.1277,
+      "bytes": 7084,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "245fcda0ccbc48e30c25c2d295166611da827c9609cecefdb701abd323dea9f0"
+    },
+    {
+      "id": "qing-yongzheng/child-03",
+      "file": "assets/art/portraits/unique/qing-yongzheng/child-03.webp",
+      "job": "frame-qing-yongzheng-child-03-single-v3",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/frame-qing-yongzheng-child-03-single-v3.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 567.54,
+      "headTop": 197,
+      "faceBox": [
+        259.24431905150414,
+        454.07100915908813,
+        369.4596378207207,
+        369.4596394300461
+      ],
+      "status": "exported",
+      "crop": [
+        5,
+        12,
+        1117,
+        1402
+      ],
+      "eyeRatio": 0.3997,
+      "headTopRatio": 0.1331,
+      "bytes": 6538,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "032ea1bb71afb5d8fe9df093167bab6a1d9955b310c64c03e6d9e5b95e8102b9"
+    },
+    {
+      "id": "qing-yongzheng/child-03-adult",
+      "file": "assets/art/portraits/unique/qing-yongzheng/child-03-adult.webp",
+      "job": "rev-20261107-qing-yongzheng-child-03-adult",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/rev-20261107-qing-yongzheng-child-03-adult.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 491.52,
+      "headTop": 149,
+      "faceBox": [
+        263.40536937117577,
+        387.3502644896507,
+        370.38417077064514,
+        370.3841686844826
+      ],
+      "status": "exported",
+      "crop": [
+        15,
+        0,
+        1107,
+        1365
+      ],
+      "eyeRatio": 0.3601,
+      "headTopRatio": 0.1092,
+      "bytes": 6100,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "0fa45f2ab97b37d803759e46e3809f77f50809118b6efe4f39cd97cfa47e3667"
+    },
+    {
+      "id": "qing-yongzheng/foreign-01",
+      "file": "assets/art/portraits/unique/qing-yongzheng/foreign-01.webp",
+      "job": "unique-qing-yongzheng-foreign-01",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/unique-qing-yongzheng-foreign-01.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 462.38,
+      "headTop": 158,
+      "faceBox": [
+        474.54765915870667,
+        335.4028513431549,
+        444.2542498111725,
+        444.2542524933815
+      ],
+      "status": "exported",
+      "crop": [
+        47,
+        0,
+        1074,
+        1284
+      ],
+      "eyeRatio": 0.3601,
+      "headTopRatio": 0.1231,
+      "bytes": 9900,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "aae398bf66d02c339ca162d1d1f9c8c1d7837bf6785eee828644b00e35c22205"
+    },
+    {
+      "id": "qing-yongzheng/foreign-02",
+      "file": "assets/art/portraits/unique/qing-yongzheng/foreign-02.webp",
+      "job": "unique-qing-yongzheng-foreign-02",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/unique-qing-yongzheng-foreign-02.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 508.87,
+      "headTop": 180,
+      "faceBox": [
+        246.08422833681107,
+        394.59119164943695,
+        405.95770686864853,
+        405.95771622657776
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "eyeRatio": 0.363,
+      "headTopRatio": 0.1284,
+      "bytes": 9730,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "98a90459603f1f6c888296a14ebd24ad53eb80756b53bc49ef87dd071e7b2cdc"
+    },
+    {
+      "id": "qing-yongzheng/foreign-03",
+      "file": "assets/art/portraits/unique/qing-yongzheng/foreign-03.webp",
+      "job": "unique-qing-yongzheng-foreign-03",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/unique-qing-yongzheng-foreign-03.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 516.2,
+      "headTop": 156,
+      "faceBox": [
+        487.8702428340912,
+        401.4262819290161,
+        362.291121840477,
+        362.2911219596863
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "eyeRatio": 0.3682,
+      "headTopRatio": 0.1113,
+      "bytes": 7830,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "c054678850c8aea8c229e9fea2be904e75b9a252f042f54049406b1f1d05f7bd"
+    },
+    {
+      "id": "qing-yongzheng/foreign-04",
+      "file": "assets/art/portraits/unique/qing-yongzheng/foreign-04.webp",
+      "job": "unique-qing-yongzheng-foreign-04",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/unique-qing-yongzheng-foreign-04.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 551.3,
+      "headTop": 167,
+      "faceBox": [
+        232.12845879793167,
+        435.5927500128746,
+        413.39192283153534,
+        413.3919308781624
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "eyeRatio": 0.3932,
+      "headTopRatio": 0.1191,
+      "bytes": 6644,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "9a26aa1e70a21fda1c868be7dcc4e5f10aeea1afc6655db3ef9b609c24bcd2f5"
+    },
+    {
+      "id": "qing-yongzheng/foreign-05",
+      "file": "assets/art/portraits/unique/qing-yongzheng/foreign-05.webp",
+      "job": "unique-qing-yongzheng-foreign-05",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/unique-qing-yongzheng-foreign-05.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 561.17,
+      "headTop": 158,
+      "faceBox": [
+        484.8417445421219,
+        439.2836803793907,
+        414.31862926483154,
+        414.31863284111023
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        1,
+        1121,
+        1402
+      ],
+      "eyeRatio": 0.3998,
+      "headTopRatio": 0.1121,
+      "bytes": 9592,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "55935260d6c2115e2e193e2f28bcfcc53fe7c16f11ccf9cdb7c698e9f3df4837"
+    },
+    {
+      "id": "qing-yongzheng/dowager-01",
+      "file": "assets/art/portraits/unique/qing-yongzheng/dowager-01.webp",
+      "job": "frame-qing-yongzheng-dowager-01-single-v2",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/frame-qing-yongzheng-dowager-01-single-v2.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 569.07,
+      "headTop": 168,
+      "faceBox": [
+        490.6456139087677,
+        456.1500405073166,
+        372.9641958475113,
+        372.9642182588577
+      ],
+      "status": "exported",
+      "crop": [
+        6,
+        14,
+        1116,
+        1402
+      ],
+      "eyeRatio": 0.3999,
+      "headTopRatio": 0.111,
+      "bytes": 6802,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "33687b68ae436e2d452943bc2f2bcf7ab43628ee5706938c1ec8d541a7ed6759"
+    }
+  ]
+}

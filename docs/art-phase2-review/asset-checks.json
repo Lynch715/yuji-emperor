@@ -1,0 +1,96 @@
+{
+  "stage": "第1步，4/79张定调样张",
+  "assets": [
+    {
+      "id": "qing/official-mature-01",
+      "file": "assets/art/portraits/qing/official-mature-01.webp",
+      "bytes": 9884,
+      "dimensions": [
+        400,
+        500
+      ],
+      "quality": 75,
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/official-mature-01.png",
+      "crop": [
+        1,
+        1,
+        1121,
+        1401
+      ],
+      "sourceHeadTopApprox": 170,
+      "sourceEyeYApprox": 532,
+      "headTopRatio": 0.1207,
+      "eyeRatio": 0.3793,
+      "measurement": "人工定位头顶与眼线，约±5px；仅裁切缩放，无修图"
+    },
+    {
+      "id": "qing/consort-regular-01",
+      "file": "assets/art/portraits/qing/consort-regular-01.webp",
+      "bytes": 7596,
+      "dimensions": [
+        400,
+        500
+      ],
+      "quality": 75,
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/consort-regular-01.png",
+      "crop": [
+        35,
+        66,
+        1087,
+        1381
+      ],
+      "sourceHeadTopApprox": 223,
+      "sourceEyeYApprox": 564,
+      "headTopRatio": 0.1194,
+      "eyeRatio": 0.3787,
+      "measurement": "人工定位头顶与眼线，约±5px；仅裁切缩放，无修图"
+    },
+    {
+      "id": "qing/consort-high-01",
+      "file": "assets/art/portraits/qing/consort-high-01.webp",
+      "bytes": 8284,
+      "dimensions": [
+        400,
+        500
+      ],
+      "quality": 75,
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/consort-high-01.png",
+      "crop": [
+        17,
+        32,
+        1105,
+        1392
+      ],
+      "sourceHeadTopApprox": 180,
+      "sourceEyeYApprox": 562,
+      "headTopRatio": 0.1088,
+      "eyeRatio": 0.3897,
+      "measurement": "人工定位头顶与眼线，约±5px；仅裁切缩放，无修图"
+    },
+    {
+      "id": "qing/emperor-young-01",
+      "file": "assets/art/portraits/qing/emperor-young-01.webp",
+      "bytes": 13648,
+      "dimensions": [
+        400,
+        500
+      ],
+      "quality": 75,
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/emperor-young-01.png",
+      "crop": [
+        17,
+        32,
+        1105,
+        1392
+      ],
+      "sourceHeadTopApprox": 199,
+      "sourceEyeYApprox": 535,
+      "headTopRatio": 0.1228,
+      "eyeRatio": 0.3699,
+      "measurement": "人工定位头顶与眼线，约±5px；仅裁切缩放，无修图"
+    }
+  ],
+  "newBytes": 39412,
+  "totalFiles": 149,
+  "totalBytes": 2988572
+}

@@ -1,0 +1,22 @@
+{
+  "method": "localhost image connection destroyed; Cache-Control no-store; page and script stay available",
+  "failedRequests": 17,
+  "paths": [
+    "/assets/art/portraits/qing/consort-regular-01.webp",
+    "/assets/art/portraits/qing/consort-regular-02.webp",
+    "/assets/art/portraits/qing/consort-regular-03.webp",
+    "/assets/art/portraits/qing/consort-regular-04.webp",
+    "/assets/art/portraits/qing/consort-regular-05.webp",
+    "/assets/art/portraits/qing/official-old-03.webp",
+    "/assets/art/portraits/qing/official-old-04.webp",
+    "/assets/art/portraits/unique/qing-yongzheng/consort-01.webp",
+    "/assets/art/portraits/unique/qing-yongzheng/consort-02.webp",
+    "/assets/art/portraits/unique/qing-yongzheng/consort-03.webp",
+    "/assets/art/portraits/unique/qing-yongzheng/consort-04.webp",
+    "/assets/art/portraits/unique/qing-yongzheng/official-10.webp",
+    "/assets/art/scenes/accession-1440.webp",
+    "/assets/art/scenes/accession-720.webp",
+    "/assets/art/scenes/garden-1440.webp",
+    "/assets/art/scenes/garden-720.webp"
+  ]
+}

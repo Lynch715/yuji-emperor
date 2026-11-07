@@ -1,0 +1,760 @@
+{
+  "browser": "Codex In-app Browser",
+  "port": 4210,
+  "checks": [
+    {
+      "images": [
+        {
+          "current": "http://127.0.0.1:4210/assets/art/scenes/accession-1440.webp",
+          "loaded": true,
+          "opacity": "1",
+          "src": "assets/art/scenes/accession-1440.webp"
+        },
+        {
+          "current": "http://127.0.0.1:4210/assets/art/portraits/qing/official-mature-10.webp",
+          "loaded": true,
+          "opacity": "1",
+          "src": "assets/art/portraits/qing/official-mature-10.webp"
+        },
+        {
+          "current": "http://127.0.0.1:4210/assets/art/portraits/qing/official-mature-06.webp",
+          "loaded": true,
+          "opacity": "1",
+          "src": "assets/art/portraits/qing/official-mature-06.webp"
+        },
+        {
+          "current": "http://127.0.0.1:4210/assets/art/portraits/qing/official-mature-08.webp",
+          "loaded": true,
+          "opacity": "1",
+          "src": "assets/art/portraits/qing/official-mature-08.webp"
+        },
+        {
+          "current": "http://127.0.0.1:4210/assets/art/scenes/court-1440.webp",
+          "loaded": true,
+          "opacity": "1",
+          "src": "assets/art/scenes/court-1440.webp"
+        },
+        {
+          "current": "http://127.0.0.1:4210/assets/art/portraits/unique/qing-kangxi/emperor-01.webp",
+          "loaded": true,
+          "opacity": "1",
+          "src": "assets/art/portraits/unique/qing-kangxi/emperor-01.webp"
+        }
+      ],
+      "scrollWidth": 1280,
+      "view": "kangxi-opening-1280",
+      "width": 1280
+    },
+    {
+      "portraits": [
+        {
+          "loaded": true,
+          "size": [
+            64,
+            80
+          ],
+          "src": "assets/art/portraits/unique/qing-kangxi/official-01.webp"
+        },
+        {
+          "loaded": true,
+          "size": [
+            64,
+            80
+          ],
+          "src": "assets/art/portraits/unique/qing-kangxi/official-02.webp"
+        },
+        {
+          "loaded": true,
+          "size": [
+            64,
+            80
+          ],
+          "src": "assets/art/portraits/unique/qing-kangxi/official-03.webp"
+        },
+        {
+          "loaded": true,
+          "size": [
+            64,
+            80
+          ],
+          "src": "assets/art/portraits/unique/qing-kangxi/official-04.webp"
+        },
+        {
+          "loaded": true,
+          "size": [
+            64,
+            80
+          ],
+          "src": "assets/art/portraits/unique/qing-kangxi/official-05.webp"
+        },
+        {
+          "loaded": true,
+          "size": [
+            64,
+            80
+          ],
+          "src": "assets/art/portraits/unique/qing-kangxi/official-06.webp"
+        },
+        {
+          "loaded": false,
+          "size": [
+            0,
+            80
+          ],
+          "src": "assets/art/portraits/unique/qing-kangxi/official-07.webp"
+        },
+        {
+          "loaded": false,
+          "size": [
+            64,
+            80
+          ],
+          "src": "assets/art/portraits/unique/qing-kangxi/official-08.webp"
+        },
+        {
+          "loaded": false,
+          "size": [
+            64,
+            80
+          ],
+          "src": "assets/art/portraits/unique/qing-kangxi/official-09.webp"
+        },
+        {
+          "loaded": false,
+          "size": [
+            64,
+            80
+          ],
+          "src": "assets/art/portraits/unique/qing-kangxi/official-10.webp"
+        },
+        {
+          "loaded": true,
+          "size": [
+            64,
+            80
+          ],
+          "src": "assets/art/portraits/qing/official-mature-08.webp"
+        },
+        {
+          "loaded": false,
+          "size": [
+            64,
+            80
+          ],
+          "src": "assets/art/portraits/qing/official-mature-09.webp"
+        },
+        {
+          "loaded": true,
+          "size": [
+            64,
+            80
+          ],
+          "src": "assets/art/portraits/qing/official-mature-10.webp"
+        },
+        {
+          "loaded": false,
+          "size": [
+            64,
+            80
+          ],
+          "src": "assets/art/portraits/qing/official-mature-04.webp"
+        },
+        {
+          "loaded": false,
+          "size": [
+            64,
+            80
+          ],
+          "src": "assets/art/portraits/qing/official-old-03.webp"
+        },
+        {
+          "loaded": true,
+          "size": [
+            64,
+            80
+          ],
+          "src": "assets/art/portraits/qing/official-mature-06.webp"
+        },
+        {
+          "loaded": false,
+          "size": [
+            64,
+            80
+          ],
+          "src": "assets/art/portraits/qing/official-mature-07.webp"
+        },
+        {
+          "loaded": true,
+          "size": [
+            64,
+            80
+          ],
+          "src": "assets/art/portraits/qing/official-mature-08.webp"
+        },
+        {
+          "loaded": false,
+          "size": [
+            64,
+            80
+          ],
+          "src": "assets/art/portraits/qing/official-mature-09.webp"
+        },
+        {
+          "loaded": true,
+          "size": [
+            64,
+            80
+          ],
+          "src": "assets/art/portraits/qing/official-mature-10.webp"
+        },
+        {
+          "loaded": false,
+          "size": [
+            64,
+            80
+          ],
+          "src": "assets/art/portraits/qing/official-mature-01.webp"
+        },
+        {
+          "loaded": false,
+          "size": [
+            64,
+            80
+          ],
+          "src": "assets/art/portraits/qing/official-mature-02.webp"
+        },
+        {
+          "loaded": false,
+          "size": [
+            64,
+            80
+          ],
+          "src": "assets/art/portraits/qing/official-old-04.webp"
+        },
+        {
+          "loaded": false,
+          "size": [
+            64,
+            80
+          ],
+          "src": "assets/art/portraits/qing/official-mature-04.webp"
+        },
+        {
+          "loaded": false,
+          "size": [
+            64,
+            80
+          ],
+          "src": "assets/art/portraits/qing/official-mature-05.webp"
+        }
+      ],
+      "scrollWidth": 1280,
+      "view": "kangxi-court-1280",
+      "width": 1280
+    },
+    {
+      "modalWidth": 374,
+      "scrollWidth": 390,
+      "view": "kangxi-court-390",
+      "width": 390
+    },
+    {
+      "header": {
+        "height": 112,
+        "width": 340,
+        "x": 25,
+        "y": 25
+      },
+      "image": {
+        "current": "http://127.0.0.1:4210/assets/art/scenes/audience-720.webp",
+        "fit": "cover",
+        "height": 112,
+        "loaded": true,
+        "position": "50% 50%",
+        "width": 340
+      },
+      "scrollWidth": 390,
+      "view": "action-390",
+      "width": 390
+    },
+    {
+      "scrollWidth": 360,
+      "view": "kangxi-360",
+      "width": 360
+    },
+    {
+      "hall": [
+        {
+          "loaded": true,
+          "src": "http://127.0.0.1:4210/assets/art/scenes/garden-1440.webp"
+        }
+      ],
+      "portraits": [
+        {
+          "loaded": true,
+          "src": "assets/art/portraits/unique/qing-yongzheng/consort-01.webp"
+        },
+        {
+          "loaded": true,
+          "src": "assets/art/portraits/unique/qing-yongzheng/consort-02.webp"
+        },
+        {
+          "loaded": true,
+          "src": "assets/art/portraits/unique/qing-yongzheng/consort-03.webp"
+        },
+        {
+          "loaded": true,
+          "src": "assets/art/portraits/unique/qing-yongzheng/consort-04.webp"
+        },
+        {
+          "loaded": true,
+          "src": "assets/art/portraits/qing/consort-regular-04.webp"
+        },
+        {
+          "loaded": true,
+          "src": "assets/art/portraits/qing/consort-regular-05.webp"
+        },
+        {
+          "loaded": true,
+          "src": "assets/art/portraits/qing/consort-regular-02.webp"
+        },
+        {
+          "loaded": true,
+          "src": "assets/art/portraits/qing/consort-regular-03.webp"
+        },
+        {
+          "loaded": true,
+          "src": "assets/art/portraits/qing/consort-regular-04.webp"
+        },
+        {
+          "loaded": true,
+          "src": "assets/art/portraits/qing/consort-regular-05.webp"
+        },
+        {
+          "loaded": true,
+          "src": "assets/art/portraits/qing/consort-regular-01.webp"
+        }
+      ],
+      "scrollWidth": 1280,
+      "view": "yongzheng-harem-1280",
+      "width": 1280
+    },
+    {
+      "images": [
+        {
+          "loaded": true,
+          "opacity": "1",
+          "src": "http://127.0.0.1:4210/assets/art/scenes/accession-1440.webp"
+        },
+        {
+          "loaded": true,
+          "opacity": "1",
+          "src": "http://127.0.0.1:4210/assets/art/portraits/qing/official-old-03.webp"
+        },
+        {
+          "loaded": true,
+          "opacity": "1",
+          "src": "http://127.0.0.1:4210/assets/art/portraits/unique/qing-yongzheng/official-10.webp"
+        },
+        {
+          "loaded": true,
+          "opacity": "1",
+          "src": "http://127.0.0.1:4210/assets/art/portraits/qing/official-old-04.webp"
+        }
+      ],
+      "scrollWidth": 1280,
+      "view": "yongzheng-opening-1280-final",
+      "width": 1280
+    },
+    {
+      "images": [
+        {
+          "loaded": false,
+          "opacity": "0",
+          "src": "assets/art/scenes/accession-1440.webp"
+        },
+        {
+          "failed": true,
+          "loaded": false,
+          "opacity": "0",
+          "src": "assets/art/portraits/qing/official-old-03.webp"
+        },
+        {
+          "failed": true,
+          "loaded": false,
+          "opacity": "0",
+          "src": "assets/art/portraits/unique/qing-yongzheng/official-10.webp"
+        },
+        {
+          "failed": true,
+          "loaded": false,
+          "opacity": "0",
+          "src": "assets/art/portraits/qing/official-old-04.webp"
+        }
+      ],
+      "scrollWidth": 1280,
+      "view": "offline-game-1280",
+      "width": 1280
+    },
+    {
+      "hall": [
+        {
+          "loaded": false,
+          "opacity": "0"
+        }
+      ],
+      "portraits": [
+        {
+          "failed": true,
+          "loaded": false,
+          "opacity": "0",
+          "size": [
+            44,
+            44
+          ],
+          "text": "乌"
+        },
+        {
+          "failed": true,
+          "loaded": false,
+          "opacity": "0",
+          "size": [
+            44,
+            44
+          ],
+          "text": "年"
+        },
+        {
+          "failed": true,
+          "loaded": false,
+          "opacity": "0",
+          "size": [
+            44,
+            44
+          ],
+          "text": "钮"
+        },
+        {
+          "failed": true,
+          "loaded": false,
+          "opacity": "0",
+          "size": [
+            44,
+            44
+          ],
+          "text": "李"
+        },
+        {
+          "failed": true,
+          "loaded": false,
+          "opacity": "0",
+          "size": [
+            44,
+            44
+          ],
+          "text": "梁"
+        },
+        {
+          "failed": true,
+          "loaded": false,
+          "opacity": "0",
+          "size": [
+            44,
+            44
+          ],
+          "text": "韩"
+        },
+        {
+          "failed": true,
+          "loaded": false,
+          "opacity": "0",
+          "size": [
+            44,
+            44
+          ],
+          "text": "裴"
+        },
+        {
+          "failed": true,
+          "loaded": false,
+          "opacity": "0",
+          "size": [
+            44,
+            44
+          ],
+          "text": "卢"
+        },
+        {
+          "failed": true,
+          "loaded": false,
+          "opacity": "0",
+          "size": [
+            44,
+            44
+          ],
+          "text": "唐"
+        },
+        {
+          "failed": true,
+          "loaded": false,
+          "opacity": "0",
+          "size": [
+            44,
+            44
+          ],
+          "text": "钱"
+        },
+        {
+          "failed": true,
+          "loaded": false,
+          "opacity": "0",
+          "size": [
+            44,
+            44
+          ],
+          "text": "傅"
+        }
+      ],
+      "scrollWidth": 390,
+      "view": "offline-harem-390",
+      "width": 390
+    },
+    {
+      "images": [
+        {
+          "loaded": true,
+          "opacity": "1",
+          "src": "http://127.0.0.1:4210/assets/art/scenes/accession-720.webp"
+        },
+        {
+          "loaded": false,
+          "opacity": "0",
+          "src": ""
+        },
+        {
+          "loaded": false,
+          "opacity": "0",
+          "src": ""
+        },
+        {
+          "loaded": false,
+          "opacity": "0",
+          "src": ""
+        }
+      ],
+      "scrollWidth": 390,
+      "view": "restored-game-390",
+      "width": 390
+    },
+    {
+      "artOff": true,
+      "images": [
+        {
+          "display": "block",
+          "opacity": "0",
+          "src": null,
+          "srcset": null
+        },
+        {
+          "display": "none",
+          "opacity": "0",
+          "src": null,
+          "srcset": null
+        },
+        {
+          "display": "none",
+          "opacity": "0",
+          "src": null,
+          "srcset": null
+        },
+        {
+          "display": "none",
+          "opacity": "0",
+          "src": null,
+          "srcset": null
+        }
+      ],
+      "scrollWidth": 390,
+      "view": "illustrations-off-after-reload",
+      "width": 390
+    },
+    {
+      "artOff": true,
+      "portraits": [
+        {
+          "size": [
+            44,
+            44
+          ],
+          "src": null,
+          "text": "乌"
+        },
+        {
+          "size": [
+            44,
+            44
+          ],
+          "src": null,
+          "text": "年"
+        },
+        {
+          "size": [
+            44,
+            44
+          ],
+          "src": null,
+          "text": "钮"
+        },
+        {
+          "size": [
+            44,
+            44
+          ],
+          "src": null,
+          "text": "李"
+        },
+        {
+          "size": [
+            44,
+            44
+          ],
+          "src": null,
+          "text": "梁"
+        },
+        {
+          "size": [
+            44,
+            44
+          ],
+          "src": null,
+          "text": "韩"
+        },
+        {
+          "size": [
+            44,
+            44
+          ],
+          "src": null,
+          "text": "裴"
+        },
+        {
+          "size": [
+            44,
+            44
+          ],
+          "src": null,
+          "text": "卢"
+        },
+        {
+          "size": [
+            44,
+            44
+          ],
+          "src": null,
+          "text": "唐"
+        },
+        {
+          "size": [
+            44,
+            44
+          ],
+          "src": null,
+          "text": "钱"
+        },
+        {
+          "size": [
+            44,
+            44
+          ],
+          "src": null,
+          "text": "傅"
+        }
+      ],
+      "scrollWidth": 390,
+      "view": "illustrations-off-harem-390",
+      "width": 390
+    },
+    {
+      "artOff": false,
+      "loaded": [
+        true,
+        false,
+        false,
+        false
+      ],
+      "view": "illustrations-restored-after-reload"
+    },
+    {
+      "portraits": [
+        {
+          "loaded": true,
+          "src": "assets/art/portraits/unique/qing-yongzheng/dowager-01.webp"
+        },
+        {
+          "loaded": true,
+          "src": "assets/art/portraits/unique/qing-yongzheng/child-01.webp"
+        },
+        {
+          "loaded": true,
+          "src": "assets/art/portraits/unique/qing-yongzheng/child-02.webp"
+        },
+        {
+          "loaded": true,
+          "src": "assets/art/portraits/unique/qing-yongzheng/child-03.webp"
+        }
+      ],
+      "scrollWidth": 390,
+      "view": "yongzheng-family-390",
+      "width": 390
+    },
+    {
+      "scrollWidth": 360,
+      "view": "yongzheng-360",
+      "width": 360
+    },
+    {
+      "view": "offline-current-context-console",
+      "logs": []
+    },
+    {
+      "colors": {
+        "--desk": "#1c1714",
+        "--desk-shade": "#120e0c",
+        "--gold": "#c8a35a",
+        "--ink": "#2a2420",
+        "--ink-muted": "#6e6155",
+        "--paper": "#efe6d3",
+        "--text": "#ede3d1"
+      },
+      "heading": {
+        "bottom": 601.3828125,
+        "color": "rgb(42, 36, 32)",
+        "top": 546.7890625
+      },
+      "image": {
+        "bottom": 536.7890625,
+        "top": 416.7890625
+      },
+      "images": [
+        {
+          "loaded": true,
+          "src": "http://127.0.0.1:4210/assets/art/scenes/accession-1440.webp"
+        },
+        {
+          "loaded": true,
+          "src": "http://127.0.0.1:4210/assets/art/portraits/qing/official-old-03.webp"
+        },
+        {
+          "loaded": true,
+          "src": "http://127.0.0.1:4210/assets/art/portraits/unique/qing-yongzheng/official-10.webp"
+        },
+        {
+          "loaded": true,
+          "src": "http://127.0.0.1:4210/assets/art/portraits/qing/official-old-04.webp"
+        }
+      ],
+      "view": "contrast-colors-and-chapter-layout"
+    }
+  ],
+  "logs": []
+}
