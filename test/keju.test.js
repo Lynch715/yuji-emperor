@@ -182,7 +182,7 @@ test('迟榜真实预演失败重试与提交只扣一次，不修改原档和�
 
 function regencyFixture(s=fresh('free'),until=108) {
  const child={id:'keju-young-emperor',name:'萧景宁',sex:'男',born:until-16*36,health:90,aptitude:70,education:0,mother:'c0',fatherId:s.runId,faction:'f0'};
- s.harem.children=[child];s.reign.emperorId=child.id;s.emperor.name=child.name;s.emperor.age=15;s.regency={regentId:'o0',until};s.reign.married=false;
+ s.harem.children=[child];s.reign.emperorId=child.id;s.emperor.name=child.name;s.emperor.age=15;s.regency={regentId:'o0',until,growth:{age:15,education:0}};s.reign.married=false;
  for(const c of s.harem.consorts)c.retired=true;
  return s;
 }

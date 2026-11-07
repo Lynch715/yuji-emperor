@@ -3084,7 +3084,7 @@ actionsHTML, chapterHTML, chapterTitle, chapterNotes, ledgerLabel,
 const { memorialDialog, scheduledMemorialDialog } = __load("src/ui/memorials.js");
 const { memorialAssignments } = __load("src/ui/memorial-state.js");
 const { openMemorialArchive } = __load("src/ui/memorial-archive.js");
-const { actionAvailability, repeatSchedule, delegateSchedule, delegateStop } = __load("src/ui/view-model.js");
+const { memorialEntryKind, actionAvailability, repeatSchedule, delegateSchedule, delegateStop } = __load("src/ui/view-model.js");
 const { actionDialog } = __load("src/ui/actions.js");
 const { palacePanel } = __load("src/ui/panels.js");
 const { createSaveStore, createIDB } = __load("src/store/save.js");
@@ -4051,7 +4051,7 @@ scheduledMemorialDialog(state,b.dataset.memorial);return;
 }
 const sl=['朝','午'].find(k=>!state.schedule[k]);
 if(!sl)throw new Error('朝、午已有安排，请先撤下行动');
-memorialDialog(state,sl==='朝'?'上朝':'批折',sl,(which,a)=>arrange(which,a),b.dataset.memorial);
+memorialDialog(state,memorialEntryKind(state,sl),sl,(which,a)=>arrange(which,a),b.dataset.memorial);
 } else if (b.dataset.editReviewSlot) {
 guard();
 const sl=b.dataset.editReviewSlot,a=state.schedule[sl];
@@ -4567,9 +4567,9 @@ const { validateScenarioAmbitions } = __load("src/core/scenario-goals.js");
 const { validateCampaignState } = __load("src/core/campaign-rules.js");
 const { seedNumber, random, DRAFT } = __load("src/core/rng.js");
 const { uniqueName } = __load("src/core/names.js");
-const { chooseRegent } = __load("src/core/regency-info.js");
+const { chooseRegent, legacyDowagerFaction } = __load("src/core/regency-info.js");
 const {factionPowers} = __load("src/core/politics.js");
-const VERSION = 23;
+const VERSION = 24;
 const TALENTS = ["政略", "权谋", "武略", "文采", "魅力"];
 const SLOTS = ["朝", "午", "夜"];
 const POST_NAMES = [
@@ -4849,6 +4849,7 @@ childNaming: null,
 weddingNames: null,
 imperialSurname: emperor.name[0],
 regency: null,
+dowagerFaction: null,
 edictCooldowns: {},
 era: {
 name: String(options.era || "永宁").slice(0, 8),
@@ -5128,6 +5129,12 @@ s.reign.eraStartTurn ??= s.era.startTurn;
 s.reign.married ??= s.emperor.age >= 16 && s.harem.consorts.some(c=>!c.retired);
 const child=s.harem.children.find(c=>c.id===s.reign.emperorId);
 s.regency ??= s.emperor.age < 16 ? {regentId:chooseRegent(s).id,until:Number.isFinite(child?.born)?child.born+16*36:s.turn+Math.ceil((16-s.emperor.age)*36)} : null;
+// v24 starts tracking future growth from the loaded values. Never reconstruct
+// old talents or mutate a frozen forecast; its resulting state upgrades on commit.
+if(input.v<24){
+s.dowagerFaction ??= legacyDowagerFaction(s);
+if(s.regency)s.regency.growth={age:s.emperor.age,education:child?.education || 0};
+}
 if(s.emperor.age<16)s.reign.married=false;
 if (s.regency && !s.reign.married) for (const c of s.harem.consorts) c.retired=true;
 for (const p of s.nation.provinces) {p.taxRelief ??= null;p.taxSurge ??= null;}
@@ -5206,6 +5213,13 @@ range(x.favor, 0, 100);
 if(s.v>=5){
 if(typeof s.imperialSurname!=='string'||!s.imperialSurname.trim())throw new Error('皇姓资料无效');
 if(!Number.isSafeInteger(s.era.startTurn)||s.era.startTurn<0)throw new Error('纪年起点无效');
+if(s.v>=24){
+if(s.dowagerFaction!==null&&!s.court.factions.some(f=>f.id===s.dowagerFaction))throw new Error('太后派系无效');
+if(s.regency){
+const g=s.regency.growth;
+if(!g||!Number.isInteger(g.age)||g.age<0||g.age>16||!Number.isFinite(g.education)||g.education<0||g.education>100)throw new Error('摄政成长基准无效');
+}
+}
 if(s.regency&&(!s.regency.regentId||!Number.isSafeInteger(s.regency.until)||s.regency.until<0))throw new Error('摄政资料无效');
 for(const f of s.foreign)if(!s.nation.army.frontiers.some(b=>b.dir===f.frontier))throw new Error('外邦边境资料无效');
 for(const p of s.nation.provinces)for(const k of ['taxRelief','taxSurge'])if(p[k]!==null&&(!p[k]||!Number.isFinite(p[k].factor)||p[k].factor<=0||!Number.isSafeInteger(p[k].untilQuarter)||p[k].untilQuarter<0))throw new Error('州税政策资料无效');
@@ -5980,9 +5994,19 @@ return {SURNAMES,GIVEN_NAMES,IMPERIAL_CHARS,personNames,uniqueName};
 },
 "src/core/regency-info.js":function(__load){
 // No state mutation or randomness: migration can use the same selection rule.
+function legacyDowagerFaction(s) {
+// Only the original historical dowager: later reigns must use their own mother.
+if(s.scenario==='song-renzong'&&s.reign?.number===1&&s.dowager==='刘太后')
+return s.court.factions.find(f=>f.name==='刘氏外戚')?.id || 'f2';
+return null;
+}
+function dowagerPerson(s) {
+const mother=s.harem.consorts.find(c=>c.id===s.harem.children.find(c=>c.id===s.reign?.emperorId)?.mother);
+return {id:'dowager',name:s.dowager || mother?.name || '慈宁太后',power:mother?.scheming ?? 65,
+faction:mother?.faction || s.dowagerFaction || legacyDowagerFaction(s) || 'f0'};
+}
 function chooseRegent(s) {
-const mother = s.harem.consorts.find(c => c.id === s.harem.children.find(c => c.id === s.reign?.emperorId)?.mother);
-const candidates = [{id:'dowager',name:s.dowager || mother?.name || '慈宁太后',power:mother?.scheming ?? 65,faction:mother?.faction || 'f0'}];
+const candidates = [dowagerPerson(s)];
 for (const title of ['内阁首辅','宗人令']) {
 const id=s.court.posts.find(p=>p.title===title)?.holder;
 const o=s.court.officials.find(o=>o.id===id&&o.alive&&o.health>0&&!o.jailed&&!o.retired);
@@ -5991,11 +6015,11 @@ if(o)candidates.push({id:o.id,name:o.name,power:o.abilities.权谋 ?? 50,faction
 return candidates.sort((a,b)=>b.power-a.power)[0];
 }
 function regentPerson(s) {
-if(s.regency?.regentId==='dowager')return {id:'dowager',name:s.dowager || '慈宁太后',faction:'f0'};
+if(s.regency?.regentId==='dowager')return dowagerPerson(s);
 return s.court.officials.find(o=>o.id===s.regency?.regentId&&o.alive&&!o.jailed&&!o.retired) || chooseRegent(s);
 }
 
-return {chooseRegent,regentPerson};
+return {legacyDowagerFaction,chooseRegent,regentPerson};
 },
 "src/core/politics.js":function(__load){
 // Derive office influence without changing the input state. Event influence is
@@ -8932,7 +8956,7 @@ emperor: ["赵祯", 12, "60 50 40 70 75", "仁厚"], aptitude: 75, posts: "song"
 provinces: "开封府 京西路 两浙路 荆湖路 京东路 河东路 陕西路 川峡路 福建路 广南路 江南路 河北路",
 factions: "台谏清议:纳谏清议 将门勋旧:军功封赏 刘氏外戚:家族恩荫 内侍近臣:亲近信任 三司计臣:钱粮自主 宗室:宗藩安稳",
 nation: { treasury: 900, morale: 66, governance: 60, prestige: 50 }, threat: [35, 40, 20, 25],
-dowager: "刘太后", regent: "dowager", wedding: ["郭氏", "曹氏", "张氏"],
+dowager: "刘太后", dowagerFaction: "f2", regent: "dowager", wedding: ["郭氏", "曹氏", "张氏"],
 blurb: "真宗新丧，十二岁的天子即位，刘太后垂帘听政。权相丁谓与内侍雷允恭擅移先帝陵穴，王曾正等一个开口的机会。",
 officials: [
 "丁谓|0|2|56|机敏多智，善揣上意|与内侍雷允恭擅移先帝陵穴，事将败露。|80 30 85 20 30 90|90",
@@ -9133,6 +9157,7 @@ tutor: null, education: Math.min(60, Number(cage) * 4), faction: s.harem.consort
 s.harem.heir = sc.heir !== undefined ? s.harem.children[sc.heir]?.id || null : null;
 s.harem.royalWomen = [];
 s.dowager = sc.dowager || null;
+s.dowagerFaction = sc.dowagerFaction || null;
 s.weddingNames = sc.wedding || null;
 if (child) {
 // 幼帝以皇嗣身份记年龄，亲政时由 advanceRegency 撤摄政、行大婚。
@@ -9142,7 +9167,7 @@ aptitude: sc.aptitude || 60, health: 85, tutor: null, education: age * 3, factio
 s.reign.emperorId = id;
 s.reign.married = false;
 const regent = sc.regent === "dowager" ? "dowager" : s.court.officials.find((o) => o.name === sc.regent)?.id;
-s.regency = { regentId: regent || "dowager", until: (16 - age) * 36 };
+s.regency = { regentId: regent || "dowager", until: (16 - age) * 36, growth: {age,education:age*3} };
 } else s.reign.married = s.harem.consorts.length > 0;
 // 外邦
 s.foreign = sc.foreign.map(split).map(([n, ruler, status, attitude, dir, demand], i) => ({
@@ -12676,7 +12701,7 @@ const { examGraceReceipt } = __load("src/core/keju-schema.js");
 const { clone, reignId, TALENTS } = __load("src/core/state.js");
 const { roll } = __load("src/core/rng.js");
 const { succession } = __load("src/core/harem.js");
-const { clamp } = __load("src/core/effects.js");
+const { clamp, growTalent } = __load("src/core/effects.js");
 const { uniqueName, IMPERIAL_CHARS } = __load("src/core/names.js");
 const { chooseRegent } = __load("src/core/regency-info.js");
 const { selectAmbitions } = __load("src/core/ambitions.js");
@@ -12705,8 +12730,24 @@ if(!s.regency)return s;
 const child=s.harem.children.find(c=>c.id===s.reign.emperorId);
 const age=child?Math.max(0,Math.floor((s.turn-child.born)/36)):s.emperor.age;
 s.emperor.age=age;
-const aptitude=child?.aptitude ?? 58,education=(child?.education || 0)/10;
-s.emperor.talents=Object.fromEntries(TALENTS.map(t=>[t,clamp(aptitude*Math.min(1,age/16)+education)]));
+const aptitude=child?.aptitude ?? 58,education=child?.education || 0;
+const previous=s.regency.growth;
+if(previous){
+const delta=Math.max(0,aptitude*(Math.min(1,age/16)-Math.min(1,previous.age/16)))+Math.max(0,education-previous.education)/10;
+// Historical openings already have authored talents. Their later maturation
+// shares the annual study budget; newborn successors retain natural maturation.
+const historical=s.reign.number===1&&!!s.scenario;
+for(const t of TALENTS)if(delta>0){
+if(historical)s=growTalent(s,t,delta);
+else {
+const before=s.emperor.talents[t];
+s.emperor.talents[t]=clamp(before+delta);
+s.ledger.push({turn:s.turn,path:'emperor.talents.'+t,before,after:s.emperor.talents[t],delta:s.emperor.talents[t]-before,source:'幼帝自然成熟：年龄与教养增量'});
+}
+}
+}
+// Consume even capped growth; it cannot be banked and claimed in another year.
+s.regency.growth={age:Math.min(16,age),education};
 if(age>=16){
 s.regency=null;
 const exam=s.keju?.exams.find(e=>e.status!=='published');
@@ -12740,8 +12781,9 @@ const lifespan=Math.max(age+1,draw(55,80)),tag=['勤政','仁厚','节俭','多�
 s.emperor={name,age,lifespan,health:Math.max(55,child?.health||85),energy:9,mood:65,depressedMonths:0,prestige:50,virtue:55,
 talents,tags:[tag],status:[],growth:Object.fromEntries(TALENTS.map(t=>[t,0]))};
 const mother=s.harem.consorts.find(c=>c.id===child?.mother&&c.health>0);if(mother)s.dowager=mother.name;
+s.dowagerFaction=mother?.faction || null;
 for(const c of s.harem.consorts)c.retired=true;
-if(age<16){s.regency={regentId:chooseRegent(s).id,until:child.born+16*36};}
+if(age<16){s.regency={regentId:chooseRegent(s).id,until:child.born+16*36,growth:{age,education:child?.education || 0}};}
 else {s.regency=null;s=imperialWedding(s);}
 s.harem.heir=null;s.harem.candidates=[];s.harem.selectionYear=0;
 s.ending=null;s.pending=null;s.turnBudget=null;s.schedule={朝:null,午:null,夜:null};s.interimEntries=[];
@@ -14441,6 +14483,9 @@ if (kind === "亲征" && !s.campaigns.some(w=>!w.done)) return "无战事";
 if (s.campaigns.some(w=>w.personal&&!w.done) && !["亲征","歇息"].includes(kind)&&kind!=='批折') return "御驾在外";
 return "";
 }
+function memorialEntryKind(s, slot) {
+return slot==='朝'&&!actionAvailability(s,'上朝')?'上朝':'批折';
+}
 function actionMeta(kind, s = null) {
 const rule = ACTIONS[kind];
 if (!rule) return "";
@@ -14552,7 +14597,7 @@ if (s.memorials.some((m) => m.urgent)) return "急报呈至";
 return "";
 }
 
-return {ACTION_GROUPS,HALLS,GLYPHS,selectionDescription,actionAvailability,actionMeta,actionCaption,energyView,metricGroups,scheduleEstimate,REPEATABLE,repeatSchedule,delegateSchedule,DELEGATE_STOPS,delegateStop};
+return {ACTION_GROUPS,HALLS,GLYPHS,selectionDescription,actionAvailability,memorialEntryKind,actionMeta,actionCaption,energyView,metricGroups,scheduleEstimate,REPEATABLE,repeatSchedule,delegateSchedule,DELEGATE_STOPS,delegateStop};
 },
 "src/ui/memorials.js":function(__load){
 const {developmentChoiceBlock} = __load("src/core/development-choices.js");
