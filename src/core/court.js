@@ -168,6 +168,22 @@ export function appoint(state, action) {
     ...(concession||{}),
   };
 }
+function defaultTalkThought(s, person, line, chat, success, denied) {
+  if (s.emperor.talents.魅力 < 60) return "";
+  const close = (person.favor ?? person.attitude ?? 50) >= 60;
+  if (chat) {
+    const topic = line.split(/[，,。！？；;?\n]/).filter(t => t.trim()).at(-1) || '';
+    if (/文章|诗|词|文采|读书|学问/.test(topic) && !/(?:不|别|莫|勿)(?:再|要)?(?:谈|聊|说|论)|换个话题/.test(topic))
+      return "陛下问到学问，正可把自己的见解细细说来。";
+    return close ? "与陛下谈得来，不妨把眼前的话说得明白些。" : "先听清陛下的问题，再说说自己的看法。";
+  }
+  if (s.settings.freedom === 'free') return denied || !success
+    ? "把眼下的难处说清，再看看还有什么可行的办法。"
+    : "所议之事已有定论，照方才议定的回应便是。";
+  return close ? "圣眷尚厚，回话须顾全情面。" +
+    (s.court.factions.find((f) => f.id === person.faction)?.demand || person.demand || "此事须从长计议。")
+    : "此事牵涉自身进退，须谨慎回话。";
+}
 export function talkAttempt(state, personId, line, structured = false) {
   let s = clone(state);
   const person =
@@ -238,13 +254,7 @@ export function talkAttempt(state, personId, line, structured = false) {
       : verdict.success
         ? "臣谨遵圣意，当在职权内尽力。"
         : "臣有难处，此事尚难奉行。",
-    innerThought:
-      s.emperor.talents.魅力 >= 60
-        ? (person.favor ?? person.attitude ?? 50) >= 60
-          ? "圣眷尚厚，回话须顾全情面。" +
-            (s.court.factions.find((f) => f.id === person.faction)?.demand || person.demand || "此事须从长计议。")
-          : "此事牵涉自身进退，须谨慎回话。"
-        : "",
+    innerThought: defaultTalkThought(s, person, line, !mechanical && !structured, verdict.success, denied),
   };
   s.interimEntries = [
     ...(state.interimEntries || []),

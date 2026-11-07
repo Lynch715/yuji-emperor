@@ -462,18 +462,19 @@ export function validateTalk(data, result, state) {
     // cannot turn a refusal into an apparent agreement.
     const numeral='[0-9０-９零〇一二两三四五六七八九十百千万亿壹贰叁肆伍陆柒捌玖拾佰仟萬億]';
     const measurement = new RegExp(numeral+'(?:'+numeral+'|[点.,，])*\\s*(?:万两|两|兵|人|石|名|位|岁|万人|万石|匹|艘|亩|户|成)');
-    const uncommitted = reply.split(/(?<=[。！？\n])/).filter((sentence) =>
+    const uncommitted = (text) => text.split(/(?<=[。！？\n])/).filter((sentence) =>
       !measurement.test(sentence) &&
       ![...sentence.matchAll(/遵旨|领旨|奉旨|遵命|领命|奉命|谨遵|应允|允诺|承诺|答应|照办|照准|允准|即刻|立即|马上|拨付|拨款|拨银|给付|交付|调兵|发兵|已拨|已调|已办|办妥|奉行|依旨|尽力|定当|必当|定会|必会|这就|便去/g)].some(m => !/不|未|难|办不到|无法|岂能/.test(sentence.slice(Math.max(0,m.index-5),m.index+m[0].length+5))),
     ).join("");
-    const checked = state ? validateTurn({ chapter: { 朝: "", 午: uncommitted, 夜: "" } }, {
+    const checkText = (text) => state ? validateTurn({ chapter: { 朝: "", 午: uncommitted(text), 夜: "" } }, {
       state, die: result.die, fate: "面谈", newMemorials: [],
       slotResults: { 朝: [], 午: [], 夜: [] }, entries: [], notes: [], facts: [],
-    }).chapter.午 : uncommitted.split(/(?<=[。！？\n])/).filter((sentence) =>
+    }).chapter.午 : uncommitted(text).split(/(?<=[。！？\n])/).filter((sentence) =>
       !ASSERTIONS.some(([, pattern]) => new RegExp(pattern.source).test(sentence))).join("");
     return {
-      reply: checked.trim() || result.reply,
-      innerThought: result.innerThought || "",
+      reply: checkText(reply).trim() || result.reply,
+      innerThought: (result.mode === 'chat' && result.innerThought
+        ? checkText(cleanText(data.innerThought, 500)).trim() : '') || result.innerThought || "",
       effects: null,
     };
   }

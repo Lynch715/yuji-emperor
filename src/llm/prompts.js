@@ -95,10 +95,14 @@ export function worldRules(state) {
     pov = POVS[state.settings.pov] || POVS.third;
   const sc = scenarioById(state.scenario);
   const modern = style === STYLES.modern;
+  const interaction = "往事只在与眼前话题直接相关时提起，不把一次任务或旧日顾虑当成所有交谈的主线；已经说开或了结的事不反复翻回。" +
+    (state.settings.freedom === "free"
+      ? "【人物互动·想做就成】人物更愿意接话、表达和配合，优先顺着玩家当前话题展开，可以主动谈见解、兴趣与日常，回应善意和亲近。保留各自性格、既有亲疏与真实经历，但不要仅因君臣身份、好感尚低或泛泛的前程顾虑反复试探、推拒、说教或索要保证。已有嫌隙可以影响语气，不得把已判成功的说服、和解或合作写回犹疑拒绝。确有未解决的矛盾或办不到的事时，具体说明缘由并给出可行回应。所有实际结果、职权、钱粮和秘密边界仍以引擎提供的内容为准。"
+      : "自由度只影响口谕裁决，不改变人物立场与叙事一致性要求。");
   const frame = sc
     ? `你是「${state.dynasty}」朝的叙事引擎。本局以${sc.year}${sc.title.split(" · ")[0]}即位之初的史实开局，官职、地名用该朝称谓（见王朝设定）。史实只用于人物性格、关系与背景；本局自开局起已偏离史实，生死、成败、任免一律以引擎结算为准，不得按史书预言或补写结局，也不得写开局之后的史事。`
     : `你是架空王朝「${state.dynasty}」的叙事引擎，制度近似明清。`;
-  return `${frame}只输出一个 JSON 对象。\n铁律：引擎记账，模型叙事。所有钱粮、人物、派系、健康、受孕、生育、死亡、升迁、战争胜负、执行度由结算表决定，你不得追加或改写硬结果，不得另给数字。名册姓名一字不改，大臣称陛下、自称臣，妃嫔自称臣妾。人物各有利益。文风「${style.label}」：${style.rules}${pov.rules}\n【文风范文（只学笔法，不照搬人物与事件）】${style.sample}\n白描，禁用嘴角勾起、眼中闪过一丝${modern ? "" : "、现代词"}；对话用「」。亲密场面点到为止，禁止描写性行为或身体细节。共同经历摘要是旁白所知，NPC只知道自己参与、目睹或后来获知的部分；私下往事不得让未在场者无故知晓。人物各有立场，不替玩家决定；自由度只影响口谕裁决，不改变叙事一致性要求。`;
+  return `${frame}只输出一个 JSON 对象。\n铁律：引擎记账，模型叙事。所有钱粮、人物、派系、健康、受孕、生育、死亡、升迁、战争胜负、执行度由结算表决定，你不得追加或改写硬结果，不得另给数字。名册姓名一字不改，大臣称陛下、自称臣，妃嫔自称臣妾。人物各有利益。文风「${style.label}」：${style.rules}${pov.rules}\n【文风范文（只学笔法，不照搬人物与事件）】${style.sample}\n白描，禁用嘴角勾起、眼中闪过一丝${modern ? "" : "、现代词"}；对话用「」。亲密场面点到为止，禁止描写性行为或身体细节。共同经历摘要是旁白所知，NPC只知道自己参与、目睹或后来获知的部分；私下往事不得让未在场者无故知晓。人物各有立场，不替玩家决定。${interaction}`;
 }
 function examFaction(o,value){return o.keju&&!o.keju.revealed.includes('faction')?'派系待察':value;}
 export function roster(state) {
@@ -147,7 +151,7 @@ const TASK_RULES = `【叙事守则】死亡、怀孕、生产、小产、任免
 【正文任务】把本旬写成「朝」「午」「夜」三段，每段{{LENGTH}}字，空槽可略写。必须表现结算表的执行度与成败。正文只写故事，不抄结算条目；起居注会另行展示结算。廷议按名单立场写。风闻最多2条，只写无关痛痒的市井传言。
 章末 hook 写一句 30 字内的下旬伏笔，只能取自未结奏报、在途政务或新近事实，用“恐”“将”“未知”等未定语气，不得断言结果。
 正文输出：{"chapter":{"朝":"","午":"","夜":""},"summary":"30字内","hook":"","reactions":[{"name":"官员全名","favorDelta":0,"mood":"","note":""}],"sceneMemories":[{"slot":"夜","personId":"","evidence":"正文中完整原句"}],"rumors":[],"ambitionEvidence":[{"id":"","objectiveId":"","evidence":""}],"factUpdates":[{"subject":"","key":"","value":"","reason":""}]}`;
-const TALK_RULES = `【面谈任务】扮演被召见者御前面谈。只写游戏中的人物言行，不解释生成或校验；成功才让步，失败不得让步，不得超过职权。未提供的秘密不得编造，未允时不得承诺拨款、调兵或落实请求。好感、让步与秘密是否揭露由引擎判定，照判定写即可。
+const TALK_RULES = `【面谈任务】扮演被召见者御前面谈。只写游戏中的人物言行，不解释生成或校验。普通交谈直接回答当前问题，表达本人的见解或感受，无须先通过说服，也无须凭空寻找拒绝的理由；只有实际办事或说服、威吓、试探等检定才按成败决定让步，不得超过职权。未提供的秘密不得编造，未允时不得承诺拨款、调兵或落实请求。好感、让步与秘密是否揭露由引擎判定，照判定写即可。innerThought写对眼前这句话的真实想法，与当前话题和性格相符，不反复套用担忧前程、谨慎回话等泛泛心声，不泄露未提供的秘密。
 面谈输出 {"reply":"","innerThought":"","mood":"","summary":""}`;
 // Only people present or referenced in this request receive a full card.
 export function referencedPeople(state,context){
@@ -302,7 +306,7 @@ export function talkMessages(state, result, log = []) {
     content: (prior.length ? "" : header) + talkTurnLine(result) +
       "\n【此人记得的往事与关系】"+stable(memoryContext(state,[result.person]))+"\n【此刻】" + stable({ favor: favor ?? attitude, mood, 拨款上限: result.cap + " 万两" }) +
       (known ? "\n【已获准参考的秘密】" + secret : "") +
-      "\n按【面谈任务】作答，适时提起与本次话题相关的个人往事，保持当时留下的亲疏与顾虑，不机械罗列，不泄露别人的心事。输出面谈 JSON。",
+      "\n按【面谈任务】作答，以皇帝当前这一句为主；往事仅作相关背景，保留已有亲疏，不把旧任务或已消除的顾虑反复拉回，不机械罗列，不泄露别人的心事。输出面谈 JSON。",
   });
   return messages;
 }
