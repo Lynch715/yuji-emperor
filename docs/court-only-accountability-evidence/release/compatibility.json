@@ -1,0 +1,39 @@
+{
+  "mainBaseline": "ea3f0d6",
+  "mergedFeature": "8e9a9ca",
+  "saveVersion": 25,
+  "states": [
+    {
+      "shape": "v25",
+      "migratedTo": 25,
+      "progressPreserved": true,
+      "pendingUnchanged": true,
+      "originalDie": 18,
+      "rngPreserved": true,
+      "idempotent": true
+    },
+    {
+      "shape": "摄政主线v24",
+      "migratedTo": 25,
+      "progressPreserved": true,
+      "pendingUnchanged": true,
+      "originalDie": 18,
+      "rngPreserved": true,
+      "idempotent": true
+    },
+    {
+      "shape": "美术预览v24",
+      "migratedTo": 25,
+      "progressPreserved": true,
+      "pendingUnchanged": true,
+      "originalDie": 18,
+      "rngPreserved": true,
+      "idempotent": true
+    }
+  ],
+  "oldScheduledAccountability": {
+    "unchanged": true,
+    "buttonHidden": true,
+    "originalSettlementRetained": true
+  }
+}

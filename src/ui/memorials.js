@@ -413,7 +413,7 @@ export function memorialHTML(s, session) {
     memorialPortraitHTML(s,m) + esc(memorialAuthor(m,postTitle(s,post))) +
     (faction ? "（" + esc(faction.name) + "）" : "") +
     "</span>" +
-    (person?.alive
+    (session.kind === "上朝" && person?.alive
       ? '<button type="button" class="accountability" data-review-account="' +
         person.id +
         '" aria-pressed="' +

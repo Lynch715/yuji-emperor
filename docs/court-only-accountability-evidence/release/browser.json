@@ -1,0 +1,53 @@
+{
+  "origin": "http://127.0.0.1:49640",
+  "checks": [
+    {
+      "accountability": 0,
+      "images": [
+        {
+          "loaded": true,
+          "src": "assets/art/scenes/desk-day-1440.webp"
+        },
+        {
+          "loaded": true,
+          "src": "assets/art/portraits/ming/official-mature-02.webp"
+        }
+      ],
+      "kind": "批折",
+      "scrollWidth": 1280,
+      "width": 1280
+    },
+    {
+      "accountability": 0,
+      "kind": "批折",
+      "scrollWidth": 360,
+      "width": 360
+    },
+    {
+      "accountability": 1,
+      "images": [
+        {
+          "loaded": true,
+          "src": "assets/art/scenes/court-1440.webp"
+        },
+        {
+          "loaded": true,
+          "src": "assets/art/portraits/ming/official-mature-02.webp"
+        }
+      ],
+      "kind": "上朝",
+      "pressed": "true",
+      "scrollWidth": 1280,
+      "width": 1280
+    },
+    {
+      "accountability": 1,
+      "height": 44,
+      "kind": "上朝",
+      "pressed": "true",
+      "scrollWidth": 360,
+      "width": 360
+    }
+  ],
+  "console": []
+}

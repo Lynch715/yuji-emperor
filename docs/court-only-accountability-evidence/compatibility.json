@@ -1,0 +1,38 @@
+{
+  "baseline": "d5a9596",
+  "saveVersion": 24,
+  "views": [
+    {
+      "scenario": "自拟王朝",
+      "kind": "上朝",
+      "accountabilityVisible": true,
+      "readOnlyRender": true
+    },
+    {
+      "scenario": "自拟王朝",
+      "kind": "批折",
+      "accountabilityVisible": false,
+      "readOnlyRender": true
+    },
+    {
+      "scenario": "song-renzong",
+      "kind": "批折",
+      "accountabilityVisible": false,
+      "readOnlyRender": true
+    }
+  ],
+  "legacyScheduledBatch": {
+    "unchanged": true,
+    "questioningStancePreserved": true,
+    "questioningButtonHidden": true,
+    "forecastMatchesMain": true
+  },
+  "frozenPending": {
+    "unchanged": true,
+    "die": 13,
+    "rngPreserved": true,
+    "nationPreserved": true,
+    "courtPreserved": true,
+    "idempotent": true
+  }
+}

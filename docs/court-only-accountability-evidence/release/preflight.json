@@ -1,0 +1,20 @@
+{
+  "mainBaseline": "ea3f0d6",
+  "featureCommit": "8e9a9ca",
+  "saveVersion": 25,
+  "tests": {
+    "pass": 607,
+    "fail": 0
+  },
+  "simulation": {
+    "years": 200,
+    "turns": 7200,
+    "reigns": 5
+  },
+  "html": {
+    "bytes": 850945,
+    "sha256": "b48365f416a0c9066fc51a495a02e794357e51f49c18f566f69eafd8d90e5a8b"
+  },
+  "coreAndStoreUnchangedFromMain": true,
+  "artAndWorkflowUnchangedFromMain": true
+}
