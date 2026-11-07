@@ -1,6 +1,6 @@
 # 御极 · 美术实际提示词
 
-工具：内置 `imagegen`，未使用 CLI / 外部 API。画风方向已确认；先修订四张定调样张与明制服饰约束，再继续一期批量生成。历史提示词保留以便追溯。
+工具：内置 `imagegen`，未使用 CLI / 外部 API。一期画风已确认并完成；二期清制当前仅完成四张定调样张，等待玩家确认。历史提示词保留以便追溯。
 
 ## 美术二期 · 清制定调样张（第1步，待确认）
 
@@ -91,6 +91,30 @@ Change ONLY the VERTICAL HEIGHT of the red warm hat and round finial. The curren
 Use case: precise-object-edit. There are EIGHT references: images1–4 approved Phase1 STYLE references, images5–8 Qing tone samples (official,regularconsort,highconsort,youngemperor). Image8 is the ONLY EDIT TARGET; preserve its exact same face identity, facial hair, forehead, gaze, shoulders, costume, collar, necklace, skin, flat baimiao style and #E3D7BE paper background. Other seven images are style references ONLY, never copy their people or dress.
 Change ONLY the VERTICAL HEIGHT of the red JIFUGUAN upper cap and gold/red finial. The current very top of the finial is too high, near8% of canvas height. Make the UPPER CAP / FINIAL more COMPACT vertically, bringing its very top DOWN to12% of total image height (strict10–14%, target12%). Keep the LOWER edge of the hat next to forehead fixed. Keep both eye centers exactly where they are, at38% image height (strict36–40%), keep head anatomy and all face/body positions fixed. Do not move the person down or enlarge the face. This is a compact Qing hat, no Ming wings, no continuous wide Western hat brim. Retain the existing period costume, rank patch/dragon outline and court beads unchanged. No new elements or text, no composition lines, no Manchu or Han writing,seals,watermarks,frames,photo,3D,glow. Single4:5 portrait,1024x1280.
 ```
+
+### 实际采用：两块参照板与单张编辑目标
+
+参照板仅等比缩放、拼接，不改原图内容；无文字标注。顺序：一期4张板、清制4张板、编辑目标。
+
+#### official-mature-01 参照板版
+
+```text
+Use case: precise-object-edit. Image1 is a reference board containing ALL FOUR approved Phase1 style pictures (Ming official, Ming consort, night desk, court). Image2 is a reference board containing ALL FOUR Qing tone samples (official, regularconsort, highconsort, youngemperor). These EIGHT pictures are STYLE REFERENCES ONLY. Image3 is the ONLY EDIT TARGET: preserve its exact face identity, facial hair, forehead, gaze, shoulders, costume, collar, necklace, skin, baimiao flat-wash style and #E3D7BE background. Do not copy the faces or dress of the other people on the boards.
+Change ONLY the VERTICAL HEIGHT of the red warm hat and round finial. The current very top of the finial is too high, near8% of canvas height. Make the UPPER CAP / FINIAL more COMPACT vertically, bringing its very top DOWN to12% of total image height (strict10–14%, target12%). Keep the LOWER edge of the hat next to forehead fixed. Keep both eye centers exactly where they are, at38% image height (strict36–40%), keep head anatomy and all face/body positions fixed. Do not move the person down or enlarge the face. This is a compact Qing hat, no Ming wings, no continuous wide Western hat brim. Retain the existing period costume, rank patch/dragon outline and court beads unchanged. No new elements or text, no composition lines, no Manchu or Han writing,seals,watermarks,frames,photo,3D,glow. Single4:5 portrait,1024x1280.
+```
+
+#### emperor-young-01 参照板版
+
+```text
+Use case: precise-object-edit. Image1 is a reference board containing ALL FOUR approved Phase1 style pictures (Ming official, Ming consort, night desk, court). Image2 is a reference board containing ALL FOUR Qing tone samples (official, regularconsort, highconsort, youngemperor). These EIGHT pictures are STYLE REFERENCES ONLY. Image3 is the ONLY EDIT TARGET: preserve its exact face identity, facial hair, forehead, gaze, shoulders, costume, collar, necklace, skin, baimiao flat-wash style and #E3D7BE background. Do not copy the faces or dress of the other people on the boards.
+Change ONLY the VERTICAL HEIGHT of the red JIFUGUAN upper cap and gold/red finial. The current very top of the finial is too high, near8% of canvas height. Make the UPPER CAP / FINIAL more COMPACT vertically, bringing its very top DOWN to12% of total image height (strict10–14%, target12%). Keep the LOWER edge of the hat next to forehead fixed. Keep both eye centers exactly where they are, at38% image height (strict36–40%), keep head anatomy and all face/body positions fixed. Do not move the person down or enlarge the face. This is a compact Qing hat, no Ming wings, no continuous wide Western hat brim. Retain the existing period costume, rank patch/dragon outline and court beads unchanged. No new elements or text, no composition lines, no Manchu or Han writing,seals,watermarks,frames,photo,3D,glow. Single4:5 portrait,1024x1280.
+```
+
+### 本步最终导出与后续参照入口
+
+- 最终4张PNG保存在本机`art-source/phase2/{official-mature-01,consort-regular-01,consort-high-01,emperor-young-01}.png`；首稿-v1、男像修订-v2均保留。WebP导出均400×500/q75；原图裁切框和人工构图读数见`docs/art-phase2-review/asset-checks.json`。
+- 后续参照入口：`art-source/phase2/phase1-reference-board.png`包含一期四张，`art-source/phase2/qing-reference-board.png`包含本次四张最终WebP画面。确认后每次生成同时传入两板；需要编辑时再传目标。若玩家要求修订样张，先更新清制板再批量。
+- 44px圆章按生产object-position50%32%裁切；综合图、构图线、游戏截图和阶段检查在`docs/ART-PHASE2-QA.md`。当前停在第1步，后续75张未生成。
 
 ## 明制服饰要点（本轮修订，后续明 / 大晟人物全部沿用）
 

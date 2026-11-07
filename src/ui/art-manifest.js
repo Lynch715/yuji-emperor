@@ -89,7 +89,7 @@ export const ART_POOLS = {
     "assets/art/portraits/ming/princess-adult-02.webp"
   ],
   "qing/official-mature": [
-    null,
+    "assets/art/portraits/qing/official-mature-01.webp",
     null,
     null,
     null,
@@ -114,18 +114,18 @@ export const ART_POOLS = {
     null
   ],
   "qing/consort-high": [
-    null,
+    "assets/art/portraits/qing/consort-high-01.webp",
     null
   ],
   "qing/consort-regular": [
-    null,
+    "assets/art/portraits/qing/consort-regular-01.webp",
     null,
     null,
     null,
     null
   ],
   "qing/emperor-young": [
-    null
+    "assets/art/portraits/qing/emperor-young-01.webp"
   ],
   "qing/emperor-old": [
     null
