@@ -6,9 +6,9 @@
     "uniquePortraits": 29,
     "generatedPortraits": 62,
     "remainingPortraits": 0,
-    "phase3Bytes": 532674,
+    "phase3Bytes": 530882,
     "totalWebPFiles": 286,
-    "totalBytes": 4211064,
+    "totalBytes": 4209272,
     "unchangedPriorFiles": 224,
     "unchangedOtherToneSamples": 3,
     "maximumPortraitBytes": 16378,
@@ -1825,8 +1825,8 @@
     {
       "id": "tang/prince-teen-01",
       "file": "assets/art/portraits/tang/prince-teen-01.webp",
-      "job": "tang-final-anchors-tang-prince-teen-01",
-      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-final-anchors-tang-prince-teen-01.png",
+      "job": "tang-final-release-tang-prince-teen-01",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-final-release-tang-prince-teen-01.png",
       "cellBox": [
         0,
         0,
@@ -1837,13 +1837,13 @@
         1122,
         1402
       ],
-      "eyeY": 505.71,
-      "headTop": 153,
+      "eyeY": 504.98,
+      "headTop": 154,
       "faceBox": [
-        317.526626765728,
-        407.91910794377327,
-        322.4865492582321,
-        322.48653796315193
+        320.701283454895,
+        406.81952941417694,
+        314.10934245586395,
+        314.1093469262123
       ],
       "status": "exported",
       "crop": [
@@ -1852,15 +1852,15 @@
         1122,
         1402
       ],
-      "eyeRatio": 0.3607,
-      "headTopRatio": 0.1091,
-      "bytes": 7420,
+      "eyeRatio": 0.3602,
+      "headTopRatio": 0.1098,
+      "bytes": 6122,
       "quality": 75,
       "dimensions": [
         400,
         500
       ],
-      "sha256": "3ddbd2d3da8763de83135d6134cafdd794e33ae7e31cdb618d8206f1f49be4f4",
+      "sha256": "bd8038ecd265d9afe6dfe81c006dea394d90959a0d20243b06c9e72c03ebc382",
       "faceCard": {
         "id": "tang/prince-teen-01",
         "pool": "prince-teen",
@@ -1868,7 +1868,7 @@
         "age": 13,
         "dims": [
           "slim soft LONG OVAL adolescent face with immature rounded chin",
-          "CLEAN SHAVEN teen with paired small TOPKNOTS and middle soft hairline",
+          "CLEAN SHAVEN real 13-year-old BOY with compact BLACK SOFT-CLOTH CHILD FUTOU, no buns, ribbons or trailing hair ties",
           "fine straight brows and large clear thoughtful eyes",
           "small fine straight nose and full youthful closed lips",
           "thin short teen neck and small narrow shoulders",
@@ -1877,11 +1877,12 @@
           "earnest slightly anxious adolescent reserve"
         ],
         "facing": "LEFT",
-        "costume": "Tang modest round-collar muted blue robe. Real13-year-old BOY with paired small topknots, no beard, adolescent anatomy, not adult.",
+        "costume": "Tang modest round-collar muted blue robe. Real13-year-old BOY with paired small topknots, no beard, adolescent anatomy, not adult. Final approved revision: fitted small black Tang soft-cloth boy futou, no hair ribbons, bows or paired rounded buns; readable as boy at44px.",
         "file": "assets/art/portraits/tang/prince-teen-01.webp",
         "sourceType": "fictional-pool",
         "existedBeforeBatch": false,
-        "face": "13-year-old BOY, slim soft LONG OVAL adolescent face with immature rounded chin, CLEAN SHAVEN teen with paired small TOPKNOTS and middle soft hairline, fine straight brows and large clear thoughtful eyes, small fine straight nose and full youthful closed lips, thin short teen neck and small narrow shoulders, warm pale cream skin, tiny right brow beauty spot, earnest slightly anxious adolescent reserve; facing LEFT"
+        "face": "13-year-old BOY, slim soft LONG OVAL adolescent face with immature rounded chin, CLEAN SHAVEN real 13-year-old BOY with compact BLACK SOFT-CLOTH CHILD FUTOU, no buns, ribbons or trailing hair ties, fine straight brows and large clear thoughtful eyes, small fine straight nose and full youthful closed lips, thin short teen neck and small narrow shoulders, warm pale cream skin, tiny right brow beauty spot, earnest slightly anxious adolescent reserve; facing LEFT",
+        "revision": "2026-11-08 player-approved final release revision; exact identity retained"
       }
     },
     {
@@ -2609,42 +2610,42 @@
     {
       "id": "tang-taizong/official-08",
       "file": "assets/art/portraits/unique/tang-taizong/official-08.webp",
-      "job": "tang-frame-unique-v1-tang-taizong-official-08",
-      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-frame-unique-v1-tang-taizong-official-08.png",
+      "job": "tang-final-release-gaoshilian-identity-fix",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-final-release-gaoshilian-identity-fix.png",
       "cellBox": [
         0,
         0,
-        1122,
-        1402
+        1072,
+        1467
       ],
       "rawSize": [
-        1122,
-        1402
+        1072,
+        1467
       ],
-      "eyeY": 625.92,
-      "headTop": 282,
+      "eyeY": 574.32,
+      "headTop": 187,
       "faceBox": [
-        507.0033166408539,
-        519.6002739071846,
-        360.2539660334587,
-        360.25395703315735
+        463.90820932388306,
+        465.11555618047714,
+        383.69166803359985,
+        383.691677570343
       ],
       "status": "exported",
       "crop": [
-        44,
-        109,
-        1078,
-        1402
+        0,
+        46,
+        1072,
+        1386
       ],
-      "eyeRatio": 0.3998,
-      "headTopRatio": 0.1338,
-      "bytes": 7050,
+      "eyeRatio": 0.3943,
+      "headTopRatio": 0.1052,
+      "bytes": 7194,
       "quality": 75,
       "dimensions": [
         400,
         500
       ],
-      "sha256": "e36ccfe6c9ff63af694a81a5587da3f3a5d79c1247fc8d755ef2b55c4bd17cb4",
+      "sha256": "c3729306a45b3744dd9269a85f21892fda7c8472e219538ce27f164b509c1c51",
       "faceCard": {
         "id": "tang-taizong/official-08",
         "scenario": "tang-taizong",
@@ -2655,12 +2656,12 @@
         "variant": "base",
         "dims": [
           "SHORT WIDE INVERTED TRAPEZOID face with broad upper cheeks and blunt chin",
-          "heavy downward WALRUS MOUSTACHE and bare chin",
+          "heavy downward SALT-AND-PEPPER WALRUS MOUSTACHE, bare chin, conspicuous SILVER-WHITE TEMPLES and short gray sideburns",
           "fine low level brows and large calm open eyes",
           "short large rounded nose and broad thin gently curved mouth",
           "full medium short neck and broad relaxed shoulders",
           "warm ruddy wheat skin",
-          "deep rounded chin dimple",
+          "deep rounded chin dimple, fine forehead lines, crow-feet and mature under-eye/nasolabial creases at51",
           "benevolent steady diplomatic patience"
         ],
         "facing": "RIGHT",
@@ -2670,7 +2671,8 @@
         "costume": "Tang SOFT-TAILED FUTOU black cloth wrap with TWO cloth tails hanging or curving DOWN at back/nape, never rigid horizontal Ming wings or long straight Song wings. Natural full hairline, not Qing shaven forehead. ROUND-COLLAR robe, small pale undercollar, no chest rank patch, no necklace. Muted dark PURPLE round-collar official robe.",
         "historySource": "https://zh.wikisource.org/wiki/舊唐書/卷65",
         "sourceNote": "年龄、身份、性格秘密以scenarios.js为准；史书记载用于人物事迹与冠服大意，未明载的八维五官、痣与体态是区分人物的创作，不宣称精确真实相貌。外邦年龄为绘制档，不新增游戏年龄。",
-        "face": "51-year-old ADULT MAN, SHORT WIDE INVERTED TRAPEZOID face with broad upper cheeks and blunt chin, heavy downward WALRUS MOUSTACHE and bare chin, fine low level brows and large calm open eyes, short large rounded nose and broad thin gently curved mouth, full medium short neck and broad relaxed shoulders, warm ruddy wheat skin, deep rounded chin dimple, benevolent steady diplomatic patience; facing RIGHT"
+        "face": "51-year-old mature ADULT MAN, SHORT WIDE INVERTED TRAPEZOID face with broad upper cheeks and blunt chin, heavy downward SALT-AND-PEPPER WALRUS MOUSTACHE, bare chin, conspicuous SILVER-WHITE TEMPLES and short gray sideburns, fine low level brows and large calm open eyes, short large rounded nose and broad thin gently curved mouth, full medium short neck and broad relaxed shoulders, warm ruddy wheat skin, deep rounded chin dimple, fine forehead lines, crow-feet and mature under-eye/nasolabial creases at51, benevolent steady diplomatic patience; facing RIGHT",
+        "revision": "2026-11-08 player-approved final release revision; exact identity retained"
       }
     },
     {
@@ -3212,8 +3214,8 @@
     {
       "id": "tang-taizong/child-01",
       "file": "assets/art/portraits/unique/tang-taizong/child-01.webp",
-      "job": "tang-unique-child-01",
-      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-unique-child-01.png",
+      "job": "tang-final-release-tang-taizong-child-01",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-final-release-tang-taizong-child-01.png",
       "cellBox": [
         0,
         0,
@@ -3224,30 +3226,30 @@
         1122,
         1402
       ],
-      "eyeY": 561.48,
-      "headTop": 161,
+      "eyeY": 560.25,
+      "headTop": 171,
       "faceBox": [
-        271.3350559473038,
-        442.39600175619125,
-        393.7030391693115,
-        393.7030134797096
+        266.63402876257896,
+        427.0222088098526,
+        397.830550968647,
+        397.8305746912956
       ],
       "status": "exported",
       "crop": [
-        1,
-        2,
-        1121,
+        0,
+        0,
+        1122,
         1402
       ],
       "eyeRatio": 0.3996,
-      "headTopRatio": 0.1136,
-      "bytes": 6362,
+      "headTopRatio": 0.122,
+      "bytes": 5724,
       "quality": 75,
       "dimensions": [
         400,
         500
       ],
-      "sha256": "07596c50a7beaea3b4de5736ce19fd614ae560493297a757c985a0cab502d8d7",
+      "sha256": "7a7daa34a8990c3cffa736c0f8b632568832e7ad1d3cc5a977eacfaeb37078a6",
       "faceCard": {
         "id": "tang-taizong/child-01",
         "scenario": "tang-taizong",
@@ -3258,7 +3260,7 @@
         "variant": "base",
         "dims": [
           "LONG SOFT OVAL real CHILD face with gently full cheeks and rounded narrow chin",
-          "clean-shaven real8-year-old boy, soft low hairline and two SMALL TOPKNOTS",
+          "CLEAN SHAVEN real 8-year-old BOY with compact BLACK SOFT-CLOTH CHILD FUTOU, no buns, ribbons or trailing hair ties",
           "fine straight brows and large round earnest eyes",
           "small fine straight child nose and small full child lips",
           "short thin CHILD neck and small narrow CHILD shoulders",
@@ -3270,10 +3272,11 @@
         "context": "开局8岁皇子，母亲下标0；参照旧唐书太宗诸子传，儿童阶段不预画成人野心神态。",
         "file": "assets/art/portraits/unique/tang-taizong/child-01.webp",
         "sourceType": "historical-unique",
-        "costume": "Fully covered Tang round-collar muted dark blue robe, simple pale inner collar. REAL CHILD age8, small topknots, no hat if it obscures child proportions, no beard or adult jaw/muscles. Normal child anatomy, NOT a miniature adult.",
+        "costume": "Fully covered Tang round-collar muted dark blue robe, simple pale inner collar. REAL CHILD age8, small topknots, no hat if it obscures child proportions, no beard or adult jaw/muscles. Normal child anatomy, NOT a miniature adult. Final approved revision: fitted small black Tang soft-cloth boy futou, no hair ribbons, bows or paired rounded buns; readable as boy at44px.",
         "historySource": "https://zh.wikisource.org/wiki/舊唐書/卷76",
         "sourceNote": "年龄、身份、性格秘密以scenarios.js为准；史书记载用于人物事迹与冠服大意，未明载的八维五官、痣与体态是区分人物的创作，不宣称精确真实相貌。外邦年龄为绘制档，不新增游戏年龄。",
-        "face": "8-year-old BOY, LONG SOFT OVAL real CHILD face with gently full cheeks and rounded narrow chin, clean-shaven real8-year-old boy, soft low hairline and two SMALL TOPKNOTS, fine straight brows and large round earnest eyes, small fine straight child nose and small full child lips, short thin CHILD neck and small narrow CHILD shoulders, warm pale cream child skin, tiny right eyebrow-tail mole, quiet earnest slightly anxious CHILD reserve; facing LEFT"
+        "face": "8-year-old BOY, LONG SOFT OVAL real CHILD face with gently full cheeks and rounded narrow chin, CLEAN SHAVEN real 8-year-old BOY with compact BLACK SOFT-CLOTH CHILD FUTOU, no buns, ribbons or trailing hair ties, fine straight brows and large round earnest eyes, small fine straight child nose and small full child lips, short thin CHILD neck and small narrow CHILD shoulders, warm pale cream child skin, tiny right eyebrow-tail mole, quiet earnest slightly anxious CHILD reserve; facing LEFT",
+        "revision": "2026-11-08 player-approved final release revision; exact identity retained"
       }
     },
     {

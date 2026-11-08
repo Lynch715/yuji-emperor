@@ -644,7 +644,7 @@
     "age": 13,
     "dims": [
       "slim soft LONG OVAL adolescent face with immature rounded chin",
-      "CLEAN SHAVEN teen with paired small TOPKNOTS and middle soft hairline",
+      "CLEAN SHAVEN real 13-year-old BOY with compact BLACK SOFT-CLOTH CHILD FUTOU, no buns, ribbons or trailing hair ties",
       "fine straight brows and large clear thoughtful eyes",
       "small fine straight nose and full youthful closed lips",
       "thin short teen neck and small narrow shoulders",
@@ -653,11 +653,12 @@
       "earnest slightly anxious adolescent reserve"
     ],
     "facing": "LEFT",
-    "costume": "Tang modest round-collar muted blue robe. Real13-year-old BOY with paired small topknots, no beard, adolescent anatomy, not adult.",
+    "costume": "Tang modest round-collar muted blue robe. Real13-year-old BOY with paired small topknots, no beard, adolescent anatomy, not adult. Final approved revision: fitted small black Tang soft-cloth boy futou, no hair ribbons, bows or paired rounded buns; readable as boy at44px.",
     "file": "assets/art/portraits/tang/prince-teen-01.webp",
     "sourceType": "fictional-pool",
     "existedBeforeBatch": false,
-    "face": "13-year-old BOY, slim soft LONG OVAL adolescent face with immature rounded chin, CLEAN SHAVEN teen with paired small TOPKNOTS and middle soft hairline, fine straight brows and large clear thoughtful eyes, small fine straight nose and full youthful closed lips, thin short teen neck and small narrow shoulders, warm pale cream skin, tiny right brow beauty spot, earnest slightly anxious adolescent reserve; facing LEFT"
+    "face": "13-year-old BOY, slim soft LONG OVAL adolescent face with immature rounded chin, CLEAN SHAVEN real 13-year-old BOY with compact BLACK SOFT-CLOTH CHILD FUTOU, no buns, ribbons or trailing hair ties, fine straight brows and large clear thoughtful eyes, small fine straight nose and full youthful closed lips, thin short teen neck and small narrow shoulders, warm pale cream skin, tiny right brow beauty spot, earnest slightly anxious adolescent reserve; facing LEFT",
+    "revision": "2026-11-08 player-approved final release revision; exact identity retained"
   },
   {
     "id": "tang/prince-adult-01",
@@ -951,12 +952,12 @@
     "variant": "base",
     "dims": [
       "SHORT WIDE INVERTED TRAPEZOID face with broad upper cheeks and blunt chin",
-      "heavy downward WALRUS MOUSTACHE and bare chin",
+      "heavy downward SALT-AND-PEPPER WALRUS MOUSTACHE, bare chin, conspicuous SILVER-WHITE TEMPLES and short gray sideburns",
       "fine low level brows and large calm open eyes",
       "short large rounded nose and broad thin gently curved mouth",
       "full medium short neck and broad relaxed shoulders",
       "warm ruddy wheat skin",
-      "deep rounded chin dimple",
+      "deep rounded chin dimple, fine forehead lines, crow-feet and mature under-eye/nasolabial creases at51",
       "benevolent steady diplomatic patience"
     ],
     "facing": "RIGHT",
@@ -966,7 +967,8 @@
     "costume": "Tang SOFT-TAILED FUTOU black cloth wrap with TWO cloth tails hanging or curving DOWN at back/nape, never rigid horizontal Ming wings or long straight Song wings. Natural full hairline, not Qing shaven forehead. ROUND-COLLAR robe, small pale undercollar, no chest rank patch, no necklace. Muted dark PURPLE round-collar official robe.",
     "historySource": "https://zh.wikisource.org/wiki/舊唐書/卷65",
     "sourceNote": "年龄、身份、性格秘密以scenarios.js为准；史书记载用于人物事迹与冠服大意，未明载的八维五官、痣与体态是区分人物的创作，不宣称精确真实相貌。外邦年龄为绘制档，不新增游戏年龄。",
-    "face": "51-year-old ADULT MAN, SHORT WIDE INVERTED TRAPEZOID face with broad upper cheeks and blunt chin, heavy downward WALRUS MOUSTACHE and bare chin, fine low level brows and large calm open eyes, short large rounded nose and broad thin gently curved mouth, full medium short neck and broad relaxed shoulders, warm ruddy wheat skin, deep rounded chin dimple, benevolent steady diplomatic patience; facing RIGHT"
+    "face": "51-year-old mature ADULT MAN, SHORT WIDE INVERTED TRAPEZOID face with broad upper cheeks and blunt chin, heavy downward SALT-AND-PEPPER WALRUS MOUSTACHE, bare chin, conspicuous SILVER-WHITE TEMPLES and short gray sideburns, fine low level brows and large calm open eyes, short large rounded nose and broad thin gently curved mouth, full medium short neck and broad relaxed shoulders, warm ruddy wheat skin, deep rounded chin dimple, fine forehead lines, crow-feet and mature under-eye/nasolabial creases at51, benevolent steady diplomatic patience; facing RIGHT",
+    "revision": "2026-11-08 player-approved final release revision; exact identity retained"
   },
   {
     "id": "tang-taizong/official-09",
@@ -1194,7 +1196,7 @@
     "variant": "base",
     "dims": [
       "LONG SOFT OVAL real CHILD face with gently full cheeks and rounded narrow chin",
-      "clean-shaven real8-year-old boy, soft low hairline and two SMALL TOPKNOTS",
+      "CLEAN SHAVEN real 8-year-old BOY with compact BLACK SOFT-CLOTH CHILD FUTOU, no buns, ribbons or trailing hair ties",
       "fine straight brows and large round earnest eyes",
       "small fine straight child nose and small full child lips",
       "short thin CHILD neck and small narrow CHILD shoulders",
@@ -1206,10 +1208,11 @@
     "context": "开局8岁皇子，母亲下标0；参照旧唐书太宗诸子传，儿童阶段不预画成人野心神态。",
     "file": "assets/art/portraits/unique/tang-taizong/child-01.webp",
     "sourceType": "historical-unique",
-    "costume": "Fully covered Tang round-collar muted dark blue robe, simple pale inner collar. REAL CHILD age8, small topknots, no hat if it obscures child proportions, no beard or adult jaw/muscles. Normal child anatomy, NOT a miniature adult.",
+    "costume": "Fully covered Tang round-collar muted dark blue robe, simple pale inner collar. REAL CHILD age8, small topknots, no hat if it obscures child proportions, no beard or adult jaw/muscles. Normal child anatomy, NOT a miniature adult. Final approved revision: fitted small black Tang soft-cloth boy futou, no hair ribbons, bows or paired rounded buns; readable as boy at44px.",
     "historySource": "https://zh.wikisource.org/wiki/舊唐書/卷76",
     "sourceNote": "年龄、身份、性格秘密以scenarios.js为准；史书记载用于人物事迹与冠服大意，未明载的八维五官、痣与体态是区分人物的创作，不宣称精确真实相貌。外邦年龄为绘制档，不新增游戏年龄。",
-    "face": "8-year-old BOY, LONG SOFT OVAL real CHILD face with gently full cheeks and rounded narrow chin, clean-shaven real8-year-old boy, soft low hairline and two SMALL TOPKNOTS, fine straight brows and large round earnest eyes, small fine straight child nose and small full child lips, short thin CHILD neck and small narrow CHILD shoulders, warm pale cream child skin, tiny right eyebrow-tail mole, quiet earnest slightly anxious CHILD reserve; facing LEFT"
+    "face": "8-year-old BOY, LONG SOFT OVAL real CHILD face with gently full cheeks and rounded narrow chin, CLEAN SHAVEN real 8-year-old BOY with compact BLACK SOFT-CLOTH CHILD FUTOU, no buns, ribbons or trailing hair ties, fine straight brows and large round earnest eyes, small fine straight child nose and small full child lips, short thin CHILD neck and small narrow CHILD shoulders, warm pale cream child skin, tiny right eyebrow-tail mole, quiet earnest slightly anxious CHILD reserve; facing LEFT",
+    "revision": "2026-11-08 player-approved final release revision; exact identity retained"
   },
   {
     "id": "tang-taizong/child-02",
