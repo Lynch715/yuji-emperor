@@ -1,6 +1,30 @@
 # 美术二期 · 清制 · 完整验收
 
-完成日期：2026-11-07。分支`feat/art-phase2`，基于main／`34bdb82`；前提PR #5已合并并发布。[草稿PR #6](https://github.com/Lynch715/yuji-emperor/pull/6)本轮更新为二期79／79张完成，仍待玩家测试，不合并、不发布。
+完成日期：2026-11-07。分支`feat/art-phase2`，基于main／`34bdb82`；二期79／79张和前次修订已获玩家通过。本轮完成最终三张修订，按玩家授权进入PR #6合并与GitHub Pages发布。下方保留各轮验收历史。
+
+## 合并前最终三张修订 · 2026-11-07 · 504e723基线
+
+- 常位池05改为约26岁女子：全黑发、光洁年轻面貌、柔和眉眼，保留绛红立领旗装与44px可见的横向两把头；常位池也用于18—25岁秀女，已写入提示词共用约束。
+- 康熙熊赐履07改为宽短方脸、粗颈宽肩、短直髭、严正神情，与明珠06的瘦长无须面貌分开；仍按剧本26岁及理学名儒性格绘制。
+- 雍正允禟10改为低圆阔脸、丰腴体态、双颏、八字髭和短方颏须，与允祥02的清瘦疲惫、短须茬面貌分开；保留39岁和好结纳、经营商号的角色气质。
+
+内置imagegen每次沿用一期四张板与清制四张板。两位官员初稿构图偏高，在生成端整体下移后再裁切、等比缩放、q75转WebP；没有手工修脸、改色或补画。PNG原稿及未选稿只存本机art-source。实际长相卡与每次提示词已先于生成记入[ART-PROMPTS](ART-PROMPTS.md)。
+
+![三张修订前后及44px](art-phase2-review/release-final-20261107/three-before-after.png)
+
+![康熙完整44px前后](art-phase2-review/release-final-20261107/qing-kangxi-before-after-44.png)
+
+![雍正完整44px前后](art-phase2-review/release-final-20261107/qing-yongzheng-before-after-44.png)
+
+已逐组查看两剧本完整44px条及全头像，重点两对的脸型、须形、体态均可辨。常位池完整条也已更新。仅3个WebP变化，其余221个与504e723逐字节一致；源码、清单、生产HTML/CSS及存档逻辑不变，存档仍v25。二期79张 **729,230字节**；assets/art全目录 **224个WebP／3,678,390字节**；最大单头像15,242字节。79张全部400×500，帽／发顶10–14%、眼高36–40%，体积均在预算内。[资产与测试摘要](art-phase2-review/release-final-20261107/qa-summary.json)、[三张长相卡](art-phase2-review/release-final-20261107/revised-face-cards.json)。
+
+本轮 **608／608测试、200年／7200旬mock模拟、构建通过**；模拟6朝、5次传承、无亡国，终局国库2040。HTML855,007字节。Lighthouse沿用bf98707六项可访问性100记录；本轮仅替换三张资产，未重复运行。
+
+应用内浏览器经隔离localhost查看既有0旬试读卷：熊赐履与允禟真实朝堂取图均400×500加载，1280桌面及390手机显示正常，390无横向溢出。只查看人物、切换卷位，未执行回合。脚本warn/error为空。[本轮浏览器读数](art-phase2-review/release-final-20261107/local-browser-results.json)。
+
+![康熙游戏内1280](art-phase2-review/release-final-20261107/local-kangxi-1280.jpg)
+
+![雍正游戏内390](art-phase2-review/release-final-20261107/local-yongzheng-390.jpg)
 
 ## bf98707验收后修订 · 2026-11-07
 

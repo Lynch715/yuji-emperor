@@ -4,10 +4,10 @@
     "poolPortraits": 32,
     "uniqueKangxi": 18,
     "uniqueYongzheng": 29,
-    "phase2Bytes": 727074,
+    "phase2Bytes": 729230,
     "phase2MaximumBytes": 15242,
     "totalWebPFiles": 224,
-    "totalBytes": 3676234,
+    "totalBytes": 3678390,
     "maximumPortraitBudget": 30000,
     "totalBudget": 12000000,
     "headTopRange": [
@@ -976,42 +976,42 @@
     {
       "id": "qing/consort-regular-05",
       "file": "assets/art/portraits/qing/consort-regular-05.webp",
-      "job": "rev-20261107-qing-consort-regular-02-05-grid",
-      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/rev-20261107-qing-consort-regular-02-05-grid.png",
+      "job": "release-final-20261107-qing-consort-regular-05",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/release-final-20261107-qing-consort-regular-05.png",
       "cellBox": [
-        566,
-        706,
-        1117,
-        1397
+        0,
+        0,
+        1122,
+        1402
       ],
       "rawSize": [
-        551,
-        691
+        1122,
+        1402
       ],
-      "eyeY": 246.53,
-      "headTop": 63,
+      "eyeY": 548.41,
+      "headTop": 141,
       "faceBox": [
-        124.48585650324821,
-        176.0344833135605,
-        223.6001104414463,
-        223.60012057423592
+        221.6315539777279,
+        412.4297970533371,
+        487.1236680150032,
+        487.12367165088654
       ],
       "status": "exported",
       "crop": [
-        23,
         0,
-        527,
-        630
+        0,
+        1122,
+        1402
       ],
-      "eyeRatio": 0.3913,
-      "headTopRatio": 0.1,
-      "bytes": 10532,
+      "eyeRatio": 0.3912,
+      "headTopRatio": 0.1006,
+      "bytes": 9238,
       "quality": 75,
       "dimensions": [
         400,
         500
       ],
-      "sha256": "6512b4a355e54f318fda3185f55ee5c432e5b17af9373fdc290a4fc2f1c14e49"
+      "sha256": "caf50b44fbe2d2f81dccffbd4636e98e49a3bc98a5ac6f52c758b3a1cd20f62d"
     },
     {
       "id": "qing/emperor-young-01",
@@ -1559,8 +1559,8 @@
     {
       "id": "qing-kangxi/official-07",
       "file": "assets/art/portraits/unique/qing-kangxi/official-07.webp",
-      "job": "rev-20261107-qing-kangxi-official-07",
-      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/rev-20261107-qing-kangxi-official-07.png",
+      "job": "release-final-20261107-qing-kangxi-official-07-framing",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/release-final-20261107-qing-kangxi-official-07-framing.png",
       "cellBox": [
         0,
         0,
@@ -1571,30 +1571,30 @@
         1122,
         1402
       ],
-      "eyeY": 504.02,
-      "headTop": 144,
+      "eyeY": 531.41,
+      "headTop": 149,
       "faceBox": [
-        264.9280951023102,
-        398.627916932106,
-        377.6573483347893,
-        377.6573522090912
+        261.3218013346195,
+        422.6530591249466,
+        388.5908390879631,
+        388.59083926677704
       ],
       "status": "exported",
       "crop": [
-        1,
         0,
-        1121,
-        1400
+        0,
+        1122,
+        1402
       ],
-      "eyeRatio": 0.36,
-      "headTopRatio": 0.1029,
-      "bytes": 8774,
+      "eyeRatio": 0.379,
+      "headTopRatio": 0.1063,
+      "bytes": 9966,
       "quality": 75,
       "dimensions": [
         400,
         500
       ],
-      "sha256": "fb372786b34c605bf39f3c469c3d305029851f5ae342eb2e1e4e1839cb54aa31"
+      "sha256": "57ded05bfcaf22ccb8bb75af41bed0473908a01373c03d0020508222bc8c2c44"
     },
     {
       "id": "qing-kangxi/official-08",
@@ -2399,8 +2399,8 @@
     {
       "id": "qing-yongzheng/official-10",
       "file": "assets/art/portraits/unique/qing-yongzheng/official-10.webp",
-      "job": "rev-20261107-qing-yongzheng-official-10",
-      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/rev-20261107-qing-yongzheng-official-10.png",
+      "job": "release-final-20261107-qing-yongzheng-official-10-framing",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase2/bulk/release-final-20261107-qing-yongzheng-official-10-framing.png",
       "cellBox": [
         0,
         0,
@@ -2411,30 +2411,30 @@
         1122,
         1402
       ],
-      "eyeY": 517.62,
-      "headTop": 130,
+      "eyeY": 549.73,
+      "headTop": 162,
       "faceBox": [
-        487.67476308345795,
-        406.93769133090973,
-        359.4059396982193,
-        359.40593218803406
+        488.4355491399765,
+        420.94012916088104,
+        437.26131784915924,
+        437.2613065838814
       ],
       "status": "exported",
       "crop": [
-        41,
         0,
-        1081,
-        1300
+        0,
+        1122,
+        1402
       ],
-      "eyeRatio": 0.3982,
-      "headTopRatio": 0.1,
-      "bytes": 7286,
+      "eyeRatio": 0.3921,
+      "headTopRatio": 0.1155,
+      "bytes": 9544,
       "quality": 75,
       "dimensions": [
         400,
         500
       ],
-      "sha256": "d8a753c9da4d9bd7ffdf8fac2bc7cb5f9ee120b05473cff00f73af48ddb3ed49"
+      "sha256": "77f41d496867837377e775dee106bf7537e1b91c91c606724b11185b8f27e765"
     },
     {
       "id": "qing-yongzheng/official-11",

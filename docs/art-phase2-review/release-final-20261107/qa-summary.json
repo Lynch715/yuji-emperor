@@ -1,0 +1,71 @@
+{
+  "date": "2026-11-07",
+  "baseline": "504e723",
+  "revisedPortraits": 3,
+  "unchangedWebPs": 221,
+  "allCodeAndHtmlUnchanged": true,
+  "summary": {
+    "contentPortraitsPhase2": 79,
+    "poolPortraits": 32,
+    "uniqueKangxi": 18,
+    "uniqueYongzheng": 29,
+    "phase2Bytes": 729230,
+    "phase2MaximumBytes": 15242,
+    "totalWebPFiles": 224,
+    "totalBytes": 3678390,
+    "maximumPortraitBudget": 30000,
+    "totalBudget": 12000000,
+    "headTopRange": [
+      0.1,
+      0.1399
+    ],
+    "eyeRange": [
+      0.36,
+      0.3999
+    ],
+    "poolCardsPairwiseFourDimensions": true
+  },
+  "changes": [
+    {
+      "file": "assets/art/portraits/qing/consort-regular-05.webp",
+      "beforeBytes": 10532,
+      "afterBytes": 9238,
+      "beforeSha256": "6512b4a355e54f318fda3185f55ee5c432e5b17af9373fdc290a4fc2f1c14e49",
+      "afterSha256": "caf50b44fbe2d2f81dccffbd4636e98e49a3bc98a5ac6f52c758b3a1cd20f62d"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-kangxi/official-07.webp",
+      "beforeBytes": 8774,
+      "afterBytes": 9966,
+      "beforeSha256": "fb372786b34c605bf39f3c469c3d305029851f5ae342eb2e1e4e1839cb54aa31",
+      "afterSha256": "57ded05bfcaf22ccb8bb75af41bed0473908a01373c03d0020508222bc8c2c44"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-yongzheng/official-10.webp",
+      "beforeBytes": 7286,
+      "afterBytes": 9544,
+      "beforeSha256": "d8a753c9da4d9bd7ffdf8fac2bc7cb5f9ee120b05473cff00f73af48ddb3ed49",
+      "afterSha256": "77f41d496867837377e775dee106bf7537e1b91c91c606724b11185b8f27e765"
+    }
+  ],
+  "tests": {
+    "command": "npm test -- --test-concurrency=4",
+    "total": 608,
+    "passed": 608,
+    "failed": 0
+  },
+  "simulation": {
+    "seed": "御极·两百年",
+    "years": 200,
+    "actualYears": 200,
+    "turns": 7200,
+    "reigns": 6,
+    "ending": null,
+    "finalTreasury": 2040
+  },
+  "build": {
+    "htmlBytes": 855007,
+    "sha256": "c04409e58e596caade605f96ad1ef09966e4c5e3a482bb5d99bed3c3440e7d9f"
+  },
+  "lighthouse": "沿用bf98707六项可访问性100记录，本轮仅替换三张资产，HTML/CSS及交互未变，未重复运行。"
+}

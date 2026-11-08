@@ -17,6 +17,6 @@
   },
   "build": {
     "htmlBytes": 855007,
-    "command": "npm run build"
+    "sha256": "c04409e58e596caade605f96ad1ef09966e4c5e3a482bb5d99bed3c3440e7d9f"
   }
 }
