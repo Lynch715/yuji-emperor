@@ -1,0 +1,13 @@
+{
+  "baseline": "97f80a4",
+  "changedPoolKeys": [
+    "tang/official-mature",
+    "tang/consort-regular",
+    "tang/consort-high",
+    "tang/emperor-young"
+  ],
+  "unchangedOtherPoolKeys": 64,
+  "uniqueMapUnchanged": true,
+  "sceneMapUnchanged": true,
+  "focusAndFallbackCodeUnchanged": true
+}

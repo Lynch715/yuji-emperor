@@ -1,0 +1,82 @@
+[
+  {
+    "id": "tang/official-mature-01",
+    "pool": "official-mature",
+    "age": 42,
+    "facing": "LEFT",
+    "dims": [
+      "long angular TRIANGULAR face with high cheekbones and a narrow blunt chin",
+      "THREE distinct thin long black beard locks with a narrow separated moustache",
+      "fine long straight brows and narrow slightly drooping thoughtful eyes",
+      "long slender aquiline nose and thin firmly closed lips",
+      "lean long neck and narrow slightly sloped shoulders",
+      "light warm wheat-beige skin",
+      "a small dark mole below the right cheekbone",
+      "reserved calm scholarly concentration"
+    ],
+    "costume": "TANG SOFT-TAILED FUTOU: small rounded black CLOTH head wrap tied at BACK, two SOFT BLACK CLOTH TAILS hang DOWN and gently CURVE behind the ears toward the nape/shoulder. Make their downward drooping fabric silhouette unmistakable at44px. NO horizontally outstretched rigid wings; NO straight long Song wings; NO Ming flat-topped two-tier hard cap; NO Qing hat, top bead, brim, crown or dangling beads. Tang PURPLE muted plum #70576D ROUND-COLLAR official robe, soft curved round neckline with a very small pale undercollar. NO square rank patch, NO dragon medallion, NO necklace, NO Qing standing collar. A plain leather belt belongs at the waist OUTSIDE this head-shoulder crop; do not widen the composition just to show it.",
+    "file": "assets/art/portraits/tang/official-mature-01.webp",
+    "sourceType": "fictional-pool-sample",
+    "face": "42-year-old ADULT MAN, long angular TRIANGULAR face with high cheekbones and a narrow blunt chin, THREE distinct thin long black beard locks with a narrow separated moustache, fine long straight brows and narrow slightly drooping thoughtful eyes, long slender aquiline nose and thin firmly closed lips, lean long neck and narrow slightly sloped shoulders, light warm wheat-beige skin, a small dark mole below the right cheekbone, reserved calm scholarly concentration; facing LEFT"
+  },
+  {
+    "id": "tang/consort-regular-01",
+    "pool": "consort-regular",
+    "age": 24,
+    "facing": "RIGHT",
+    "dims": [
+      "delicate HEART-SHAPED young adult female face with soft cheekbones and a rounded pointed chin",
+      "low shallow widow-peak hairline and a modest compact VERTICAL HIGH LOOP BUN, entirely black hair",
+      "fine softly arched brows and clear wide almond eyes",
+      "small low straight nose and full gently bowed lips",
+      "slender fine neck and softly sloped petite shoulders",
+      "warm light ivory skin",
+      "one tiny right eyebrow-tail beauty spot",
+      "gentle warm slightly shy closed smile"
+    ],
+    "costume": "TANG woman with a compact upright HIGH HAIR BUN (one vertical loop above crown), one small plain hairpin only. A tiny red FLOWER HUADIAN at CENTER OF FOREHEAD. Simple RUQUN: muted dusty coral-red short blouse bodice and malachite-sage green PIBO SILK SCARF visibly draped around both shoulders. Soft open curved neckline reveals only upper collarbones, fully covered chest, dignified and modest. No deep cleavage. NO Ming high standing-collar jacket, NO Qing horizontal liangbatou, NO phoenix crown, NO diadem. Clearly adult feminine face.",
+    "file": "assets/art/portraits/tang/consort-regular-01.webp",
+    "sourceType": "fictional-pool-sample",
+    "face": "24-year-old WOMAN, delicate HEART-SHAPED young adult female face with soft cheekbones and a rounded pointed chin, low shallow widow-peak hairline and a modest compact VERTICAL HIGH LOOP BUN, entirely black hair, fine softly arched brows and clear wide almond eyes, small low straight nose and full gently bowed lips, slender fine neck and softly sloped petite shoulders, warm light ivory skin, one tiny right eyebrow-tail beauty spot, gentle warm slightly shy closed smile; facing RIGHT"
+  },
+  {
+    "id": "tang/consort-high-01",
+    "pool": "consort-high",
+    "age": 32,
+    "facing": "LEFT",
+    "dims": [
+      "full very broad OVAL female face with gently square rounded jaw",
+      "high rounded hairline and a substantially larger broad fan-looped HIGH BLACK BUN",
+      "long low gently curved brows and serene elongated slightly downturned eyes",
+      "high small rounded nose and full softly firm bow lips",
+      "slightly PLUMP graceful short neck and broad relaxed shoulders",
+      "cool pale beige skin",
+      "a shallow dimple at the left corner of the mouth",
+      "dignified poised confidence with a restrained small smile"
+    ],
+    "costume": "TANG HIGH RANK woman: a clearly LARGER AND HIGHER broad fan-looped HIGH BUN, distinct from ordinary consort. Two simple GOLD HAIRPINS and one small BU YAO SPRING HAIR ORNAMENT with two short delicate dangling gold drops; simplified shapes only, NO crown or large jewelry. A small red three-petal FLOWER HUADIAN at CENTER FOREHEAD. RUQUN with muted deep cinnabar/cranberry-red blouse and ochre-gold PIBO SILK SCARF clearly draped over shoulders. Graceful open rounded neckline shows only collarbones, fully covered chest, dignified and modest. NO Qing diadem/chaoguan, NO liangbatou, NO Ming phoenix crown or standing collar. Clearly feminine adult face.",
+    "file": "assets/art/portraits/tang/consort-high-01.webp",
+    "sourceType": "fictional-pool-sample",
+    "face": "32-year-old WOMAN, full very broad OVAL female face with gently square rounded jaw, high rounded hairline and a substantially larger broad fan-looped HIGH BLACK BUN, long low gently curved brows and serene elongated slightly downturned eyes, high small rounded nose and full softly firm bow lips, slightly PLUMP graceful short neck and broad relaxed shoulders, cool pale beige skin, a shallow dimple at the left corner of the mouth, dignified poised confidence with a restrained small smile; facing LEFT"
+  },
+  {
+    "id": "tang/emperor-young-01",
+    "pool": "emperor-young",
+    "age": 33,
+    "facing": "RIGHT",
+    "dims": [
+      "SHORT BROAD PENTAGONAL face with a wide forehead and a strong prominent chin",
+      "thick short slightly upturned black moustache and a small squared black goatee",
+      "thick level straight brows and large alert almond eyes",
+      "short broad high-bridge straight nose and firm full closed mouth",
+      "sturdy thick upright neck and broad square shoulders",
+      "warm medium honey-wheat skin",
+      "one shallow vertical crease between brows",
+      "calm watchful decisive authority"
+    ],
+    "costume": "TANG SOFT-TAILED FUTOU: small rounded black CLOTH head wrap tied at BACK, two SOFT BLACK CLOTH TAILS hang DOWN and gently CURVE behind the ears toward the nape/shoulder. Make their downward drooping fabric silhouette unmistakable at44px. NO horizontally outstretched rigid wings; NO straight long Song wings; NO Ming flat-topped two-tier hard cap; NO Qing hat, top bead, brim, crown or dangling beads. TANG EMPEROR wearing a plain muted OCHRE-YELLOW #C09558 ROUND-COLLAR ROBE, simple small pale undercollar. Warm earth ochre, NOT Qing lemon imperial yellow. No dragon-medallion embroidery, NO Ming YISHANGUAN, NO mianguan, no hanging pearl curtain, NO crown or necklaces. Keep round collar unmistakable, not a Qing upright band collar.",
+    "file": "assets/art/portraits/tang/emperor-young-01.webp",
+    "sourceType": "fictional-pool-sample",
+    "face": "33-year-old ADULT MAN, SHORT BROAD PENTAGONAL face with a wide forehead and a strong prominent chin, thick short slightly upturned black moustache and a small squared black goatee, thick level straight brows and large alert almond eyes, short broad high-bridge straight nose and firm full closed mouth, sturdy thick upright neck and broad square shoulders, warm medium honey-wheat skin, one shallow vertical crease between brows, calm watchful decisive authority; facing RIGHT"
+  }
+]

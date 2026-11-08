@@ -1,6 +1,6 @@
 # 御极 · 美术实际提示词
 
-工具：内置 `imagegen`，未使用 CLI / 外部 API。一期与二期清制画风均已确认；本轮已按玩家要求强化两把头，并完成二期79张（四张定调＋其余75张）。历史提示词保留以便追溯。
+工具：内置 `imagegen`，未使用 CLI / 外部 API。一期与二期清制画风均已确认，二期79张及验收修订已合并发布。当前三期第一批唐制只完成第1步四张定调，等待确认；其余58张未生成。历史提示词保留以便追溯。
 
 ## 美术二期 · 清制定调样张（第1步历史记录，已确认）
 
@@ -3473,4 +3473,121 @@ ONE SINGLE PERSON EDIT. Image3 is the CURRENT EXACT PERSON and painting to prese
 ```text
 Use case: game character portraits. Image1 contains ALL FOUR approved Phase1 paintings; image2 contains ALL FOUR approved Qing paintings. These EIGHT images are STYLE references only; NEVER copy their people or Ming costumes. Chinese BAIMIAO fine clean restrained ink outlines and light FLAT muted washes, at most one faint flat shade. Near-smooth plain warm #E3D7BE paper to all edges. Same restrained character-atlas illustration as approved samples. Head-and-shoulders ONLY, crop just below shoulders, no hands or props, natural three-quarter view and gaze slightly off-camera. Simplified period dress shapes and a few folds, no intricate embroidery. No text of any language, seals, signatures,watermark,border,guides,photo,3D,anime,glow,dramatic lighting,actors or TV likeness. No braid falling onto chest. Natural dignified anatomy.
 ONE SINGLE PERSON EDIT. Image3 is the CURRENT EXACT PERSON and painting to preserve. KEEP THE EXACT NEW FACE, head width and shape, beard/hair, eyes, nose, lips, expression, age, body proportions, costume, linework, muted colors and paper. ONLY CORRECT FRAMING: translate the ENTIRE PERSON including complete hat, face, neck and shoulders DOWN by approximately3.5% canvas height (49pixels on1122x1402). Do NOT stretch the neck or enlarge the head. Keep current width. Extend the same plain paper above and continue the same robe below to the edges. Current hat top is7–8% and eye center35%; corrected COMPLETE HAT TOP11–12%, BOTH EYE CENTERS38–39%. On1122x1402 targethat top160 and eyes540. On1024x1280 top146 and eyes493. These coordinates invisible; never draw any guides, text or border. No other identity changes. Face silhouette and facial hair must remain unmistakably the SAME as image3.
+```
+
+
+## 美术三期第一批 · 唐制定调样张 · 2026-11-07（待确认）
+
+从最新main／97f80a4新建feat/art-phase3-tang。唐制总范围62张：池33＋唐太宗专属29。本步仅出四张池图样张；参照前两期定调做法逐张生成，各池其余长相卡在画风确认后、该池批量生成前补齐，随后同池按2×2一组、专属像单张，逐池44px对照。完成本步后必须停下，草稿PR不合并、不发布。
+
+### 唐制服饰要点（全部唐制生成共同约束）
+
+- 朝代辨识首看软脚幞头：黑色软纱／布裹头，两脚从脑后软垂或向下弯，在44px仍能见到下垂轮廓；不画明制乌纱帽平伸硬展角，不画宋制长而平直的硬脚。
+- 文官：圆领袍，按品级用降饱和紫、绯、绿、青，胸前不画补子，腰束革带。头肩像不为展示腰带而扩大裁切。
+- 武将：明光甲，胸前两块圆护，戴兜鍪或软脚幞头；关键轮廓简化，余纹样不铺画。
+- 皇帝：赭黄圆领袍配软脚幞头，不戴翼善冠、不戴冕旒，不借用清制顶戴或朝珠。
+- 宦官：圆领袍配软脚幞头，无须、面白，形象端正自然。
+- 后妃：高髻、额上花钿，襦裙配披帛；领口可较低，但必须完整端庄，只露上锁骨，不强调胸部。体态可略丰腴。正位用更大的高髻，加步摇、金钗；常位用较小高髻和少量发饰，44px也能分开。不要清制两把头、钿子或明制凤冠／立领袄。
+- 皇子：圆领袍，少年总角或软脚幞头；公主襦裙、双丫髻或高髻。未成年人按真实年龄绘制，衣着得体、不成人化。
+- 外邦君主按唐太宗剧本各自冠服大意：东突厥披发或尖帽，吐谷浑参考其高原／草原冠服，高句丽鸟羽冠，百济与薛延陀各依人物资料；不夸张面貌、不丑化，不统一套中原幞头。
+- 全部图中禁文字、匾额、印章、水印、演员／影视形象。只画服饰大件与少量衣褶，白描淡彩、平涂、纯#E3D7BE纸底，不加写实光影。
+
+### 参照、构图和四张长相卡
+
+第一步初次生成时唐制四张尚不存在，因此显式传入已批准一期四张：明文官壮01、明常位01、desk-night、court，均只作画风参考，不复制明制衣帽。唐四张出齐后拼为唐制参照板；确认后每次传入一期四张板＋唐四张板，八幅画面全部保留，编辑时另加目标。两板处理沿用二期，适配内置工具最多5个参照文件，不减少参考内容。定调样张逐张生成沿用二期；后续池图按同池2×2执行。
+
+四张均为虚构池图，不冒充历史人物专属长相。4:5头肩像，顶距10–14%（目标12%），双眼36–40%（目标38%），两张向左、两张向右。输出仅裁切、等比缩放、转400×500/q75 WebP；原始PNG及未选稿保留本机art-source/phase3-tang。
+
+| 文件 | 年龄 | 脸型 | 须形／发髻 | 眉眼 | 鼻口 | 体态 | 肤色 | 标记 | 神情／朝向 |
+|---|---|---|---|---|---|---|---|---|---|
+|`tang/official-mature-01`|42|long angular TRIANGULAR face with high cheekbones and a narrow blunt chin|THREE distinct thin long black beard locks with a narrow separated moustache|fine long straight brows and narrow slightly drooping thoughtful eyes|long slender aquiline nose and thin firmly closed lips|lean long neck and narrow slightly sloped shoulders|light warm wheat-beige skin|a small dark mole below the right cheekbone|reserved calm scholarly concentration／LEFT|
+|`tang/consort-regular-01`|24|delicate HEART-SHAPED young adult female face with soft cheekbones and a rounded pointed chin|low shallow widow-peak hairline and a modest compact VERTICAL HIGH LOOP BUN, entirely black hair|fine softly arched brows and clear wide almond eyes|small low straight nose and full gently bowed lips|slender fine neck and softly sloped petite shoulders|warm light ivory skin|one tiny right eyebrow-tail beauty spot|gentle warm slightly shy closed smile／RIGHT|
+|`tang/consort-high-01`|32|full very broad OVAL female face with gently square rounded jaw|high rounded hairline and a substantially larger broad fan-looped HIGH BLACK BUN|long low gently curved brows and serene elongated slightly downturned eyes|high small rounded nose and full softly firm bow lips|slightly PLUMP graceful short neck and broad relaxed shoulders|cool pale beige skin|a shallow dimple at the left corner of the mouth|dignified poised confidence with a restrained small smile／LEFT|
+|`tang/emperor-young-01`|33|SHORT BROAD PENTAGONAL face with a wide forehead and a strong prominent chin|thick short slightly upturned black moustache and a small squared black goatee|thick level straight brows and large alert almond eyes|short broad high-bridge straight nose and firm full closed mouth|sturdy thick upright neck and broad square shoulders|warm medium honey-wheat skin|one shallow vertical crease between brows|calm watchful decisive authority／RIGHT|
+
+### 实际生成提示词 `tang-tone-official-mature-01`
+
+参考：/private/tmp/yuji-art-phase3-tang-20261107/assets/art/portraits/ming/official-mature-01.webp, /private/tmp/yuji-art-phase3-tang-20261107/assets/art/portraits/ming/consort-regular-01.webp, /private/tmp/yuji-art-phase3-tang-20261107/assets/art/scenes/desk-night-1440.webp, /private/tmp/yuji-art-phase3-tang-20261107/assets/art/scenes/court-1440.webp
+
+```text
+Use case: historical-scene. Asset type: ONE fictional Tang-dynasty game character portrait for 御极. The FOUR supplied images are the FOUR approved Phase1 STYLE references: Ming official, Ming regular consort, desk-night and court. Match ONLY their baimiao ink outlines, light flat muted washes and paper. NEVER copy the Ming hats, Ming collars, faces or scene backgrounds.
+Style: Chinese BAIMIAO, clean restrained ink outlines with slight line-weight variation, FLAT muted ochre/cinnabar/azurite/malachite/beige/ink colors, at most one very faint flat shade. Simple atlas illustration, only key period clothing shapes and a few folds, no intricate embroidery or jewelry. Near-smooth plain #E3D7BE paper to ALL edges, almost no paper grain, no dramatic lighting.
+Composition: ONE person, ONE full4:5 canvas1024x1280. Head and shoulders only, crop just below shoulders, no hands/props. Natural three-quarter view, gaze slightly off-camera. Entire complete hat/hair TOP12% of canvas height (strict10–14%); BOTH eye centers38% (strict36–40%). Compact headwear and bun. Invisible coordinates: top154 and eyes486 on1024x1280; top168 and eyes533 on1122x1402. Face horizontally centered. Shoulders fill bottom naturally; no blank bottom border. Do NOT draw coordinates or guides.
+Avoid: any text, seals, signatures,watermarks,frames,grid,borders; photography,3D,anime,glow,detailed realistic shading,actor/TV likeness,Western crown,Korean/Japanese dress. No Ming stiff winged hat, no Song long straight stiff hat tails, no Qing finial hat or court-bead necklaces.
+FACE CARD: 42-year-old ADULT MAN, long angular TRIANGULAR face with high cheekbones and a narrow blunt chin, THREE distinct thin long black beard locks with a narrow separated moustache, fine long straight brows and narrow slightly drooping thoughtful eyes, long slender aquiline nose and thin firmly closed lips, lean long neck and narrow slightly sloped shoulders, light warm wheat-beige skin, a small dark mole below the right cheekbone, reserved calm scholarly concentration; facing LEFT
+TANG COSTUME: TANG SOFT-TAILED FUTOU: small rounded black CLOTH head wrap tied at BACK, two SOFT BLACK CLOTH TAILS hang DOWN and gently CURVE behind the ears toward the nape/shoulder. Make their downward drooping fabric silhouette unmistakable at44px. NO horizontally outstretched rigid wings; NO straight long Song wings; NO Ming flat-topped two-tier hard cap; NO Qing hat, top bead, brim, crown or dangling beads. Tang PURPLE muted plum #70576D ROUND-COLLAR official robe, soft curved round neckline with a very small pale undercollar. NO square rank patch, NO dragon medallion, NO necklace, NO Qing standing collar. A plain leather belt belongs at the waist OUTSIDE this head-shoulder crop; do not widen the composition just to show it.
+```
+
+### 实际生成提示词 `tang-tone-consort-regular-01`
+
+参考：/private/tmp/yuji-art-phase3-tang-20261107/assets/art/portraits/ming/official-mature-01.webp, /private/tmp/yuji-art-phase3-tang-20261107/assets/art/portraits/ming/consort-regular-01.webp, /private/tmp/yuji-art-phase3-tang-20261107/assets/art/scenes/desk-night-1440.webp, /private/tmp/yuji-art-phase3-tang-20261107/assets/art/scenes/court-1440.webp
+
+```text
+Use case: historical-scene. Asset type: ONE fictional Tang-dynasty game character portrait for 御极. The FOUR supplied images are the FOUR approved Phase1 STYLE references: Ming official, Ming regular consort, desk-night and court. Match ONLY their baimiao ink outlines, light flat muted washes and paper. NEVER copy the Ming hats, Ming collars, faces or scene backgrounds.
+Style: Chinese BAIMIAO, clean restrained ink outlines with slight line-weight variation, FLAT muted ochre/cinnabar/azurite/malachite/beige/ink colors, at most one very faint flat shade. Simple atlas illustration, only key period clothing shapes and a few folds, no intricate embroidery or jewelry. Near-smooth plain #E3D7BE paper to ALL edges, almost no paper grain, no dramatic lighting.
+Composition: ONE person, ONE full4:5 canvas1024x1280. Head and shoulders only, crop just below shoulders, no hands/props. Natural three-quarter view, gaze slightly off-camera. Entire complete hat/hair TOP12% of canvas height (strict10–14%); BOTH eye centers38% (strict36–40%). Compact headwear and bun. Invisible coordinates: top154 and eyes486 on1024x1280; top168 and eyes533 on1122x1402. Face horizontally centered. Shoulders fill bottom naturally; no blank bottom border. Do NOT draw coordinates or guides.
+Avoid: any text, seals, signatures,watermarks,frames,grid,borders; photography,3D,anime,glow,detailed realistic shading,actor/TV likeness,Western crown,Korean/Japanese dress. No Ming stiff winged hat, no Song long straight stiff hat tails, no Qing finial hat or court-bead necklaces.
+FACE CARD: 24-year-old WOMAN, delicate HEART-SHAPED young adult female face with soft cheekbones and a rounded pointed chin, low shallow widow-peak hairline and a modest compact VERTICAL HIGH LOOP BUN, entirely black hair, fine softly arched brows and clear wide almond eyes, small low straight nose and full gently bowed lips, slender fine neck and softly sloped petite shoulders, warm light ivory skin, one tiny right eyebrow-tail beauty spot, gentle warm slightly shy closed smile; facing RIGHT
+TANG COSTUME: TANG woman with a compact upright HIGH HAIR BUN (one vertical loop above crown), one small plain hairpin only. A tiny red FLOWER HUADIAN at CENTER OF FOREHEAD. Simple RUQUN: muted dusty coral-red short blouse bodice and malachite-sage green PIBO SILK SCARF visibly draped around both shoulders. Soft open curved neckline reveals only upper collarbones, fully covered chest, dignified and modest. No deep cleavage. NO Ming high standing-collar jacket, NO Qing horizontal liangbatou, NO phoenix crown, NO diadem. Clearly adult feminine face.
+```
+
+### 实际生成提示词 `tang-tone-consort-high-01`
+
+参考：/private/tmp/yuji-art-phase3-tang-20261107/assets/art/portraits/ming/official-mature-01.webp, /private/tmp/yuji-art-phase3-tang-20261107/assets/art/portraits/ming/consort-regular-01.webp, /private/tmp/yuji-art-phase3-tang-20261107/assets/art/scenes/desk-night-1440.webp, /private/tmp/yuji-art-phase3-tang-20261107/assets/art/scenes/court-1440.webp
+
+```text
+Use case: historical-scene. Asset type: ONE fictional Tang-dynasty game character portrait for 御极. The FOUR supplied images are the FOUR approved Phase1 STYLE references: Ming official, Ming regular consort, desk-night and court. Match ONLY their baimiao ink outlines, light flat muted washes and paper. NEVER copy the Ming hats, Ming collars, faces or scene backgrounds.
+Style: Chinese BAIMIAO, clean restrained ink outlines with slight line-weight variation, FLAT muted ochre/cinnabar/azurite/malachite/beige/ink colors, at most one very faint flat shade. Simple atlas illustration, only key period clothing shapes and a few folds, no intricate embroidery or jewelry. Near-smooth plain #E3D7BE paper to ALL edges, almost no paper grain, no dramatic lighting.
+Composition: ONE person, ONE full4:5 canvas1024x1280. Head and shoulders only, crop just below shoulders, no hands/props. Natural three-quarter view, gaze slightly off-camera. Entire complete hat/hair TOP12% of canvas height (strict10–14%); BOTH eye centers38% (strict36–40%). Compact headwear and bun. Invisible coordinates: top154 and eyes486 on1024x1280; top168 and eyes533 on1122x1402. Face horizontally centered. Shoulders fill bottom naturally; no blank bottom border. Do NOT draw coordinates or guides.
+Avoid: any text, seals, signatures,watermarks,frames,grid,borders; photography,3D,anime,glow,detailed realistic shading,actor/TV likeness,Western crown,Korean/Japanese dress. No Ming stiff winged hat, no Song long straight stiff hat tails, no Qing finial hat or court-bead necklaces.
+FACE CARD: 32-year-old WOMAN, full very broad OVAL female face with gently square rounded jaw, high rounded hairline and a substantially larger broad fan-looped HIGH BLACK BUN, long low gently curved brows and serene elongated slightly downturned eyes, high small rounded nose and full softly firm bow lips, slightly PLUMP graceful short neck and broad relaxed shoulders, cool pale beige skin, a shallow dimple at the left corner of the mouth, dignified poised confidence with a restrained small smile; facing LEFT
+TANG COSTUME: TANG HIGH RANK woman: a clearly LARGER AND HIGHER broad fan-looped HIGH BUN, distinct from ordinary consort. Two simple GOLD HAIRPINS and one small BU YAO SPRING HAIR ORNAMENT with two short delicate dangling gold drops; simplified shapes only, NO crown or large jewelry. A small red three-petal FLOWER HUADIAN at CENTER FOREHEAD. RUQUN with muted deep cinnabar/cranberry-red blouse and ochre-gold PIBO SILK SCARF clearly draped over shoulders. Graceful open rounded neckline shows only collarbones, fully covered chest, dignified and modest. NO Qing diadem/chaoguan, NO liangbatou, NO Ming phoenix crown or standing collar. Clearly feminine adult face.
+```
+
+### 实际生成提示词 `tang-tone-emperor-young-01`
+
+参考：/private/tmp/yuji-art-phase3-tang-20261107/assets/art/portraits/ming/official-mature-01.webp, /private/tmp/yuji-art-phase3-tang-20261107/assets/art/portraits/ming/consort-regular-01.webp, /private/tmp/yuji-art-phase3-tang-20261107/assets/art/scenes/desk-night-1440.webp, /private/tmp/yuji-art-phase3-tang-20261107/assets/art/scenes/court-1440.webp
+
+```text
+Use case: historical-scene. Asset type: ONE fictional Tang-dynasty game character portrait for 御极. The FOUR supplied images are the FOUR approved Phase1 STYLE references: Ming official, Ming regular consort, desk-night and court. Match ONLY their baimiao ink outlines, light flat muted washes and paper. NEVER copy the Ming hats, Ming collars, faces or scene backgrounds.
+Style: Chinese BAIMIAO, clean restrained ink outlines with slight line-weight variation, FLAT muted ochre/cinnabar/azurite/malachite/beige/ink colors, at most one very faint flat shade. Simple atlas illustration, only key period clothing shapes and a few folds, no intricate embroidery or jewelry. Near-smooth plain #E3D7BE paper to ALL edges, almost no paper grain, no dramatic lighting.
+Composition: ONE person, ONE full4:5 canvas1024x1280. Head and shoulders only, crop just below shoulders, no hands/props. Natural three-quarter view, gaze slightly off-camera. Entire complete hat/hair TOP12% of canvas height (strict10–14%); BOTH eye centers38% (strict36–40%). Compact headwear and bun. Invisible coordinates: top154 and eyes486 on1024x1280; top168 and eyes533 on1122x1402. Face horizontally centered. Shoulders fill bottom naturally; no blank bottom border. Do NOT draw coordinates or guides.
+Avoid: any text, seals, signatures,watermarks,frames,grid,borders; photography,3D,anime,glow,detailed realistic shading,actor/TV likeness,Western crown,Korean/Japanese dress. No Ming stiff winged hat, no Song long straight stiff hat tails, no Qing finial hat or court-bead necklaces.
+FACE CARD: 33-year-old ADULT MAN, SHORT BROAD PENTAGONAL face with a wide forehead and a strong prominent chin, thick short slightly upturned black moustache and a small squared black goatee, thick level straight brows and large alert almond eyes, short broad high-bridge straight nose and firm full closed mouth, sturdy thick upright neck and broad square shoulders, warm medium honey-wheat skin, one shallow vertical crease between brows, calm watchful decisive authority; facing RIGHT
+TANG COSTUME: TANG SOFT-TAILED FUTOU: small rounded black CLOTH head wrap tied at BACK, two SOFT BLACK CLOTH TAILS hang DOWN and gently CURVE behind the ears toward the nape/shoulder. Make their downward drooping fabric silhouette unmistakable at44px. NO horizontally outstretched rigid wings; NO straight long Song wings; NO Ming flat-topped two-tier hard cap; NO Qing hat, top bead, brim, crown or dangling beads. TANG EMPEROR wearing a plain muted OCHRE-YELLOW #C09558 ROUND-COLLAR ROBE, simple small pale undercollar. Warm earth ochre, NOT Qing lemon imperial yellow. No dragon-medallion embroidery, NO Ming YISHANGUAN, NO mianguan, no hanging pearl curtain, NO crown or necklaces. Keep round collar unmistakable, not a Qing upright band collar.
+```
+
+### 唐后妃样张构图修正（先记后生成）
+
+首稿常位眼高40.55%、髻顶7.99%；正位眼高40.23%、髻顶2.21%。不接入这两张首稿。保持面貌、衣色和发髻类别，只在生成端压紧上部发髻并稍上移脸／肩，使髻顶12%、眼高38.5%；正位仍保留更大的宽髻、步摇与金钗。
+
+#### `tang-tone-framing-consort-regular-01`
+
+参考：/private/tmp/yuji-art-phase3-tang-20261107/assets/art/portraits/ming/official-mature-01.webp, /private/tmp/yuji-art-phase3-tang-20261107/assets/art/portraits/ming/consort-regular-01.webp, /private/tmp/yuji-art-phase3-tang-20261107/assets/art/scenes/desk-night-1440.webp, /private/tmp/yuji-art-phase3-tang-20261107/assets/art/scenes/court-1440.webp, /Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-tone-consort-regular-01.png
+
+```text
+Use case: precise-object-edit. Images1–4 are ALL FOUR approved Phase1 STYLE references only. Image5 is the ONLY EDIT TARGET: this same Tang woman and painting. Preserve EXACT facial identity and anatomy, face width, eyes/nose/lips/brows, age, expression, skin, forehead red huadian, shoulder width, pose, Tang ruqun and pibo colors, fine baimiao linework and flat muted wash, paper background. NO new person or costume.
+Change ONLY FRAMING / UPPER BUN HEIGHT: current bun top is too high and eyes slightly too low. Keep the face at the SAME SCALE; move face/neck/shoulders together slightly UP by about2% canvas height so BOTH EYE CENTERS land at38.5% height. Make ONLY the UPPER HAIR BUN much more COMPACT VERTICALLY, so COMPLETE HAIR TOP is now12% height, NOT2% or8%. Preserve the bun type and width. Keep forehead/hairline shape and huadian unchanged. On1122x1402 targethair top168, eye centers540. On1024x1280 targethair top154, eyes493. These are invisible layout targets; draw NO guides or text. Do not crop off the bun. Do NOT stretch neck, shrink face or enlarge shoulders.
+REGULAR RANK: retain one SMALLER VERTICAL loop bun, one plain pin, no dangling gold ornament, narrow compact upright silhouette.
+Fully covered chest, modest Tang open curved neckline and scarf; NO cleavage or exposed breast. Keep plain near-smooth #E3D7BE paper to all edges and robe extending through bottom edge. Single4:5 head-shoulder portrait1024x1280. No border,seals,text,watermark,photography,3D,glow. Do not copy Ming clothing from references.
+```
+
+#### `tang-tone-framing-consort-high-01`
+
+参考：/private/tmp/yuji-art-phase3-tang-20261107/assets/art/portraits/ming/official-mature-01.webp, /private/tmp/yuji-art-phase3-tang-20261107/assets/art/portraits/ming/consort-regular-01.webp, /private/tmp/yuji-art-phase3-tang-20261107/assets/art/scenes/desk-night-1440.webp, /private/tmp/yuji-art-phase3-tang-20261107/assets/art/scenes/court-1440.webp, /Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-tone-consort-high-01.png
+
+```text
+Use case: precise-object-edit. Images1–4 are ALL FOUR approved Phase1 STYLE references only. Image5 is the ONLY EDIT TARGET: this same Tang woman and painting. Preserve EXACT facial identity and anatomy, face width, eyes/nose/lips/brows, age, expression, skin, forehead red huadian, shoulder width, pose, Tang ruqun and pibo colors, fine baimiao linework and flat muted wash, paper background. NO new person or costume.
+Change ONLY FRAMING / UPPER BUN HEIGHT: current bun top is too high and eyes slightly too low. Keep the face at the SAME SCALE; move face/neck/shoulders together slightly UP by about2% canvas height so BOTH EYE CENTERS land at38.5% height. Make ONLY the UPPER HAIR BUN much more COMPACT VERTICALLY, so COMPLETE HAIR TOP is now12% height, NOT2% or8%. Preserve the bun type and width. Keep forehead/hairline shape and huadian unchanged. On1122x1402 targethair top168, eye centers540. On1024x1280 targethair top154, eyes493. These are invisible layout targets; draw NO guides or text. Do not crop off the bun. Do NOT stretch neck, shrink face or enlarge shoulders.
+HIGH RANK: retain the WIDER, LARGER DOUBLE-LOOP bun, gold pins and gold BU YAO with two dangling drops; keep its width and broad silhouette, still clearly larger than the regular consort bun.
+Fully covered chest, modest Tang open curved neckline and scarf; NO cleavage or exposed breast. Keep plain near-smooth #E3D7BE paper to all edges and robe extending through bottom edge. Single4:5 head-shoulder portrait1024x1280. No border,seals,text,watermark,photography,3D,glow. Do not copy Ming clothing from references.
+```
+
+### 唐正位样张第二次髻顶修正（先记后生成）
+
+第一次修订眼高39.43%已合格，髻顶8.77%仍偏高。仅压紧发髻上部约50px，脸、眼位、衣服、步摇金钗均保持。
+
+```text
+Use case: precise-object-edit. Images1–4 are all four approved Phase1 STYLE references only. Image5 is the ONLY EDIT TARGET, same Tang high-rank woman. Preserve EXACT same face, age, eyes, eyebrows, nose, lips, expression, skin, face scale, forehead huadian, hairline, lower hair mass beside cheeks, neck, shoulders, ruqun, golden pibo, colors, pose, baimiao outlines and plain paper. NO identity change.
+Change ONLY the TOPMOST part of the high bun: compress its UPPER TWO LOOPS vertically by50pixels on1122x1402, bringing the highest point DOWN from y123 to y173 (12.3% image height). Keep lower bun edge and gold hairpin band in place. Keep both eye centers EXACTLY at their present y553 (39.4% height), do not move the face or body. Preserve broad width, both loops, golden hairpins, the dangling BU YAO and the clear larger high-rank bun silhouette. Same composition and no other changes. Hair highest point must be between10–14% (target12.3%) while eyes stay39.4%. No empty top or bottom bars, keep same #E3D7BE paper continuous to all edges. Single4:5 portrait. Draw NO coordinates, guides, text, seals or watermark. No crown or Qing liangbatou.
 ```
