@@ -1,6 +1,6 @@
 # 美术三期第一批 · 唐制验收
 
-## 最终三张修订 · 2026-11-08 · 发布准备
+## 最终三张修订与Pages发布 · 2026-11-08
 
 玩家通过62张后要求：皇子少年池01、李承乾幼年像去掉发带，改为男童总角或小幞头；高士廉51岁画成熟些、鬓发花白。已用内置imagegen仅替换这三张：两男童均改小型黑色软脚幞头，保留各自13／8岁原脸、眉痣与衣色；高士廉保留朝右和原宽上窄下脸型，补花白鬓须、成熟眼周与额纹，和35岁李孝恭分开。提示词与长相卡同步更新。
 
@@ -18,7 +18,21 @@
 
 ![皇子少年池44px生产样式投影](art-phase3-tang-review/revision-20261108-release/boy-pool-44-browser.jpg)
 
-玩家已明确授权本轮完成后合并PR #7并发布Pages；发布结果与线上抽查将在完成后补录。线上既有第3卷万历0旬已先通过正常导出功能备份到本机，不推进、不覆盖该档。
+已按玩家授权合并PR #7至main，合并提交`73def5b`。[Pages测试、构建与部署运行](https://github.com/Lynch715/yuji-emperor/actions/runs/42508344139)全部成功。
+
+发布后逐一获取正式站点HTML及286张WebP，共**287项HTTP 200且SHA-256完全匹配合并提交**。[完整线上散列](art-phase3-tang-review/revision-20261108-release/pages-all-hashes.json)。
+
+新版应用内浏览器在正式站点的唐太宗开局预览中，确认李世民专属像400×500、opacity=1，1280／390正常，390无横向溢出；另外直接打开三张修订WebP，全部400×500成功解码。线上检查没有新建唐局，没有推进或覆盖已有游戏；真实宗室／朝堂人物卡在隔离localhost复验，范围与正式站点预览分开记录。[线上浏览器读数](art-phase3-tang-review/revision-20261108-release/live-browser-results.json)。
+
+既有第3卷万历0旬在发布前后通过正常导出取得，**38,163字节逐字节相同**，SHA-256均为`44fa7e68aac173da77068995b5e17b4baed065966d58d56604e0ce5bc1da4d82`；第1／2卷仍为空卷，插图设置未改变。原始存档仅留本机未提交。[存档保持证据](art-phase3-tang-review/revision-20261108-release/save-preservation.json)。
+
+![正式站点唐太宗开局预览1280](art-phase3-tang-review/revision-20261108-release/live-tang-preview-1280.jpg)
+
+![正式站点唐太宗开局预览390](art-phase3-tang-review/revision-20261108-release/live-tang-preview-390.jpg)
+
+![正式站点李承乾修订像解码](art-phase3-tang-review/revision-20261108-release/live-child01-image.jpg)
+
+![正式站点高士廉修订像解码](art-phase3-tang-review/revision-20261108-release/live-gao-image.jpg)
 
 ## 全批完成 · 2026-11-08
 

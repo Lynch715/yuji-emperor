@@ -1,0 +1,79 @@
+{
+  "results": [
+    {
+      "images": [
+        {
+          "h": 720,
+          "opacity": "1",
+          "src": "https://lynch715.github.io/yuji-emperor/assets/art/scenes/court-1440.webp",
+          "w": 1280
+        },
+        {
+          "h": 500,
+          "opacity": "1",
+          "src": "https://lynch715.github.io/yuji-emperor/assets/art/portraits/unique/tang-taizong/emperor-01.webp",
+          "w": 400
+        }
+      ],
+      "preview": "李唐 · 626年 · 李世民 28 岁玄武门之变方过两月，东宫旧臣惶惶不安；突厥颉利可汗率十余万骑直抵渭水便桥之北，长安震动。朝中：房玄龄、杜如晦、长孙无忌、魏征、王珪、萧瑀等",
+      "scrollWidth": 1280,
+      "surface": "live Tang scenario preview",
+      "url": "https://lynch715.github.io/yuji-emperor/",
+      "width": 1280
+    },
+    {
+      "portrait": [
+        {
+          "h": 500,
+          "opacity": "1",
+          "src": "https://lynch715.github.io/yuji-emperor/assets/art/portraits/unique/tang-taizong/emperor-01.webp",
+          "w": 400
+        }
+      ],
+      "scrollWidth": 390,
+      "surface": "live Tang preview390",
+      "width": 390
+    },
+    {
+      "images": [
+        {
+          "complete": true,
+          "h": 500,
+          "src": "https://lynch715.github.io/yuji-emperor/assets/art/portraits/unique/tang-taizong/child-01.webp?revision=8aa1c75",
+          "w": 400
+        }
+      ],
+      "surface": "live child01 image",
+      "url": "https://lynch715.github.io/yuji-emperor/assets/art/portraits/unique/tang-taizong/child-01.webp?revision=8aa1c75"
+    },
+    {
+      "images": [
+        {
+          "complete": true,
+          "h": 500,
+          "src": "https://lynch715.github.io/yuji-emperor/assets/art/portraits/tang/prince-teen-01.webp?revision=8aa1c75",
+          "w": 400
+        }
+      ],
+      "surface": "live prince-teen image",
+      "url": "https://lynch715.github.io/yuji-emperor/assets/art/portraits/tang/prince-teen-01.webp?revision=8aa1c75"
+    },
+    {
+      "images": [
+        {
+          "complete": true,
+          "h": 500,
+          "src": "https://lynch715.github.io/yuji-emperor/assets/art/portraits/unique/tang-taizong/official-08.webp?revision=8aa1c75",
+          "w": 400
+        }
+      ],
+      "surface": "live Gao Shilian image",
+      "url": "https://lynch715.github.io/yuji-emperor/assets/art/portraits/unique/tang-taizong/official-08.webp?revision=8aa1c75"
+    }
+  ],
+  "logs": [],
+  "originalIllustrationsOff": false,
+  "settingsChanged": false,
+  "saveCheck": "before and after exports saved privately; compare hashes separately",
+  "scope": "Live Tang opening preview without creating a save; all three revised WebPs decoded directly from Pages. Real character panels checked on isolated localhost."
+}
