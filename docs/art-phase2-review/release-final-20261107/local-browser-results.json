@@ -1,0 +1,40 @@
+{
+  "results": [
+    {
+      "images": [
+        {
+          "complete": true,
+          "height": 500,
+          "src": "http://127.0.0.1:4210/assets/art/portraits/unique/qing-yongzheng/official-10.webp",
+          "width": 400
+        },
+        {
+          "complete": true,
+          "height": 500,
+          "src": "http://127.0.0.1:4210/assets/art/portraits/unique/qing-yongzheng/official-10.webp",
+          "width": 400
+        }
+      ],
+      "overflow": false,
+      "scope": "local-yongzheng"
+    },
+    {
+      "scope": "local-yongzheng-390",
+      "scrollWidth": 390,
+      "viewport": 390
+    },
+    {
+      "images": [
+        {
+          "complete": true,
+          "height": 500,
+          "src": "http://127.0.0.1:4210/assets/art/portraits/unique/qing-kangxi/official-07.webp",
+          "width": 400
+        }
+      ],
+      "scope": "local-kangxi"
+    }
+  ],
+  "logs": [],
+  "preserved": "仅切换既有0旬试读卷并查看人物，未执行回合或写入新进度。"
+}

@@ -1,0 +1,22 @@
+{
+  "date": "2026-11-07",
+  "tests": {
+    "command": "npm test -- --test-concurrency=4",
+    "total": 608,
+    "passed": 608,
+    "failed": 0
+  },
+  "simulation": {
+    "seed": "御极·两百年",
+    "years": 200,
+    "actualYears": 200,
+    "turns": 7200,
+    "reigns": 6,
+    "ending": null,
+    "finalTreasury": 2040
+  },
+  "build": {
+    "htmlBytes": 855007,
+    "sha256": "c04409e58e596caade605f96ad1ef09966e4c5e3a482bb5d99bed3c3440e7d9f"
+  }
+}

@@ -101,13 +101,13 @@ test('场景按行动和地点取图，章节可选显示元数据不改结算�
  assert.equal(JSON.stringify(f),raw);assert.deepEqual(art.nation,done.nation);assert.deepEqual(withChapterArt(art,f),art);
  assert.equal(sceneHTML('不存在'), '');
 });
-test('万历与崇祯全部开局人物优先取专属像，40岁切换老年像，同名不串剧本',()=>{
- for(const id of ['ming-wanli','ming-chongzhen']){
+test('明清四剧本全部开局人物优先取专属像，40岁切换老年像，同名不串剧本',()=>{
+ for(const id of ['ming-wanli','ming-chongzhen','qing-kangxi','qing-yongzheng']){
   const sc=SCENARIOS.find(x=>x.id===id),s=initialTurn(applyScenario(createState({seed:'专属取图'}),id)),before=JSON.stringify(s);
   const base=`assets/art/portraits/unique/${id}/emperor-01.webp`,old=`assets/art/portraits/unique/${id}/emperor-01-old.webp`;
-  assert.equal(portraitSource(s,s.emperor),base);
+  assert.equal(portraitSource(s,s.emperor),s.emperor.age>=40?old:base);
   for(const p of [s.emperor,...s.court.officials.slice(0,sc.officials.length),...s.harem.consorts,...s.harem.children,...s.foreign]){
-   const name=p.ruler||p.name;assert.equal(portraitSource(s,p),ART_UNIQUE[id][name].base,name);assert.ok(portraitSource(s,p)?.includes(`/unique/${id}/`),name);
+   const name=p.ruler||p.name;assert.equal(portraitSource(s,p),ART_UNIQUE[id][name][p===s.emperor&&p.age>=40?'old':'base'],name);assert.ok(portraitSource(s,p)?.includes(`/unique/${id}/`),name);
   }
   assert.equal(portraitSource(s,{name:s.dowager}),ART_UNIQUE[id][s.dowager].base);
   for(const age of [39,40]){const aged=structuredClone(s);aged.emperor.age=age;assert.equal(portraitSource(aged,aged.emperor),age<40?base:old);}
@@ -120,7 +120,19 @@ test('清单仅引用已导出的WebP，尺寸体积预算与文件一一对应'
   ...Object.values({...ART_SCENES,...ART_HALLS}).flatMap(s=>[s.src,s.small])].filter(Boolean);
  const actual=[];function walk(dir){for(const e of readdirSync(dir,{withFileTypes:true})){const path=dir+'/'+e.name;if(e.isDirectory())walk(path);else actual.push(path);}}
  walk('assets/art');assert.deepEqual([...new Set(paths)].sort(),actual.sort());
- assert.equal(actual.length,145,'一期132张内容：116人物、13场景两档、3殿阁题图');
+ assert.equal(actual.length,224,'一期145文件，加二期79张；其余朝代仍为空位');
  assert.ok(actual.reduce((sum,path)=>sum+statSync(path).size,0)<=12000000);
  for(const path of actual){assert.match(path,/\.webp$/);assert.ok(statSync(path).size<=(path.includes('/portraits/')?30000:path.includes('/halls/')?100000:path.endsWith('-720.webp')?60000:150000));}
+});
+
+test('弘历与福惠满16岁切换成年专属像，取图不改脸号、年龄或存档',()=>{
+ const s=initialTurn(applyScenario(createState({seed:'清制成年变体'}),'qing-yongzheng'));
+ for(const name of ['弘历','福惠']){
+  const p=s.harem.children.find(p=>p.name===name);assert.ok(p,name);
+  for(const age of [6,7,15,16,20]){
+   const state=structuredClone(s),child=state.harem.children.find(c=>c.id===p.id);child.born=state.turn-age*36;
+   const before=JSON.stringify(state),faceNo=child.faceNo,expected=ART_UNIQUE['qing-yongzheng'][name][age<16?'base':'adult'];
+   assert.equal(portraitSource(state,child),expected,name+age);assert.equal(child.faceNo,faceNo);assert.equal(JSON.stringify(state),before);
+  }
+ }
 });

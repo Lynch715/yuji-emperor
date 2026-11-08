@@ -1,0 +1,12 @@
+{
+  "width": 1280,
+  "height": 900,
+  "scenario": "qing-yongzheng",
+  "firstScreenRequests": 4,
+  "paths": [
+    "/assets/art/scenes/accession-1440.webp",
+    "/assets/art/portraits/qing/official-old-03.webp",
+    "/assets/art/portraits/unique/qing-yongzheng/official-10.webp",
+    "/assets/art/portraits/qing/official-old-04.webp"
+  ]
+}
