@@ -1,0 +1,353 @@
+{
+  "origin": "http://127.0.0.1:4211",
+  "scope": "第1步四张样张；新建本地第1卷试读局，仅查看开局、朝堂、后宫和设置，未推进回合。线上未访问。",
+  "readings": [
+    {
+      "name": "opening-1280",
+      "images": [
+        {
+          "complete": true,
+          "height": 720,
+          "opacity": "1",
+          "shown": true,
+          "src": "http://127.0.0.1:4211/assets/art/scenes/court-1440.webp",
+          "width": 1280
+        },
+        {
+          "complete": true,
+          "height": 500,
+          "opacity": "1",
+          "shown": true,
+          "src": "http://127.0.0.1:4211/assets/art/portraits/tang/emperor-young-01.webp",
+          "width": 400
+        }
+      ],
+      "scrollWidth": 1280,
+      "viewport": 1280
+    },
+    {
+      "name": "opening-390",
+      "images": [
+        {
+          "complete": true,
+          "height": 405,
+          "opacity": "1",
+          "shown": true,
+          "src": "http://127.0.0.1:4211/assets/art/scenes/court-720.webp",
+          "width": 720
+        },
+        {
+          "complete": true,
+          "height": 500,
+          "opacity": "1",
+          "shown": true,
+          "src": "http://127.0.0.1:4211/assets/art/portraits/tang/emperor-young-01.webp",
+          "width": 400
+        }
+      ],
+      "scrollWidth": 390,
+      "viewport": 390
+    },
+    {
+      "name": "court-1280",
+      "images": [
+        {
+          "complete": true,
+          "height": 720,
+          "opacity": "1",
+          "shown": true,
+          "src": "http://127.0.0.1:4211/assets/art/scenes/accession-1440.webp",
+          "width": 1280
+        },
+        {
+          "complete": true,
+          "height": 720,
+          "opacity": "1",
+          "shown": true,
+          "src": "http://127.0.0.1:4211/assets/art/scenes/court-1440.webp",
+          "width": 1280
+        },
+        {
+          "complete": true,
+          "height": 500,
+          "opacity": "1",
+          "shown": true,
+          "src": "http://127.0.0.1:4211/assets/art/portraits/tang/official-mature-01.webp",
+          "width": 400
+        },
+        {
+          "complete": false,
+          "height": 500,
+          "opacity": "0",
+          "shown": false,
+          "src": "http://127.0.0.1:4211/assets/art/portraits/tang/official-mature-01.webp",
+          "width": 400
+        }
+      ],
+      "scrollWidth": 1280,
+      "viewport": 1280
+    },
+    {
+      "name": "court-390",
+      "images": [
+        {
+          "complete": true,
+          "height": 405,
+          "opacity": "1",
+          "shown": true,
+          "src": "http://127.0.0.1:4211/assets/art/scenes/accession-720.webp",
+          "width": 720
+        },
+        {
+          "complete": true,
+          "height": 405,
+          "opacity": "1",
+          "shown": true,
+          "src": "http://127.0.0.1:4211/assets/art/scenes/court-720.webp",
+          "width": 720
+        },
+        {
+          "complete": true,
+          "height": 500,
+          "opacity": "1",
+          "shown": true,
+          "src": "http://127.0.0.1:4211/assets/art/portraits/tang/official-mature-01.webp",
+          "width": 400
+        },
+        {
+          "complete": false,
+          "height": 500,
+          "opacity": "0",
+          "shown": true,
+          "src": "http://127.0.0.1:4211/assets/art/portraits/tang/official-mature-01.webp",
+          "width": 400
+        }
+      ],
+      "scrollWidth": 390,
+      "viewport": 390
+    },
+    {
+      "name": "harem-1280",
+      "images": [
+        {
+          "complete": true,
+          "height": 720,
+          "opacity": "1",
+          "shown": true,
+          "src": "http://127.0.0.1:4211/assets/art/scenes/accession-1440.webp",
+          "width": 1280
+        },
+        {
+          "complete": true,
+          "height": 720,
+          "opacity": "1",
+          "shown": true,
+          "src": "http://127.0.0.1:4211/assets/art/scenes/garden-1440.webp",
+          "width": 1280
+        },
+        {
+          "complete": true,
+          "height": 500,
+          "opacity": "1",
+          "shown": true,
+          "src": "http://127.0.0.1:4211/assets/art/portraits/tang/consort-high-01.webp",
+          "width": 400
+        },
+        {
+          "complete": true,
+          "height": 500,
+          "opacity": "1",
+          "shown": true,
+          "src": "http://127.0.0.1:4211/assets/art/portraits/tang/consort-regular-01.webp",
+          "width": 400
+        }
+      ],
+      "scrollWidth": 1280,
+      "viewport": 1280
+    },
+    {
+      "name": "harem-high-390",
+      "images": [
+        {
+          "complete": true,
+          "height": 405,
+          "opacity": "1",
+          "shown": true,
+          "src": "http://127.0.0.1:4211/assets/art/scenes/accession-720.webp",
+          "width": 720
+        },
+        {
+          "complete": true,
+          "height": 405,
+          "opacity": "1",
+          "shown": true,
+          "src": "http://127.0.0.1:4211/assets/art/scenes/garden-720.webp",
+          "width": 720
+        },
+        {
+          "complete": true,
+          "height": 500,
+          "opacity": "1",
+          "shown": true,
+          "src": "http://127.0.0.1:4211/assets/art/portraits/tang/consort-high-01.webp",
+          "width": 400
+        },
+        {
+          "complete": true,
+          "height": 500,
+          "opacity": "1",
+          "shown": true,
+          "src": "http://127.0.0.1:4211/assets/art/portraits/tang/consort-regular-01.webp",
+          "width": 400
+        }
+      ],
+      "scrollWidth": 390,
+      "viewport": 390
+    },
+    {
+      "name": "harem-regular-390",
+      "images": [
+        {
+          "complete": true,
+          "height": 405,
+          "opacity": "1",
+          "shown": true,
+          "src": "http://127.0.0.1:4211/assets/art/scenes/accession-720.webp",
+          "width": 720
+        },
+        {
+          "complete": true,
+          "height": 405,
+          "opacity": "1",
+          "shown": true,
+          "src": "http://127.0.0.1:4211/assets/art/scenes/garden-720.webp",
+          "width": 720
+        },
+        {
+          "complete": true,
+          "height": 500,
+          "opacity": "1",
+          "shown": true,
+          "src": "http://127.0.0.1:4211/assets/art/portraits/tang/consort-high-01.webp",
+          "width": 400
+        },
+        {
+          "complete": true,
+          "height": 500,
+          "opacity": "1",
+          "shown": true,
+          "src": "http://127.0.0.1:4211/assets/art/portraits/tang/consort-regular-01.webp",
+          "width": 400
+        }
+      ],
+      "scrollWidth": 390,
+      "viewport": 390
+    },
+    {
+      "name": "harem-360",
+      "scrollWidth": 360,
+      "viewport": 360
+    },
+    {
+      "name": "illustrations-off",
+      "artOff": true,
+      "badges": [
+        {
+          "shown": "grid",
+          "text": "杜"
+        },
+        {
+          "shown": "grid",
+          "text": "张"
+        },
+        {
+          "shown": "grid",
+          "text": "杜"
+        },
+        {
+          "shown": "grid",
+          "text": "长"
+        },
+        {
+          "shown": "grid",
+          "text": "杨"
+        },
+        {
+          "shown": "grid",
+          "text": "韦"
+        },
+        {
+          "shown": "inline-grid",
+          "text": "江"
+        },
+        {
+          "shown": "inline-grid",
+          "text": "刘"
+        },
+        {
+          "shown": "inline-grid",
+          "text": "卢"
+        },
+        {
+          "shown": "inline-grid",
+          "text": "吕"
+        },
+        {
+          "shown": "inline-grid",
+          "text": "唐"
+        },
+        {
+          "shown": "inline-grid",
+          "text": "陶"
+        }
+      ],
+      "imagesWithSrc": 0,
+      "scenes": [
+        "none",
+        "none"
+      ]
+    },
+    {
+      "name": "illustrations-off",
+      "images": [
+        {
+          "complete": true,
+          "height": 0,
+          "opacity": "1",
+          "shown": false,
+          "src": null,
+          "width": 0
+        },
+        {
+          "complete": true,
+          "height": 0,
+          "opacity": "0",
+          "shown": false,
+          "src": null,
+          "width": 0
+        },
+        {
+          "complete": true,
+          "height": 0,
+          "opacity": "0",
+          "shown": false,
+          "src": null,
+          "width": 0
+        },
+        {
+          "complete": true,
+          "height": 0,
+          "opacity": "0",
+          "shown": false,
+          "src": null,
+          "width": 0
+        }
+      ],
+      "scrollWidth": 1280,
+      "viewport": 1280
+    }
+  ],
+  "logs": [],
+  "illustrationsRestored": true,
+  "remainingFullPhaseAcceptance": "768三档完整回归、断网、首屏请求、对比度及Lighthouse，待画风确认并完成其余58张后执行。"
+}

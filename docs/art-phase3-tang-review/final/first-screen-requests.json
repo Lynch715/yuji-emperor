@@ -1,0 +1,22 @@
+{
+  "surface": "real Tang game first screen 1280x900",
+  "images": [
+    {
+      "time": "2026-11-08T15:45:29.117Z",
+      "path": "/assets/art/scenes/accession-1440.webp",
+      "offline": false
+    },
+    {
+      "time": "2026-11-08T15:45:29.118Z",
+      "path": "/assets/art/portraits/unique/tang-taizong/official-02.webp",
+      "offline": false
+    },
+    {
+      "time": "2026-11-08T15:45:29.118Z",
+      "path": "/assets/art/portraits/tang/official-mature-09.webp",
+      "offline": false
+    }
+  ],
+  "newArtRequests": 3,
+  "budget": 6
+}

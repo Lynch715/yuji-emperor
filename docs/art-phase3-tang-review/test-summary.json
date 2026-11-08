@@ -1,0 +1,26 @@
+{
+  "date": "2026-11-07",
+  "baseline": "97f80a4",
+  "stage": "唐制第1步定调",
+  "tests": {
+    "command": "npm test -- --test-concurrency=4",
+    "passed": 608,
+    "failed": 0
+  },
+  "simulation": {
+    "seed": "御极·两百年",
+    "years": 200,
+    "actualYears": 200,
+    "turns": 7200,
+    "reigns": 6,
+    "successionCount": 5,
+    "ending": null,
+    "finalTreasury": 2040
+  },
+  "build": {
+    "command": "npm run build",
+    "htmlBytes": 855190,
+    "sha256": "8d944549866ca3c6bfa6ac9744c3e1f096121a8f639d0b9ad2525fc403b1c8a8"
+  },
+  "coreAndLlmUnchanged": true
+}

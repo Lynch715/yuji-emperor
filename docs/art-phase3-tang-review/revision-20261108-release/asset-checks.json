@@ -1,0 +1,149 @@
+{
+  "summary": {
+    "baseline": "6a92b32",
+    "replacedFiles": 3,
+    "unchangedFiles": 283,
+    "totalWebPFiles": 286,
+    "totalBytes": 4209272,
+    "phase3Bytes": 530882,
+    "sourceHtmlTestsUnchanged": true,
+    "saveVersion": 25
+  },
+  "replacements": [
+    {
+      "file": "assets/art/portraits/tang/prince-teen-01.webp",
+      "bytes": 6122,
+      "sha256": "bd8038ecd265d9afe6dfe81c006dea394d90959a0d20243b06c9e72c03ebc382",
+      "beforeSha256": "3ddbd2d3da8763de83135d6134cafdd794e33ae7e31cdb618d8206f1f49be4f4",
+      "export": {
+        "id": "tang/prince-teen-01",
+        "file": "assets/art/portraits/tang/prince-teen-01.webp",
+        "job": "tang-final-release-tang-prince-teen-01",
+        "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-final-release-tang-prince-teen-01.png",
+        "cellBox": [
+          0,
+          0,
+          1122,
+          1402
+        ],
+        "rawSize": [
+          1122,
+          1402
+        ],
+        "eyeY": 504.98,
+        "headTop": 154,
+        "faceBox": [
+          320.701283454895,
+          406.81952941417694,
+          314.10934245586395,
+          314.1093469262123
+        ],
+        "status": "exported",
+        "crop": [
+          0,
+          0,
+          1122,
+          1402
+        ],
+        "eyeRatio": 0.3602,
+        "headTopRatio": 0.1098,
+        "bytes": 6122,
+        "quality": 75,
+        "dimensions": [
+          400,
+          500
+        ]
+      }
+    },
+    {
+      "file": "assets/art/portraits/unique/tang-taizong/official-08.webp",
+      "bytes": 7194,
+      "sha256": "c3729306a45b3744dd9269a85f21892fda7c8472e219538ce27f164b509c1c51",
+      "beforeSha256": "e36ccfe6c9ff63af694a81a5587da3f3a5d79c1247fc8d755ef2b55c4bd17cb4",
+      "export": {
+        "id": "tang-taizong/official-08",
+        "file": "assets/art/portraits/unique/tang-taizong/official-08.webp",
+        "job": "tang-final-release-gaoshilian-identity-fix",
+        "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-final-release-gaoshilian-identity-fix.png",
+        "cellBox": [
+          0,
+          0,
+          1072,
+          1467
+        ],
+        "rawSize": [
+          1072,
+          1467
+        ],
+        "eyeY": 574.32,
+        "headTop": 187,
+        "faceBox": [
+          463.90820932388306,
+          465.11555618047714,
+          383.69166803359985,
+          383.691677570343
+        ],
+        "status": "exported",
+        "crop": [
+          0,
+          46,
+          1072,
+          1386
+        ],
+        "eyeRatio": 0.3943,
+        "headTopRatio": 0.1052,
+        "bytes": 7194,
+        "quality": 75,
+        "dimensions": [
+          400,
+          500
+        ]
+      }
+    },
+    {
+      "file": "assets/art/portraits/unique/tang-taizong/child-01.webp",
+      "bytes": 5724,
+      "sha256": "7a7daa34a8990c3cffa736c0f8b632568832e7ad1d3cc5a977eacfaeb37078a6",
+      "beforeSha256": "07596c50a7beaea3b4de5736ce19fd614ae560493297a757c985a0cab502d8d7",
+      "export": {
+        "id": "tang-taizong/child-01",
+        "file": "assets/art/portraits/unique/tang-taizong/child-01.webp",
+        "job": "tang-final-release-tang-taizong-child-01",
+        "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-final-release-tang-taizong-child-01.png",
+        "cellBox": [
+          0,
+          0,
+          1122,
+          1402
+        ],
+        "rawSize": [
+          1122,
+          1402
+        ],
+        "eyeY": 560.25,
+        "headTop": 171,
+        "faceBox": [
+          266.63402876257896,
+          427.0222088098526,
+          397.830550968647,
+          397.8305746912956
+        ],
+        "status": "exported",
+        "crop": [
+          0,
+          0,
+          1122,
+          1402
+        ],
+        "eyeRatio": 0.3996,
+        "headTopRatio": 0.122,
+        "bytes": 5724,
+        "quality": 75,
+        "dimensions": [
+          400,
+          500
+        ]
+      }
+    }
+  ]
+}

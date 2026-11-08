@@ -1,0 +1,66 @@
+{
+  "fixture": "production palacePanel/portraitHTML/sceneHTML and production CSS, initArt before mounting template; isolated no-save projection",
+  "realInteractionBrowser": "Codex In-app Browser",
+  "reports": [
+    {
+      "surface": "court",
+      "device": "mobile",
+      "score": 100,
+      "url": "http://127.0.0.1:4211/qa/art-phase3/lh-court.html",
+      "lighthouseVersion": "13.6.0",
+      "fetchTime": "2026-11-08T16:31:11.836Z",
+      "failedAudits": [],
+      "rawSha256": "e7184f25866ea69830c4483b5085d29c0c05a8886a2377e966b5cc9457fb4adc"
+    },
+    {
+      "surface": "court",
+      "device": "desktop",
+      "score": 100,
+      "url": "http://127.0.0.1:4211/qa/art-phase3/lh-court.html",
+      "lighthouseVersion": "13.6.0",
+      "fetchTime": "2026-11-08T16:31:11.836Z",
+      "failedAudits": [],
+      "rawSha256": "7ae8704e68f5ed77db7e91f60a7a0774139ad721e8b9e7e283f62272abf1b880"
+    },
+    {
+      "surface": "harem",
+      "device": "desktop",
+      "score": 100,
+      "url": "http://127.0.0.1:4211/qa/art-phase3/lh-harem.html",
+      "lighthouseVersion": "13.6.0",
+      "fetchTime": "2026-11-08T16:31:22.313Z",
+      "failedAudits": [],
+      "rawSha256": "20fc85e9913f5159b0b41761342e0640d650a052dbec29e4605d36aefcc71e50"
+    },
+    {
+      "surface": "harem",
+      "device": "mobile",
+      "score": 100,
+      "url": "http://127.0.0.1:4211/qa/art-phase3/lh-harem.html",
+      "lighthouseVersion": "13.6.0",
+      "fetchTime": "2026-11-08T16:31:22.924Z",
+      "failedAudits": [],
+      "rawSha256": "2c50eb45076c539792907f696d6e4e3258845ca769074dc4f6309008348fa298"
+    },
+    {
+      "surface": "paper",
+      "device": "desktop",
+      "score": 100,
+      "url": "http://127.0.0.1:4211/qa/art-phase3/lh-paper.html",
+      "lighthouseVersion": "13.6.0",
+      "fetchTime": "2026-11-08T16:31:32.322Z",
+      "failedAudits": [],
+      "rawSha256": "f73205606d1b69465e41ec39b9347b205144e75993399d5679d585197b166d52"
+    },
+    {
+      "surface": "paper",
+      "device": "mobile",
+      "score": 100,
+      "url": "http://127.0.0.1:4211/qa/art-phase3/lh-paper.html",
+      "lighthouseVersion": "13.6.0",
+      "fetchTime": "2026-11-08T16:31:32.987Z",
+      "failedAudits": [],
+      "rawSha256": "227be1422c8ebc1eaa3eed61a807164a86ee829f840739c2d80f38e9e17170dd"
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "tests": {
+    "total": 608,
+    "passed": 608,
+    "failed": 0,
+    "durationMs": 42218.346667
+  },
+  "simulation": {
+    "seed": "御极·两百年",
+    "years": 200,
+    "actualYears": 200,
+    "turns": 7200,
+    "successionCount": 5,
+    "ending": null,
+    "finalTreasury": 2040
+  },
+  "build": {
+    "htmlBytes": 858090,
+    "unchangedFrom": "6a92b32"
+  },
+  "lighthouse": {
+    "reusedFrom": "6a92b32 complete batch",
+    "scores": [
+      100,
+      100,
+      100,
+      100,
+      100,
+      100
+    ],
+    "reason": "This revision changes only three WebP assets and evidence, no source/HTML/CSS changes; no rerun"
+  },
+  "saveVersion": 25
+}

@@ -1,0 +1,27 @@
+{
+  "tests": {
+    "command": "npm test",
+    "total": 608,
+    "passed": 608,
+    "failed": 0,
+    "durationMs": 46244.564583
+  },
+  "simulation": {
+    "seed": "御极·两百年",
+    "years": 200,
+    "actualYears": 200,
+    "turns": 7200,
+    "successionCount": 5,
+    "completedReigns": 5,
+    "collapseCount": 0,
+    "ending": null,
+    "finalTreasury": 2040
+  },
+  "build": {
+    "command": "npm run build",
+    "htmlBytes": 858090,
+    "htmlBudget": 860000
+  },
+  "saveVersion": 25,
+  "coreLogicChanged": false
+}

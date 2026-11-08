@@ -1,0 +1,115 @@
+{
+  "method": "WCAG sRGB relative luminance on art-adjacent CSS token pairs read from real IAB DOM",
+  "minimum": 4.8314,
+  "gradientSceneTextNodes": [
+    ""
+  ],
+  "scope": "Art wrappers are aria-hidden and contain no text; titles follow images. Checks cover surrounding dark text, paper text, and ink on the portrait badge background; not an assertion about every possible site color combination.",
+  "checks": [
+    {
+      "text": "--text",
+      "background": "--desk",
+      "foreground": "#ede3d1",
+      "backgroundColor": "#1c1714",
+      "ratio": 13.9668
+    },
+    {
+      "text": "--text",
+      "background": "--desk-deep",
+      "foreground": "#ede3d1",
+      "backgroundColor": "#191411",
+      "ratio": 14.3622
+    },
+    {
+      "text": "--text",
+      "background": "--desk-shade",
+      "foreground": "#ede3d1",
+      "backgroundColor": "#120e0c",
+      "ratio": 15.0929
+    },
+    {
+      "text": "--text-strong",
+      "background": "--desk",
+      "foreground": "#f2e8d6",
+      "backgroundColor": "#1c1714",
+      "ratio": 14.6266
+    },
+    {
+      "text": "--text-strong",
+      "background": "--desk-deep",
+      "foreground": "#f2e8d6",
+      "backgroundColor": "#191411",
+      "ratio": 15.0407
+    },
+    {
+      "text": "--text-strong",
+      "background": "--desk-shade",
+      "foreground": "#f2e8d6",
+      "backgroundColor": "#120e0c",
+      "ratio": 15.8058
+    },
+    {
+      "text": "--text-soft",
+      "background": "--desk",
+      "foreground": "#d9cbb4",
+      "backgroundColor": "#1c1714",
+      "ratio": 11.1264
+    },
+    {
+      "text": "--text-soft",
+      "background": "--desk-deep",
+      "foreground": "#d9cbb4",
+      "backgroundColor": "#191411",
+      "ratio": 11.4414
+    },
+    {
+      "text": "--text-soft",
+      "background": "--desk-shade",
+      "foreground": "#d9cbb4",
+      "backgroundColor": "#120e0c",
+      "ratio": 12.0234
+    },
+    {
+      "text": "--text-muted",
+      "background": "--desk",
+      "foreground": "#a89a88",
+      "backgroundColor": "#1c1714",
+      "ratio": 6.4657
+    },
+    {
+      "text": "--text-muted",
+      "background": "--desk-deep",
+      "foreground": "#a89a88",
+      "backgroundColor": "#191411",
+      "ratio": 6.6488
+    },
+    {
+      "text": "--text-muted",
+      "background": "--desk-shade",
+      "foreground": "#a89a88",
+      "backgroundColor": "#120e0c",
+      "ratio": 6.987
+    },
+    {
+      "text": "--ink",
+      "background": "--paper",
+      "foreground": "#2a2420",
+      "backgroundColor": "#efe6d3",
+      "ratio": 12.3424
+    },
+    {
+      "text": "--ink-muted",
+      "background": "--paper",
+      "foreground": "#6e6155",
+      "backgroundColor": "#efe6d3",
+      "ratio": 4.8314
+    },
+    {
+      "text": "--ink",
+      "background": "--paper-chip",
+      "foreground": "#2a2420",
+      "backgroundColor": "#e3d7be",
+      "ratio": 10.7388
+    }
+  ]
+}
