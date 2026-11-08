@@ -1,0 +1,52 @@
+{
+  "release": "c60651b",
+  "results": [
+    {
+      "images": [
+        {
+          "complete": true,
+          "height": 500,
+          "opacity": "1",
+          "src": "https://lynch715.github.io/yuji-emperor/assets/art/portraits/unique/qing-kangxi/emperor-01.webp",
+          "width": 400
+        }
+      ],
+      "scope": "live-kangxi-preview"
+    },
+    {
+      "images": [
+        {
+          "complete": true,
+          "height": 500,
+          "opacity": "1",
+          "src": "https://lynch715.github.io/yuji-emperor/assets/art/portraits/unique/qing-yongzheng/emperor-01-old.webp",
+          "width": 400
+        }
+      ],
+      "scope": "live-yongzheng-preview"
+    },
+    {
+      "images": [
+        {
+          "complete": true,
+          "height": 500,
+          "opacity": "1",
+          "src": "https://lynch715.github.io/yuji-emperor/assets/art/portraits/unique/qing-yongzheng/emperor-01-old.webp",
+          "width": 400
+        }
+      ],
+      "scope": "live-yongzheng-390",
+      "scrollWidth": 390,
+      "viewport": 390
+    }
+  ],
+  "headerUnchanged": true,
+  "scope": "正式站点仅用开局选择预览，不点击承天践祚；验收前后导出第3卷比较，原第1、2卷仍为空卷。",
+  "logs": [],
+  "savePreservation": {
+    "bytes": 38163,
+    "byteIdentical": true,
+    "sha256": "44fa7e68aac173da77068995b5e17b4baed065966d58d56604e0ce5bc1da4d82",
+    "rawExports": "只留本机qa/art，不提交存档内容"
+  }
+}

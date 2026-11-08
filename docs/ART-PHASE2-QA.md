@@ -1,6 +1,20 @@
 # 美术二期 · 清制 · 完整验收
 
-完成日期：2026-11-07。分支`feat/art-phase2`，基于main／`34bdb82`；二期79／79张和前次修订已获玩家通过。本轮完成最终三张修订，按玩家授权进入PR #6合并与GitHub Pages发布。下方保留各轮验收历史。
+完成日期：2026-11-07。分支`feat/art-phase2`，基于main／`34bdb82`；二期79／79张和前次修订已获玩家通过。本轮完成最终三张修订后，已按玩家授权合并[PR #6](https://github.com/Lynch715/yuji-emperor/pull/6)并成功发布GitHub Pages。下方保留各轮验收历史。
+
+## 发布验收 · 2026-11-07
+
+功能合并提交 **`c60651b7b462bb8cbb320d4bfcacd7df78256a61`**（PR #6，最终修订头56469ac）。[GitHub Actions发布记录](https://github.com/Lynch715/yuji-emperor/actions/runs/42439872822)的build／deploy均success，完成于2026-11-08 02:47 UTC（本地11月7日）；[流水线原始结果](art-phase2-review/release-final-20261107/pages-c60651b.json)。后续发布记录提交只涉及CHANGELOG、验收文档与证据，不改变站点产物。
+
+对[正式站点](https://lynch715.github.io/yuji-emperor/)逐项附提交号避缓存读取：**HTML+全部224个WebP，225／225项HTTP200且SHA-256与已合并main一致**。包含本轮常位05、熊赐履07、允禟10及全部79张二期像。[完整线上散列核对](art-phase2-review/release-final-20261107/live-assets-c60651b.json)。
+
+应用内浏览器抽查正式站点：开局选择切换清圣祖／清世宗，康熙`unique/qing-kangxi/emperor-01.webp`、雍正`unique/qing-yongzheng/emperor-01-old.webp`均complete=true、naturalWidth=400、naturalHeight=500、opacity=1，390宽scrollWidth=390。这里是正式开局选择的头像预览；实际朝堂人物修订已在上面的隔离localhost验收。浏览器warn/error为空。[线上浏览器读数及存档保护散列](art-phase2-review/release-final-20261107/live-browser-results.json)。
+
+为保护既有进度，线上只预览并关闭开局表单，未点击承天践祚；回到原万历0旬，验收前后UI导出的第3卷 **38,163字节逐字节一致**（SHA-256 `44fa7e68aac173da77068995b5e17b4baed065966d58d56604e0ce5bc1da4d82`）。第1、2卷仍为空卷；原始导出只留本机qa/art，未提交存档内容。视口已恢复默认。
+
+![线上康熙开局头像预览1280](art-phase2-review/release-final-20261107/live-kangxi-1280.jpg)
+
+![线上雍正开局头像预览390](art-phase2-review/release-final-20261107/live-yongzheng-390.jpg)
 
 ## 合并前最终三张修订 · 2026-11-07 · 504e723基线
 
