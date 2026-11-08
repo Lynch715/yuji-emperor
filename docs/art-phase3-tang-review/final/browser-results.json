@@ -1,0 +1,313 @@
+{
+  "results": [
+    {
+      "images": [
+        {
+          "h": 500,
+          "opacity": "1",
+          "src": "http://127.0.0.1:4211/assets/art/portraits/unique/tang-taizong/official-01.webp",
+          "w": 400
+        },
+        {
+          "h": 500,
+          "opacity": "1",
+          "src": "http://127.0.0.1:4211/assets/art/portraits/unique/tang-taizong/official-02.webp",
+          "w": 400
+        }
+      ],
+      "scrollWidth": 1280,
+      "surface": "court-1280",
+      "width": 1280
+    },
+    {
+      "portrait": [
+        {
+          "naturalWidth": 400,
+          "opacity": "1",
+          "src": "http://127.0.0.1:4211/assets/art/portraits/unique/tang-taizong/official-01.webp"
+        }
+      ],
+      "scene": [
+        {
+          "fit": "cover",
+          "h": 112,
+          "naturalWidth": 720,
+          "src": "http://127.0.0.1:4211/assets/art/scenes/audience-720.webp",
+          "w": 340
+        }
+      ],
+      "scrollWidth": 390,
+      "surface": "audience-390",
+      "width": 390
+    },
+    {
+      "images": [
+        {
+          "ok": true,
+          "src": "http://127.0.0.1:4211/assets/art/scenes/accession-1440.webp"
+        },
+        {
+          "ok": true,
+          "src": "http://127.0.0.1:4211/assets/art/portraits/unique/tang-taizong/official-02.webp"
+        },
+        {
+          "ok": true,
+          "src": "http://127.0.0.1:4211/assets/art/portraits/tang/official-mature-09.webp"
+        },
+        {
+          "ok": true,
+          "src": "http://127.0.0.1:4211/assets/art/portraits/unique/tang-taizong/official-02.webp"
+        }
+      ],
+      "scrollWidth": 1280,
+      "surface": "fresh-first-screen",
+      "width": 1280
+    },
+    {
+      "portraits": [
+        {
+          "naturalHeight": 500,
+          "naturalWidth": 400,
+          "src": "http://127.0.0.1:4211/assets/art/portraits/unique/tang-taizong/consort-01.webp"
+        },
+        {
+          "naturalHeight": 500,
+          "naturalWidth": 400,
+          "src": "http://127.0.0.1:4211/assets/art/portraits/unique/tang-taizong/consort-02.webp"
+        },
+        {
+          "naturalHeight": 500,
+          "naturalWidth": 400,
+          "src": "http://127.0.0.1:4211/assets/art/portraits/unique/tang-taizong/consort-03.webp"
+        },
+        {
+          "naturalHeight": 500,
+          "naturalWidth": 400,
+          "src": "http://127.0.0.1:4211/assets/art/portraits/tang/consort-regular-03.webp"
+        },
+        {
+          "naturalHeight": 500,
+          "naturalWidth": 400,
+          "src": "http://127.0.0.1:4211/assets/art/portraits/tang/consort-regular-04.webp"
+        },
+        {
+          "naturalHeight": 500,
+          "naturalWidth": 400,
+          "src": "http://127.0.0.1:4211/assets/art/portraits/tang/consort-regular-05.webp"
+        },
+        {
+          "naturalHeight": 500,
+          "naturalWidth": 400,
+          "src": "http://127.0.0.1:4211/assets/art/portraits/tang/consort-regular-02.webp"
+        },
+        {
+          "naturalHeight": 500,
+          "naturalWidth": 400,
+          "src": "http://127.0.0.1:4211/assets/art/portraits/tang/consort-regular-03.webp"
+        },
+        {
+          "naturalHeight": 500,
+          "naturalWidth": 400,
+          "src": "http://127.0.0.1:4211/assets/art/portraits/tang/consort-regular-04.webp"
+        }
+      ],
+      "scrollWidth": 1280,
+      "surface": "harem-1280",
+      "width": 1280
+    },
+    {
+      "modalScrollWidth": 342,
+      "modalWidth": 342,
+      "scrollWidth": 360,
+      "surface": "harem-360",
+      "width": 360
+    },
+    {
+      "imageSrcCount": 0,
+      "off": true,
+      "portraits": [
+        {
+          "h": 44,
+          "text": "房",
+          "w": 44
+        },
+        {
+          "h": 44,
+          "text": "杜",
+          "w": 44
+        },
+        {
+          "h": 44,
+          "text": "长",
+          "w": 44
+        },
+        {
+          "h": 44,
+          "text": "魏",
+          "w": 44
+        },
+        {
+          "h": 44,
+          "text": "王",
+          "w": 44
+        },
+        {
+          "h": 44,
+          "text": "萧",
+          "w": 44
+        }
+      ],
+      "sceneVisible": false,
+      "surface": "illustrations-off"
+    },
+    {
+      "off": true,
+      "srcCount": 0,
+      "surface": "off-survives-reload"
+    },
+    {
+      "heading": "贞观新政",
+      "images": [
+        {
+          "complete": true,
+          "naturalWidth": 0,
+          "opacity": "0",
+          "src": "assets/art/scenes/accession-1440.webp"
+        },
+        {
+          "complete": true,
+          "failed": true,
+          "naturalWidth": 0,
+          "opacity": "0",
+          "src": "assets/art/portraits/unique/tang-taizong/official-02.webp"
+        },
+        {
+          "complete": true,
+          "failed": true,
+          "naturalWidth": 0,
+          "opacity": "0",
+          "src": "assets/art/portraits/tang/official-mature-09.webp"
+        },
+        {
+          "complete": true,
+          "failed": true,
+          "naturalWidth": 0,
+          "opacity": "0",
+          "src": "assets/art/portraits/unique/tang-taizong/official-02.webp"
+        }
+      ],
+      "sceneBackgrounds": [
+        "rgb(239, 230, 211)"
+      ],
+      "surface": "image-connection-failure-chapter"
+    },
+    {
+      "badges": [
+        {
+          "failed": true,
+          "h": 44,
+          "text": "房",
+          "w": 44
+        },
+        {
+          "failed": true,
+          "h": 44,
+          "text": "杜",
+          "w": 44
+        },
+        {
+          "failed": true,
+          "h": 44,
+          "text": "长",
+          "w": 44
+        },
+        {
+          "failed": true,
+          "h": 44,
+          "text": "魏",
+          "w": 44
+        },
+        {
+          "failed": true,
+          "h": 44,
+          "text": "王",
+          "w": 44
+        },
+        {
+          "failed": true,
+          "h": 44,
+          "text": "萧",
+          "w": 44
+        }
+      ],
+      "scrollWidth": 1280,
+      "surface": "image-connection-failure-portraits",
+      "width": 1280
+    },
+    {
+      "colors": {
+        "--desk": "#1c1714",
+        "--desk-deep": "#191411",
+        "--desk-shade": "#120e0c",
+        "--ink": "#2a2420",
+        "--ink-muted": "#6e6155",
+        "--paper": "#efe6d3",
+        "--paper-chip": "#e3d7be",
+        "--text": "#ede3d1",
+        "--text-muted": "#a89a88",
+        "--text-soft": "#d9cbb4",
+        "--text-strong": "#f2e8d6"
+      },
+      "images": [
+        {
+          "ok": true,
+          "src": "http://127.0.0.1:4211/assets/art/scenes/accession-1440.webp"
+        },
+        {
+          "ok": true,
+          "src": "http://127.0.0.1:4211/assets/art/portraits/unique/tang-taizong/official-02.webp"
+        },
+        {
+          "ok": true,
+          "src": "http://127.0.0.1:4211/assets/art/portraits/tang/official-mature-09.webp"
+        },
+        {
+          "ok": true,
+          "src": "http://127.0.0.1:4211/assets/art/portraits/unique/tang-taizong/official-02.webp"
+        }
+      ],
+      "sceneText": [
+        ""
+      ],
+      "scrollWidth": 1280,
+      "surface": "connection-restored",
+      "width": 1280
+    },
+    {
+      "scene": [
+        {
+          "h": 432,
+          "src": "http://127.0.0.1:4211/assets/art/scenes/accession-1440.webp",
+          "w": 768
+        }
+      ],
+      "scrollWidth": 768,
+      "surface": "game-768",
+      "width": 768
+    },
+    {
+      "scene": [
+        {
+          "h": 405,
+          "src": "http://127.0.0.1:4211/assets/art/scenes/accession-720.webp",
+          "w": 720
+        }
+      ],
+      "scrollWidth": 390,
+      "surface": "game-390",
+      "width": 390
+    }
+  ],
+  "normalLogs": [],
+  "offlineLogs": []
+}

@@ -1,5 +1,99 @@
 # 美术三期第一批 · 唐制验收
 
+## 全批完成 · 2026-11-08
+
+玩家已确认唐制画风，本轮完成其余58张，并重出正位池01：更高、更大的纵向高髻，凤钗与三串垂珠；44px仍明显隆重于常位。当前唐制**62／62**，草稿[PR #7](https://github.com/Lynch715/yuji-emperor/pull/7)供玩家审阅，**不合并、不发布**。
+
+分支`feat/art-phase3-tang`；主线基准`97f80a4`，定调样张基准`79bace9`。原工作区未提交内容保留。全部素材使用内置imagegen；一期四张与更新后的唐制四张以两块完整参照板随每次生成传入，未减少参考画面。池图先写卡再按2×2出稿，尾组空格不导出；专属像单张，年龄变体另加本人底像。构图不合格的稿件在生成端保留原脸校正，未接入未合格原稿。实际提示词、史料索引、脸卡及修订过程见[ART-PROMPTS](ART-PROMPTS.md)。原始PNG与失败稿仅留本机`art-source/phase3-tang/bulk/`。
+
+### 数量、体积与兼容
+
+| 范围 | 张数 | WebP字节 |
+| --- | ---: | ---: |
+| 唐制池：文官壮10、老6、武将3、宦官1、正位2、常位5、皇帝青老各1、皇子少成各1、公主少成各1 | 33 | 300,900 |
+| 唐太宗专属：25位历史开局人物＋李世民老年＋李承乾／李泰／李恪成年 | 29 | 231,774 |
+| 本批唐制合计 | **62** | **532,674** |
+| `assets/art/`全目录 | **286个WebP** | **4,211,064（约4.21 MB）** |
+
+全部唐像400×500、WebP q75，最大16,378字节，低于每张30 KB；总目录低于12 MB。逐张导出记录的完整髻／帽顶距为10–14%，眼高为36.02–40%；构图探针与全图人工复检结合。前两期224个WebP逐字节保持，唐制其余三个已确认定调样张逐字节保持，仅正位01按反馈替换。[资产及构图记录](art-phase3-tang-review/final/asset-checks.json)。
+
+仅填唐制33池槽和唐太宗29专属槽，其他朝代、其他剧本、共用池、场景／殿阁、焦点配置逐项比对不变。`src/core`没有修改，存档仍v25；既有脸号、随机数、迁移与提交规则保持。[保持性核对](art-phase3-tang-review/final/preservation.json)。
+
+### 长相、44px与年龄复检
+
+同池长相卡74组两两组合均至少四维不同，脸型或胡须／发际线维度不同；最终全图与44px逐池检查。唐制软脚下垂、圆领无补子、文武区别以及后妃两档头饰继续沿用已确认规范。正位01保留原脸与衣色，只加强高髻、凤钗、垂珠：
+
+![正位01修订前后与常位44px对照](art-phase3-tang-review/high-regalia-before-after.png)
+
+![唐池33张原图与44px](art-phase3-tang-review/final/tang-pool-full.png)
+
+![唐池33张44px完整条](art-phase3-tang-review/final/tang-pool-44.png)
+
+逐池44px条也保存在本机`qa/art/`，仓库镜像：[文官壮](art-phase3-tang-review/final/pools-44/tang-official-mature-44.png)、[文官老](art-phase3-tang-review/final/pools-44/tang-official-old-44.png)、[武将](art-phase3-tang-review/final/pools-44/tang-general-all-44.png)、[宦官](art-phase3-tang-review/final/pools-44/tang-eunuch-all-44.png)、[正位](art-phase3-tang-review/final/pools-44/tang-consort-high-44.png)、[常位](art-phase3-tang-review/final/pools-44/tang-consort-regular-44.png)、[皇帝青](art-phase3-tang-review/final/pools-44/tang-emperor-young-44.png)、[皇帝老](art-phase3-tang-review/final/pools-44/tang-emperor-old-44.png)、[皇子少](art-phase3-tang-review/final/pools-44/tang-prince-teen-44.png)、[皇子成](art-phase3-tang-review/final/pools-44/tang-prince-adult-44.png)、[公主少](art-phase3-tang-review/final/pools-44/tang-princess-teen-44.png)、[公主成](art-phase3-tang-review/final/pools-44/tang-princess-adult-44.png)。
+
+专属像依据scenarios.js的年龄、性格与秘密，并参考《旧唐书》相关卷目及韦贵妃墓志；未有可靠记载的具体五官、痣和体态明确作为创作设定，外邦绘制年龄不写入游戏状态。用长短脸、全须／三绺／短颏／无须、胖瘦颈肩与神情区分；外邦冠服各异。李恪幼年稿在复检时改回明确7岁儿童比例。李世民老年为约50岁，三位皇子成年为约20岁，分别保留本人五官特征。
+
+![唐太宗专属29张](art-phase3-tang-review/final/tang-taizong-full.png)
+
+![唐太宗专属29张44px完整条](art-phase3-tang-review/final/tang-taizong-44.png)
+
+![本人幼年／成年及皇帝青老对照](art-phase3-tang-review/final/age-variants.png)
+
+### 自动检查与应用内浏览器
+
+- `npm test`：**608／608通过**。扩展现有测试覆盖唐、明、清五剧本全部历史开局人物，皇帝39／40切档、跨剧本同名隔离；唐清五位皇子6／7／15／16／20岁切档且取图不修改存档。
+- `node scripts/simulate.mjs 200`：**200年／7200旬**，五次继位，未崩盘，最终国库2040；mock路径不请求模型。
+- `npm run build`：`index.html` **858,090字节**，低于860,000预算。[测试与模拟摘要](art-phase3-tang-review/final/test-summary.json)。
+- 新版Codex In-app Browser，经`http://127.0.0.1:4211`查看独立第1卷试读唐局；仅查看和打开召见预览，没有垂询模型或推进旬，没有访问线上存档。真实游戏1280×900、768×1024、390×844截图齐全，360×800无横向溢出，360时后宫弹窗scrollWidth／clientWidth均342。
+- 真实召见纸面头像400×500正常；390行动头图为340×112，使用720档、object-fit:cover，完整覆盖无画边。首屏仅**3个**新增图片请求（章节、杜如晦、池文官09），不超过6。[首屏请求记录](art-phase3-tang-review/final/first-screen-requests.json)。
+- 生产取图函数逐一核对62个路径；只读投影页复用生产头像HTML与CSS，初始化加载监听后再挂载，124个头像／人物卡、62个不同源均400×500解码且opacity=1。此投影页为全批解码与44px补充验证，不等同于真实游戏操作截图。[取图记录](art-phase3-tang-review/final/portrait-resolution.json)、[浏览器解码记录](art-phase3-tang-review/final/gallery-load-results.json)。
+
+![真实游戏章节1280](art-phase3-tang-review/final/game-1280.jpg)
+
+![真实朝堂1280](art-phase3-tang-review/final/court-1280.jpg)
+
+![真实后宫1280](art-phase3-tang-review/final/harem-1280.jpg)
+
+![真实游戏章节768](art-phase3-tang-review/final/game-768.jpg)
+
+![真实朝堂768](art-phase3-tang-review/final/court-768.jpg)
+
+![真实后宫768](art-phase3-tang-review/final/harem-768.jpg)
+
+![真实游戏章节390](art-phase3-tang-review/final/game-390.jpg)
+
+![真实朝堂390](art-phase3-tang-review/final/court-390.jpg)
+
+![真实后宫正位390](art-phase3-tang-review/final/harem-high-390.jpg)
+
+![真实后宫常位390](art-phase3-tang-review/final/harem-regular-390.jpg)
+
+![真实召见纸面及112px头图390](art-phase3-tang-review/final/audience-390.jpg)
+
+![生产取图44px及人物卡的只读投影](art-phase3-tang-review/final/regalia-in-browser-1280.jpg)
+
+### 退回、对比度与Lighthouse
+
+关闭「显示插图」后，img src为0、场景隐藏，人物退回44px首字圆章；刷新后仍关闭，复验后恢复开启。通过隔离localhost服务器中断所有WebP连接来模拟图片不可达，章节退回#EFE6D3纯色，人物naturalWidth=0时均标记art-failed并退回首字圆章，文字与导航仍可用；恢复连接后图片正常。此项是资源断网模拟，不宣称整机物理断网。正常与断图期间捕获的warn/error均为空。[浏览器读数](art-phase3-tang-review/final/browser-results.json)。
+
+![关闭插图人物退回](art-phase3-tang-review/final/illustrations-off.jpg)
+
+![关闭插图章节退回](art-phase3-tang-review/final/chapter-off.jpg)
+
+![连接中断章节退回](art-phase3-tang-review/final/image-network-failure-chapter.jpg)
+
+![连接中断人物退回](art-phase3-tang-review/final/image-network-failure-portraits.jpg)
+
+场景渐变包装不含文字，标题位于图外；实际读取当前CSS并计算美术相邻的纸面、暗底与圆章文字组合，最低**4.8314:1**，满足普通文字4.5门槛，不宣称覆盖站内任意颜色组合。[对比度记录](art-phase3-tang-review/final/contrast.json)。
+
+官方Lighthouse使用生产朝堂、后宫与召见纸面HTML／CSS的只读投影，1280／390各三页共六次，可访问性均**100**。修正验收页早于监听器加载的静态图片时序后，六次已重新完整运行；原始报告留本机，仓库保留版本、时间、失败项与SHA-256摘要。真实交互和截图均使用应用内浏览器，Lighthouse的无头Chrome仅用于该审计。[Lighthouse摘要](art-phase3-tang-review/final/lighthouse-summary.json)。
+
+本分支不合并、不发布，未执行Pages线上验收。待玩家明确批准合并发布后，再核对线上资源。
+
+<details>
+<summary>历史：第1步定调样张与当时的待办（现已获确认并完成）</summary>
+
+
 日期：2026-11-07。分支`feat/art-phase3-tang`，从最新main／`97f80a4`建立；原工作区的未提交内容保留。本轮**只完成第1步四张定调样张，停下等待画风确认**。唐制总范围62张（池33＋唐太宗专属29），已出池图4张，其余58张尚未生成。草稿PR仅供审阅，不合并、不发布。
 
 ## 四张样张与朝代辨识
@@ -62,3 +156,5 @@
 本步停在定调样张，未开展其余58张。确认后先补每池长相卡，再出其余池图29张与唐太宗专属29张（25位开局人物、李世民老年像、李承乾／李泰／李恪成年像）。每池、同剧本均做44px全条检查。
 
 完整§9验收在批量完成后执行：唐剧本开局全员专属取图、完整1280／768／390三档、断网退回、首屏请求预算、对比度与Lighthouse均尚未在本批宣称通过；本步已完成的测试、模拟、体积、两档截图、360溢出和插图开关结果如上。分支阶段不做Pages线上发布验收。
+
+</details>

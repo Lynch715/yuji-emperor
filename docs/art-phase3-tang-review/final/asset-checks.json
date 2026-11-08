@@ -1,0 +1,5133 @@
+{
+  "summary": {
+    "baseline": "97f80a4",
+    "target": 62,
+    "poolPortraits": 33,
+    "uniquePortraits": 29,
+    "generatedPortraits": 62,
+    "remainingPortraits": 0,
+    "phase3Bytes": 532674,
+    "totalWebPFiles": 286,
+    "totalBytes": 4211064,
+    "unchangedPriorFiles": 224,
+    "unchangedOtherToneSamples": 3,
+    "maximumPortraitBytes": 16378,
+    "headTopRange": [
+      0.1,
+      0.14
+    ],
+    "eyeRange": [
+      0.3602,
+      0.4
+    ],
+    "saveVersion": 25,
+    "poolFacePairs": 74
+  },
+  "assets": [
+    {
+      "id": "tang/official-mature-01",
+      "file": "assets/art/portraits/tang/official-mature-01.webp",
+      "job": "tang-tone-official-mature-01",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-tone-official-mature-01.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 524.0,
+      "headTop": 176,
+      "faceBox": [
+        266.57138228416443,
+        418.01115095615387,
+        382.3988524675369,
+        382.3988707065582
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "eyeRatio": 0.3738,
+      "headTopRatio": 0.1255,
+      "bytes": 6800,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "ce6c43c33dc77d3357fb62a62c6cc9b73658462fdf91d4d582fea603884a78b5",
+      "faceCard": {
+        "id": "tang/official-mature-01",
+        "pool": "official-mature",
+        "age": 42,
+        "facing": "LEFT",
+        "dims": [
+          "long angular TRIANGULAR face with high cheekbones and a narrow blunt chin",
+          "THREE distinct thin long black beard locks with a narrow separated moustache",
+          "fine long straight brows and narrow slightly drooping thoughtful eyes",
+          "long slender aquiline nose and thin firmly closed lips",
+          "lean long neck and narrow slightly sloped shoulders",
+          "light warm wheat-beige skin",
+          "a small dark mole below the right cheekbone",
+          "reserved calm scholarly concentration"
+        ],
+        "costume": "TANG SOFT-TAILED FUTOU: small rounded black CLOTH head wrap tied at BACK, two SOFT BLACK CLOTH TAILS hang DOWN and gently CURVE behind the ears toward the nape/shoulder. Make their downward drooping fabric silhouette unmistakable at44px. NO horizontally outstretched rigid wings; NO straight long Song wings; NO Ming flat-topped two-tier hard cap; NO Qing hat, top bead, brim, crown or dangling beads. Tang PURPLE muted plum #70576D ROUND-COLLAR official robe, soft curved round neckline with a very small pale undercollar. NO square rank patch, NO dragon medallion, NO necklace, NO Qing standing collar. A plain leather belt belongs at the waist OUTSIDE this head-shoulder crop; do not widen the composition just to show it.",
+        "file": "assets/art/portraits/tang/official-mature-01.webp",
+        "sourceType": "fictional-pool-sample",
+        "face": "42-year-old ADULT MAN, long angular TRIANGULAR face with high cheekbones and a narrow blunt chin, THREE distinct thin long black beard locks with a narrow separated moustache, fine long straight brows and narrow slightly drooping thoughtful eyes, long slender aquiline nose and thin firmly closed lips, lean long neck and narrow slightly sloped shoulders, light warm wheat-beige skin, a small dark mole below the right cheekbone, reserved calm scholarly concentration; facing LEFT",
+        "n": 1,
+        "existedBeforeBatch": true
+      }
+    },
+    {
+      "id": "tang/official-mature-02",
+      "file": "assets/art/portraits/tang/official-mature-02.webp",
+      "job": "tang-frame-pool-v2-tang-official-mature-02",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-frame-pool-v2-tang-official-mature-02.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 625.07,
+      "headTop": 286,
+      "faceBox": [
+        547.3124383091927,
+        524.0174738764763,
+        337.39707988500595,
+        337.39706349372864
+      ],
+      "status": "exported",
+      "crop": [
+        43,
+        108,
+        1078,
+        1402
+      ],
+      "eyeRatio": 0.3996,
+      "headTopRatio": 0.1376,
+      "bytes": 7878,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "9b0870f054d4afa11f7be6ec293d0edfa1941a90bfc36e82e3ce59eaf0742b20",
+      "faceCard": {
+        "id": "tang/official-mature-02",
+        "pool": "official-mature",
+        "n": 2,
+        "age": 38,
+        "dims": [
+          "very FULL ROUND moon face with soft double chin",
+          "completely CLEAN SHAVEN cheeks and chin",
+          "soft high arched fine brows and large round friendly eyes",
+          "short upturned blunt nose and full curved smiling mouth",
+          "very PLUMP short neck and rounded relaxed shoulders",
+          "warm rosy beige skin",
+          "deep right cheek dimple",
+          "open good-humored ease"
+        ],
+        "facing": "RIGHT",
+        "costume": "TANG SOFT-TAILED FUTOU: rounded BLACK CLOTH wrap tied at BACK; TWO flexible cloth tails droop DOWN or curve DOWN behind ears toward nape. No rigid horizontal Ming wings, no long straight Song wings, no Qing hat/beads. Round-collar robe, small pale undercollar, NO square rank patch, NO dragon medallion, no necklace. A waist leather belt lies below this shoulder crop, do not extend framing to show belt. Tang round-collar robe in muted cinnabar SCARLET #A15C55",
+        "file": "assets/art/portraits/tang/official-mature-02.webp",
+        "sourceType": "fictional-pool",
+        "existedBeforeBatch": false,
+        "face": "38-year-old ADULT MAN, very FULL ROUND moon face with soft double chin, completely CLEAN SHAVEN cheeks and chin, soft high arched fine brows and large round friendly eyes, short upturned blunt nose and full curved smiling mouth, very PLUMP short neck and rounded relaxed shoulders, warm rosy beige skin, deep right cheek dimple, open good-humored ease; facing RIGHT"
+      }
+    },
+    {
+      "id": "tang/official-mature-03",
+      "file": "assets/art/portraits/tang/official-mature-03.webp",
+      "job": "tang-frame-pool-v2-tang-official-mature-03",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-frame-pool-v2-tang-official-mature-03.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 624.64,
+      "headTop": 296,
+      "faceBox": [
+        493.578679561615,
+        513.4898863732815,
+        346.25476026535034,
+        346.25475737452507
+      ],
+      "status": "exported",
+      "crop": [
+        46,
+        116,
+        1075,
+        1402
+      ],
+      "eyeRatio": 0.3955,
+      "headTopRatio": 0.14,
+      "bytes": 8504,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "b7cd412bfb6394db86ae3901633ae6e7a5ebbfba60153392f514d5383dd0ee62",
+      "faceCard": {
+        "id": "tang/official-mature-03",
+        "pool": "official-mature",
+        "n": 3,
+        "age": 47,
+        "dims": [
+          "VERY BROAD SQUARE face and flat heavy jaw",
+          "dense SHORT FULL BLACK BEARD covering cheeks and jaw",
+          "thick low straight brows and small deep-set intent eyes",
+          "wide flat nose and thick firmly closed lips",
+          "very THICK short neck and massive upright shoulders",
+          "sun-darkened bronze skin",
+          "small notch in left eyebrow",
+          "stern solid resolve"
+        ],
+        "facing": "RIGHT",
+        "costume": "TANG SOFT-TAILED FUTOU: rounded BLACK CLOTH wrap tied at BACK; TWO flexible cloth tails droop DOWN or curve DOWN behind ears toward nape. No rigid horizontal Ming wings, no long straight Song wings, no Qing hat/beads. Round-collar robe, small pale undercollar, NO square rank patch, NO dragon medallion, no necklace. A waist leather belt lies below this shoulder crop, do not extend framing to show belt. Tang round-collar robe in muted dark GREEN #557B68",
+        "file": "assets/art/portraits/tang/official-mature-03.webp",
+        "sourceType": "fictional-pool",
+        "existedBeforeBatch": false,
+        "face": "47-year-old ADULT MAN, VERY BROAD SQUARE face and flat heavy jaw, dense SHORT FULL BLACK BEARD covering cheeks and jaw, thick low straight brows and small deep-set intent eyes, wide flat nose and thick firmly closed lips, very THICK short neck and massive upright shoulders, sun-darkened bronze skin, small notch in left eyebrow, stern solid resolve; facing RIGHT"
+      }
+    },
+    {
+      "id": "tang/official-mature-04",
+      "file": "assets/art/portraits/tang/official-mature-04.webp",
+      "job": "tang-frame-pool-v2-tang-official-mature-04",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-frame-pool-v2-tang-official-mature-04.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 627.12,
+      "headTop": 285,
+      "faceBox": [
+        293.9338325858116,
+        529.4551156461239,
+        330.8794720172882,
+        330.87946024537086
+      ],
+      "status": "exported",
+      "crop": [
+        44,
+        111,
+        1077,
+        1402
+      ],
+      "eyeRatio": 0.3998,
+      "headTopRatio": 0.1348,
+      "bytes": 7538,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "d6a31514b69d18d070e9c2b9c8dde709c5d27e5f6fb4e2aac68b231431223ffa",
+      "faceCard": {
+        "id": "tang/official-mature-04",
+        "pool": "official-mature",
+        "n": 4,
+        "age": 51,
+        "dims": [
+          "very LONG NARROW RECTANGULAR face with hollow cheeks",
+          "one long pointed BLACK GOATEE and no moustache",
+          "fine slanting brows and long hooded suspicious eyes",
+          "long hooked nose and extremely thin tight mouth",
+          "gaunt slightly stooped long neck and narrow shoulders",
+          "cool olive beige skin",
+          "two deep mouth-corner lines",
+          "guarded skeptical calculation"
+        ],
+        "facing": "LEFT",
+        "costume": "TANG SOFT-TAILED FUTOU: rounded BLACK CLOTH wrap tied at BACK; TWO flexible cloth tails droop DOWN or curve DOWN behind ears toward nape. No rigid horizontal Ming wings, no long straight Song wings, no Qing hat/beads. Round-collar robe, small pale undercollar, NO square rank patch, NO dragon medallion, no necklace. A waist leather belt lies below this shoulder crop, do not extend framing to show belt. Tang round-collar robe in muted dark BLUE #536F89",
+        "file": "assets/art/portraits/tang/official-mature-04.webp",
+        "sourceType": "fictional-pool",
+        "existedBeforeBatch": false,
+        "face": "51-year-old ADULT MAN, very LONG NARROW RECTANGULAR face with hollow cheeks, one long pointed BLACK GOATEE and no moustache, fine slanting brows and long hooded suspicious eyes, long hooked nose and extremely thin tight mouth, gaunt slightly stooped long neck and narrow shoulders, cool olive beige skin, two deep mouth-corner lines, guarded skeptical calculation; facing LEFT"
+      }
+    },
+    {
+      "id": "tang/official-mature-05",
+      "file": "assets/art/portraits/tang/official-mature-05.webp",
+      "job": "tang-frame-pool-v1-tang-official-mature-05",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-frame-pool-v1-tang-official-mature-05.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 506.48,
+      "headTop": 130,
+      "faceBox": [
+        273.6243525445461,
+        393.43409901857376,
+        358.20186334848404,
+        358.20187562704086
+      ],
+      "status": "exported",
+      "crop": [
+        41,
+        0,
+        1081,
+        1300
+      ],
+      "eyeRatio": 0.3896,
+      "headTopRatio": 0.1,
+      "bytes": 8464,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "b65656d00546a19257df5a466d1b80ca32536072d5f520f708f74d5016aa9056",
+      "faceCard": {
+        "id": "tang/official-mature-05",
+        "pool": "official-mature",
+        "n": 5,
+        "age": 45,
+        "dims": [
+          "short WIDE PEAR face with heavy low cheeks",
+          "thick downward HORSESHOE MOUSTACHE and clean chin",
+          "heavy curved brows and wide-set calm almond eyes",
+          "short bulbous nose and broad compressed lips",
+          "stocky thick neck and broad low shoulders",
+          "warm golden-tan skin",
+          "round chin dimple",
+          "patient stubborn gravity"
+        ],
+        "facing": "LEFT",
+        "costume": "TANG SOFT-TAILED FUTOU: rounded BLACK CLOTH wrap tied at BACK; TWO flexible cloth tails droop DOWN or curve DOWN behind ears toward nape. No rigid horizontal Ming wings, no long straight Song wings, no Qing hat/beads. Round-collar robe, small pale undercollar, NO square rank patch, NO dragon medallion, no necklace. A waist leather belt lies below this shoulder crop, do not extend framing to show belt. Tang round-collar robe in muted plum PURPLE #70576D",
+        "file": "assets/art/portraits/tang/official-mature-05.webp",
+        "sourceType": "fictional-pool",
+        "existedBeforeBatch": false,
+        "face": "45-year-old ADULT MAN, short WIDE PEAR face with heavy low cheeks, thick downward HORSESHOE MOUSTACHE and clean chin, heavy curved brows and wide-set calm almond eyes, short bulbous nose and broad compressed lips, stocky thick neck and broad low shoulders, warm golden-tan skin, round chin dimple, patient stubborn gravity; facing LEFT"
+      }
+    },
+    {
+      "id": "tang/official-mature-06",
+      "file": "assets/art/portraits/tang/official-mature-06.webp",
+      "job": "tang-frame-pool-v1-tang-official-mature-06",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-frame-pool-v1-tang-official-mature-06.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 506.11,
+      "headTop": 160,
+      "faceBox": [
+        537.7660980820656,
+        403.2462177872658,
+        325.98779690265656,
+        325.98779505491257
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "eyeRatio": 0.361,
+      "headTopRatio": 0.1141,
+      "bytes": 7232,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "416b76d7cb189cca9f6e589b52bc8f364ab0ede9a7647007ff62c64f29b3c60c",
+      "faceCard": {
+        "id": "tang/official-mature-06",
+        "pool": "official-mature",
+        "n": 6,
+        "age": 36,
+        "dims": [
+          "sharp DIAMOND face with high cheekbones and pointed chin",
+          "clean-shaven with sharply outlined black sideburns",
+          "high thin arching brows and bright narrow watchful eyes",
+          "high fine straight nose and small pursed mouth",
+          "very slender long neck and narrow squared shoulders",
+          "cool pale ivory skin",
+          "small left temple freckle",
+          "alert polite caution"
+        ],
+        "facing": "RIGHT",
+        "costume": "TANG SOFT-TAILED FUTOU: rounded BLACK CLOTH wrap tied at BACK; TWO flexible cloth tails droop DOWN or curve DOWN behind ears toward nape. No rigid horizontal Ming wings, no long straight Song wings, no Qing hat/beads. Round-collar robe, small pale undercollar, NO square rank patch, NO dragon medallion, no necklace. A waist leather belt lies below this shoulder crop, do not extend framing to show belt. Tang round-collar robe in muted cinnabar SCARLET #A15C55",
+        "file": "assets/art/portraits/tang/official-mature-06.webp",
+        "sourceType": "fictional-pool",
+        "existedBeforeBatch": false,
+        "face": "36-year-old ADULT MAN, sharp DIAMOND face with high cheekbones and pointed chin, clean-shaven with sharply outlined black sideburns, high thin arching brows and bright narrow watchful eyes, high fine straight nose and small pursed mouth, very slender long neck and narrow squared shoulders, cool pale ivory skin, small left temple freckle, alert polite caution; facing RIGHT"
+      }
+    },
+    {
+      "id": "tang/official-mature-07",
+      "file": "assets/art/portraits/tang/official-mature-07.webp",
+      "job": "tang-frame-pool-v2-tang-official-mature-07",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-frame-pool-v2-tang-official-mature-07.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 638.09,
+      "headTop": 283,
+      "faceBox": [
+        510.9460823535919,
+        532.6837813854218,
+        337.6420147418976,
+        337.64203637838364
+      ],
+      "status": "exported",
+      "crop": [
+        52,
+        129,
+        1070,
+        1402
+      ],
+      "eyeRatio": 0.3999,
+      "headTopRatio": 0.121,
+      "bytes": 7982,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "d25ab8e2e2f9e158eb5384fcbe6f0dbc6227e2d75ad4f48c7c9555c10eef6344",
+      "faceCard": {
+        "id": "tang/official-mature-07",
+        "pool": "official-mature",
+        "n": 7,
+        "age": 31,
+        "dims": [
+          "small HEART-SHAPED face with broad forehead and short tapered chin",
+          "fine separated PENCIL MOUSTACHE and bare chin",
+          "gently rising short brows and wide bright almond eyes",
+          "small upturned nose and full rosebud-shaped closed mouth",
+          "slim smooth short neck and softly sloping shoulders",
+          "pale warm peach skin",
+          "left cheek dimple",
+          "easy sociable curiosity"
+        ],
+        "facing": "RIGHT",
+        "costume": "TANG SOFT-TAILED FUTOU: rounded BLACK CLOTH wrap tied at BACK; TWO flexible cloth tails droop DOWN or curve DOWN behind ears toward nape. No rigid horizontal Ming wings, no long straight Song wings, no Qing hat/beads. Round-collar robe, small pale undercollar, NO square rank patch, NO dragon medallion, no necklace. A waist leather belt lies below this shoulder crop, do not extend framing to show belt. Tang round-collar robe in muted dark GREEN #557B68",
+        "file": "assets/art/portraits/tang/official-mature-07.webp",
+        "sourceType": "fictional-pool",
+        "existedBeforeBatch": false,
+        "face": "31-year-old ADULT MAN, small HEART-SHAPED face with broad forehead and short tapered chin, fine separated PENCIL MOUSTACHE and bare chin, gently rising short brows and wide bright almond eyes, small upturned nose and full rosebud-shaped closed mouth, slim smooth short neck and softly sloping shoulders, pale warm peach skin, left cheek dimple, easy sociable curiosity; facing RIGHT"
+      }
+    },
+    {
+      "id": "tang/official-mature-08",
+      "file": "assets/art/portraits/tang/official-mature-08.webp",
+      "job": "tang-frame-pool-v2-tang-official-mature-08",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-frame-pool-v2-tang-official-mature-08.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 630.17,
+      "headTop": 279,
+      "faceBox": [
+        281.59827786684036,
+        523.1439197063446,
+        361.865119099617,
+        361.86510396003723
+      ],
+      "status": "exported",
+      "crop": [
+        46,
+        116,
+        1075,
+        1402
+      ],
+      "eyeRatio": 0.3998,
+      "headTopRatio": 0.1267,
+      "bytes": 8406,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "c48f025642cfdf8fb8a248a4003975aa281e07945cf1e7c9b7edec2557a3456d",
+      "faceCard": {
+        "id": "tang/official-mature-08",
+        "pool": "official-mature",
+        "n": 8,
+        "age": 49,
+        "dims": [
+          "broad PENTAGONAL face with low heavy jaw",
+          "short BOXED CHIN BEARD with disconnected broad moustache",
+          "bushy angled brows and large wide-set penetrating eyes",
+          "large broad straight nose and full flat mouth",
+          "athletic thick upright neck and square strong shoulders",
+          "deep warm wheat skin",
+          "tiny healed right brow crease",
+          "frank forceful confidence"
+        ],
+        "facing": "LEFT",
+        "costume": "TANG SOFT-TAILED FUTOU: rounded BLACK CLOTH wrap tied at BACK; TWO flexible cloth tails droop DOWN or curve DOWN behind ears toward nape. No rigid horizontal Ming wings, no long straight Song wings, no Qing hat/beads. Round-collar robe, small pale undercollar, NO square rank patch, NO dragon medallion, no necklace. A waist leather belt lies below this shoulder crop, do not extend framing to show belt. Tang round-collar robe in muted dark BLUE #536F89",
+        "file": "assets/art/portraits/tang/official-mature-08.webp",
+        "sourceType": "fictional-pool",
+        "existedBeforeBatch": false,
+        "face": "49-year-old ADULT MAN, broad PENTAGONAL face with low heavy jaw, short BOXED CHIN BEARD with disconnected broad moustache, bushy angled brows and large wide-set penetrating eyes, large broad straight nose and full flat mouth, athletic thick upright neck and square strong shoulders, deep warm wheat skin, tiny healed right brow crease, frank forceful confidence; facing LEFT"
+      }
+    },
+    {
+      "id": "tang/official-mature-09",
+      "file": "assets/art/portraits/tang/official-mature-09.webp",
+      "job": "tang-frame-pool-v2-tang-official-mature-09",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-frame-pool-v2-tang-official-mature-09.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 632.86,
+      "headTop": 292,
+      "faceBox": [
+        284.33225244283676,
+        533.9438896477222,
+        337.75958347320557,
+        337.7595924437046
+      ],
+      "status": "exported",
+      "crop": [
+        48,
+        121,
+        1073,
+        1402
+      ],
+      "eyeRatio": 0.3996,
+      "headTopRatio": 0.1335,
+      "bytes": 7530,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "d5e3a72d1160cf1c46a88a14a03d2f97a48dbf93b42ccb05fe538a5737ffe030",
+      "faceCard": {
+        "id": "tang/official-mature-09",
+        "pool": "official-mature",
+        "n": 9,
+        "age": 53,
+        "dims": [
+          "long soft OVAL face with a narrow rounded chin",
+          "sparse FORKED CHIN TUFT with bare upper lip",
+          "short sparse downward brows and tired long eyes",
+          "long narrow rounded-tip nose and thin curved lips",
+          "thin slightly bent neck and lowered delicate shoulders",
+          "cool light cream beige skin",
+          "gray right temple and fine crow-feet",
+          "weary exacting patience"
+        ],
+        "facing": "LEFT",
+        "costume": "TANG SOFT-TAILED FUTOU: rounded BLACK CLOTH wrap tied at BACK; TWO flexible cloth tails droop DOWN or curve DOWN behind ears toward nape. No rigid horizontal Ming wings, no long straight Song wings, no Qing hat/beads. Round-collar robe, small pale undercollar, NO square rank patch, NO dragon medallion, no necklace. A waist leather belt lies below this shoulder crop, do not extend framing to show belt. Tang round-collar robe in muted plum PURPLE #70576D",
+        "file": "assets/art/portraits/tang/official-mature-09.webp",
+        "sourceType": "fictional-pool",
+        "existedBeforeBatch": false,
+        "face": "53-year-old ADULT MAN, long soft OVAL face with a narrow rounded chin, sparse FORKED CHIN TUFT with bare upper lip, short sparse downward brows and tired long eyes, long narrow rounded-tip nose and thin curved lips, thin slightly bent neck and lowered delicate shoulders, cool light cream beige skin, gray right temple and fine crow-feet, weary exacting patience; facing LEFT"
+      }
+    },
+    {
+      "id": "tang/official-mature-10",
+      "file": "assets/art/portraits/tang/official-mature-10.webp",
+      "job": "tang-pool-official-mature-10-10",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-pool-official-mature-10-10.png",
+      "cellBox": [
+        5,
+        5,
+        556,
+        696
+      ],
+      "rawSize": [
+        551,
+        691
+      ],
+      "eyeY": 249.73,
+      "headTop": 68,
+      "faceBox": [
+        276.5027368068695,
+        190.78988435864449,
+        201.74000796675682,
+        201.74001547694206
+      ],
+      "status": "exported",
+      "crop": [
+        3,
+        0,
+        547,
+        680
+      ],
+      "eyeRatio": 0.3673,
+      "headTopRatio": 0.1,
+      "bytes": 8814,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "2b9883be0b7a6456c1a24abd51a1b3536f85430395b18951879a4e40b5db95ea",
+      "faceCard": {
+        "id": "tang/official-mature-10",
+        "pool": "official-mature",
+        "n": 10,
+        "age": 54,
+        "dims": [
+          "short wide TRAPEZOID face with broad cheekbones and blunt chin",
+          "thick WALRUS MOUSTACHE covering upper lip and bare cheeks/chin",
+          "low broad horizontal brows and small sideways-lidded eyes",
+          "short broad low bridge and broad thick lower lip",
+          "heavy compact neck and full softly raised shoulders",
+          "muted ruddy tan skin",
+          "deep left nasolabial crease",
+          "wry diplomatic reserve"
+        ],
+        "facing": "RIGHT",
+        "costume": "TANG SOFT-TAILED FUTOU: rounded BLACK CLOTH wrap tied at BACK; TWO flexible cloth tails droop DOWN or curve DOWN behind ears toward nape. No rigid horizontal Ming wings, no long straight Song wings, no Qing hat/beads. Round-collar robe, small pale undercollar, NO square rank patch, NO dragon medallion, no necklace. A waist leather belt lies below this shoulder crop, do not extend framing to show belt. Tang round-collar robe in muted cinnabar SCARLET #A15C55",
+        "file": "assets/art/portraits/tang/official-mature-10.webp",
+        "sourceType": "fictional-pool",
+        "existedBeforeBatch": false,
+        "face": "54-year-old ADULT MAN, short wide TRAPEZOID face with broad cheekbones and blunt chin, thick WALRUS MOUSTACHE covering upper lip and bare cheeks/chin, low broad horizontal brows and small sideways-lidded eyes, short broad low bridge and broad thick lower lip, heavy compact neck and full softly raised shoulders, muted ruddy tan skin, deep left nasolabial crease, wry diplomatic reserve; facing RIGHT"
+      }
+    },
+    {
+      "id": "tang/official-old-01",
+      "file": "assets/art/portraits/tang/official-old-01.webp",
+      "job": "tang-frame-pool-v2-tang-official-old-01",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-frame-pool-v2-tang-official-old-01.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 633.84,
+      "headTop": 280,
+      "faceBox": [
+        341.2474558353424,
+        540.6256159543991,
+        317.64977967739105,
+        317.6497754454613
+      ],
+      "status": "exported",
+      "crop": [
+        49,
+        122,
+        1073,
+        1402
+      ],
+      "eyeRatio": 0.3999,
+      "headTopRatio": 0.1234,
+      "bytes": 8632,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "2d795481dd9f8a2f40c55071bb6b302e92e4704dc5510c1de4584c8fc5b83c2f",
+      "faceCard": {
+        "id": "tang/official-old-01",
+        "pool": "official-old",
+        "n": 1,
+        "age": 73,
+        "dims": [
+          "very LONG THIN OVAL face with hollow cheeks",
+          "THREE long wispy WHITE beard locks and fine gray moustache",
+          "sparse drooping white brows and small deep tired eyes",
+          "high long narrow nose and very thin closed mouth",
+          "frail stringy long neck and hunched narrow shoulders",
+          "cool gray beige aged skin",
+          "deep horizontal forehead lines",
+          "grave reflective fatigue"
+        ],
+        "facing": "LEFT",
+        "costume": "TANG SOFT-TAILED FUTOU: rounded BLACK CLOTH wrap tied at BACK; TWO flexible cloth tails droop DOWN or curve DOWN behind ears toward nape. No rigid horizontal Ming wings, no long straight Song wings, no Qing hat/beads. Round-collar robe, small pale undercollar, NO square rank patch, NO dragon medallion, no necklace. A waist leather belt lies below this shoulder crop, do not extend framing to show belt. Tang round-collar robe in muted plum PURPLE #70576D",
+        "file": "assets/art/portraits/tang/official-old-01.webp",
+        "sourceType": "fictional-pool",
+        "existedBeforeBatch": false,
+        "face": "73-year-old ADULT MAN, very LONG THIN OVAL face with hollow cheeks, THREE long wispy WHITE beard locks and fine gray moustache, sparse drooping white brows and small deep tired eyes, high long narrow nose and very thin closed mouth, frail stringy long neck and hunched narrow shoulders, cool gray beige aged skin, deep horizontal forehead lines, grave reflective fatigue; facing LEFT"
+      }
+    },
+    {
+      "id": "tang/official-old-02",
+      "file": "assets/art/portraits/tang/official-old-02.webp",
+      "job": "tang-frame-pool-v1-tang-official-old-02",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-frame-pool-v1-tang-official-old-02.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 507.69,
+      "headTop": 134,
+      "faceBox": [
+        503.4002496600151,
+        386.08044171333313,
+        372.91624546051025,
+        372.916251540184
+      ],
+      "status": "exported",
+      "crop": [
+        25,
+        0,
+        1097,
+        1340
+      ],
+      "eyeRatio": 0.3789,
+      "headTopRatio": 0.1,
+      "bytes": 9412,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "2401699add06ea7532141be47fc81058718048e50c8e824f9da89be6f6cdbb89",
+      "faceCard": {
+        "id": "tang/official-old-02",
+        "pool": "official-old",
+        "n": 2,
+        "age": 62,
+        "dims": [
+          "very BROAD ROUND face with soft double chin",
+          "CLEAN SHAVEN face with white temples",
+          "thick gently arched gray brows and large round open eyes",
+          "short wide blunt nose and full broad soft lips",
+          "plump short neck and rounded relaxed shoulders",
+          "warm peach-beige aged skin",
+          "right cheek dimple and small nose freckles",
+          "warm genial calm"
+        ],
+        "facing": "RIGHT",
+        "costume": "TANG SOFT-TAILED FUTOU: rounded BLACK CLOTH wrap tied at BACK; TWO flexible cloth tails droop DOWN or curve DOWN behind ears toward nape. No rigid horizontal Ming wings, no long straight Song wings, no Qing hat/beads. Round-collar robe, small pale undercollar, NO square rank patch, NO dragon medallion, no necklace. A waist leather belt lies below this shoulder crop, do not extend framing to show belt. Tang round-collar robe in muted cinnabar SCARLET #A15C55",
+        "file": "assets/art/portraits/tang/official-old-02.webp",
+        "sourceType": "fictional-pool",
+        "existedBeforeBatch": false,
+        "face": "62-year-old ADULT MAN, very BROAD ROUND face with soft double chin, CLEAN SHAVEN face with white temples, thick gently arched gray brows and large round open eyes, short wide blunt nose and full broad soft lips, plump short neck and rounded relaxed shoulders, warm peach-beige aged skin, right cheek dimple and small nose freckles, warm genial calm; facing RIGHT"
+      }
+    },
+    {
+      "id": "tang/official-old-03",
+      "file": "assets/art/portraits/tang/official-old-03.webp",
+      "job": "tang-frame-pool-v2-tang-official-old-03",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-frame-pool-v2-tang-official-old-03.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 639.53,
+      "headTop": 306,
+      "faceBox": [
+        495.11830830574036,
+        533.2704544663429,
+        373.6494115591049,
+        373.64941531419754
+      ],
+      "status": "exported",
+      "crop": [
+        53,
+        132,
+        1069,
+        1402
+      ],
+      "eyeRatio": 0.3996,
+      "headTopRatio": 0.137,
+      "bytes": 10374,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "10c86c037582e2d71ef52ed2ea109a69cb0e3d945891749ded81377d0b158070",
+      "faceCard": {
+        "id": "tang/official-old-03",
+        "pool": "official-old",
+        "n": 3,
+        "age": 66,
+        "dims": [
+          "massive BROAD SQUARE jaw and firm straight cheeks",
+          "dense full GRAY-WHITE JAW BEARD and heavy moustache",
+          "strong level gray brows and deep-set bright narrow eyes",
+          "wide straight nose and thick tight lower lip",
+          "robust broad neck and upright square shoulders",
+          "weathered dark tan skin",
+          "old crease above left eyebrow",
+          "firm unyielding confidence"
+        ],
+        "facing": "RIGHT",
+        "costume": "TANG SOFT-TAILED FUTOU: rounded BLACK CLOTH wrap tied at BACK; TWO flexible cloth tails droop DOWN or curve DOWN behind ears toward nape. No rigid horizontal Ming wings, no long straight Song wings, no Qing hat/beads. Round-collar robe, small pale undercollar, NO square rank patch, NO dragon medallion, no necklace. A waist leather belt lies below this shoulder crop, do not extend framing to show belt. Tang round-collar robe in muted dark GREEN #557B68",
+        "file": "assets/art/portraits/tang/official-old-03.webp",
+        "sourceType": "fictional-pool",
+        "existedBeforeBatch": false,
+        "face": "66-year-old ADULT MAN, massive BROAD SQUARE jaw and firm straight cheeks, dense full GRAY-WHITE JAW BEARD and heavy moustache, strong level gray brows and deep-set bright narrow eyes, wide straight nose and thick tight lower lip, robust broad neck and upright square shoulders, weathered dark tan skin, old crease above left eyebrow, firm unyielding confidence; facing RIGHT"
+      }
+    },
+    {
+      "id": "tang/official-old-04",
+      "file": "assets/art/portraits/tang/official-old-04.webp",
+      "job": "tang-frame-pool-v1-tang-official-old-04",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-frame-pool-v1-tang-official-old-04.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 524.43,
+      "headTop": 149,
+      "faceBox": [
+        287.0724465250969,
+        428.11295026540756,
+        356.8973051905632,
+        356.8972895145416
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "eyeRatio": 0.3741,
+      "headTopRatio": 0.1063,
+      "bytes": 7312,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "398a24f2c9743444787af55205696adf3b81ea02e736c79f3e5a51de55047e19",
+      "faceCard": {
+        "id": "tang/official-old-04",
+        "pool": "official-old",
+        "n": 4,
+        "age": 77,
+        "dims": [
+          "small HEART-SHAPED face with pointed chin",
+          "fine WHITE PENCIL MOUSTACHE with bare chin",
+          "high thin curved brows and long hooded eyes",
+          "small crooked-tip nose and compact thin mouth",
+          "very slender long neck and low sloped shoulders",
+          "pale olive beige skin",
+          "two right cheek age spots",
+          "tired watchful caution"
+        ],
+        "facing": "LEFT",
+        "costume": "TANG SOFT-TAILED FUTOU: rounded BLACK CLOTH wrap tied at BACK; TWO flexible cloth tails droop DOWN or curve DOWN behind ears toward nape. No rigid horizontal Ming wings, no long straight Song wings, no Qing hat/beads. Round-collar robe, small pale undercollar, NO square rank patch, NO dragon medallion, no necklace. A waist leather belt lies below this shoulder crop, do not extend framing to show belt. Tang round-collar robe in muted dark BLUE #536F89",
+        "file": "assets/art/portraits/tang/official-old-04.webp",
+        "sourceType": "fictional-pool",
+        "existedBeforeBatch": false,
+        "face": "77-year-old ADULT MAN, small HEART-SHAPED face with pointed chin, fine WHITE PENCIL MOUSTACHE with bare chin, high thin curved brows and long hooded eyes, small crooked-tip nose and compact thin mouth, very slender long neck and low sloped shoulders, pale olive beige skin, two right cheek age spots, tired watchful caution; facing LEFT"
+      }
+    },
+    {
+      "id": "tang/official-old-05",
+      "file": "assets/art/portraits/tang/official-old-05.webp",
+      "job": "tang-frame-pool-v2-tang-official-old-05",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-frame-pool-v2-tang-official-old-05.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 593.58,
+      "headTop": 261,
+      "faceBox": [
+        297.63173031806946,
+        489.5841386914253,
+        358.69253557920456,
+        358.69253170490265
+      ],
+      "status": "exported",
+      "crop": [
+        30,
+        76,
+        1091,
+        1402
+      ],
+      "eyeRatio": 0.3903,
+      "headTopRatio": 0.1395,
+      "bytes": 8708,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "6d16d63d1a8e3debe740d2893947b431258f0399f053d77cc656229ce1bb471e",
+      "faceCard": {
+        "id": "tang/official-old-05",
+        "pool": "official-old",
+        "n": 5,
+        "age": 69,
+        "dims": [
+          "wide DIAMOND cheekbones and narrow angular jaw",
+          "long GRAY FORKED BEARD with sparse short moustache",
+          "bushy downward brows and close-set intent eyes",
+          "flat broad nose and narrow curved lip line",
+          "lean medium short neck and stiff hunched shoulders",
+          "ruddy sun-marked skin",
+          "deep nasolabial folds",
+          "tense candid impatience"
+        ],
+        "facing": "LEFT",
+        "costume": "TANG SOFT-TAILED FUTOU: rounded BLACK CLOTH wrap tied at BACK; TWO flexible cloth tails droop DOWN or curve DOWN behind ears toward nape. No rigid horizontal Ming wings, no long straight Song wings, no Qing hat/beads. Round-collar robe, small pale undercollar, NO square rank patch, NO dragon medallion, no necklace. A waist leather belt lies below this shoulder crop, do not extend framing to show belt. Tang round-collar robe in muted plum PURPLE #70576D",
+        "file": "assets/art/portraits/tang/official-old-05.webp",
+        "sourceType": "fictional-pool",
+        "existedBeforeBatch": false,
+        "face": "69-year-old ADULT MAN, wide DIAMOND cheekbones and narrow angular jaw, long GRAY FORKED BEARD with sparse short moustache, bushy downward brows and close-set intent eyes, flat broad nose and narrow curved lip line, lean medium short neck and stiff hunched shoulders, ruddy sun-marked skin, deep nasolabial folds, tense candid impatience; facing LEFT"
+      }
+    },
+    {
+      "id": "tang/official-old-06",
+      "file": "assets/art/portraits/tang/official-old-06.webp",
+      "job": "tang-frame-pool-v2-tang-official-old-06",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-frame-pool-v2-tang-official-old-06.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 603.74,
+      "headTop": 261,
+      "faceBox": [
+        506.6091470718384,
+        490.7510920763016,
+        394.653152346611,
+        394.6531556248665
+      ],
+      "status": "exported",
+      "crop": [
+        30,
+        76,
+        1091,
+        1402
+      ],
+      "eyeRatio": 0.398,
+      "headTopRatio": 0.1395,
+      "bytes": 9242,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "26d7b5f9a52fe3a9c996be95ad800a1bd6a63c1c8c39b61ac3bcb0e7a9292ddc",
+      "faceCard": {
+        "id": "tang/official-old-06",
+        "pool": "official-old",
+        "n": 6,
+        "age": 58,
+        "dims": [
+          "broad PEAR-SHAPED face with heavy lower cheeks",
+          "short broad FAN-SHAPED GRAY BEARD and downward moustache tips",
+          "short gray horizontal brows and wide-set drooping eyes",
+          "large rounded nose and full soft mouth",
+          "thick short neck and low stocky shoulders",
+          "medium warm beige skin",
+          "left temple freckles and a shallow brow crease",
+          "quiet precise attentiveness"
+        ],
+        "facing": "RIGHT",
+        "costume": "TANG SOFT-TAILED FUTOU: rounded BLACK CLOTH wrap tied at BACK; TWO flexible cloth tails droop DOWN or curve DOWN behind ears toward nape. No rigid horizontal Ming wings, no long straight Song wings, no Qing hat/beads. Round-collar robe, small pale undercollar, NO square rank patch, NO dragon medallion, no necklace. A waist leather belt lies below this shoulder crop, do not extend framing to show belt. Tang round-collar robe in muted cinnabar SCARLET #A15C55",
+        "file": "assets/art/portraits/tang/official-old-06.webp",
+        "sourceType": "fictional-pool",
+        "existedBeforeBatch": false,
+        "face": "58-year-old ADULT MAN, broad PEAR-SHAPED face with heavy lower cheeks, short broad FAN-SHAPED GRAY BEARD and downward moustache tips, short gray horizontal brows and wide-set drooping eyes, large rounded nose and full soft mouth, thick short neck and low stocky shoulders, medium warm beige skin, left temple freckles and a shallow brow crease, quiet precise attentiveness; facing RIGHT"
+      }
+    },
+    {
+      "id": "tang/general-all-01",
+      "file": "assets/art/portraits/tang/general-all-01.webp",
+      "job": "tang-frame-pool-v2-tang-general-all-01",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-frame-pool-v2-tang-general-all-01.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 600.17,
+      "headTop": 272,
+      "faceBox": [
+        302.3677840232849,
+        501.91100043058395,
+        336.82602220773697,
+        336.8260172009468
+      ],
+      "status": "exported",
+      "crop": [
+        36,
+        89,
+        1086,
+        1402
+      ],
+      "eyeRatio": 0.3893,
+      "headTopRatio": 0.1394,
+      "bytes": 14886,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "7c9aa485722c463b64feac42054ce609da9a750cba8003364f9f06bcfb5c8d48",
+      "faceCard": {
+        "id": "tang/general-all-01",
+        "pool": "general-all",
+        "n": 1,
+        "age": 44,
+        "dims": [
+          "massive BROAD RECTANGULAR face with very heavy square jaw",
+          "dense rough FULL BLACK JAW BEARD and thick short moustache",
+          "heavy angled brows and small intense eyes",
+          "broad flat nose and thick firm mouth",
+          "very muscular thick neck and massive shoulders",
+          "wind-darkened bronze skin",
+          "small healed pale left brow scar",
+          "stern steady resolve"
+        ],
+        "facing": "LEFT",
+        "costume": "Tang MINGGUANG ARMOR with TWO ROUND CHEST PROTECTORS partly visible at lower crop, gray iron and muted leather, simple helmet without horn/feathers or a soft-tailed futou, no Qing finial or Ming wing helmet. No weapons, no battle.",
+        "file": "assets/art/portraits/tang/general-all-01.webp",
+        "sourceType": "fictional-pool",
+        "existedBeforeBatch": false,
+        "face": "44-year-old ADULT MAN, massive BROAD RECTANGULAR face with very heavy square jaw, dense rough FULL BLACK JAW BEARD and thick short moustache, heavy angled brows and small intense eyes, broad flat nose and thick firm mouth, very muscular thick neck and massive shoulders, wind-darkened bronze skin, small healed pale left brow scar, stern steady resolve; facing LEFT"
+      }
+    },
+    {
+      "id": "tang/general-all-02",
+      "file": "assets/art/portraits/tang/general-all-02.webp",
+      "job": "tang-frame-pool-v2-tang-general-all-02",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-frame-pool-v2-tang-general-all-02.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 590.01,
+      "headTop": 258,
+      "faceBox": [
+        537.3981440663338,
+        503.6653163135052,
+        288.61344623565674,
+        288.613427311182
+      ],
+      "status": "exported",
+      "crop": [
+        29,
+        72,
+        1093,
+        1402
+      ],
+      "eyeRatio": 0.3895,
+      "headTopRatio": 0.1398,
+      "bytes": 13860,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "a6e99546c81af02fed24236c90abb6dfad80088d81ead54b3f83f9459b36326d",
+      "faceCard": {
+        "id": "tang/general-all-02",
+        "pool": "general-all",
+        "n": 2,
+        "age": 30,
+        "dims": [
+          "NARROW TRIANGULAR face with pointed chin",
+          "completely CLEAN SHAVEN with no moustache",
+          "fine straight brows and large alert almond eyes",
+          "high narrow straight nose and thin softly pressed lips",
+          "tall lean athletic neck and narrow angular shoulders",
+          "light warm golden skin",
+          "tiny mole below right eye",
+          "energetic cool vigilance"
+        ],
+        "facing": "RIGHT",
+        "costume": "Tang MINGGUANG ARMOR with TWO ROUND CHEST PROTECTORS partly visible at lower crop, gray iron and muted leather, simple helmet without horn/feathers or a soft-tailed futou, no Qing finial or Ming wing helmet. No weapons, no battle.",
+        "file": "assets/art/portraits/tang/general-all-02.webp",
+        "sourceType": "fictional-pool",
+        "existedBeforeBatch": false,
+        "face": "30-year-old ADULT MAN, NARROW TRIANGULAR face with pointed chin, completely CLEAN SHAVEN with no moustache, fine straight brows and large alert almond eyes, high narrow straight nose and thin softly pressed lips, tall lean athletic neck and narrow angular shoulders, light warm golden skin, tiny mole below right eye, energetic cool vigilance; facing RIGHT"
+      }
+    },
+    {
+      "id": "tang/general-all-03",
+      "file": "assets/art/portraits/tang/general-all-03.webp",
+      "job": "tang-frame-pool-v2-tang-general-all-03",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-frame-pool-v2-tang-general-all-03.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 583.56,
+      "headTop": 265,
+      "faceBox": [
+        504.2144699692726,
+        474.37250500917435,
+        353.7281658053398,
+        353.728185236454
+      ],
+      "status": "exported",
+      "crop": [
+        32,
+        80,
+        1090,
+        1402
+      ],
+      "eyeRatio": 0.3809,
+      "headTopRatio": 0.1399,
+      "bytes": 16378,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "6e8c5ce1d2a1dcc86217d7cdd1c938a5d9d74e97a61d049c4108405a8da8d539",
+      "faceCard": {
+        "id": "tang/general-all-03",
+        "pool": "general-all",
+        "n": 3,
+        "age": 56,
+        "dims": [
+          "FULL BROAD ROUND face and rounded low jaw",
+          "heavy gray-flecked DOWNWARD MOUSTACHE with bare chin",
+          "curved bushy brows and wide calm eyes",
+          "short large rounded nose and broad thin mouth",
+          "stocky full short neck and broad relaxed shoulders",
+          "ruddy weathered beige skin",
+          "faint healed right cheek scar and gray temples",
+          "patient commanding composure"
+        ],
+        "facing": "RIGHT",
+        "costume": "Tang MINGGUANG ARMOR with TWO ROUND CHEST PROTECTORS partly visible at lower crop, gray iron and muted leather, simple helmet without horn/feathers or a soft-tailed futou, no Qing finial or Ming wing helmet. No weapons, no battle.",
+        "file": "assets/art/portraits/tang/general-all-03.webp",
+        "sourceType": "fictional-pool",
+        "existedBeforeBatch": false,
+        "face": "56-year-old ADULT MAN, FULL BROAD ROUND face and rounded low jaw, heavy gray-flecked DOWNWARD MOUSTACHE with bare chin, curved bushy brows and wide calm eyes, short large rounded nose and broad thin mouth, stocky full short neck and broad relaxed shoulders, ruddy weathered beige skin, faint healed right cheek scar and gray temples, patient commanding composure; facing RIGHT"
+      }
+    },
+    {
+      "id": "tang/eunuch-all-01",
+      "file": "assets/art/portraits/tang/eunuch-all-01.webp",
+      "job": "tang-frame-pool-v1-tang-eunuch-all-01",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-frame-pool-v1-tang-eunuch-all-01.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 544.78,
+      "headTop": 146,
+      "faceBox": [
+        288.90021228790283,
+        442.45378744602203,
+        349.65278416872025,
+        349.6527690291405
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "eyeRatio": 0.3886,
+      "headTopRatio": 0.1041,
+      "bytes": 7736,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "43891e929506fbf64c60578ea015917e5f05caa54b740534734d39aa6a467004",
+      "faceCard": {
+        "id": "tang/eunuch-all-01",
+        "pool": "eunuch-all",
+        "n": 1,
+        "age": 46,
+        "dims": [
+          "soft BROAD OVAL face with gently rounded jaw",
+          "fully CLEAN SHAVEN adult man, no beard or moustache",
+          "fine low arched brows and small gently smiling long eyes",
+          "short fine nose and full softly curved closed lips",
+          "short smooth neck and medium rounded shoulders",
+          "very pale warm beige skin",
+          "one small left mouth-corner mole",
+          "polite attentive reserve"
+        ],
+        "facing": "LEFT",
+        "costume": "TANG SOFT-TAILED FUTOU: rounded BLACK CLOTH wrap tied at BACK; TWO flexible cloth tails droop DOWN or curve DOWN behind ears toward nape. No rigid horizontal Ming wings, no long straight Song wings, no Qing hat/beads. Round-collar robe, small pale undercollar, NO square rank patch, NO dragon medallion, no necklace. A waist leather belt lies below this shoulder crop, do not extend framing to show belt. Plain muted blue-green Tang round-collar inner-attendant robe, NO rank patch, no jewellery, completely beardless dignified man.",
+        "file": "assets/art/portraits/tang/eunuch-all-01.webp",
+        "sourceType": "fictional-pool",
+        "existedBeforeBatch": false,
+        "face": "46-year-old ADULT MAN, soft BROAD OVAL face with gently rounded jaw, fully CLEAN SHAVEN adult man, no beard or moustache, fine low arched brows and small gently smiling long eyes, short fine nose and full softly curved closed lips, short smooth neck and medium rounded shoulders, very pale warm beige skin, one small left mouth-corner mole, polite attentive reserve; facing LEFT"
+      }
+    },
+    {
+      "id": "tang/consort-high-01",
+      "file": "assets/art/portraits/tang/consort-high-01.webp",
+      "job": "tang-high-01-regalia-framing2-20261108",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-high-01-regalia-framing2-20261108.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 558.42,
+      "headTop": 162,
+      "faceBox": [
+        345.6175952553749,
+        457.8021137416363,
+        250.63685676455498,
+        250.63686415553093
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "eyeRatio": 0.3983,
+      "headTopRatio": 0.1155,
+      "bytes": 9162,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "c1cc2257beb0b468fb8acdb6c809dd22263cea0af36e6355441b75aa4d6fc941",
+      "faceCard": {
+        "id": "tang/consort-high-01",
+        "pool": "consort-high",
+        "age": 32,
+        "facing": "LEFT",
+        "dims": [
+          "full very broad OVAL female face with gently square rounded jaw",
+          "high rounded hairline and TALL UPRIGHT THREE-TIER coiled black high bun with phoenix hairpin and THREE pearl-drop strands",
+          "long low gently curved brows and serene elongated slightly downturned eyes",
+          "high small rounded nose and full softly firm bow lips",
+          "slightly PLUMP graceful short neck and broad relaxed shoulders",
+          "cool pale beige skin",
+          "a shallow dimple at the left corner of the mouth",
+          "dignified poised confidence with a restrained small smile"
+        ],
+        "costume": "Tang HIGH RANK consort: MUCH TALLER AND LARGER UPRIGHT STACKED HIGH BUN, large GOLD PHOENIX HAIRPIN with clear bird head/wing/tail silhouette and THREE pearl-drop strands at temple, second smaller gold pin. Same clearly formal silhouette as Tang reference board third portrait, at44px unmistakably more ornate than regular consort. No crown base or Ming phoenix crown, no Qing liangbatou. Red HUADIAN, modest fully covered RUQUN and PIBO; simple bold ornament shapes, not intricate filigree. Keep entire head/ornaments top12%, eyes38%; SCALE the full head including tall hair to fit, never crop ornaments. Preserve approved red ruqun and ochre-gold pibo.",
+        "file": "assets/art/portraits/tang/consort-high-01.webp",
+        "sourceType": "fictional-pool-sample",
+        "face": "32-year-old WOMAN, full very broad OVAL female face with gently square rounded jaw, high rounded hairline and TALL UPRIGHT THREE-TIER coiled black high bun with phoenix hairpin and THREE pearl-drop strands, long low gently curved brows and serene elongated slightly downturned eyes, high small rounded nose and full softly firm bow lips, slightly PLUMP graceful short neck and broad relaxed shoulders, cool pale beige skin, a shallow dimple at the left corner of the mouth, dignified poised confidence with a restrained small smile; facing LEFT",
+        "n": 1,
+        "existedBeforeBatch": true
+      }
+    },
+    {
+      "id": "tang/consort-high-02",
+      "file": "assets/art/portraits/tang/consort-high-02.webp",
+      "job": "tang-high02-final-downshift",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-high02-final-downshift.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 537.26,
+      "headTop": 151,
+      "faceBox": [
+        493.7747946381569,
+        455.1399399638176,
+        250.93709841370583,
+        250.93709486722946
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "eyeRatio": 0.3832,
+      "headTopRatio": 0.1077,
+      "bytes": 8138,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "77224b2a24d4197d4e8a30af1130f7cf8d6003c000e22cd2925063d417c8d9f7",
+      "faceCard": {
+        "id": "tang/consort-high-02",
+        "pool": "consort-high",
+        "n": 2,
+        "age": 29,
+        "dims": [
+          "slim LONG DIAMOND female face with high soft cheekbones and fine rounded chin",
+          "low rounded hairline and tall asymmetric COILED HIGH BUN",
+          "fine softly level brows and large gently downturned almond eyes",
+          "small blunt high nose and full rounded closed lips",
+          "long slender graceful neck and narrow lifted shoulders",
+          "warm pale golden skin",
+          "tiny beauty mark below right temple",
+          "kind confident attentiveness"
+        ],
+        "facing": "RIGHT",
+        "costume": "Tang HIGH RANK consort: MUCH TALLER AND LARGER UPRIGHT STACKED HIGH BUN, large GOLD PHOENIX HAIRPIN with clear bird head/wing/tail silhouette and THREE pearl-drop strands at temple, second smaller gold pin. Same clearly formal silhouette as Tang reference board third portrait, at44px unmistakably more ornate than regular consort. No crown base or Ming phoenix crown, no Qing liangbatou. Red HUADIAN, modest fully covered RUQUN and PIBO; simple bold ornament shapes, not intricate filigree. Keep entire head/ornaments top12%, eyes38%; SCALE the full head including tall hair to fit, never crop ornaments. Robe soft dusty plum, pibo muted pale jade-green.",
+        "file": "assets/art/portraits/tang/consort-high-02.webp",
+        "sourceType": "fictional-pool",
+        "existedBeforeBatch": false,
+        "face": "29-year-old WOMAN, slim LONG DIAMOND female face with high soft cheekbones and fine rounded chin, low rounded hairline and tall asymmetric COILED HIGH BUN, fine softly level brows and large gently downturned almond eyes, small blunt high nose and full rounded closed lips, long slender graceful neck and narrow lifted shoulders, warm pale golden skin, tiny beauty mark below right temple, kind confident attentiveness; facing RIGHT"
+      }
+    },
+    {
+      "id": "tang/consort-regular-01",
+      "file": "assets/art/portraits/tang/consort-regular-01.webp",
+      "job": "tang-tone-framing-consort-regular-01",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-tone-framing-consort-regular-01.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 558.24,
+      "headTop": 149,
+      "faceBox": [
+        496.410159945488,
+        438.8461720943451,
+        379.01550793647766,
+        379.01550394296646
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "eyeRatio": 0.3982,
+      "headTopRatio": 0.1063,
+      "bytes": 8800,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "443a11ecbeebdbe453fed3312cd5b127c44f3457f384cab7bb24eb080f226a26",
+      "faceCard": {
+        "id": "tang/consort-regular-01",
+        "pool": "consort-regular",
+        "age": 24,
+        "facing": "RIGHT",
+        "dims": [
+          "delicate HEART-SHAPED young adult female face with soft cheekbones and a rounded pointed chin",
+          "low shallow widow-peak hairline and a modest compact VERTICAL HIGH LOOP BUN, entirely black hair",
+          "fine softly arched brows and clear wide almond eyes",
+          "small low straight nose and full gently bowed lips",
+          "slender fine neck and softly sloped petite shoulders",
+          "warm light ivory skin",
+          "one tiny right eyebrow-tail beauty spot",
+          "gentle warm slightly shy closed smile"
+        ],
+        "costume": "TANG woman with a compact upright HIGH HAIR BUN (one vertical loop above crown), one small plain hairpin only. A tiny red FLOWER HUADIAN at CENTER OF FOREHEAD. Simple RUQUN: muted dusty coral-red short blouse bodice and malachite-sage green PIBO SILK SCARF visibly draped around both shoulders. Soft open curved neckline reveals only upper collarbones, fully covered chest, dignified and modest. No deep cleavage. NO Ming high standing-collar jacket, NO Qing horizontal liangbatou, NO phoenix crown, NO diadem. Clearly adult feminine face.",
+        "file": "assets/art/portraits/tang/consort-regular-01.webp",
+        "sourceType": "fictional-pool-sample",
+        "face": "24-year-old WOMAN, delicate HEART-SHAPED young adult female face with soft cheekbones and a rounded pointed chin, low shallow widow-peak hairline and a modest compact VERTICAL HIGH LOOP BUN, entirely black hair, fine softly arched brows and clear wide almond eyes, small low straight nose and full gently bowed lips, slender fine neck and softly sloped petite shoulders, warm light ivory skin, one tiny right eyebrow-tail beauty spot, gentle warm slightly shy closed smile; facing RIGHT",
+        "n": 1,
+        "existedBeforeBatch": true
+      }
+    },
+    {
+      "id": "tang/consort-regular-02",
+      "file": "assets/art/portraits/tang/consort-regular-02.webp",
+      "job": "tang-frame-pool-v1-tang-consort-regular-02",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-frame-pool-v1-tang-consort-regular-02.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 566.93,
+      "headTop": 176,
+      "faceBox": [
+        522.3472398519516,
+        456.02832704782486,
+        356.2570638656616,
+        356.2570925951004
+      ],
+      "status": "exported",
+      "crop": [
+        4,
+        11,
+        1117,
+        1402
+      ],
+      "eyeRatio": 0.3997,
+      "headTopRatio": 0.1186,
+      "bytes": 8982,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "116858155e334457b45be776a6237dde5a40cdb9da1127d0725ded7c684a3c13",
+      "faceCard": {
+        "id": "tang/consort-regular-02",
+        "pool": "consort-regular",
+        "n": 2,
+        "age": 25,
+        "dims": [
+          "very FULL ROUND female face with soft plump cheeks",
+          "high shallow widow-peak hairline and compact double-loop upright bun",
+          "short fine arched brows and large round smiling eyes",
+          "short upturned rounded nose and full rosebud lips",
+          "plump short graceful neck and rounded relaxed shoulders",
+          "warm rosy beige skin",
+          "deep right cheek dimple",
+          "bright friendly closed smile"
+        ],
+        "facing": "RIGHT",
+        "costume": "Tang REGULAR consort: modest compact UPRIGHT SINGLE HIGH LOOP BUN, one small plain pin only, no phoenix or pearl strands. Red flower HUADIAN at forehead. Modest fully covered RUQUN and visible PIBO scarf over both shoulders, only upper collarbones visible. No Qing liangbatou or diadem, no Ming jacket/crown. Natural clearly feminine face, no facial hair. Robe and pibo respectively dusty lotus pink / pale lavender.",
+        "file": "assets/art/portraits/tang/consort-regular-02.webp",
+        "sourceType": "fictional-pool",
+        "existedBeforeBatch": false,
+        "face": "25-year-old WOMAN, very FULL ROUND female face with soft plump cheeks, high shallow widow-peak hairline and compact double-loop upright bun, short fine arched brows and large round smiling eyes, short upturned rounded nose and full rosebud lips, plump short graceful neck and rounded relaxed shoulders, warm rosy beige skin, deep right cheek dimple, bright friendly closed smile; facing RIGHT"
+      }
+    },
+    {
+      "id": "tang/consort-regular-03",
+      "file": "assets/art/portraits/tang/consort-regular-03.webp",
+      "job": "tang-final-anchors-tang-consort-regular-03",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-final-anchors-tang-consort-regular-03.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 517.97,
+      "headTop": 148,
+      "faceBox": [
+        513.3021383285522,
+        398.3001513183117,
+        309.94481456279755,
+        309.9448287785053
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "eyeRatio": 0.3694,
+      "headTopRatio": 0.1056,
+      "bytes": 7984,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "a4739a8d8c3a43e95b9e08e3cdd1181804effd2e9ca4ec2e793d60f29d94a34c",
+      "faceCard": {
+        "id": "tang/consort-regular-03",
+        "pool": "consort-regular",
+        "n": 3,
+        "age": 28,
+        "dims": [
+          "very LONG NARROW OVAL female face with gently hollow cheeks",
+          "high deep widow-peak hairline and slim taller single-loop bun",
+          "thin low straight brows and long heavily-lidded soft eyes",
+          "long fine nose and thin precise closed lips",
+          "very slender long neck and steeply sloped shoulders",
+          "cool pale ivory skin",
+          "tiny freckle at left mouth corner",
+          "reserved thoughtful composure"
+        ],
+        "facing": "RIGHT",
+        "costume": "Tang REGULAR consort: modest compact UPRIGHT SINGLE HIGH LOOP BUN, one small plain pin only, no phoenix or pearl strands. Red flower HUADIAN at forehead. Modest fully covered RUQUN and visible PIBO scarf over both shoulders, only upper collarbones visible. No Qing liangbatou or diadem, no Ming jacket/crown. Natural clearly feminine face, no facial hair. Robe and pibo respectively lake blue / soft sand beige.",
+        "file": "assets/art/portraits/tang/consort-regular-03.webp",
+        "sourceType": "fictional-pool",
+        "existedBeforeBatch": false,
+        "face": "28-year-old WOMAN, very LONG NARROW OVAL female face with gently hollow cheeks, high deep widow-peak hairline and slim taller single-loop bun, thin low straight brows and long heavily-lidded soft eyes, long fine nose and thin precise closed lips, very slender long neck and steeply sloped shoulders, cool pale ivory skin, tiny freckle at left mouth corner, reserved thoughtful composure; facing RIGHT"
+      }
+    },
+    {
+      "id": "tang/consort-regular-04",
+      "file": "assets/art/portraits/tang/consort-regular-04.webp",
+      "job": "tang-final-anchors-tang-consort-regular-04",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-final-anchors-tang-consort-regular-04.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 479.53,
+      "headTop": 123,
+      "faceBox": [
+        338.18578684329987,
+        384.6824500262737,
+        279.999630689621,
+        279.9996408522129
+      ],
+      "status": "exported",
+      "crop": [
+        69,
+        0,
+        1053,
+        1230
+      ],
+      "eyeRatio": 0.3899,
+      "headTopRatio": 0.1,
+      "bytes": 8348,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "c4101916627f566d5cf1507dcef8f2c945d4a442d178b6c5d6d6797d9d316192",
+      "faceCard": {
+        "id": "tang/consort-regular-04",
+        "pool": "consort-regular",
+        "n": 4,
+        "age": 27,
+        "dims": [
+          "very BROAD SOFT SQUARE female face with rounded jaw corners",
+          "low straight hairline and compact broad upright coiled bun",
+          "long gently curved brows and wide-set large almond eyes",
+          "wide low nose bridge and full firm bowed lower lip",
+          "broad upright shoulders and medium strong graceful neck",
+          "medium warm golden tan skin",
+          "small mole below left eye",
+          "frank calm directness"
+        ],
+        "facing": "LEFT",
+        "costume": "Tang REGULAR consort: modest compact UPRIGHT SINGLE HIGH LOOP BUN, one small plain pin only, no phoenix or pearl strands. Red flower HUADIAN at forehead. Modest fully covered RUQUN and visible PIBO scarf over both shoulders, only upper collarbones visible. No Qing liangbatou or diadem, no Ming jacket/crown. Natural clearly feminine face, no facial hair. Robe and pibo respectively muted burgundy / pale sage green.",
+        "file": "assets/art/portraits/tang/consort-regular-04.webp",
+        "sourceType": "fictional-pool",
+        "existedBeforeBatch": false,
+        "face": "27-year-old WOMAN, very BROAD SOFT SQUARE female face with rounded jaw corners, low straight hairline and compact broad upright coiled bun, long gently curved brows and wide-set large almond eyes, wide low nose bridge and full firm bowed lower lip, broad upright shoulders and medium strong graceful neck, medium warm golden tan skin, small mole below left eye, frank calm directness; facing LEFT"
+      }
+    },
+    {
+      "id": "tang/consort-regular-05",
+      "file": "assets/art/portraits/tang/consort-regular-05.webp",
+      "job": "tang-final-anchors-tang-consort-regular-05",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-final-anchors-tang-consort-regular-05.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 513.29,
+      "headTop": 142,
+      "faceBox": [
+        339.04113614559174,
+        415.46684661507607,
+        292.2757991552353,
+        292.27577820420265
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "eyeRatio": 0.3661,
+      "headTopRatio": 0.1013,
+      "bytes": 7418,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "f826968b730daaae6fc7da8b196e718ca7e5bfb919f00fe76084a9e58f378ac8",
+      "faceCard": {
+        "id": "tang/consort-regular-05",
+        "pool": "consort-regular",
+        "n": 5,
+        "age": 23,
+        "dims": [
+          "wide INVERTED TRIANGULAR young female face with smooth high forehead and neat chin",
+          "middle gently wavy hairline and narrow high oval-loop bun",
+          "short soft downward brows and clear small almond eyes",
+          "small slightly aquiline nose and full gently bowed mouth",
+          "petite short fine neck and lowered soft shoulders",
+          "light cool beige clear youthful skin",
+          "one small left temple beauty spot",
+          "kind patient gentle fresh smile"
+        ],
+        "facing": "LEFT",
+        "costume": "Tang REGULAR consort: modest compact UPRIGHT SINGLE HIGH LOOP BUN, one small plain pin only, no phoenix or pearl strands. Red flower HUADIAN at forehead. Modest fully covered RUQUN and visible PIBO scarf over both shoulders, only upper collarbones visible. No Qing liangbatou or diadem, no Ming jacket/crown. Natural clearly feminine face, no facial hair. Robe and pibo respectively soft apricot / dusty rose.",
+        "file": "assets/art/portraits/tang/consort-regular-05.webp",
+        "sourceType": "fictional-pool",
+        "existedBeforeBatch": false,
+        "face": "23-year-old WOMAN, wide INVERTED TRIANGULAR young female face with smooth high forehead and neat chin, middle gently wavy hairline and narrow high oval-loop bun, short soft downward brows and clear small almond eyes, small slightly aquiline nose and full gently bowed mouth, petite short fine neck and lowered soft shoulders, light cool beige clear youthful skin, one small left temple beauty spot, kind patient gentle fresh smile; facing LEFT"
+      }
+    },
+    {
+      "id": "tang/emperor-young-01",
+      "file": "assets/art/portraits/tang/emperor-young-01.webp",
+      "job": "tang-tone-emperor-young-01",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-tone-emperor-young-01.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 522.19,
+      "headTop": 133,
+      "faceBox": [
+        489.9229139685631,
+        400.71400958299637,
+        420.9417346715927,
+        420.94175869226456
+      ],
+      "status": "exported",
+      "crop": [
+        29,
+        0,
+        1093,
+        1330
+      ],
+      "eyeRatio": 0.3926,
+      "headTopRatio": 0.1,
+      "bytes": 9256,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "9909f2d16b1ac32d00e4c4ea47637fe745ea23f9a61048b033f851b26b721344",
+      "faceCard": {
+        "id": "tang/emperor-young-01",
+        "pool": "emperor-young",
+        "age": 33,
+        "facing": "RIGHT",
+        "dims": [
+          "SHORT BROAD PENTAGONAL face with a wide forehead and a strong prominent chin",
+          "thick short slightly upturned black moustache and a small squared black goatee",
+          "thick level straight brows and large alert almond eyes",
+          "short broad high-bridge straight nose and firm full closed mouth",
+          "sturdy thick upright neck and broad square shoulders",
+          "warm medium honey-wheat skin",
+          "one shallow vertical crease between brows",
+          "calm watchful decisive authority"
+        ],
+        "costume": "TANG SOFT-TAILED FUTOU: small rounded black CLOTH head wrap tied at BACK, two SOFT BLACK CLOTH TAILS hang DOWN and gently CURVE behind the ears toward the nape/shoulder. Make their downward drooping fabric silhouette unmistakable at44px. NO horizontally outstretched rigid wings; NO straight long Song wings; NO Ming flat-topped two-tier hard cap; NO Qing hat, top bead, brim, crown or dangling beads. TANG EMPEROR wearing a plain muted OCHRE-YELLOW #C09558 ROUND-COLLAR ROBE, simple small pale undercollar. Warm earth ochre, NOT Qing lemon imperial yellow. No dragon-medallion embroidery, NO Ming YISHANGUAN, NO mianguan, no hanging pearl curtain, NO crown or necklaces. Keep round collar unmistakable, not a Qing upright band collar.",
+        "file": "assets/art/portraits/tang/emperor-young-01.webp",
+        "sourceType": "fictional-pool-sample",
+        "face": "33-year-old ADULT MAN, SHORT BROAD PENTAGONAL face with a wide forehead and a strong prominent chin, thick short slightly upturned black moustache and a small squared black goatee, thick level straight brows and large alert almond eyes, short broad high-bridge straight nose and firm full closed mouth, sturdy thick upright neck and broad square shoulders, warm medium honey-wheat skin, one shallow vertical crease between brows, calm watchful decisive authority; facing RIGHT",
+        "n": 1,
+        "existedBeforeBatch": true
+      }
+    },
+    {
+      "id": "tang/emperor-old-01",
+      "file": "assets/art/portraits/tang/emperor-old-01.webp",
+      "job": "tang-frame-pool-v2-tang-emperor-old-01",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-frame-pool-v2-tang-emperor-old-01.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 621.98,
+      "headTop": 258,
+      "faceBox": [
+        290.1759801506996,
+        518.4116352200508,
+        363.51599675416946,
+        363.5159863829613
+      ],
+      "status": "exported",
+      "crop": [
+        41,
+        102,
+        1081,
+        1402
+      ],
+      "eyeRatio": 0.4,
+      "headTopRatio": 0.12,
+      "bytes": 10362,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "865659de344856a1ccd29ec86af01cb7782bb4e3f5dad921f590cd98d1c9e357",
+      "faceCard": {
+        "id": "tang/emperor-old-01",
+        "pool": "emperor-old",
+        "n": 1,
+        "age": 61,
+        "dims": [
+          "broad long PEAR face with heavy jaw and full cheeks",
+          "broad gray-flecked FORKED CHIN BEARD and gray straight moustache",
+          "low thick gently angled brows and large thoughtful hooded eyes",
+          "large high broad nose and full firm closed mouth",
+          "thick upright neck and stately broad shoulders",
+          "warm weathered honey skin",
+          "gray temples and three shallow forehead lines",
+          "patient grave authoritative composure"
+        ],
+        "facing": "LEFT",
+        "costume": "TANG SOFT-TAILED FUTOU: rounded BLACK CLOTH wrap tied at BACK; TWO flexible cloth tails droop DOWN or curve DOWN behind ears toward nape. No rigid horizontal Ming wings, no long straight Song wings, no Qing hat/beads. Round-collar robe, small pale undercollar, NO square rank patch, NO dragon medallion, no necklace. A waist leather belt lies below this shoulder crop, do not extend framing to show belt. Muted OCHRE-YELLOW emperor round-collar robe, not Qing bright lemon yellow. No crown or pearl curtain.",
+        "file": "assets/art/portraits/tang/emperor-old-01.webp",
+        "sourceType": "fictional-pool",
+        "existedBeforeBatch": false,
+        "face": "61-year-old ADULT MAN, broad long PEAR face with heavy jaw and full cheeks, broad gray-flecked FORKED CHIN BEARD and gray straight moustache, low thick gently angled brows and large thoughtful hooded eyes, large high broad nose and full firm closed mouth, thick upright neck and stately broad shoulders, warm weathered honey skin, gray temples and three shallow forehead lines, patient grave authoritative composure; facing LEFT"
+      }
+    },
+    {
+      "id": "tang/prince-teen-01",
+      "file": "assets/art/portraits/tang/prince-teen-01.webp",
+      "job": "tang-final-anchors-tang-prince-teen-01",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-final-anchors-tang-prince-teen-01.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 505.71,
+      "headTop": 153,
+      "faceBox": [
+        317.526626765728,
+        407.91910794377327,
+        322.4865492582321,
+        322.48653796315193
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "eyeRatio": 0.3607,
+      "headTopRatio": 0.1091,
+      "bytes": 7420,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "3ddbd2d3da8763de83135d6134cafdd794e33ae7e31cdb618d8206f1f49be4f4",
+      "faceCard": {
+        "id": "tang/prince-teen-01",
+        "pool": "prince-teen",
+        "n": 1,
+        "age": 13,
+        "dims": [
+          "slim soft LONG OVAL adolescent face with immature rounded chin",
+          "CLEAN SHAVEN teen with paired small TOPKNOTS and middle soft hairline",
+          "fine straight brows and large clear thoughtful eyes",
+          "small fine straight nose and full youthful closed lips",
+          "thin short teen neck and small narrow shoulders",
+          "warm pale cream skin",
+          "tiny right brow beauty spot",
+          "earnest slightly anxious adolescent reserve"
+        ],
+        "facing": "LEFT",
+        "costume": "Tang modest round-collar muted blue robe. Real13-year-old BOY with paired small topknots, no beard, adolescent anatomy, not adult.",
+        "file": "assets/art/portraits/tang/prince-teen-01.webp",
+        "sourceType": "fictional-pool",
+        "existedBeforeBatch": false,
+        "face": "13-year-old BOY, slim soft LONG OVAL adolescent face with immature rounded chin, CLEAN SHAVEN teen with paired small TOPKNOTS and middle soft hairline, fine straight brows and large clear thoughtful eyes, small fine straight nose and full youthful closed lips, thin short teen neck and small narrow shoulders, warm pale cream skin, tiny right brow beauty spot, earnest slightly anxious adolescent reserve; facing LEFT"
+      }
+    },
+    {
+      "id": "tang/prince-adult-01",
+      "file": "assets/art/portraits/tang/prince-adult-01.webp",
+      "job": "tang-frame-pool-v1-tang-prince-adult-01",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-frame-pool-v1-tang-prince-adult-01.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 521.85,
+      "headTop": 166,
+      "faceBox": [
+        291.4927766919136,
+        421.07099306583405,
+        348.5405960083008,
+        348.5405929684639
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "eyeRatio": 0.3722,
+      "headTopRatio": 0.1184,
+      "bytes": 7890,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "bf3c2d67a740d1d422c08a3d714c16d3b52fa53ad400b43d5b60888eb9b36808",
+      "faceCard": {
+        "id": "tang/prince-adult-01",
+        "pool": "prince-adult",
+        "n": 1,
+        "age": 22,
+        "dims": [
+          "broad angular DIAMOND adult male face with firm mature jaw",
+          "CLEAN SHAVEN with a compact soft-tailed futou",
+          "thick slanted brows and narrow alert adult eyes",
+          "high broad straight nose and thin firm closed mouth",
+          "strong adult medium neck and broad athletic shoulders",
+          "medium warm wheat skin",
+          "small shallow chin dimple",
+          "self-assured energetic adult composure"
+        ],
+        "facing": "LEFT",
+        "costume": "Tang modest round-collar muted blue robe. TANG SOFT-TAILED FUTOU: rounded BLACK CLOTH wrap tied at BACK; TWO flexible cloth tails droop DOWN or curve DOWN behind ears toward nape. No rigid horizontal Ming wings, no long straight Song wings, no Qing hat/beads. Round-collar robe, small pale undercollar, NO square rank patch, NO dragon medallion, no necklace. A waist leather belt lies below this shoulder crop, do not extend framing to show belt. Real22-year-old ADULT man, fully developed jaw/neck/shoulders, not a child.",
+        "file": "assets/art/portraits/tang/prince-adult-01.webp",
+        "sourceType": "fictional-pool",
+        "existedBeforeBatch": false,
+        "face": "22-year-old ADULT MAN, broad angular DIAMOND adult male face with firm mature jaw, CLEAN SHAVEN with a compact soft-tailed futou, thick slanted brows and narrow alert adult eyes, high broad straight nose and thin firm closed mouth, strong adult medium neck and broad athletic shoulders, medium warm wheat skin, small shallow chin dimple, self-assured energetic adult composure; facing LEFT"
+      }
+    },
+    {
+      "id": "tang/princess-teen-01",
+      "file": "assets/art/portraits/tang/princess-teen-01.webp",
+      "job": "tang-pool-princess-teen-01-01",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-pool-princess-teen-01-01.png",
+      "cellBox": [
+        5,
+        5,
+        556,
+        696
+      ],
+      "rawSize": [
+        551,
+        691
+      ],
+      "eyeY": 240.61,
+      "headTop": 75,
+      "faceBox": [
+        136.87010107934475,
+        166.53058582544327,
+        202.2944985628128,
+        202.29449290037155
+      ],
+      "status": "exported",
+      "crop": [
+        8,
+        0,
+        542,
+        668
+      ],
+      "eyeRatio": 0.3602,
+      "headTopRatio": 0.1123,
+      "bytes": 12612,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "fcfc8cc278628910e7ade4acd849ab5c81040109ad8d2fcc3fb98ca47666ad93",
+      "faceCard": {
+        "id": "tang/princess-teen-01",
+        "pool": "princess-teen",
+        "n": 1,
+        "age": 12,
+        "dims": [
+          "small FULL ROUND real preteen girl face with softly full cheeks",
+          "low rounded hairline and TWO SMALL SIDE-LOOP BUNS",
+          "fine short gently curved brows and large innocent almond eyes",
+          "small button nose and full small child lips",
+          "short fine child neck and small softly sloping shoulders",
+          "warm peach cream child skin",
+          "tiny right cheek freckle",
+          "quiet curious childlike warmth"
+        ],
+        "facing": "LEFT",
+        "costume": "Tang girl/woman in fully covered RUQUN and PIBO scarf, high modest neckline, small paired side-loop buns with plain ties, tiny forehead flower only, real12-year-old CHILD, no makeup or adult anatomy. Muted soft peach and light teal colors.",
+        "file": "assets/art/portraits/tang/princess-teen-01.webp",
+        "sourceType": "fictional-pool",
+        "existedBeforeBatch": false,
+        "face": "12-year-old GIRL, small FULL ROUND real preteen girl face with softly full cheeks, low rounded hairline and TWO SMALL SIDE-LOOP BUNS, fine short gently curved brows and large innocent almond eyes, small button nose and full small child lips, short fine child neck and small softly sloping shoulders, warm peach cream child skin, tiny right cheek freckle, quiet curious childlike warmth; facing LEFT"
+      }
+    },
+    {
+      "id": "tang/princess-adult-01",
+      "file": "assets/art/portraits/tang/princess-adult-01.webp",
+      "job": "tang-frame-pool-v1-tang-princess-adult-01",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-frame-pool-v1-tang-princess-adult-01.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 547.67,
+      "headTop": 142,
+      "faceBox": [
+        347.99899739027023,
+        454.09110671281815,
+        295.00104635953903,
+        295.00104409456253
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "eyeRatio": 0.3906,
+      "headTopRatio": 0.1013,
+      "bytes": 8840,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "ddc933564c4bd31676234540f15e9a8b6983940d0bd4766283c5525afcf2fd85",
+      "faceCard": {
+        "id": "tang/princess-adult-01",
+        "pool": "princess-adult",
+        "n": 1,
+        "age": 21,
+        "dims": [
+          "slender HEART-SHAPED adult female face with neat rounded chin",
+          "middle shallow widow-peak hairline and modest upright high bun",
+          "long fine lifted brows and broad open almond eyes",
+          "small high straight nose and full softly bowed lips",
+          "long fine adult neck and slender elegant shoulders",
+          "pale warm ivory skin",
+          "left eye-corner beauty mark",
+          "gracious lively adult poise"
+        ],
+        "facing": "LEFT",
+        "costume": "Tang girl/woman in fully covered RUQUN and PIBO scarf, modest neckline only upper collarbones visible, compact upright bun with plain pin, red forehead huadian. Adult21, no phoenix/pearl regalia. Muted soft peach and light teal colors.",
+        "file": "assets/art/portraits/tang/princess-adult-01.webp",
+        "sourceType": "fictional-pool",
+        "existedBeforeBatch": false,
+        "face": "21-year-old WOMAN, slender HEART-SHAPED adult female face with neat rounded chin, middle shallow widow-peak hairline and modest upright high bun, long fine lifted brows and broad open almond eyes, small high straight nose and full softly bowed lips, long fine adult neck and slender elegant shoulders, pale warm ivory skin, left eye-corner beauty mark, gracious lively adult poise; facing LEFT"
+      }
+    },
+    {
+      "id": "tang-taizong/emperor-01",
+      "file": "assets/art/portraits/unique/tang-taizong/emperor-01.webp",
+      "job": "tang-frame-unique-v1-tang-taizong-emperor-01",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-frame-unique-v1-tang-taizong-emperor-01.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 616.99,
+      "headTop": 293,
+      "faceBox": [
+        267.22320994734764,
+        517.427816092968,
+        347.62813425064087,
+        347.6281389594078
+      ],
+      "status": "exported",
+      "crop": [
+        45,
+        113,
+        1076,
+        1402
+      ],
+      "eyeRatio": 0.391,
+      "headTopRatio": 0.1396,
+      "bytes": 9242,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "19349928a74b7e8f93d1ce80e18e1d98af34e17332ce7f9a8b1a7019e905e813",
+      "faceCard": {
+        "id": "tang-taizong/emperor-01",
+        "scenario": "tang-taizong",
+        "name": "李世民",
+        "role": "emperor",
+        "index": 1,
+        "age": 28,
+        "variant": "base",
+        "dims": [
+          "broad LONG RECTANGULAR face with strong wide jaw and prominent chin",
+          "dense short CURLY FULL BLACK BEARD joined to broad separated moustache",
+          "thick sword-like slightly angled brows and large bright alert eyes",
+          "high broad straight nose and broad firm full lower lip",
+          "powerful upright thick neck and broad square shoulders",
+          "warm medium ochre-wheat skin",
+          "one shallow vertical right brow crease",
+          "resolute watchful vigorous imperial authority"
+        ],
+        "facing": "LEFT",
+        "context": "勤政；玄武门后新即位，渭水危局。旧唐书太宗本纪的临机果断、英武气象。",
+        "file": "assets/art/portraits/unique/tang-taizong/emperor-01.webp",
+        "sourceType": "historical-unique",
+        "costume": "Tang SOFT-TAILED FUTOU black cloth wrap with TWO cloth tails hanging or curving DOWN at back/nape, never rigid horizontal Ming wings or long straight Song wings. Natural full hairline, not Qing shaven forehead. ROUND-COLLAR robe, small pale undercollar, no chest rank patch, no necklace. TANG EMPEROR in muted OCHRE-YELLOW round-collar robe, no crown or pearl curtain. Not Qing lemon yellow.",
+        "historySource": "https://zh.wikisource.org/wiki/舊唐書/卷2",
+        "sourceNote": "年龄、身份、性格秘密以scenarios.js为准；史书记载用于人物事迹与冠服大意，未明载的八维五官、痣与体态是区分人物的创作，不宣称精确真实相貌。外邦年龄为绘制档，不新增游戏年龄。",
+        "face": "28-year-old ADULT MAN, broad LONG RECTANGULAR face with strong wide jaw and prominent chin, dense short CURLY FULL BLACK BEARD joined to broad separated moustache, thick sword-like slightly angled brows and large bright alert eyes, high broad straight nose and broad firm full lower lip, powerful upright thick neck and broad square shoulders, warm medium ochre-wheat skin, one shallow vertical right brow crease, resolute watchful vigorous imperial authority; facing LEFT"
+      }
+    },
+    {
+      "id": "tang-taizong/official-01",
+      "file": "assets/art/portraits/unique/tang-taizong/official-01.webp",
+      "job": "tang-frame-unique-v1-tang-taizong-official-01",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-frame-unique-v1-tang-taizong-official-01.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 593.45,
+      "headTop": 263,
+      "faceBox": [
+        315.5631687641144,
+        501.88250452280045,
+        311.7578006386757,
+        311.75780779123306
+      ],
+      "status": "exported",
+      "crop": [
+        31,
+        78,
+        1090,
+        1402
+      ],
+      "eyeRatio": 0.3893,
+      "headTopRatio": 0.1397,
+      "bytes": 6138,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "49f07a294c6dba420c3ed101734a61b511e1d3bfc8f6145679576524e0be769e",
+      "faceCard": {
+        "id": "tang-taizong/official-01",
+        "scenario": "tang-taizong",
+        "name": "房玄龄",
+        "role": "official",
+        "index": 1,
+        "age": 47,
+        "variant": "base",
+        "dims": [
+          "very LONG THIN OVAL face with softly hollow cheeks and narrow rounded chin",
+          "THREE very long fine BLACK beard locks and thin separated moustache",
+          "fine long gently drooping brows and small patient long eyes",
+          "long slender rounded-tip nose and thin soft closed mouth",
+          "stringy long neck and lowered narrow shoulders",
+          "cool light ivory-beige skin",
+          "tiny right temple mole and shallow mouth folds",
+          "gentle discreet contemplative patience"
+        ],
+        "facing": "LEFT",
+        "context": "善谋，处事周密；秘密：玄武门前夜曾力劝先发制人。",
+        "file": "assets/art/portraits/unique/tang-taizong/official-01.webp",
+        "sourceType": "historical-unique",
+        "costume": "Tang SOFT-TAILED FUTOU black cloth wrap with TWO cloth tails hanging or curving DOWN at back/nape, never rigid horizontal Ming wings or long straight Song wings. Natural full hairline, not Qing shaven forehead. ROUND-COLLAR robe, small pale undercollar, no chest rank patch, no necklace. Muted dark PURPLE round-collar official robe.",
+        "historySource": "https://zh.wikisource.org/wiki/舊唐書/卷66",
+        "sourceNote": "年龄、身份、性格秘密以scenarios.js为准；史书记载用于人物事迹与冠服大意，未明载的八维五官、痣与体态是区分人物的创作，不宣称精确真实相貌。外邦年龄为绘制档，不新增游戏年龄。",
+        "face": "47-year-old ADULT MAN, very LONG THIN OVAL face with softly hollow cheeks and narrow rounded chin, THREE very long fine BLACK beard locks and thin separated moustache, fine long gently drooping brows and small patient long eyes, long slender rounded-tip nose and thin soft closed mouth, stringy long neck and lowered narrow shoulders, cool light ivory-beige skin, tiny right temple mole and shallow mouth folds, gentle discreet contemplative patience; facing LEFT"
+      }
+    },
+    {
+      "id": "tang-taizong/official-02",
+      "file": "assets/art/portraits/unique/tang-taizong/official-02.webp",
+      "job": "tang-frame-unique-v1-tang-taizong-official-02",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-frame-unique-v1-tang-taizong-official-02.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 635.12,
+      "headTop": 300,
+      "faceBox": [
+        521.8223268985748,
+        539.0797756314278,
+        353.7927349805832,
+        353.7927397489548
+      ],
+      "status": "exported",
+      "crop": [
+        50,
+        124,
+        1072,
+        1402
+      ],
+      "eyeRatio": 0.3999,
+      "headTopRatio": 0.1377,
+      "bytes": 6600,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "651123a8c847bb46e0d05b26a757fe7c17c67bdc7d65376c859a9530e8178b2f",
+      "faceCard": {
+        "id": "tang-taizong/official-02",
+        "scenario": "tang-taizong",
+        "name": "杜如晦",
+        "role": "official",
+        "index": 2,
+        "age": 41,
+        "variant": "base",
+        "dims": [
+          "narrow INVERTED TRIANGULAR face with high forehead and hollow delicate cheeks",
+          "short thin moustache and one small POINTED BLACK GOATEE",
+          "sparse level brows and large tired deeply set eyes",
+          "fine high slightly hooked nose and thin tightly pressed lips",
+          "very GAUNT fine neck and slightly stooped thin shoulders",
+          "pale cool gray-cream skin",
+          "clear under-eye bags and a single forehead furrow",
+          "decisive yet physically fatigued concentration"
+        ],
+        "facing": "RIGHT",
+        "context": "临机善断；秘密：体弱多病，自知天年不永。",
+        "file": "assets/art/portraits/unique/tang-taizong/official-02.webp",
+        "sourceType": "historical-unique",
+        "costume": "Tang SOFT-TAILED FUTOU black cloth wrap with TWO cloth tails hanging or curving DOWN at back/nape, never rigid horizontal Ming wings or long straight Song wings. Natural full hairline, not Qing shaven forehead. ROUND-COLLAR robe, small pale undercollar, no chest rank patch, no necklace. Muted dark PURPLE round-collar official robe.",
+        "historySource": "https://zh.wikisource.org/wiki/舊唐書/卷66",
+        "sourceNote": "年龄、身份、性格秘密以scenarios.js为准；史书记载用于人物事迹与冠服大意，未明载的八维五官、痣与体态是区分人物的创作，不宣称精确真实相貌。外邦年龄为绘制档，不新增游戏年龄。",
+        "face": "41-year-old ADULT MAN, narrow INVERTED TRIANGULAR face with high forehead and hollow delicate cheeks, short thin moustache and one small POINTED BLACK GOATEE, sparse level brows and large tired deeply set eyes, fine high slightly hooked nose and thin tightly pressed lips, very GAUNT fine neck and slightly stooped thin shoulders, pale cool gray-cream skin, clear under-eye bags and a single forehead furrow, decisive yet physically fatigued concentration; facing RIGHT"
+      }
+    },
+    {
+      "id": "tang-taizong/official-03",
+      "file": "assets/art/portraits/unique/tang-taizong/official-03.webp",
+      "job": "tang-frame-unique-v1-tang-taizong-official-03",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-frame-unique-v1-tang-taizong-official-03.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 642.07,
+      "headTop": 295,
+      "faceBox": [
+        280.6203775405884,
+        541.8738369941711,
+        342.72492295503616,
+        342.72492080926895
+      ],
+      "status": "exported",
+      "crop": [
+        54,
+        136,
+        1067,
+        1402
+      ],
+      "eyeRatio": 0.3997,
+      "headTopRatio": 0.1256,
+      "bytes": 7544,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "d574e856574ccf5e087e63938193378f2214b95e06855407dc055edba6498db8",
+      "faceCard": {
+        "id": "tang-taizong/official-03",
+        "scenario": "tang-taizong",
+        "name": "长孙无忌",
+        "role": "official",
+        "index": 3,
+        "age": 32,
+        "variant": "base",
+        "dims": [
+          "VERY BROAD PEAR face with full low cheeks and a soft double chin",
+          "short dense ROUNDED FULL BLACK BEARD on jaw and cheeks",
+          "high gently arched thick brows and wide friendly watchful eyes",
+          "short broad rounded nose and full knowing curved lips",
+          "PLUMP short thick neck and wide relaxed shoulders",
+          "warm rich golden beige skin",
+          "small left mouth-corner mole",
+          "affable outward confidence with calculating side glance"
+        ],
+        "facing": "LEFT",
+        "context": "通悟，有筹略；秘密：玄武门之变首谋之一，深知许多不可言之事。",
+        "file": "assets/art/portraits/unique/tang-taizong/official-03.webp",
+        "sourceType": "historical-unique",
+        "costume": "Tang SOFT-TAILED FUTOU black cloth wrap with TWO cloth tails hanging or curving DOWN at back/nape, never rigid horizontal Ming wings or long straight Song wings. Natural full hairline, not Qing shaven forehead. ROUND-COLLAR robe, small pale undercollar, no chest rank patch, no necklace. Muted dark PURPLE round-collar official robe.",
+        "historySource": "https://zh.wikisource.org/wiki/舊唐書/卷65",
+        "sourceNote": "年龄、身份、性格秘密以scenarios.js为准；史书记载用于人物事迹与冠服大意，未明载的八维五官、痣与体态是区分人物的创作，不宣称精确真实相貌。外邦年龄为绘制档，不新增游戏年龄。",
+        "face": "32-year-old ADULT MAN, VERY BROAD PEAR face with full low cheeks and a soft double chin, short dense ROUNDED FULL BLACK BEARD on jaw and cheeks, high gently arched thick brows and wide friendly watchful eyes, short broad rounded nose and full knowing curved lips, PLUMP short thick neck and wide relaxed shoulders, warm rich golden beige skin, small left mouth-corner mole, affable outward confidence with calculating side glance; facing LEFT"
+      }
+    },
+    {
+      "id": "tang-taizong/official-04",
+      "file": "assets/art/portraits/unique/tang-taizong/official-04.webp",
+      "job": "tang-frame-unique-v1-tang-taizong-official-04",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-frame-unique-v1-tang-taizong-official-04.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 610.09,
+      "headTop": 285,
+      "faceBox": [
+        512.1906189322472,
+        507.00976234674454,
+        340.62841433286667,
+        340.6284242272377
+      ],
+      "status": "exported",
+      "crop": [
+        42,
+        104,
+        1080,
+        1402
+      ],
+      "eyeRatio": 0.3899,
+      "headTopRatio": 0.1394,
+      "bytes": 6118,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "6226f391bf113ff873c58f7fcd47e96ea698f04a3d73ccd8e1fd8758285801e0",
+      "faceCard": {
+        "id": "tang-taizong/official-04",
+        "scenario": "tang-taizong",
+        "name": "魏征",
+        "role": "official",
+        "index": 4,
+        "age": 46,
+        "variant": "base",
+        "dims": [
+          "LONG NARROW RECTANGULAR face with a projecting blunt jaw",
+          "thick short STRAIGHT MOUSTACHE and small WIDE CHIN TUFT",
+          "thick low level brows and small direct piercing eyes",
+          "long straight broad nose and very thin firmly pressed mouth",
+          "long STIFF upright neck and flat narrow squared shoulders",
+          "dark warm wheat skin",
+          "deep central brow crease",
+          "unyielding candid principled seriousness"
+        ],
+        "facing": "RIGHT",
+        "context": "犯颜直谏；秘密：曾劝隐太子早除秦王。",
+        "file": "assets/art/portraits/unique/tang-taizong/official-04.webp",
+        "sourceType": "historical-unique",
+        "costume": "Tang SOFT-TAILED FUTOU black cloth wrap with TWO cloth tails hanging or curving DOWN at back/nape, never rigid horizontal Ming wings or long straight Song wings. Natural full hairline, not Qing shaven forehead. ROUND-COLLAR robe, small pale undercollar, no chest rank patch, no necklace. Muted dark PURPLE round-collar official robe.",
+        "historySource": "https://zh.wikisource.org/wiki/舊唐書/卷71",
+        "sourceNote": "年龄、身份、性格秘密以scenarios.js为准；史书记载用于人物事迹与冠服大意，未明载的八维五官、痣与体态是区分人物的创作，不宣称精确真实相貌。外邦年龄为绘制档，不新增游戏年龄。",
+        "face": "46-year-old ADULT MAN, LONG NARROW RECTANGULAR face with a projecting blunt jaw, thick short STRAIGHT MOUSTACHE and small WIDE CHIN TUFT, thick low level brows and small direct piercing eyes, long straight broad nose and very thin firmly pressed mouth, long STIFF upright neck and flat narrow squared shoulders, dark warm wheat skin, deep central brow crease, unyielding candid principled seriousness; facing RIGHT"
+      }
+    },
+    {
+      "id": "tang-taizong/official-05",
+      "file": "assets/art/portraits/unique/tang-taizong/official-05.webp",
+      "job": "tang-frame-unique-v1-tang-taizong-official-05",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-frame-unique-v1-tang-taizong-official-05.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 641.76,
+      "headTop": 283,
+      "faceBox": [
+        305.6842855811119,
+        539.5684679150581,
+        331.1341708302498,
+        331.13418942689896
+      ],
+      "status": "exported",
+      "crop": [
+        54,
+        135,
+        1068,
+        1402
+      ],
+      "eyeRatio": 0.4,
+      "headTopRatio": 0.1168,
+      "bytes": 6456,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "2651c1fe862b62a0c91f4928a5567f4e073421b0082b0673b8e66bb1a02f30db",
+      "faceCard": {
+        "id": "tang-taizong/official-05",
+        "scenario": "tang-taizong",
+        "name": "王珪",
+        "role": "official",
+        "index": 5,
+        "age": 56,
+        "variant": "base",
+        "dims": [
+          "FULL ROUND face with heavy soft cheeks and small rounded chin",
+          "completely CLEAN SHAVEN face with white side temples",
+          "thin gently drooping gray brows and broad soft downturned eyes",
+          "short wide blunt nose and full soft straight lips",
+          "plump short neck and softly sloping shoulders",
+          "warm pale peach beige skin",
+          "two small left temple age spots",
+          "mild restrained experienced caution"
+        ],
+        "facing": "LEFT",
+        "context": "恬淡守正；秘密：原为东宫属官，曾因杨文干事流放。",
+        "file": "assets/art/portraits/unique/tang-taizong/official-05.webp",
+        "sourceType": "historical-unique",
+        "costume": "Tang SOFT-TAILED FUTOU black cloth wrap with TWO cloth tails hanging or curving DOWN at back/nape, never rigid horizontal Ming wings or long straight Song wings. Natural full hairline, not Qing shaven forehead. ROUND-COLLAR robe, small pale undercollar, no chest rank patch, no necklace. Muted dark PURPLE round-collar official robe.",
+        "historySource": "https://zh.wikisource.org/wiki/舊唐書/卷70",
+        "sourceNote": "年龄、身份、性格秘密以scenarios.js为准；史书记载用于人物事迹与冠服大意，未明载的八维五官、痣与体态是区分人物的创作，不宣称精确真实相貌。外邦年龄为绘制档，不新增游戏年龄。",
+        "face": "56-year-old ADULT MAN, FULL ROUND face with heavy soft cheeks and small rounded chin, completely CLEAN SHAVEN face with white side temples, thin gently drooping gray brows and broad soft downturned eyes, short wide blunt nose and full soft straight lips, plump short neck and softly sloping shoulders, warm pale peach beige skin, two small left temple age spots, mild restrained experienced caution; facing LEFT"
+      }
+    },
+    {
+      "id": "tang-taizong/official-06",
+      "file": "assets/art/portraits/unique/tang-taizong/official-06.webp",
+      "job": "tang-frame-unique-v1-tang-taizong-official-06",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-frame-unique-v1-tang-taizong-official-06.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 629.56,
+      "headTop": 304,
+      "faceBox": [
+        507.2708891630173,
+        528.8596054911613,
+        349.0264865756035,
+        349.0264858007431
+      ],
+      "status": "exported",
+      "crop": [
+        50,
+        126,
+        1071,
+        1402
+      ],
+      "eyeRatio": 0.3946,
+      "headTopRatio": 0.1395,
+      "bytes": 7144,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "569a2e47b61c274e4900389535952ca33e2dd7f0796791d69db5999a8da692b4",
+      "faceCard": {
+        "id": "tang-taizong/official-06",
+        "scenario": "tang-taizong",
+        "name": "萧瑀",
+        "role": "official",
+        "index": 6,
+        "age": 52,
+        "variant": "base",
+        "dims": [
+          "BROAD TALL SQUARE face with a firm heavy jaw",
+          "broad long FORKED BLACK-GRAY BEARD with heavy gray-flecked moustache",
+          "thick low frowning brows and large high-set penetrating eyes",
+          "large high hooked nose and thin flat firm mouth",
+          "robust medium short neck and upright strong shoulders",
+          "warm muted olive skin",
+          "gray temples and deep right mouth crease",
+          "righteous austere impatient gravity"
+        ],
+        "facing": "RIGHT",
+        "context": "刚直，好佛；秘密：与房玄龄、杜如晦素来不睦。",
+        "file": "assets/art/portraits/unique/tang-taizong/official-06.webp",
+        "sourceType": "historical-unique",
+        "costume": "Tang SOFT-TAILED FUTOU black cloth wrap with TWO cloth tails hanging or curving DOWN at back/nape, never rigid horizontal Ming wings or long straight Song wings. Natural full hairline, not Qing shaven forehead. ROUND-COLLAR robe, small pale undercollar, no chest rank patch, no necklace. Muted dark PURPLE round-collar official robe.",
+        "historySource": "https://zh.wikisource.org/wiki/舊唐書/卷63",
+        "sourceNote": "年龄、身份、性格秘密以scenarios.js为准；史书记载用于人物事迹与冠服大意，未明载的八维五官、痣与体态是区分人物的创作，不宣称精确真实相貌。外邦年龄为绘制档，不新增游戏年龄。",
+        "face": "52-year-old ADULT MAN, BROAD TALL SQUARE face with a firm heavy jaw, broad long FORKED BLACK-GRAY BEARD with heavy gray-flecked moustache, thick low frowning brows and large high-set penetrating eyes, large high hooked nose and thin flat firm mouth, robust medium short neck and upright strong shoulders, warm muted olive skin, gray temples and deep right mouth crease, righteous austere impatient gravity; facing RIGHT"
+      }
+    },
+    {
+      "id": "tang-taizong/official-07",
+      "file": "assets/art/portraits/unique/tang-taizong/official-07.webp",
+      "job": "tang-frame-unique-v1-tang-taizong-official-07",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-frame-unique-v1-tang-taizong-official-07.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 598.56,
+      "headTop": 269,
+      "faceBox": [
+        311.9953122138977,
+        501.7758746743202,
+        308.7274298071861,
+        308.7274225950241
+      ],
+      "status": "exported",
+      "crop": [
+        34,
+        85,
+        1088,
+        1402
+      ],
+      "eyeRatio": 0.3899,
+      "headTopRatio": 0.1397,
+      "bytes": 6550,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "9980917cae2d3e009bf904dcd21544ab66acf7fa23b08360eb29561cbfd46012",
+      "faceCard": {
+        "id": "tang-taizong/official-07",
+        "scenario": "tang-taizong",
+        "name": "封德彝",
+        "role": "official",
+        "index": 7,
+        "age": 58,
+        "variant": "base",
+        "dims": [
+          "sharp HIGH DIAMOND face with hollow cheeks and a pointed narrow chin",
+          "fine WHITE PENCIL MOUSTACHE and completely bare chin",
+          "thin high curved brows and small low-lidded sideways eyes",
+          "high curved fine nose and thin pursed closed lips",
+          "lean long neck and narrow high shoulders",
+          "cool pale golden beige skin",
+          "right temple age spots and fine crow-feet",
+          "guarded polished diplomatic calculation"
+        ],
+        "facing": "LEFT",
+        "context": "阴持两端；秘密：曾私下替隐太子说话，事未泄露。",
+        "file": "assets/art/portraits/unique/tang-taizong/official-07.webp",
+        "sourceType": "historical-unique",
+        "costume": "Tang SOFT-TAILED FUTOU black cloth wrap with TWO cloth tails hanging or curving DOWN at back/nape, never rigid horizontal Ming wings or long straight Song wings. Natural full hairline, not Qing shaven forehead. ROUND-COLLAR robe, small pale undercollar, no chest rank patch, no necklace. Muted dark PURPLE round-collar official robe.",
+        "historySource": "https://zh.wikisource.org/wiki/舊唐書/卷63",
+        "sourceNote": "年龄、身份、性格秘密以scenarios.js为准；史书记载用于人物事迹与冠服大意，未明载的八维五官、痣与体态是区分人物的创作，不宣称精确真实相貌。外邦年龄为绘制档，不新增游戏年龄。",
+        "face": "58-year-old ADULT MAN, sharp HIGH DIAMOND face with hollow cheeks and a pointed narrow chin, fine WHITE PENCIL MOUSTACHE and completely bare chin, thin high curved brows and small low-lidded sideways eyes, high curved fine nose and thin pursed closed lips, lean long neck and narrow high shoulders, cool pale golden beige skin, right temple age spots and fine crow-feet, guarded polished diplomatic calculation; facing LEFT"
+      }
+    },
+    {
+      "id": "tang-taizong/official-08",
+      "file": "assets/art/portraits/unique/tang-taizong/official-08.webp",
+      "job": "tang-frame-unique-v1-tang-taizong-official-08",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-frame-unique-v1-tang-taizong-official-08.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 625.92,
+      "headTop": 282,
+      "faceBox": [
+        507.0033166408539,
+        519.6002739071846,
+        360.2539660334587,
+        360.25395703315735
+      ],
+      "status": "exported",
+      "crop": [
+        44,
+        109,
+        1078,
+        1402
+      ],
+      "eyeRatio": 0.3998,
+      "headTopRatio": 0.1338,
+      "bytes": 7050,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "e36ccfe6c9ff63af694a81a5587da3f3a5d79c1247fc8d755ef2b55c4bd17cb4",
+      "faceCard": {
+        "id": "tang-taizong/official-08",
+        "scenario": "tang-taizong",
+        "name": "高士廉",
+        "role": "official",
+        "index": 8,
+        "age": 51,
+        "variant": "base",
+        "dims": [
+          "SHORT WIDE INVERTED TRAPEZOID face with broad upper cheeks and blunt chin",
+          "heavy downward WALRUS MOUSTACHE and bare chin",
+          "fine low level brows and large calm open eyes",
+          "short large rounded nose and broad thin gently curved mouth",
+          "full medium short neck and broad relaxed shoulders",
+          "warm ruddy wheat skin",
+          "deep rounded chin dimple",
+          "benevolent steady diplomatic patience"
+        ],
+        "facing": "RIGHT",
+        "context": "涉猎文史，持重；秘密：长孙皇后之舅，与外戚往来最密。",
+        "file": "assets/art/portraits/unique/tang-taizong/official-08.webp",
+        "sourceType": "historical-unique",
+        "costume": "Tang SOFT-TAILED FUTOU black cloth wrap with TWO cloth tails hanging or curving DOWN at back/nape, never rigid horizontal Ming wings or long straight Song wings. Natural full hairline, not Qing shaven forehead. ROUND-COLLAR robe, small pale undercollar, no chest rank patch, no necklace. Muted dark PURPLE round-collar official robe.",
+        "historySource": "https://zh.wikisource.org/wiki/舊唐書/卷65",
+        "sourceNote": "年龄、身份、性格秘密以scenarios.js为准；史书记载用于人物事迹与冠服大意，未明载的八维五官、痣与体态是区分人物的创作，不宣称精确真实相貌。外邦年龄为绘制档，不新增游戏年龄。",
+        "face": "51-year-old ADULT MAN, SHORT WIDE INVERTED TRAPEZOID face with broad upper cheeks and blunt chin, heavy downward WALRUS MOUSTACHE and bare chin, fine low level brows and large calm open eyes, short large rounded nose and broad thin gently curved mouth, full medium short neck and broad relaxed shoulders, warm ruddy wheat skin, deep rounded chin dimple, benevolent steady diplomatic patience; facing RIGHT"
+      }
+    },
+    {
+      "id": "tang-taizong/official-09",
+      "file": "assets/art/portraits/unique/tang-taizong/official-09.webp",
+      "job": "tang-frame-unique-v1-tang-taizong-official-09",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-frame-unique-v1-tang-taizong-official-09.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 588.51,
+      "headTop": 248,
+      "faceBox": [
+        284.8807393312454,
+        492.16055315732956,
+        339.1341946721077,
+        339.134185731411
+      ],
+      "status": "exported",
+      "crop": [
+        24,
+        61,
+        1097,
+        1402
+      ],
+      "eyeRatio": 0.3934,
+      "headTopRatio": 0.1394,
+      "bytes": 6964,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "f97b6114a75bc07f3ab9df8d3dbb60a69bb55a51b0d484a844db68e86e655897",
+      "faceCard": {
+        "id": "tang-taizong/official-09",
+        "scenario": "tang-taizong",
+        "name": "戴胄",
+        "role": "official",
+        "index": 9,
+        "age": 53,
+        "variant": "base",
+        "dims": [
+          "SHORT PENTAGONAL face with angular heavy lower jaw",
+          "short SQUARE BLACK-GRAY CHIN BEARD with disconnected short moustache",
+          "bushy angled brows and deep bright narrow eyes",
+          "wide flat nose and thick firmly closed lower lip",
+          "stiff thick neck and broad upright shoulders",
+          "weathered medium ochre skin",
+          "small mole below right temple",
+          "exact unwavering legal-minded attentiveness"
+        ],
+        "facing": "LEFT",
+        "context": "明于法令，敢于执法；秘密：常为断狱与上意相争。",
+        "file": "assets/art/portraits/unique/tang-taizong/official-09.webp",
+        "sourceType": "historical-unique",
+        "costume": "Tang SOFT-TAILED FUTOU black cloth wrap with TWO cloth tails hanging or curving DOWN at back/nape, never rigid horizontal Ming wings or long straight Song wings. Natural full hairline, not Qing shaven forehead. ROUND-COLLAR robe, small pale undercollar, no chest rank patch, no necklace. Muted dark PURPLE round-collar official robe.",
+        "historySource": "https://zh.wikisource.org/wiki/舊唐書/卷70",
+        "sourceNote": "年龄、身份、性格秘密以scenarios.js为准；史书记载用于人物事迹与冠服大意，未明载的八维五官、痣与体态是区分人物的创作，不宣称精确真实相貌。外邦年龄为绘制档，不新增游戏年龄。",
+        "face": "53-year-old ADULT MAN, SHORT PENTAGONAL face with angular heavy lower jaw, short SQUARE BLACK-GRAY CHIN BEARD with disconnected short moustache, bushy angled brows and deep bright narrow eyes, wide flat nose and thick firmly closed lower lip, stiff thick neck and broad upright shoulders, weathered medium ochre skin, small mole below right temple, exact unwavering legal-minded attentiveness; facing LEFT"
+      }
+    },
+    {
+      "id": "tang-taizong/official-10",
+      "file": "assets/art/portraits/unique/tang-taizong/official-10.webp",
+      "job": "tang-frame-unique-v1-tang-taizong-official-10",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-frame-unique-v1-tang-taizong-official-10.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 602.35,
+      "headTop": 268,
+      "faceBox": [
+        483.8360570669174,
+        487.2036858201027,
+        359.17892771959305,
+        359.1789259314537
+      ],
+      "status": "exported",
+      "crop": [
+        34,
+        84,
+        1088,
+        1402
+      ],
+      "eyeRatio": 0.3933,
+      "headTopRatio": 0.1396,
+      "bytes": 13852,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "1fd360aa3ee9c6cd0747e57c15261c220b358e0231b44d0d67dcf3a25d357692",
+      "faceCard": {
+        "id": "tang-taizong/official-10",
+        "scenario": "tang-taizong",
+        "name": "尉迟敬德",
+        "role": "official",
+        "index": 10,
+        "age": 41,
+        "variant": "base",
+        "dims": [
+          "MASSIVE SHORT OCTAGONAL face and very heavy square jaw",
+          "very thick dense LONG FULL BLACK BEARD and wide coarse moustache",
+          "extremely thick angled brows and large intense round eyes",
+          "broad flat flared nose and thick wide closed mouth",
+          "MASSIVE muscular very short neck and very broad armored shoulders",
+          "wind-weathered bronze skin",
+          "small healed pale scar over left eyebrow",
+          "forceful proud frank martial resolve"
+        ],
+        "facing": "RIGHT",
+        "context": "勇猛，性直好讼功；秘密：玄武门之日亲手斩杀齐王元吉。",
+        "file": "assets/art/portraits/unique/tang-taizong/official-10.webp",
+        "sourceType": "historical-unique",
+        "costume": "Tang MINGGUANG ARMOR with TWO ROUND CHEST PROTECTORS partly visible at lower crop, gray iron and muted leather, simple helmet without horn/feathers or a soft-tailed futou, no Qing finial or Ming wing helmet. No weapons, no battle. Compact gray iron helmet.",
+        "historySource": "https://zh.wikisource.org/wiki/舊唐書/卷68",
+        "sourceNote": "年龄、身份、性格秘密以scenarios.js为准；史书记载用于人物事迹与冠服大意，未明载的八维五官、痣与体态是区分人物的创作，不宣称精确真实相貌。外邦年龄为绘制档，不新增游戏年龄。",
+        "face": "41-year-old ADULT MAN, MASSIVE SHORT OCTAGONAL face and very heavy square jaw, very thick dense LONG FULL BLACK BEARD and wide coarse moustache, extremely thick angled brows and large intense round eyes, broad flat flared nose and thick wide closed mouth, MASSIVE muscular very short neck and very broad armored shoulders, wind-weathered bronze skin, small healed pale scar over left eyebrow, forceful proud frank martial resolve; facing RIGHT"
+      }
+    },
+    {
+      "id": "tang-taizong/official-11",
+      "file": "assets/art/portraits/unique/tang-taizong/official-11.webp",
+      "job": "tang-frame-unique-v1-tang-taizong-official-11",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-frame-unique-v1-tang-taizong-official-11.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 617.26,
+      "headTop": 285,
+      "faceBox": [
+        319.40050381422043,
+        531.5261664688587,
+        311.1519003510475,
+        311.1518937051296
+      ],
+      "status": "exported",
+      "crop": [
+        42,
+        104,
+        1080,
+        1402
+      ],
+      "eyeRatio": 0.3954,
+      "headTopRatio": 0.1394,
+      "bytes": 11010,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "70d2544a6740f596f9e96f8880b07f661c2ecc101da2a082e0b104ae3f9801de",
+      "faceCard": {
+        "id": "tang-taizong/official-11",
+        "scenario": "tang-taizong",
+        "name": "李靖",
+        "role": "official",
+        "index": 11,
+        "age": 55,
+        "variant": "base",
+        "dims": [
+          "VERY LONG RECTANGULAR face with high broad forehead and narrow blunt chin",
+          "THREE LONG GRAY-WHITE beard locks and a fine gray moustache",
+          "fine widely spaced level brows and long steady calm eyes",
+          "high long straight narrow nose and thin firmly closed lips",
+          "tall lean athletic medium-long neck and squared sloping armored shoulders",
+          "weathered light tan skin",
+          "gray temples and subtle crow-feet",
+          "patient strategic commanding composure"
+        ],
+        "facing": "LEFT",
+        "context": "沉毅有谋；秘密：曾在隋末欲告发高祖起兵。",
+        "file": "assets/art/portraits/unique/tang-taizong/official-11.webp",
+        "sourceType": "historical-unique",
+        "costume": "Tang MINGGUANG ARMOR with TWO ROUND CHEST PROTECTORS partly visible at lower crop, gray iron and muted leather, simple helmet without horn/feathers or a soft-tailed futou, no Qing finial or Ming wing helmet. No weapons, no battle. Compact gray iron helmet.",
+        "historySource": "https://zh.wikisource.org/wiki/舊唐書/卷67",
+        "sourceNote": "年龄、身份、性格秘密以scenarios.js为准；史书记载用于人物事迹与冠服大意，未明载的八维五官、痣与体态是区分人物的创作，不宣称精确真实相貌。外邦年龄为绘制档，不新增游戏年龄。",
+        "face": "55-year-old ADULT MAN, VERY LONG RECTANGULAR face with high broad forehead and narrow blunt chin, THREE LONG GRAY-WHITE beard locks and a fine gray moustache, fine widely spaced level brows and long steady calm eyes, high long straight narrow nose and thin firmly closed lips, tall lean athletic medium-long neck and squared sloping armored shoulders, weathered light tan skin, gray temples and subtle crow-feet, patient strategic commanding composure; facing LEFT"
+      }
+    },
+    {
+      "id": "tang-taizong/official-12",
+      "file": "assets/art/portraits/unique/tang-taizong/official-12.webp",
+      "job": "tang-frame-unique-v1-tang-taizong-official-12",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-frame-unique-v1-tang-taizong-official-12.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 610.03,
+      "headTop": 271,
+      "faceBox": [
+        535.7010548114777,
+        523.837347984314,
+        285.8090173602104,
+        285.8090246915817
+      ],
+      "status": "exported",
+      "crop": [
+        35,
+        87,
+        1087,
+        1402
+      ],
+      "eyeRatio": 0.3977,
+      "headTopRatio": 0.1399,
+      "bytes": 9636,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "f136610536829fa3c23822c127122d697da535297894d10742b7034a66b9c60b",
+      "faceCard": {
+        "id": "tang-taizong/official-12",
+        "scenario": "tang-taizong",
+        "name": "李勣",
+        "role": "official",
+        "index": 12,
+        "age": 32,
+        "variant": "base",
+        "dims": [
+          "SMALL SHORT HEART-SHAPED face with broad smooth forehead and neat pointed chin",
+          "completely CLEAN SHAVEN adult man",
+          "high fine angled brows and small lively alert eyes",
+          "slender straight nose and full curved upper lip",
+          "long fine athletic neck and narrow balanced armored shoulders",
+          "light warm peach skin",
+          "small notch at left eyebrow",
+          "cool wary restrained vigilance"
+        ],
+        "facing": "RIGHT",
+        "context": "善用兵，处事谨慎；秘密：玄武门之变时袖手不言，两不相助。",
+        "file": "assets/art/portraits/unique/tang-taizong/official-12.webp",
+        "sourceType": "historical-unique",
+        "costume": "Tang MINGGUANG ARMOR with TWO ROUND CHEST PROTECTORS partly visible at lower crop, gray iron and muted leather, simple helmet without horn/feathers or a soft-tailed futou, no Qing finial or Ming wing helmet. No weapons, no battle. Compact soft-tailed FUTOU, not helmet.",
+        "historySource": "https://zh.wikisource.org/wiki/舊唐書/卷67",
+        "sourceNote": "年龄、身份、性格秘密以scenarios.js为准；史书记载用于人物事迹与冠服大意，未明载的八维五官、痣与体态是区分人物的创作，不宣称精确真实相貌。外邦年龄为绘制档，不新增游戏年龄。",
+        "face": "32-year-old ADULT MAN, SMALL SHORT HEART-SHAPED face with broad smooth forehead and neat pointed chin, completely CLEAN SHAVEN adult man, high fine angled brows and small lively alert eyes, slender straight nose and full curved upper lip, long fine athletic neck and narrow balanced armored shoulders, light warm peach skin, small notch at left eyebrow, cool wary restrained vigilance; facing RIGHT"
+      }
+    },
+    {
+      "id": "tang-taizong/official-13",
+      "file": "assets/art/portraits/unique/tang-taizong/official-13.webp",
+      "job": "tang-frame-unique-v1-tang-taizong-official-13",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-frame-unique-v1-tang-taizong-official-13.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 615.64,
+      "headTop": 277,
+      "faceBox": [
+        338.37110137939453,
+        519.1313449144363,
+        287.3485123515129,
+        287.34851402044296
+      ],
+      "status": "exported",
+      "crop": [
+        38,
+        94,
+        1084,
+        1402
+      ],
+      "eyeRatio": 0.3988,
+      "headTopRatio": 0.1399,
+      "bytes": 6774,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "fd4407c6de824ec8d0814005092d7b00137e100e413d4b39470bd7b8bedf21d4",
+      "faceCard": {
+        "id": "tang-taizong/official-13",
+        "scenario": "tang-taizong",
+        "name": "李孝恭",
+        "role": "official",
+        "index": 13,
+        "age": 35,
+        "variant": "base",
+        "dims": [
+          "LOW WIDE PEAR face with fleshy cheeks and rounded double chin",
+          "heavy HORSESHOE MOUSTACHE and bare chin/cheeks",
+          "low gently curved brows and large friendly open eyes",
+          "short wide upturned nose and full thick curved lips",
+          "STOCKY very short broad neck and soft wide shoulders",
+          "warm sunny honey skin",
+          "deep right cheek dimple",
+          "generous modest outward warmth"
+        ],
+        "facing": "LEFT",
+        "context": "宽恕退让；秘密：宗室中战功最著，难免招人猜忌。",
+        "file": "assets/art/portraits/unique/tang-taizong/official-13.webp",
+        "sourceType": "historical-unique",
+        "costume": "Tang SOFT-TAILED FUTOU black cloth wrap with TWO cloth tails hanging or curving DOWN at back/nape, never rigid horizontal Ming wings or long straight Song wings. Natural full hairline, not Qing shaven forehead. ROUND-COLLAR robe, small pale undercollar, no chest rank patch, no necklace. Muted dark PURPLE round-collar official robe.",
+        "historySource": "https://zh.wikisource.org/wiki/舊唐書/卷60",
+        "sourceNote": "年龄、身份、性格秘密以scenarios.js为准；史书记载用于人物事迹与冠服大意，未明载的八维五官、痣与体态是区分人物的创作，不宣称精确真实相貌。外邦年龄为绘制档，不新增游戏年龄。",
+        "face": "35-year-old ADULT MAN, LOW WIDE PEAR face with fleshy cheeks and rounded double chin, heavy HORSESHOE MOUSTACHE and bare chin/cheeks, low gently curved brows and large friendly open eyes, short wide upturned nose and full thick curved lips, STOCKY very short broad neck and soft wide shoulders, warm sunny honey skin, deep right cheek dimple, generous modest outward warmth; facing LEFT"
+      }
+    },
+    {
+      "id": "tang-taizong/consort-01",
+      "file": "assets/art/portraits/unique/tang-taizong/consort-01.webp",
+      "job": "tang-final-anchors-tang-taizong-consort-01",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-final-anchors-tang-taizong-consort-01.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 514.45,
+      "headTop": 146,
+      "faceBox": [
+        340.1193510890007,
+        424.4702373147011,
+        253.59180772304535,
+        253.59181040525436
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "eyeRatio": 0.3669,
+      "headTopRatio": 0.1041,
+      "bytes": 8884,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "3f0f2b2ba5d71a52c0026c5279107fa6e06167ed978c19fc5d6a9fa086cd00e1",
+      "faceCard": {
+        "id": "tang-taizong/consort-01",
+        "scenario": "tang-taizong",
+        "name": "长孙氏",
+        "role": "consort",
+        "index": 1,
+        "age": 25,
+        "variant": "base",
+        "dims": [
+          "slender LONG OVAL female face with high soft cheeks and finely rounded chin",
+          "high rounded female hairline and tall coiled HIGH BUN",
+          "long low gently curved brows and serene long soft almond eyes",
+          "small high straight nose and full softly firm bow lips",
+          "graceful medium long fine neck and narrow upright shoulders",
+          "warm pale cream skin",
+          "tiny beauty mark below left ear",
+          "quiet wise compassionate self-possession"
+        ],
+        "facing": "LEFT",
+        "context": "皇后，河南长孙氏；秘密：体有气疾，常隐忍不言。",
+        "file": "assets/art/portraits/unique/tang-taizong/consort-01.webp",
+        "sourceType": "historical-unique",
+        "costume": "Tang HIGH RANK consort: MUCH TALLER AND LARGER UPRIGHT STACKED HIGH BUN, large GOLD PHOENIX HAIRPIN with clear bird head/wing/tail silhouette and THREE pearl-drop strands at temple, second smaller gold pin. Same clearly formal silhouette as Tang reference board third portrait, at44px unmistakably more ornate than regular consort. No crown base or Ming phoenix crown, no Qing liangbatou. Red HUADIAN, modest fully covered RUQUN and PIBO; simple bold ornament shapes, not intricate filigree. Keep entire head/ornaments top12%, eyes38%; SCALE the full head including tall hair to fit, never crop ornaments. Soft dark plum ruqun and pale jade pibo.",
+        "historySource": "https://zh.wikisource.org/wiki/舊唐書/卷51",
+        "sourceNote": "年龄、身份、性格秘密以scenarios.js为准；史书记载用于人物事迹与冠服大意，未明载的八维五官、痣与体态是区分人物的创作，不宣称精确真实相貌。外邦年龄为绘制档，不新增游戏年龄。",
+        "face": "25-year-old WOMAN, slender LONG OVAL female face with high soft cheeks and finely rounded chin, high rounded female hairline and tall coiled HIGH BUN, long low gently curved brows and serene long soft almond eyes, small high straight nose and full softly firm bow lips, graceful medium long fine neck and narrow upright shoulders, warm pale cream skin, tiny beauty mark below left ear, quiet wise compassionate self-possession; facing LEFT"
+      }
+    },
+    {
+      "id": "tang-taizong/consort-02",
+      "file": "assets/art/portraits/unique/tang-taizong/consort-02.webp",
+      "job": "tang-frame-unique-v1-tang-taizong-consort-02",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-frame-unique-v1-tang-taizong-consort-02.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 664.88,
+      "headTop": 315,
+      "faceBox": [
+        528.8746785521507,
+        578.0399281084538,
+        288.2487691640854,
+        288.2487883269787
+      ],
+      "status": "exported",
+      "crop": [
+        70,
+        174,
+        1052,
+        1402
+      ],
+      "eyeRatio": 0.3997,
+      "headTopRatio": 0.1148,
+      "bytes": 7068,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "212cb63844208fb68b37b88d1d611fdea320787202a60d2cb1dbd098f16ae63c",
+      "faceCard": {
+        "id": "tang-taizong/consort-02",
+        "scenario": "tang-taizong",
+        "name": "杨氏",
+        "role": "consort",
+        "index": 2,
+        "age": 26,
+        "variant": "base",
+        "dims": [
+          "VERY NARROW LONG HEART female face with smooth high forehead and finely tapered chin",
+          "high deep widow-peak hairline and compact upright single-loop high bun",
+          "fine downward soft brows and long wary low-lidded eyes",
+          "small fine convex nose and thin gently bowed closed lips",
+          "very slender long neck and lowered narrow shoulders",
+          "cool pale ivory skin",
+          "small mole below right brow",
+          "reserved cautious dignified melancholy"
+        ],
+        "facing": "RIGHT",
+        "context": "妃，隋炀帝之女；秘密：前朝公主身份使她处处谨慎。",
+        "file": "assets/art/portraits/unique/tang-taizong/consort-02.webp",
+        "sourceType": "historical-unique",
+        "costume": "Tang woman with modest upright HIGH LOOP BUN, one or two small plain hairpins, red forehead HUADIAN, fully covered RUQUN with PIBO silk scarf over shoulders, modest neckline reveals only collarbones. NO large phoenix or pearl regalia, no Qing liangbatou/diadem or Ming standing-collar jacket. Pale lake-blue ruqun and lavender pibo.",
+        "historySource": "https://zh.wikisource.org/wiki/舊唐書/卷76",
+        "sourceNote": "年龄、身份、性格秘密以scenarios.js为准；史书记载用于人物事迹与冠服大意，未明载的八维五官、痣与体态是区分人物的创作，不宣称精确真实相貌。外邦年龄为绘制档，不新增游戏年龄。",
+        "face": "26-year-old WOMAN, VERY NARROW LONG HEART female face with smooth high forehead and finely tapered chin, high deep widow-peak hairline and compact upright single-loop high bun, fine downward soft brows and long wary low-lidded eyes, small fine convex nose and thin gently bowed closed lips, very slender long neck and lowered narrow shoulders, cool pale ivory skin, small mole below right brow, reserved cautious dignified melancholy; facing RIGHT"
+      }
+    },
+    {
+      "id": "tang-taizong/consort-03",
+      "file": "assets/art/portraits/unique/tang-taizong/consort-03.webp",
+      "job": "tang-frame-unique-v1-tang-taizong-consort-03",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-frame-unique-v1-tang-taizong-consort-03.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 610.84,
+      "headTop": 273,
+      "faceBox": [
+        344.41161292791367,
+        529.7956459224224,
+        279.41790622472763,
+        279.41789814829826
+      ],
+      "status": "exported",
+      "crop": [
+        36,
+        90,
+        1086,
+        1402
+      ],
+      "eyeRatio": 0.397,
+      "headTopRatio": 0.1395,
+      "bytes": 7056,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "ae80da79b90f4803d235aed69455d7e1b78ea2fa685d8882c3b435f13086303c",
+      "faceCard": {
+        "id": "tang-taizong/consort-03",
+        "scenario": "tang-taizong",
+        "name": "韦珪",
+        "role": "consort",
+        "index": 3,
+        "age": 29,
+        "variant": "base",
+        "dims": [
+          "BROAD SOFT SQUARE female face with full cheeks and rounded wide jaw",
+          "low smooth straight hairline and compact upright double-loop high bun",
+          "short soft raised brows and large round lively eyes",
+          "short rounded blunt nose and full gently smiling lips",
+          "full short graceful neck and rounded broad shoulders",
+          "warm rosy beige skin",
+          "tiny right chin beauty spot",
+          "composed lively candid confidence"
+        ],
+        "facing": "LEFT",
+        "context": "妃，京兆韦氏；秘密：曾嫁李珉，再入秦府。",
+        "file": "assets/art/portraits/unique/tang-taizong/consort-03.webp",
+        "sourceType": "historical-unique",
+        "costume": "Tang woman with modest upright HIGH LOOP BUN, one or two small plain hairpins, red forehead HUADIAN, fully covered RUQUN with PIBO silk scarf over shoulders, modest neckline reveals only collarbones. NO large phoenix or pearl regalia, no Qing liangbatou/diadem or Ming standing-collar jacket. Muted dusty rose ruqun and light sage pibo.",
+        "historySource": "https://zh.wikisource.org/wiki/大唐太宗文皇帝故貴妃紀國太妃韋氏墓誌銘並序",
+        "sourceNote": "年龄、身份、性格秘密以scenarios.js为准；史书记载用于人物事迹与冠服大意，未明载的八维五官、痣与体态是区分人物的创作，不宣称精确真实相貌。外邦年龄为绘制档，不新增游戏年龄。",
+        "face": "29-year-old WOMAN, BROAD SOFT SQUARE female face with full cheeks and rounded wide jaw, low smooth straight hairline and compact upright double-loop high bun, short soft raised brows and large round lively eyes, short rounded blunt nose and full gently smiling lips, full short graceful neck and rounded broad shoulders, warm rosy beige skin, tiny right chin beauty spot, composed lively candid confidence; facing LEFT"
+      }
+    },
+    {
+      "id": "tang-taizong/child-01",
+      "file": "assets/art/portraits/unique/tang-taizong/child-01.webp",
+      "job": "tang-unique-child-01",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-unique-child-01.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 561.48,
+      "headTop": 161,
+      "faceBox": [
+        271.3350559473038,
+        442.39600175619125,
+        393.7030391693115,
+        393.7030134797096
+      ],
+      "status": "exported",
+      "crop": [
+        1,
+        2,
+        1121,
+        1402
+      ],
+      "eyeRatio": 0.3996,
+      "headTopRatio": 0.1136,
+      "bytes": 6362,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "07596c50a7beaea3b4de5736ce19fd614ae560493297a757c985a0cab502d8d7",
+      "faceCard": {
+        "id": "tang-taizong/child-01",
+        "scenario": "tang-taizong",
+        "name": "李承乾",
+        "role": "child",
+        "index": 1,
+        "age": 8,
+        "variant": "base",
+        "dims": [
+          "LONG SOFT OVAL real CHILD face with gently full cheeks and rounded narrow chin",
+          "clean-shaven real8-year-old boy, soft low hairline and two SMALL TOPKNOTS",
+          "fine straight brows and large round earnest eyes",
+          "small fine straight child nose and small full child lips",
+          "short thin CHILD neck and small narrow CHILD shoulders",
+          "warm pale cream child skin",
+          "tiny right eyebrow-tail mole",
+          "quiet earnest slightly anxious CHILD reserve"
+        ],
+        "facing": "LEFT",
+        "context": "开局8岁皇子，母亲下标0；参照旧唐书太宗诸子传，儿童阶段不预画成人野心神态。",
+        "file": "assets/art/portraits/unique/tang-taizong/child-01.webp",
+        "sourceType": "historical-unique",
+        "costume": "Fully covered Tang round-collar muted dark blue robe, simple pale inner collar. REAL CHILD age8, small topknots, no hat if it obscures child proportions, no beard or adult jaw/muscles. Normal child anatomy, NOT a miniature adult.",
+        "historySource": "https://zh.wikisource.org/wiki/舊唐書/卷76",
+        "sourceNote": "年龄、身份、性格秘密以scenarios.js为准；史书记载用于人物事迹与冠服大意，未明载的八维五官、痣与体态是区分人物的创作，不宣称精确真实相貌。外邦年龄为绘制档，不新增游戏年龄。",
+        "face": "8-year-old BOY, LONG SOFT OVAL real CHILD face with gently full cheeks and rounded narrow chin, clean-shaven real8-year-old boy, soft low hairline and two SMALL TOPKNOTS, fine straight brows and large round earnest eyes, small fine straight child nose and small full child lips, short thin CHILD neck and small narrow CHILD shoulders, warm pale cream child skin, tiny right eyebrow-tail mole, quiet earnest slightly anxious CHILD reserve; facing LEFT"
+      }
+    },
+    {
+      "id": "tang-taizong/child-02",
+      "file": "assets/art/portraits/unique/tang-taizong/child-02.webp",
+      "job": "tang-frame-unique-v1-tang-taizong-child-02",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-frame-unique-v1-tang-taizong-child-02.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 675.59,
+      "headTop": 314,
+      "faceBox": [
+        477.2765511274338,
+        562.7024862468243,
+        326.1605386734009,
+        326.1605462729931
+      ],
+      "status": "exported",
+      "crop": [
+        77,
+        192,
+        1045,
+        1402
+      ],
+      "eyeRatio": 0.3997,
+      "headTopRatio": 0.1008,
+      "bytes": 6814,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "bdbebb07c4cd50146d1eb9460d4c0b935710fe9b2902e3147af060a391d4cee5",
+      "faceCard": {
+        "id": "tang-taizong/child-02",
+        "scenario": "tang-taizong",
+        "name": "李泰",
+        "role": "child",
+        "index": 2,
+        "age": 7,
+        "variant": "base",
+        "dims": [
+          "FULL ROUND real CHILD face with broad forehead and plump cheeks",
+          "clean-shaven real7-year-old boy, shallow widow peak and one SMALL ROUND TOPKNOT",
+          "short soft curved brows and wide round bright eyes",
+          "small low rounded button nose and full softly smiling child mouth",
+          "short plump CHILD neck and rounded small CHILD shoulders",
+          "warm rosy beige child skin",
+          "deep left cheek dimple",
+          "curious cheerful bookish CHILD attentiveness"
+        ],
+        "facing": "RIGHT",
+        "context": "开局7岁皇子，母亲下标0；参照旧唐书太宗诸子传，儿童阶段不预画成人野心神态。",
+        "file": "assets/art/portraits/unique/tang-taizong/child-02.webp",
+        "sourceType": "historical-unique",
+        "costume": "Fully covered Tang round-collar muted jade-green robe, simple pale inner collar. REAL CHILD age7, small topknots, no hat if it obscures child proportions, no beard or adult jaw/muscles. Normal child anatomy, NOT a miniature adult.",
+        "historySource": "https://zh.wikisource.org/wiki/舊唐書/卷76",
+        "sourceNote": "年龄、身份、性格秘密以scenarios.js为准；史书记载用于人物事迹与冠服大意，未明载的八维五官、痣与体态是区分人物的创作，不宣称精确真实相貌。外邦年龄为绘制档，不新增游戏年龄。",
+        "face": "7-year-old BOY, FULL ROUND real CHILD face with broad forehead and plump cheeks, clean-shaven real7-year-old boy, shallow widow peak and one SMALL ROUND TOPKNOT, short soft curved brows and wide round bright eyes, small low rounded button nose and full softly smiling child mouth, short plump CHILD neck and rounded small CHILD shoulders, warm rosy beige child skin, deep left cheek dimple, curious cheerful bookish CHILD attentiveness; facing RIGHT"
+      }
+    },
+    {
+      "id": "tang-taizong/child-03",
+      "file": "assets/art/portraits/unique/tang-taizong/child-03.webp",
+      "job": "tang-child03-child-age-fix",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-child03-child-age-fix.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 599.73,
+      "headTop": 217,
+      "faceBox": [
+        259.36327546834946,
+        475.73859548568726,
+        385.96711027622223,
+        385.9670848250389
+      ],
+      "status": "exported",
+      "crop": [
+        26,
+        65,
+        1096,
+        1402
+      ],
+      "eyeRatio": 0.3999,
+      "headTopRatio": 0.1137,
+      "bytes": 7386,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "2eb07fc2fd6b8425843ca076092ea761a6b75e736c5dcbe466b20fe2234836fb",
+      "faceCard": {
+        "id": "tang-taizong/child-03",
+        "scenario": "tang-taizong",
+        "name": "李恪",
+        "role": "child",
+        "index": 3,
+        "age": 7,
+        "variant": "base",
+        "dims": [
+          "BROAD SOFT TRAPEZOID real CHILD face with gently wide cheeks and blunt rounded chin",
+          "clean-shaven real7-year-old boy, low straight hairline and paired low SMALL TOPKNOTS",
+          "thick soft level child brows and wide-set clear almond eyes",
+          "small broad-tip child nose and full firm little lips",
+          "sturdy short CHILD neck and small broad CHILD shoulders",
+          "medium warm honey child skin",
+          "tiny left temple freckle",
+          "alert serious but unmistakably CHILDLIKE composure"
+        ],
+        "facing": "LEFT",
+        "context": "开局7岁皇子，母亲下标1；参照旧唐书太宗诸子传，儿童阶段不预画成人野心神态。",
+        "file": "assets/art/portraits/unique/tang-taizong/child-03.webp",
+        "sourceType": "historical-unique",
+        "costume": "Fully covered Tang round-collar muted scarlet robe, simple pale inner collar. REAL CHILD age7, small topknots, no hat if it obscures child proportions, no beard or adult jaw/muscles. Normal child anatomy, NOT a miniature adult.",
+        "historySource": "https://zh.wikisource.org/wiki/舊唐書/卷76",
+        "sourceNote": "年龄、身份、性格秘密以scenarios.js为准；史书记载用于人物事迹与冠服大意，未明载的八维五官、痣与体态是区分人物的创作，不宣称精确真实相貌。外邦年龄为绘制档，不新增游戏年龄。",
+        "face": "7-year-old BOY, BROAD SOFT TRAPEZOID real CHILD face with gently wide cheeks and blunt rounded chin, clean-shaven real7-year-old boy, low straight hairline and paired low SMALL TOPKNOTS, thick soft level child brows and wide-set clear almond eyes, small broad-tip child nose and full firm little lips, sturdy short CHILD neck and small broad CHILD shoulders, medium warm honey child skin, tiny left temple freckle, alert serious but unmistakably CHILDLIKE composure; facing LEFT"
+      }
+    },
+    {
+      "id": "tang-taizong/foreign-01",
+      "file": "assets/art/portraits/unique/tang-taizong/foreign-01.webp",
+      "job": "tang-unique-foreign-01",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-unique-foreign-01.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 417.84,
+      "headTop": 118,
+      "faceBox": [
+        259.3672713339329,
+        308.84704691171646,
+        395.7306985259056,
+        395.7306936979294
+      ],
+      "status": "exported",
+      "crop": [
+        97,
+        0,
+        1025,
+        1160
+      ],
+      "eyeRatio": 0.3602,
+      "headTopRatio": 0.1017,
+      "bytes": 14966,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "73d8d3337e285473a33c7acee78aadbf4a33bac8e66088944ed8260368a0e231",
+      "faceCard": {
+        "id": "tang-taizong/foreign-01",
+        "scenario": "tang-taizong",
+        "name": "颉利可汗",
+        "role": "foreign",
+        "index": 1,
+        "age": 46,
+        "variant": "base",
+        "dims": [
+          "BROAD TRAPEZOID face with high wide cheekbones and heavy jaw",
+          "long dense FULL BLACK BEARD and broad downward moustache, loose black hair behind shoulders",
+          "bushy arched brows and small sharp deeply set eyes",
+          "large high broad nose and full firm lips",
+          "thick robust medium neck and broad upright shoulders",
+          "wind-weathered warm copper tan skin",
+          "subtle old pale right cheek scar",
+          "proud watchful guarded command"
+        ],
+        "facing": "LEFT",
+        "context": "东突厥君主；关系冷淡；所求：岁币与劫掠",
+        "file": "assets/art/portraits/unique/tang-taizong/foreign-01.webp",
+        "sourceType": "historical-unique",
+        "costume": "Early Turkic khagan, LOOSE LONG BLACK HAIR with plain narrow leather headband and one small gold clasp, brown cross-lapel robe with simple fur-edged shoulder cloak. NO Chinese futou, no fantasy horns. Dignified natural human face, no caricature.",
+        "historySource": "https://zh.wikisource.org/wiki/舊唐書/卷194上",
+        "sourceNote": "年龄、身份、性格秘密以scenarios.js为准；史书记载用于人物事迹与冠服大意，未明载的八维五官、痣与体态是区分人物的创作，不宣称精确真实相貌。外邦年龄为绘制档，不新增游戏年龄。",
+        "face": "46-year-old ADULT MAN, BROAD TRAPEZOID face with high wide cheekbones and heavy jaw, long dense FULL BLACK BEARD and broad downward moustache, loose black hair behind shoulders, bushy arched brows and small sharp deeply set eyes, large high broad nose and full firm lips, thick robust medium neck and broad upright shoulders, wind-weathered warm copper tan skin, subtle old pale right cheek scar, proud watchful guarded command; facing LEFT"
+      }
+    },
+    {
+      "id": "tang-taizong/foreign-02",
+      "file": "assets/art/portraits/unique/tang-taizong/foreign-02.webp",
+      "job": "tang-frame-unique-v1-tang-taizong-foreign-02",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-frame-unique-v1-tang-taizong-foreign-02.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 614.48,
+      "headTop": 298,
+      "faceBox": [
+        486.68870383501053,
+        500.2484814822674,
+        311.3185898065567,
+        311.31860730051994
+      ],
+      "status": "exported",
+      "crop": [
+        48,
+        119,
+        1074,
+        1402
+      ],
+      "eyeRatio": 0.3862,
+      "headTopRatio": 0.1395,
+      "bytes": 8888,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "188fb1a8d9b8d410853a90f016b9c39d45a94404f19aa549065e2ec09299391d",
+      "faceCard": {
+        "id": "tang-taizong/foreign-02",
+        "scenario": "tang-taizong",
+        "name": "伏允",
+        "role": "foreign",
+        "index": 2,
+        "age": 75,
+        "variant": "base",
+        "dims": [
+          "VERY LONG THIN OVAL elderly face with sunken cheeks",
+          "long sparse WHITE FORKED BEARD and fine white downward moustache",
+          "sparse drooping gray brows and long tired narrow eyes",
+          "high hooked rounded-tip nose and thin downturned closed lips",
+          "frail stringy medium neck and hunched narrow shoulders",
+          "ruddy beige aged skin",
+          "deep forehead lines and left cheek age spots",
+          "wary worn elderly patience"
+        ],
+        "facing": "RIGHT",
+        "context": "吐谷浑君主；关系冷淡；所求：互市与边地",
+        "file": "assets/art/portraits/unique/tang-taizong/foreign-02.webp",
+        "sourceType": "historical-unique",
+        "costume": "Elderly TUYUHUN ruler in a compact ROUND BROWN SOFT SILK/FELT CAP with a modest rolled edge, warm beige cross-lapel robe and dark simple fur collar. Not a Chinese futou, no horizontal wings. Normal dignified elderly anatomy.",
+        "historySource": "https://zh.wikisource.org/wiki/舊唐書/卷198",
+        "sourceNote": "年龄、身份、性格秘密以scenarios.js为准；史书记载用于人物事迹与冠服大意，未明载的八维五官、痣与体态是区分人物的创作，不宣称精确真实相貌。外邦年龄为绘制档，不新增游戏年龄。",
+        "face": "75-year-old ADULT MAN, VERY LONG THIN OVAL elderly face with sunken cheeks, long sparse WHITE FORKED BEARD and fine white downward moustache, sparse drooping gray brows and long tired narrow eyes, high hooked rounded-tip nose and thin downturned closed lips, frail stringy medium neck and hunched narrow shoulders, ruddy beige aged skin, deep forehead lines and left cheek age spots, wary worn elderly patience; facing RIGHT"
+      }
+    },
+    {
+      "id": "tang-taizong/foreign-03",
+      "file": "assets/art/portraits/unique/tang-taizong/foreign-03.webp",
+      "job": "tang-final-anchors-tang-taizong-foreign-03",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-final-anchors-tang-taizong-foreign-03.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 511.04,
+      "headTop": 142,
+      "faceBox": [
+        321.5460662841797,
+        426.74481242895126,
+        306.40227073431015,
+        306.402290225029
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "eyeRatio": 0.3645,
+      "headTopRatio": 0.1013,
+      "bytes": 7188,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "e2995720bd69812391c541ab54aa5caa4c28ade3900bcdddc981221c182c3559",
+      "faceCard": {
+        "id": "tang-taizong/foreign-03",
+        "scenario": "tang-taizong",
+        "name": "高建武",
+        "role": "foreign",
+        "index": 3,
+        "age": 55,
+        "variant": "base",
+        "dims": [
+          "LONG NARROW DIAMOND face with high cheekbones and pointed rounded chin",
+          "fine separated GRAY MOUSTACHE and small long narrow pointed beard",
+          "fine low straight brows and long gently downturned thoughtful eyes",
+          "high fine straight nose and small full firm mouth",
+          "slender long neck and medium flat shoulders",
+          "cool pale beige skin",
+          "left brow crease and fine eye-corner lines",
+          "dignified cautious reflective reserve"
+        ],
+        "facing": "LEFT",
+        "context": "高句丽君主；关系通好；所求：保辽东旧界",
+        "file": "assets/art/portraits/unique/tang-taizong/foreign-03.webp",
+        "sourceType": "historical-unique",
+        "costume": "GOGURYEO royal headwear: compact WHITE/CREAM cloth crown with simple GOLD edging and TWO small upward curving BIRD FEATHERS, readable at44px; not long straight Chinese futou wings or a later Korean gat. Muted blue-green narrow-sleeve robe, no Chinese rank patch. Dignified, no caricature.",
+        "historySource": "https://zh.wikisource.org/wiki/舊唐書/卷199上",
+        "sourceNote": "年龄、身份、性格秘密以scenarios.js为准；史书记载用于人物事迹与冠服大意，未明载的八维五官、痣与体态是区分人物的创作，不宣称精确真实相貌。外邦年龄为绘制档，不新增游戏年龄。",
+        "face": "55-year-old ADULT MAN, LONG NARROW DIAMOND face with high cheekbones and pointed rounded chin, fine separated GRAY MOUSTACHE and small long narrow pointed beard, fine low straight brows and long gently downturned thoughtful eyes, high fine straight nose and small full firm mouth, slender long neck and medium flat shoulders, cool pale beige skin, left brow crease and fine eye-corner lines, dignified cautious reflective reserve; facing LEFT"
+      }
+    },
+    {
+      "id": "tang-taizong/foreign-04",
+      "file": "assets/art/portraits/unique/tang-taizong/foreign-04.webp",
+      "job": "tang-frame-unique-v1-tang-taizong-foreign-04",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-frame-unique-v1-tang-taizong-foreign-04.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 665.76,
+      "headTop": 314,
+      "faceBox": [
+        516.514780819416,
+        577.4880392551422,
+        297.39599096775055,
+        297.39599561691284
+      ],
+      "status": "exported",
+      "crop": [
+        70,
+        175,
+        1052,
+        1402
+      ],
+      "eyeRatio": 0.4,
+      "headTopRatio": 0.1133,
+      "bytes": 7564,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "cde925757e4946d4070b4b3375547a61a04fef8b609eb70978a276c5a05fd6d3",
+      "faceCard": {
+        "id": "tang-taizong/foreign-04",
+        "scenario": "tang-taizong",
+        "name": "扶余璋",
+        "role": "foreign",
+        "index": 4,
+        "age": 47,
+        "variant": "base",
+        "dims": [
+          "SHORT BROAD ROUND-SQUARE face with full cheeks and broad rounded chin",
+          "one tiny isolated BLACK CHIN TUFT with NO moustache",
+          "strong low level brows and wide alert almond eyes",
+          "short broad low nose bridge and full curved closed lips",
+          "thick short neck and broad relaxed shoulders",
+          "warm rose-gold beige skin",
+          "small left cheek dimple",
+          "stately courteous outward confidence"
+        ],
+        "facing": "RIGHT",
+        "context": "百济君主；关系通好；所求：求援以抗新罗",
+        "file": "assets/art/portraits/unique/tang-taizong/foreign-04.webp",
+        "sourceType": "historical-unique",
+        "costume": "BAEKJE royal dress: compact UPRIGHT BLACK SILK CROWN/CAP with simple GOLD FLORAL LEAF ornaments, and a large-sleeve muted PURPLE robe. Clear gold-flower crown silhouette, no Chinese futou tails/wings, no later Korean gat. Dignified, no caricature.",
+        "historySource": "https://zh.wikisource.org/wiki/舊唐書/卷199上",
+        "sourceNote": "年龄、身份、性格秘密以scenarios.js为准；史书记载用于人物事迹与冠服大意，未明载的八维五官、痣与体态是区分人物的创作，不宣称精确真实相貌。外邦年龄为绘制档，不新增游戏年龄。",
+        "face": "47-year-old ADULT MAN, SHORT BROAD ROUND-SQUARE face with full cheeks and broad rounded chin, one tiny isolated BLACK CHIN TUFT with NO moustache, strong low level brows and wide alert almond eyes, short broad low nose bridge and full curved closed lips, thick short neck and broad relaxed shoulders, warm rose-gold beige skin, small left cheek dimple, stately courteous outward confidence; facing RIGHT"
+      }
+    },
+    {
+      "id": "tang-taizong/foreign-05",
+      "file": "assets/art/portraits/unique/tang-taizong/foreign-05.webp",
+      "job": "tang-frame-unique-v1-tang-taizong-foreign-05",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-frame-unique-v1-tang-taizong-foreign-05.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 589.53,
+      "headTop": 263,
+      "faceBox": [
+        298.3889719247818,
+        491.7722441852093,
+        348.5494236946106,
+        348.54943004250526
+      ],
+      "status": "exported",
+      "crop": [
+        31,
+        78,
+        1090,
+        1402
+      ],
+      "eyeRatio": 0.3864,
+      "headTopRatio": 0.1397,
+      "bytes": 9220,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "8ab9e2ec27f8b2f0d54bf370f7761c27e37d387edbb0901df55fb322dfcf9633",
+      "faceCard": {
+        "id": "tang-taizong/foreign-05",
+        "scenario": "tang-taizong",
+        "name": "夷男",
+        "role": "foreign",
+        "index": 5,
+        "age": 44,
+        "variant": "base",
+        "dims": [
+          "WIDE HIGH-CHEEKBONED RECTANGULAR face with tapered blunt chin",
+          "long separated BROWN-BLACK moustache joined to a short forked chin beard",
+          "thick rising brows and wide-set narrow watchful eyes",
+          "long broad straight nose and thin firm lower lip",
+          "broad athletic shoulders and long sturdy neck",
+          "deep wind-tanned warm beige skin",
+          "tiny healed pale chin crease",
+          "expectant cautious ambitious composure"
+        ],
+        "facing": "LEFT",
+        "context": "薛延陀君主；关系通好；所求：脱离突厥",
+        "file": "assets/art/portraits/unique/tang-taizong/foreign-05.webp",
+        "sourceType": "historical-unique",
+        "costume": "XUEYANTUO steppe ruler: compact LOW POINTED OFF-WHITE FELT CAP with dark edging and one simple gold clasp, green-gray cross-lapel robe with tan fur-trim shoulder cloak. No Chinese futou, no horns or fantasy crown. Dignified natural human face, no caricature.",
+        "historySource": "https://zh.wikisource.org/wiki/舊唐書/卷199下",
+        "sourceNote": "年龄、身份、性格秘密以scenarios.js为准；史书记载用于人物事迹与冠服大意，未明载的八维五官、痣与体态是区分人物的创作，不宣称精确真实相貌。外邦年龄为绘制档，不新增游戏年龄。",
+        "face": "44-year-old ADULT MAN, WIDE HIGH-CHEEKBONED RECTANGULAR face with tapered blunt chin, long separated BROWN-BLACK moustache joined to a short forked chin beard, thick rising brows and wide-set narrow watchful eyes, long broad straight nose and thin firm lower lip, broad athletic shoulders and long sturdy neck, deep wind-tanned warm beige skin, tiny healed pale chin crease, expectant cautious ambitious composure; facing LEFT"
+      }
+    },
+    {
+      "id": "tang-taizong/emperor-01-old",
+      "file": "assets/art/portraits/unique/tang-taizong/emperor-01-old.webp",
+      "job": "tang-unique-emperor-01-old",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-unique-emperor-01-old.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 550.24,
+      "headTop": 188,
+      "faceBox": [
+        214.22624534368515,
+        432.04459166526794,
+        412.13829106092453,
+        412.13827806711197
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "eyeRatio": 0.3925,
+      "headTopRatio": 0.1341,
+      "bytes": 10368,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "31f04d8f7131a818d557821c84e8e08d96a02118b21c713141ad7c5ca83b5220",
+      "faceCard": {
+        "id": "tang-taizong/emperor-01-old",
+        "scenario": "tang-taizong",
+        "name": "李世民",
+        "role": "emperor",
+        "index": 1,
+        "age": 50,
+        "variant": "old",
+        "dims": [
+          "same broad LONG RECTANGULAR face and strong wide jaw with more mature cheeks",
+          "same CURLY FULL BEARD and separated moustache with some gray strands",
+          "same sword-like brows and bright alert eyes with fine crow-feet",
+          "same high broad straight nose and full firm mouth",
+          "same powerful upright neck and broad square shoulders",
+          "same warm medium ochre-wheat skin",
+          "same right brow crease plus light forehead lines and gray temples",
+          "experienced calm decisive imperial authority"
+        ],
+        "facing": "LEFT",
+        "context": "同一人老年变体；参考实际晚年约50岁，轻度灰鬓须与额纹，保持本人骨相。",
+        "file": "assets/art/portraits/unique/tang-taizong/emperor-01-old.webp",
+        "sourceType": "historical-unique",
+        "costume": "Tang SOFT-TAILED FUTOU black cloth wrap with TWO cloth tails hanging or curving DOWN at back/nape, never rigid horizontal Ming wings or long straight Song wings. Natural full hairline, not Qing shaven forehead. ROUND-COLLAR robe, small pale undercollar, no chest rank patch, no necklace. TANG EMPEROR in muted OCHRE-YELLOW round-collar robe, no crown or pearl curtain. Not Qing lemon yellow.",
+        "historySource": "https://zh.wikisource.org/wiki/舊唐書/卷2",
+        "sourceNote": "年龄、身份、性格秘密以scenarios.js为准；史书记载用于人物事迹与冠服大意，未明载的八维五官、痣与体态是区分人物的创作，不宣称精确真实相貌。外邦年龄为绘制档，不新增游戏年龄。",
+        "parent": "tang-taizong/emperor-01",
+        "face": "50-year-old ADULT MAN, same broad LONG RECTANGULAR face and strong wide jaw with more mature cheeks, same CURLY FULL BEARD and separated moustache with some gray strands, same sword-like brows and bright alert eyes with fine crow-feet, same high broad straight nose and full firm mouth, same powerful upright neck and broad square shoulders, same warm medium ochre-wheat skin, same right brow crease plus light forehead lines and gray temples, experienced calm decisive imperial authority; facing LEFT"
+      }
+    },
+    {
+      "id": "tang-taizong/child-01-adult",
+      "file": "assets/art/portraits/unique/tang-taizong/child-01-adult.webp",
+      "job": "tang-unique-child-01-adult",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-unique-child-01-adult.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 565.47,
+      "headTop": 204,
+      "faceBox": [
+        272.0189174115658,
+        466.3553777337074,
+        347.50942862033844,
+        347.5094338655472
+      ],
+      "status": "exported",
+      "crop": [
+        4,
+        9,
+        1118,
+        1402
+      ],
+      "eyeRatio": 0.3995,
+      "headTopRatio": 0.14,
+      "bytes": 5486,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "3cad5a0b8428a023fa8a23175d52aba8d7ba8ace258eb37fd3273227e836f036",
+      "faceCard": {
+        "id": "tang-taizong/child-01-adult",
+        "scenario": "tang-taizong",
+        "name": "李承乾",
+        "role": "child",
+        "index": 1,
+        "age": 20,
+        "variant": "adult",
+        "dims": [
+          "LONG NARROW OVAL ADULT face with clear developed rounded jaw",
+          "clean-shaven20-year-old ADULT with soft-tailed futou",
+          "fine level brows and large earnest slightly downturned adult eyes",
+          "high fine straight adult nose and thin full closed lips",
+          "long SLENDER ADULT neck and narrow adult shoulders",
+          "warm pale cream adult skin",
+          "same tiny right eyebrow-tail mole",
+          "restrained thoughtful adult uncertainty"
+        ],
+        "facing": "LEFT",
+        "context": "同一人20岁成年档，保留童年鼻口、发际线及标记线索，参照旧唐书太宗诸子传，明确正常成年骨相与肩颈。",
+        "file": "assets/art/portraits/unique/tang-taizong/child-01-adult.webp",
+        "sourceType": "historical-unique",
+        "costume": "Fully covered Tang round-collar muted dark blue robe, simple pale inner collar. Tang SOFT-TAILED FUTOU black cloth wrap with TWO cloth tails hanging or curving DOWN at back/nape, never rigid horizontal Ming wings or long straight Song wings. Natural full hairline, not Qing shaven forehead. ROUND-COLLAR robe, small pale undercollar, no chest rank patch, no necklace. NORMAL ADULT anatomy, firm developed adult jaw, neck and shoulders, age20; NEVER draw a toddler, child or teen.",
+        "historySource": "https://zh.wikisource.org/wiki/舊唐書/卷76",
+        "sourceNote": "年龄、身份、性格秘密以scenarios.js为准；史书记载用于人物事迹与冠服大意，未明载的八维五官、痣与体态是区分人物的创作，不宣称精确真实相貌。外邦年龄为绘制档，不新增游戏年龄。",
+        "parent": "tang-taizong/child-01",
+        "face": "20-year-old ADULT MAN, LONG NARROW OVAL ADULT face with clear developed rounded jaw, clean-shaven20-year-old ADULT with soft-tailed futou, fine level brows and large earnest slightly downturned adult eyes, high fine straight adult nose and thin full closed lips, long SLENDER ADULT neck and narrow adult shoulders, warm pale cream adult skin, same tiny right eyebrow-tail mole, restrained thoughtful adult uncertainty; facing LEFT"
+      }
+    },
+    {
+      "id": "tang-taizong/child-02-adult",
+      "file": "assets/art/portraits/unique/tang-taizong/child-02-adult.webp",
+      "job": "tang-unique-child-02-adult",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-unique-child-02-adult.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 545.64,
+      "headTop": 179,
+      "faceBox": [
+        494.4129293560982,
+        432.7947192788124,
+        372.5973452925682,
+        372.59736478328705
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "eyeRatio": 0.3892,
+      "headTopRatio": 0.1277,
+      "bytes": 6738,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "49699ad095ca296b88ae293f156c94ee049c6c176f511f2b1990b87febb62f62",
+      "faceCard": {
+        "id": "tang-taizong/child-02-adult",
+        "scenario": "tang-taizong",
+        "name": "李泰",
+        "role": "child",
+        "index": 2,
+        "age": 20,
+        "variant": "adult",
+        "dims": [
+          "FULL ROUND PLUMP ADULT face with heavy rounded double chin",
+          "clean-shaven20-year-old ADULT with soft-tailed futou",
+          "short gently arched brows and wide bright adult almond eyes",
+          "short broad adult nose and full gently smiling lips",
+          "thick short PLUMP ADULT neck and broad relaxed adult shoulders",
+          "warm rosy beige adult skin",
+          "same deep left cheek dimple",
+          "confident genial scholarly adult pride"
+        ],
+        "facing": "RIGHT",
+        "context": "同一人20岁成年档，保留童年鼻口、发际线及标记线索，参照旧唐书太宗诸子传，明确正常成年骨相与肩颈。",
+        "file": "assets/art/portraits/unique/tang-taizong/child-02-adult.webp",
+        "sourceType": "historical-unique",
+        "costume": "Fully covered Tang round-collar muted jade-green robe, simple pale inner collar. Tang SOFT-TAILED FUTOU black cloth wrap with TWO cloth tails hanging or curving DOWN at back/nape, never rigid horizontal Ming wings or long straight Song wings. Natural full hairline, not Qing shaven forehead. ROUND-COLLAR robe, small pale undercollar, no chest rank patch, no necklace. NORMAL ADULT anatomy, firm developed adult jaw, neck and shoulders, age20; NEVER draw a toddler, child or teen.",
+        "historySource": "https://zh.wikisource.org/wiki/舊唐書/卷76",
+        "sourceNote": "年龄、身份、性格秘密以scenarios.js为准；史书记载用于人物事迹与冠服大意，未明载的八维五官、痣与体态是区分人物的创作，不宣称精确真实相貌。外邦年龄为绘制档，不新增游戏年龄。",
+        "parent": "tang-taizong/child-02",
+        "face": "20-year-old ADULT MAN, FULL ROUND PLUMP ADULT face with heavy rounded double chin, clean-shaven20-year-old ADULT with soft-tailed futou, short gently arched brows and wide bright adult almond eyes, short broad adult nose and full gently smiling lips, thick short PLUMP ADULT neck and broad relaxed adult shoulders, warm rosy beige adult skin, same deep left cheek dimple, confident genial scholarly adult pride; facing RIGHT"
+      }
+    },
+    {
+      "id": "tang-taizong/child-03-adult",
+      "file": "assets/art/portraits/unique/tang-taizong/child-03-adult.webp",
+      "job": "tang-unique-child-03-adult",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-tang/bulk/tang-unique-child-03-adult.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 547.77,
+      "headTop": 175,
+      "faceBox": [
+        259.58667612075806,
+        444.30347269773483,
+        363.3991636633873,
+        363.3991615176201
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "eyeRatio": 0.3907,
+      "headTopRatio": 0.1248,
+      "bytes": 6708,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "26c8497cfea8be6ceaa473876d7973930b2e2706ca96952ce8c396dbb553bb3b",
+      "faceCard": {
+        "id": "tang-taizong/child-03-adult",
+        "scenario": "tang-taizong",
+        "name": "李恪",
+        "role": "child",
+        "index": 3,
+        "age": 20,
+        "variant": "adult",
+        "dims": [
+          "BROAD ANGULAR TRAPEZOID ADULT face with firm mature square jaw",
+          "fine separated PENCIL MOUSTACHE with bare chin and soft-tailed futou",
+          "thick straight brows and wide-set sharp alert adult almond eyes",
+          "high broad-tip straight adult nose and full firm closed lips",
+          "strong thick ATHLETIC ADULT neck and broad square adult shoulders",
+          "medium warm honey adult skin",
+          "same tiny left temple freckle",
+          "vigorous self-controlled adult resolve"
+        ],
+        "facing": "LEFT",
+        "context": "同一人20岁成年档，保留童年鼻口、发际线及标记线索，参照旧唐书太宗诸子传，明确正常成年骨相与肩颈。",
+        "file": "assets/art/portraits/unique/tang-taizong/child-03-adult.webp",
+        "sourceType": "historical-unique",
+        "costume": "Fully covered Tang round-collar muted scarlet robe, simple pale inner collar. Tang SOFT-TAILED FUTOU black cloth wrap with TWO cloth tails hanging or curving DOWN at back/nape, never rigid horizontal Ming wings or long straight Song wings. Natural full hairline, not Qing shaven forehead. ROUND-COLLAR robe, small pale undercollar, no chest rank patch, no necklace. NORMAL ADULT anatomy, firm developed adult jaw, neck and shoulders, age20; NEVER draw a toddler, child or teen.",
+        "historySource": "https://zh.wikisource.org/wiki/舊唐書/卷76",
+        "sourceNote": "年龄、身份、性格秘密以scenarios.js为准；史书记载用于人物事迹与冠服大意，未明载的八维五官、痣与体态是区分人物的创作，不宣称精确真实相貌。外邦年龄为绘制档，不新增游戏年龄。",
+        "parent": "tang-taizong/child-03",
+        "face": "20-year-old ADULT MAN, BROAD ANGULAR TRAPEZOID ADULT face with firm mature square jaw, fine separated PENCIL MOUSTACHE with bare chin and soft-tailed futou, thick straight brows and wide-set sharp alert adult almond eyes, high broad-tip straight adult nose and full firm closed lips, strong thick ATHLETIC ADULT neck and broad square adult shoulders, medium warm honey adult skin, same tiny left temple freckle, vigorous self-controlled adult resolve; facing LEFT"
+      }
+    }
+  ],
+  "poolCardPairs": [
+    {
+      "pool": "tang/official-mature",
+      "a": "tang/official-mature-01",
+      "b": "tang/official-mature-02",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-mature",
+      "a": "tang/official-mature-01",
+      "b": "tang/official-mature-03",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-mature",
+      "a": "tang/official-mature-01",
+      "b": "tang/official-mature-04",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-mature",
+      "a": "tang/official-mature-01",
+      "b": "tang/official-mature-05",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-mature",
+      "a": "tang/official-mature-01",
+      "b": "tang/official-mature-06",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-mature",
+      "a": "tang/official-mature-01",
+      "b": "tang/official-mature-07",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-mature",
+      "a": "tang/official-mature-01",
+      "b": "tang/official-mature-08",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-mature",
+      "a": "tang/official-mature-01",
+      "b": "tang/official-mature-09",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-mature",
+      "a": "tang/official-mature-01",
+      "b": "tang/official-mature-10",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-mature",
+      "a": "tang/official-mature-02",
+      "b": "tang/official-mature-03",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-mature",
+      "a": "tang/official-mature-02",
+      "b": "tang/official-mature-04",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-mature",
+      "a": "tang/official-mature-02",
+      "b": "tang/official-mature-05",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-mature",
+      "a": "tang/official-mature-02",
+      "b": "tang/official-mature-06",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-mature",
+      "a": "tang/official-mature-02",
+      "b": "tang/official-mature-07",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-mature",
+      "a": "tang/official-mature-02",
+      "b": "tang/official-mature-08",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-mature",
+      "a": "tang/official-mature-02",
+      "b": "tang/official-mature-09",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-mature",
+      "a": "tang/official-mature-02",
+      "b": "tang/official-mature-10",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-mature",
+      "a": "tang/official-mature-03",
+      "b": "tang/official-mature-04",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-mature",
+      "a": "tang/official-mature-03",
+      "b": "tang/official-mature-05",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-mature",
+      "a": "tang/official-mature-03",
+      "b": "tang/official-mature-06",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-mature",
+      "a": "tang/official-mature-03",
+      "b": "tang/official-mature-07",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-mature",
+      "a": "tang/official-mature-03",
+      "b": "tang/official-mature-08",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-mature",
+      "a": "tang/official-mature-03",
+      "b": "tang/official-mature-09",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-mature",
+      "a": "tang/official-mature-03",
+      "b": "tang/official-mature-10",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-mature",
+      "a": "tang/official-mature-04",
+      "b": "tang/official-mature-05",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-mature",
+      "a": "tang/official-mature-04",
+      "b": "tang/official-mature-06",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-mature",
+      "a": "tang/official-mature-04",
+      "b": "tang/official-mature-07",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-mature",
+      "a": "tang/official-mature-04",
+      "b": "tang/official-mature-08",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-mature",
+      "a": "tang/official-mature-04",
+      "b": "tang/official-mature-09",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-mature",
+      "a": "tang/official-mature-04",
+      "b": "tang/official-mature-10",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-mature",
+      "a": "tang/official-mature-05",
+      "b": "tang/official-mature-06",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-mature",
+      "a": "tang/official-mature-05",
+      "b": "tang/official-mature-07",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-mature",
+      "a": "tang/official-mature-05",
+      "b": "tang/official-mature-08",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-mature",
+      "a": "tang/official-mature-05",
+      "b": "tang/official-mature-09",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-mature",
+      "a": "tang/official-mature-05",
+      "b": "tang/official-mature-10",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-mature",
+      "a": "tang/official-mature-06",
+      "b": "tang/official-mature-07",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-mature",
+      "a": "tang/official-mature-06",
+      "b": "tang/official-mature-08",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-mature",
+      "a": "tang/official-mature-06",
+      "b": "tang/official-mature-09",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-mature",
+      "a": "tang/official-mature-06",
+      "b": "tang/official-mature-10",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-mature",
+      "a": "tang/official-mature-07",
+      "b": "tang/official-mature-08",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-mature",
+      "a": "tang/official-mature-07",
+      "b": "tang/official-mature-09",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-mature",
+      "a": "tang/official-mature-07",
+      "b": "tang/official-mature-10",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-mature",
+      "a": "tang/official-mature-08",
+      "b": "tang/official-mature-09",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-mature",
+      "a": "tang/official-mature-08",
+      "b": "tang/official-mature-10",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-mature",
+      "a": "tang/official-mature-09",
+      "b": "tang/official-mature-10",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-old",
+      "a": "tang/official-old-01",
+      "b": "tang/official-old-02",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-old",
+      "a": "tang/official-old-01",
+      "b": "tang/official-old-03",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-old",
+      "a": "tang/official-old-01",
+      "b": "tang/official-old-04",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-old",
+      "a": "tang/official-old-01",
+      "b": "tang/official-old-05",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-old",
+      "a": "tang/official-old-01",
+      "b": "tang/official-old-06",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-old",
+      "a": "tang/official-old-02",
+      "b": "tang/official-old-03",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-old",
+      "a": "tang/official-old-02",
+      "b": "tang/official-old-04",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-old",
+      "a": "tang/official-old-02",
+      "b": "tang/official-old-05",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-old",
+      "a": "tang/official-old-02",
+      "b": "tang/official-old-06",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-old",
+      "a": "tang/official-old-03",
+      "b": "tang/official-old-04",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-old",
+      "a": "tang/official-old-03",
+      "b": "tang/official-old-05",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-old",
+      "a": "tang/official-old-03",
+      "b": "tang/official-old-06",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-old",
+      "a": "tang/official-old-04",
+      "b": "tang/official-old-05",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-old",
+      "a": "tang/official-old-04",
+      "b": "tang/official-old-06",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/official-old",
+      "a": "tang/official-old-05",
+      "b": "tang/official-old-06",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/general-all",
+      "a": "tang/general-all-01",
+      "b": "tang/general-all-02",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/general-all",
+      "a": "tang/general-all-01",
+      "b": "tang/general-all-03",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/general-all",
+      "a": "tang/general-all-02",
+      "b": "tang/general-all-03",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/consort-high",
+      "a": "tang/consort-high-01",
+      "b": "tang/consort-high-02",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/consort-regular",
+      "a": "tang/consort-regular-01",
+      "b": "tang/consort-regular-02",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/consort-regular",
+      "a": "tang/consort-regular-01",
+      "b": "tang/consort-regular-03",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/consort-regular",
+      "a": "tang/consort-regular-01",
+      "b": "tang/consort-regular-04",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/consort-regular",
+      "a": "tang/consort-regular-01",
+      "b": "tang/consort-regular-05",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/consort-regular",
+      "a": "tang/consort-regular-02",
+      "b": "tang/consort-regular-03",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/consort-regular",
+      "a": "tang/consort-regular-02",
+      "b": "tang/consort-regular-04",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/consort-regular",
+      "a": "tang/consort-regular-02",
+      "b": "tang/consort-regular-05",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/consort-regular",
+      "a": "tang/consort-regular-03",
+      "b": "tang/consort-regular-04",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/consort-regular",
+      "a": "tang/consort-regular-03",
+      "b": "tang/consort-regular-05",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "pool": "tang/consort-regular",
+      "a": "tang/consort-regular-04",
+      "b": "tang/consort-regular-05",
+      "differentDimensions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    }
+  ]
+}
