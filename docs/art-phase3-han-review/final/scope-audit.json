@@ -1,0 +1,25 @@
+{
+  "baseline": "dbffc28",
+  "changesSinceTone": {
+    "newPortraits": 49,
+    "replacedTonePortraits": [
+      "assets/art/portraits/han/official-mature-01.webp"
+    ],
+    "unmodifiedOtherToneSamples": 3,
+    "previousNonHanFilesUnchanged": 337
+  },
+  "htmlMatchesTestedSHA256": true,
+  "allowedNonAssetFiles": [
+    "CHANGELOG.md",
+    "docs/ART-PHASE3-QA.md",
+    "docs/ART-PROMPTS.md",
+    "index.html",
+    "src/ui/art-manifest.js",
+    "test/art.test.js"
+  ],
+  "sourcePNGTracked": false,
+  "localGeneratedPNGCount": 79,
+  "draftPullRequest": 9,
+  "mergeAuthorized": false,
+  "deploymentAuthorized": false
+}

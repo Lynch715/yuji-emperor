@@ -1,0 +1,56 @@
+[
+  {
+    "surface": "court",
+    "device": "mobile",
+    "score": 100,
+    "url": "http://127.0.0.1:4219/qa/art-phase3-han/lh-court.html",
+    "lighthouseVersion": "13.6.0",
+    "fetchTime": "2026-11-09T15:07:25.376Z",
+    "failedAudits": []
+  },
+  {
+    "surface": "court",
+    "device": "desktop",
+    "score": 100,
+    "url": "http://127.0.0.1:4219/qa/art-phase3-han/lh-court.html",
+    "lighthouseVersion": "13.6.0",
+    "fetchTime": "2026-11-09T15:07:25.376Z",
+    "failedAudits": []
+  },
+  {
+    "surface": "harem",
+    "device": "desktop",
+    "score": 100,
+    "url": "http://127.0.0.1:4219/qa/art-phase3-han/lh-harem.html",
+    "lighthouseVersion": "13.6.0",
+    "fetchTime": "2026-11-09T15:07:35.401Z",
+    "failedAudits": []
+  },
+  {
+    "surface": "harem",
+    "device": "mobile",
+    "score": 100,
+    "url": "http://127.0.0.1:4219/qa/art-phase3-han/lh-harem.html",
+    "lighthouseVersion": "13.6.0",
+    "fetchTime": "2026-11-09T15:07:36.096Z",
+    "failedAudits": []
+  },
+  {
+    "surface": "paper",
+    "device": "desktop",
+    "score": 100,
+    "url": "http://127.0.0.1:4219/qa/art-phase3-han/lh-paper.html",
+    "lighthouseVersion": "13.6.0",
+    "fetchTime": "2026-11-09T15:07:45.207Z",
+    "failedAudits": []
+  },
+  {
+    "surface": "paper",
+    "device": "mobile",
+    "score": 100,
+    "url": "http://127.0.0.1:4219/qa/art-phase3-han/lh-paper.html",
+    "lighthouseVersion": "13.6.0",
+    "fetchTime": "2026-11-09T15:07:46.050Z",
+    "failedAudits": []
+  }
+]

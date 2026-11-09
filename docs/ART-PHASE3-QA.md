@@ -1,4 +1,138 @@
-# 美术三期 · 唐、宋验收
+# 美术三期 · 汉、唐、宋验收
+
+## 汉制发布前两张修订 · 2026-11-09
+
+玩家已验收汉制53张，并授权本轮修订后合并发布。本轮恰好替换**窦婴、董仲舒2张专属像**，其余388个WebP逐字节保持；全部src与HTML共108个文件与已验收`2f882b6`相同，存档仍v25。当前本地验收已完成；合并、Pages部署及线上390文件核对完成后在本节补充发布结果。
+
+- 窦婴仍50岁、原长方骨相与朝右姿态，增加灰鬓、额纹和眼周成熟纹理，改为垂至上胸的黑灰宽长髯，与韩安国短方颏须拉开。
+- 董仲舒仍39岁、朝右、深青宽黑领缘交领，改清瘦成年男性书生、细长颈肩，完全无须，与赵绾三绺稀疏长须、紧蹙眉目分开。仅调整美术长相卡，不更改剧本年龄或游戏数值。
+
+![两张修订前后及44px](art-phase3-han-review/revision-20261109-release/revision-before-after.jpg)
+
+![两对人物差异](art-phase3-han-review/revision-20261109-release/two-pairs.png)
+
+![汉武帝完整20张专属44px条](art-phase3-han-review/revision-20261109-release/han-wudi-44.png)
+
+[完整专属图册](art-phase3-han-review/revision-20261109-release/han-wudi-full.png) · [当前长相卡](art-phase3-han-review/revision-20261109-release/face-cards.json) · [构图与散列](art-phase3-han-review/revision-20261109-release/asset-checks.json) · [替换范围与源码逐字节检查](art-phase3-han-review/revision-20261109-release/revision-scope.json)。两张用内置imagegen逐张修订，每次传一期完整四图板＋汉制完整四图板＋本人目标；提示词先记ART-PROMPTS，原PNG仅保留本机art-source，导出只裁切、等比缩放及WebP编码。
+
+两张400×500／q75，冠顶10.84–12.84%、双眼39.77–39.87%，分别8,814与5,958字节。汉制仍53张，共439,232字节；assets/art总计**390个WebP／5,059,892字节**。377张原画加13个场景720派生档的口径保持。
+
+本轮重新运行**609／609测试、200年／7200旬无模型模拟及构建**，均通过，模拟6朝、终局国库2040。HTML854,145字节且SHA-256保持；本轮仅资产与文档变化，沿用下方2f882b6全量验收的退回、对比度及六次Lighthouse100证据，没有宣称重跑Lighthouse。[测试摘要](art-phase3-han-review/revision-20261109-release/test-summary.json) · [模拟完整结果](art-phase3-han-review/revision-20261109-release/simulation-200y.json)。
+
+应用内浏览器在独立localhost4219试读局仅打开真实朝堂及窦婴、董仲舒召见，未垂询或推进旬；两对人物生产取图只读图册12实例全部400×500加载。1280纸面200×250、390纸面120×150，圆章44×44，360无溢出，console warn／error为空。[本轮浏览器读数](art-phase3-han-review/revision-20261109-release/local-browser.json)。
+
+| 本轮截图 | 1280 | 390 |
+| --- | --- | --- |
+| 两对人物生产取图图册 | [桌面](art-phase3-han-review/revision-20261109-release/local-gallery-1280.jpg) | [手机](art-phase3-han-review/revision-20261109-release/local-gallery-390.jpg) |
+| 窦婴真实召见 | [桌面](art-phase3-han-review/revision-20261109-release/local-dou-paper-1280.jpg) | [手机](art-phase3-han-review/revision-20261109-release/local-dou-paper-390.jpg) |
+| 董仲舒真实召见 | — | [手机](art-phase3-han-review/revision-20261109-release/local-dong-paper-390.jpg) |
+
+以下为53张全量验收的历史记录，当时为草稿PR；最终发布状态以本节后续记录为准。
+
+---
+
+## 三期第三批 · 汉制53张完成 · 2026-11-09
+
+玩家已确认汉制画风，本轮补齐余49张，并加强文官壮01的进贤冠斜梁。当前**53／53张：汉池33＋汉武帝专属20**。分支`feat/art-phase3-han`，最新main基准`dbffc28`；更新同一[草稿PR #9](https://github.com/Lynch715/yuji-emperor/pull/9)，**不合并、不发布Pages**。下方定调第1步与宋、唐记录为历史记录。
+
+### 造型、长相卡与44px复检
+
+- 所有汉制采用交领右衽、宽深色领缘；文官进贤冠前高后低，上梁约30–40°下降；文官壮01保留本人长相，只加强冠形。武将用长条札甲、武冠或鹖冠；皇帝玄袍红缘、通天冠与金博山；正位步摇、常位简簪。其余三张已确认定调图逐字节保持。
+- 每池先写8维长相卡，74组同池两两比较均至少4维不同，且脸型或须形／发际线不同。初检将文官壮02改为短宽矩形上唇须、下巴无须，09保持无须并加强成年男性眉骨、下颌与鬓发；复检男女、年龄和44px轮廓。
+- 刘彻按开局16岁少年绘制，另出本人50岁变体，保留骨相与右颊痣；陈阿娇18岁、卫子夫17岁，后者衣饰朴素；窦太皇太后约65岁、灰鬓闭目；王臧50岁为有须文官；李广44岁修长、程不识45岁严整；赵佗约90岁、白发白须椎髻。其余人物依据scenarios.js性格、秘密与史书事迹定卡；无明确记载的五官、须形与痣为辨识设计，不冒称真实容貌。
+
+所有批量与修订使用内置imagegen，均传一期完整四图板＋汉制完整四图板；池图按同池2×2生成、空余格留空，专属单张，构图未过的稿单独校正。原PNG与未选稿仅留本机`art-source/phase3-han`；本地导出只裁切、等比缩放、WebP编码，没有手工修脸、填边或调色。全部长相卡、服饰共同约束、史书链接与实际提示词见[ART-PROMPTS](ART-PROMPTS.md)。
+
+![汉池33张与44px裁切](art-phase3-han-review/final/han-pool-full.png)
+
+![汉武帝20张与44px裁切](art-phase3-han-review/final/han-wudi-full.png)
+
+![汉武帝开局19人加本人老年变体的44px条](art-phase3-han-review/final/han-wudi-44.png)
+
+[本轮冠形与男性特征前后对照](art-phase3-han-review/final/revision-before-after.jpg) · [汉池33张44px总条](art-phase3-han-review/final/han-pool-44.png) · [刘彻本人年龄对照](art-phase3-han-review/final/age-variants.png) · [全部长相卡](art-phase3-han-review/final/face-cards.json) · [视觉终检](art-phase3-han-review/final/visual-review.json)。12个池各自的44px条已存本机`qa/art/`，并附在[池条目录](art-phase3-han-review/final/pools)。完整冠髻顶**10.00–14.00%**，双眼**36.01–40.00%**，全部400×500、q75，最大单张15,544字节；[逐文件坐标、散列及74组卡差异](art-phase3-han-review/final/asset-checks.json)。
+
+### 取图、回归与体积
+
+汉池33槽与汉武帝20槽全部填入，汉武帝开局19人优先取本人专属，刘彻40岁切换本人老年像。汉制郎中令下标8取文官、中书谒者令下标10取宦官的修正与Node回归保留。七剧本共142位不同历史开局人物均命中专属；宋、万历、康熙的皇帝另有同名皇嗣记录，按同一姓名合并计人，实际逐条检查145条。
+
+为守原单文件HTML预算，已先在PR说明原因，再将连续编号池路径由逐字面列举改为本模块纯函数`numberedPool`展开；最终导出的映射值、顺序与路径不变。非汉全部清单值深比较相同，原337个非汉WebP逐字节保持，场景、殿阁与焦点保持。[清单、七剧本逐人与377口径核对](art-phase3-han-review/final/manifest-and-377-inventory.json)。
+
+本轮**609／609测试、200年／7200旬无模型模拟、构建全部通过**。模拟6朝、终局国库2040，无结局中断；HTML **854,145字节＜860,000**，未放宽门槛。与main相比core、LLM和CSS共65个文件逐字节保持，存档仍v25。[测试与构建摘要](art-phase3-han-review/final/test-summary.json) · [200年模拟完整结果](art-phase3-han-review/final/200-year-simulation.json)。
+
+汉制53张合计**438,218字节**；全目录**390个WebP／5,058,878字节（5.06MB，低于12MB）**。ART-SPEC §6的377为原画：池207＋专属154＋场景13＋殿阁3；13个场景另有720派生档，因此**377张原画＋13派生文件＝390个WebP**，全套原画数量与规范一致。
+
+### 三档浏览器、退回与可访问性
+
+新版应用内浏览器在独立`localhost:4219`空卷1试读汉武帝开局；只打开朝堂、王臧召见纸面、后宫、设置，未垂询、未安排动作或推进旬，请求统计0次。不访问正式站点，不触碰私人存档。真实两位后妃使用专属01／02；王臧真实纸面为文官专属04。
+
+| 截图 | 1280 | 768 | 390 |
+| --- | --- | --- | --- |
+| 真实开局 | [桌面](art-phase3-han-review/final/opening-1280.jpg) | [平板](art-phase3-han-review/final/opening-768.jpg) | [手机](art-phase3-han-review/final/opening-390.jpg) |
+| 真实朝堂 | [桌面](art-phase3-han-review/final/court-1280.jpg) | [平板](art-phase3-han-review/final/court-768.jpg) | [手机](art-phase3-han-review/final/court-390.jpg) |
+| 王臧真实召见 | [桌面](art-phase3-han-review/final/paper-1280.jpg) | [平板](art-phase3-han-review/final/paper-768.jpg) | [手机](art-phase3-han-review/final/paper-390.jpg) |
+| 真实后宫 | [桌面](art-phase3-han-review/final/harem-1280.jpg) | [平板](art-phase3-han-review/final/harem-768.jpg) | [手机](art-phase3-han-review/final/harem-390.jpg) |
+| 53张生产取图只读图册 | [桌面](art-phase3-han-review/final/gallery-1280.jpg) | [平板](art-phase3-han-review/final/gallery-768.jpg) | [手机](art-phase3-han-review/final/gallery-390.jpg) |
+
+浏览器原生截图为JPEG，三档开局另转存本机`qa/art-han-{1280,768,390}.png`。图册仅以显示用状态覆盖池索引，调用生产`portraitSource`、`portraitHTML`及CSS，不读写游戏存档；53图×纸面、圆章、卡片＝159个实例，在三档均400×500全部加载。纸面桌面200×250、手机120×150，圆章44×44；游戏和图册360宽均scrollWidth360。手机行动头图实际**340×112**，audience-720、cover，裁切不露边。[浏览器完整读数](art-phase3-han-review/final/browser-results.json)。
+
+- 仅断开WebP图片请求，HTML／JS照常：章节头退纯色，王臧纸面退44×44圆章，浏览器warn／error为空；[开局退回](art-phase3-han-review/final/images-offline-1280.jpg)、[纸面退回](art-phase3-han-review/final/images-offline-paper-390.jpg)。
+- 关闭「显示插图」后刷新，图片无src，陈／卫回44×44首字圆章；[关闭后的开局](art-phase3-han-review/final/illustrations-off-1280.jpg)、[后宫](art-phase3-han-review/final/illustrations-off-harem-390.jpg)。最后恢复开启并确认4个开局图片实例正常，图册159实例正常；临时断图开关已移除。
+- 1280视口稳定后独立刷新，首屏**3次图片请求≤6**，[请求明细](art-phase3-han-review/final/first-screen.json)。朝堂、后宫、召见的头图渐变仅落在无文字图片区，文字在下方独立纯色区；本轮DOM计算的纸面／后宫文字最低**4.83:1**，无低于适用门槛的文字。
+- 官方Lighthouse13.6.0重新审计生产样式的朝堂、后宫和召见只读投影，1280／390共**六次可访问性均100≥95**；真实操作另由应用内浏览器实走。[六次审计摘要](art-phase3-han-review/final/lighthouse-summary.json)。本轮不沿用前批分数。
+
+Pages线上抽查在玩家验收并授权合并发布后执行；本轮保持草稿PR，不合并、不部署。
+
+---
+
+## 三期第三批 · 汉制定调第1步 · 2026-11-09
+
+基准最新main `dbffc28`，分支`feat/art-phase3-han`。本步已修宦官分池并完成**4／53张定调池图**：文官壮、常位后妃、正位后妃、皇帝青各01，均已接入游戏。**停在第1步等玩家确认；余49张未生成，不合并、不发布。** 本步交付为草稿PR，历史宋、唐验收记录保留在下方。
+
+### 汉制官职分池修正
+
+`src/ui/art.js`改为汉制下标10中书谒者令取宦官池，下标8郎中令取文官池；唐／宋／明仍8取宦官，清8仍按文官，大晟保持明制。王臧50岁郎中令现在命中`han/official-mature`。新增一条Node测试，含实际王臧与七剧本／大晟的8、10两职探针，保证纯函数不改人物或官职。按本轮玩家明确指示同步ART-SPEC §3.2旧表，不改引擎、官职数组或存档v25。
+
+### 四张样张与五朝对照
+
+四张种子逐张用内置imagegen生成，初次传一期完整四图板；出齐即拼汉制板，后续构图修订同时传一期四图＋汉四图＋本人目标。原稿PNG和未选稿只留本机`art-source/phase3-han`。规范未过的稿未接入，最终只裁切、等比缩放与WebP编码，没有手工修脸或调色。确认后其余池仍按同池2×2、专属单张。
+
+- 文官：深青交领、宽黑缘，前高后低斜梁进贤冠；正面无补子、无圆领、无幞头／展角。
+- 常位：17岁少女绘制档、堕马侧髻、单簪、朴素浅绿曲裾交领；正位18岁少女绘制档、更高宽髻、金枝垂珠步摇、深朱曲裾。两档在44px有明确头饰轮廓差异。
+- 青帝：16岁少年绘制档、无须，玄袍红领缘、通天冠与冠前金博山，和文官黑色斜梁冠分开。当前开局三人使用池图；刘彻、陈阿娇、卫子夫的正式历史专属仍按各自资料在第2步另绘，不把池长相卡冒充专属卡。
+
+共同汉制服饰约束、年龄／外邦要求和全部实际提示词已记[ART-PROMPTS](ART-PROMPTS.md)。四张完整冠髻顶**10.00–12.69%**，双眼**37.09–39.99%**；朝向2左／2右；400×500、q75、各≤30KB。
+
+![汉制四张定调及44px](art-phase3-han-review/tone/han-four-tones.jpg)
+
+![汉唐宋明清文官对照](art-phase3-han-review/tone/han-tang-song-ming-qing-officials.jpg)
+
+![汉制四张44px条](art-phase3-han-review/tone/han-four-tones-44.png)
+
+[逐文件构图、字节与散列](art-phase3-han-review/tone/asset-checks.json)。每池当前只有1张样张，完整同池查重与20张专属同剧本条在后续完成；四张条和逐池单张条也存本机`qa/art/`。
+
+### 本步测试与浏览器
+
+本轮**609／609测试、200年／7200旬无模型模拟、构建通过**；模拟6朝，终局国库2040。HTML **859,777字节**，仍低于原860,000字节预算；没有放宽测试门槛。core、LLM、CSS、其他朝代清单与前批337个WebP保持，存档v25。[测试与构建摘要](art-phase3-han-review/tone/test-summary.json) · [200年模拟完整结果](art-phase3-han-review/tone/200-year-simulation.json)。
+
+应用内浏览器使用独立`localhost:4217`空卷1，汉武帝试读0旬，仅打开开局、朝堂、后宫、设置，未安排动作或推进旬，请求统计0次；不触碰正式站点和私人存档。开局取青年皇帝池01，窦婴名册取文官壮01，陈阿娇与卫子夫分别取正位／常位01；未出图位置照常退回圆章。四张生产取图／CSS只读图册12个纸面、人物卡、圆章实例均400×500加载；1280纸面200×250，390纸面120×150，圆章44×44。游戏与图册360宽均scrollWidth=360，无横向溢出。
+
+关闭插图后刷新，后妃图片无src、opacity0，退回44×44首字圆章；最后恢复开启。console warn／error均空。[浏览器读数](art-phase3-han-review/tone/browser-results.json)。1280首屏独立刷新记录3次图片请求，≤6，[请求明细](art-phase3-han-review/tone/first-screen.json)。
+
+| 本步截图 | 1280 | 390 |
+| --- | --- | --- |
+| 真实汉武帝开局预览 | [桌面](art-phase3-han-review/tone/opening-1280.jpg) | [手机](art-phase3-han-review/tone/opening-390.jpg) |
+| 真实后宫 | [桌面](art-phase3-han-review/tone/harem-1280.jpg) | [手机](art-phase3-han-review/tone/harem-390.jpg) |
+| 四张生产取图只读图册 | [桌面](art-phase3-han-review/tone/samples-1280.jpg) | [手机](art-phase3-han-review/tone/samples-390.jpg) |
+
+另有[真实朝堂1280](art-phase3-han-review/tone/court-1280.jpg)、[关闭插图退回](art-phase3-han-review/tone/illustrations-off.jpg)。本步没有宣称完整§9已收尾：余49张、开局19人专属、完整768三档、图片断连、对比度与Lighthouse全量复验在确认画风并补齐后执行；代码与HTML有变，不沿用宋制Lighthouse分数冒作本轮结果。
+
+### 实际数量与377张口径
+
+本步新增4个WebP，共**32,202字节**；`assets/art/`累计**341文件／4,652,862字节（约4.65MB）**，原337文件逐字节相同。清单只填四个汉池01槽，其余29个汉池槽与20个专属槽保留空位；其他朝代、场景／殿阁和焦点不变。
+
+§6的**377张是原画／逻辑资产数**：池207＋专属154＋场景13＋殿阁3。13场景各有1440、720两档，720派生档另13个文件，因此全部完成应为**377＋13＝390个WebP**，不能把390文件误报为多画13张。本步完成逻辑资产328、实体341文件，尚缺49张汉制原画；328＋49＝377，341＋49＝390。[清单、文件与377核对](art-phase3-han-review/tone/manifest-and-377-inventory.json)。
+
+---
 
 ## 宋制发布与最终四张修订 · 2026-11-09
 

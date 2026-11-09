@@ -1,0 +1,480 @@
+{
+  "opening1280": {
+    "images": [
+      {
+        "natural": [
+          1280,
+          720
+        ],
+        "size": [
+          680,
+          160
+        ],
+        "src": "assets/art/scenes/court-1440.webp"
+      },
+      {
+        "natural": [
+          400,
+          500
+        ],
+        "size": [
+          64,
+          80
+        ],
+        "src": "assets/art/portraits/han/emperor-young-01.webp"
+      }
+    ],
+    "scrollWidth": 1280,
+    "width": 1280
+  },
+  "opening390": {
+    "images": [
+      {
+        "natural": [
+          720,
+          405
+        ],
+        "size": [
+          318,
+          112
+        ],
+        "src": "assets/art/scenes/court-1440.webp"
+      },
+      {
+        "natural": [
+          400,
+          500
+        ],
+        "size": [
+          64,
+          80
+        ],
+        "src": "assets/art/portraits/han/emperor-young-01.webp"
+      }
+    ],
+    "scrollWidth": 390,
+    "width": 390
+  },
+  "court1280": {
+    "fallbacks": 23,
+    "portraits": [
+      {
+        "natural": [
+          400,
+          500
+        ],
+        "size": [
+          64,
+          80
+        ],
+        "src": "assets/art/portraits/han/official-mature-01.webp"
+      },
+      {
+        "natural": [
+          400,
+          500
+        ],
+        "size": [
+          0,
+          80
+        ],
+        "src": "assets/art/portraits/han/official-mature-01.webp"
+      }
+    ],
+    "scrollWidth": 1280,
+    "width": 1280
+  },
+  "harem1280": {
+    "consortImages": [
+      {
+        "natural": [
+          400,
+          500
+        ],
+        "size": [
+          64,
+          80
+        ],
+        "src": "assets/art/portraits/han/consort-high-01.webp"
+      },
+      {
+        "natural": [
+          400,
+          500
+        ],
+        "size": [
+          64,
+          80
+        ],
+        "src": "assets/art/portraits/han/consort-regular-01.webp"
+      }
+    ],
+    "scrollWidth": 1280,
+    "width": 1280
+  },
+  "harem390": {
+    "consortImages": [
+      {
+        "natural": [
+          400,
+          500
+        ],
+        "size": [
+          64,
+          80
+        ],
+        "src": "assets/art/portraits/han/consort-high-01.webp"
+      },
+      {
+        "natural": [
+          400,
+          500
+        ],
+        "size": [
+          64,
+          80
+        ],
+        "src": "assets/art/portraits/han/consort-regular-01.webp"
+      }
+    ],
+    "scrollWidth": 390,
+    "width": 390
+  },
+  "illustrationsOff": {
+    "images": [
+      {
+        "src": null,
+        "visible": "0"
+      },
+      {
+        "src": null,
+        "visible": "0"
+      }
+    ],
+    "off": true,
+    "portraits": [
+      {
+        "size": [
+          44,
+          44
+        ],
+        "text": "陈"
+      },
+      {
+        "size": [
+          44,
+          44
+        ],
+        "text": "卫"
+      }
+    ]
+  },
+  "samples1280": {
+    "images": [
+      {
+        "natural": [
+          400,
+          500
+        ],
+        "size": [
+          200,
+          250
+        ],
+        "src": "assets/art/portraits/han/official-mature-01.webp"
+      },
+      {
+        "natural": [
+          400,
+          500
+        ],
+        "size": [
+          44,
+          44
+        ],
+        "src": "assets/art/portraits/han/official-mature-01.webp"
+      },
+      {
+        "natural": [
+          400,
+          500
+        ],
+        "size": [
+          64,
+          80
+        ],
+        "src": "assets/art/portraits/han/official-mature-01.webp"
+      },
+      {
+        "natural": [
+          400,
+          500
+        ],
+        "size": [
+          200,
+          250
+        ],
+        "src": "assets/art/portraits/han/consort-regular-01.webp"
+      },
+      {
+        "natural": [
+          400,
+          500
+        ],
+        "size": [
+          44,
+          44
+        ],
+        "src": "assets/art/portraits/han/consort-regular-01.webp"
+      },
+      {
+        "natural": [
+          400,
+          500
+        ],
+        "size": [
+          64,
+          80
+        ],
+        "src": "assets/art/portraits/han/consort-regular-01.webp"
+      },
+      {
+        "natural": [
+          400,
+          500
+        ],
+        "size": [
+          200,
+          250
+        ],
+        "src": "assets/art/portraits/han/consort-high-01.webp"
+      },
+      {
+        "natural": [
+          400,
+          500
+        ],
+        "size": [
+          44,
+          44
+        ],
+        "src": "assets/art/portraits/han/consort-high-01.webp"
+      },
+      {
+        "natural": [
+          400,
+          500
+        ],
+        "size": [
+          64,
+          80
+        ],
+        "src": "assets/art/portraits/han/consort-high-01.webp"
+      },
+      {
+        "natural": [
+          400,
+          500
+        ],
+        "size": [
+          200,
+          250
+        ],
+        "src": "assets/art/portraits/han/emperor-young-01.webp"
+      },
+      {
+        "natural": [
+          400,
+          500
+        ],
+        "size": [
+          44,
+          44
+        ],
+        "src": "assets/art/portraits/han/emperor-young-01.webp"
+      },
+      {
+        "natural": [
+          400,
+          500
+        ],
+        "size": [
+          64,
+          80
+        ],
+        "src": "assets/art/portraits/han/emperor-young-01.webp"
+      }
+    ],
+    "off": false,
+    "scrollWidth": 1280,
+    "width": 1280
+  },
+  "samples390": {
+    "images": [
+      {
+        "natural": [
+          400,
+          500
+        ],
+        "size": [
+          120,
+          150
+        ],
+        "src": "assets/art/portraits/han/official-mature-01.webp"
+      },
+      {
+        "natural": [
+          400,
+          500
+        ],
+        "size": [
+          44,
+          44
+        ],
+        "src": "assets/art/portraits/han/official-mature-01.webp"
+      },
+      {
+        "natural": [
+          400,
+          500
+        ],
+        "size": [
+          64,
+          80
+        ],
+        "src": "assets/art/portraits/han/official-mature-01.webp"
+      },
+      {
+        "natural": [
+          400,
+          500
+        ],
+        "size": [
+          120,
+          150
+        ],
+        "src": "assets/art/portraits/han/consort-regular-01.webp"
+      },
+      {
+        "natural": [
+          400,
+          500
+        ],
+        "size": [
+          44,
+          44
+        ],
+        "src": "assets/art/portraits/han/consort-regular-01.webp"
+      },
+      {
+        "natural": [
+          400,
+          500
+        ],
+        "size": [
+          64,
+          80
+        ],
+        "src": "assets/art/portraits/han/consort-regular-01.webp"
+      },
+      {
+        "natural": [
+          400,
+          500
+        ],
+        "size": [
+          120,
+          150
+        ],
+        "src": "assets/art/portraits/han/consort-high-01.webp"
+      },
+      {
+        "natural": [
+          400,
+          500
+        ],
+        "size": [
+          44,
+          44
+        ],
+        "src": "assets/art/portraits/han/consort-high-01.webp"
+      },
+      {
+        "natural": [
+          400,
+          500
+        ],
+        "size": [
+          64,
+          80
+        ],
+        "src": "assets/art/portraits/han/consort-high-01.webp"
+      },
+      {
+        "natural": [
+          400,
+          500
+        ],
+        "size": [
+          120,
+          150
+        ],
+        "src": "assets/art/portraits/han/emperor-young-01.webp"
+      },
+      {
+        "natural": [
+          400,
+          500
+        ],
+        "size": [
+          44,
+          44
+        ],
+        "src": "assets/art/portraits/han/emperor-young-01.webp"
+      },
+      {
+        "natural": [
+          400,
+          500
+        ],
+        "size": [
+          64,
+          80
+        ],
+        "src": "assets/art/portraits/han/emperor-young-01.webp"
+      }
+    ],
+    "scrollWidth": 390,
+    "width": 390
+  },
+  "samples360": {
+    "avatarSizes": [
+      [
+        44,
+        44
+      ],
+      [
+        44,
+        44
+      ],
+      [
+        44,
+        44
+      ],
+      [
+        44,
+        44
+      ]
+    ],
+    "scrollWidth": 360,
+    "width": 360
+  },
+  "galleryLogs": [],
+  "game360": {
+    "artEnabled": true,
+    "scrollWidth": 360,
+    "title": "汉 · 建元1年",
+    "width": 360
+  },
+  "gameLogs": [],
+  "scope": "独立localhost4217空卷1，汉武帝试读0旬，只查看开局、朝堂、后宫与设置；未安排动作、未推进旬，设置请求统计0次。样张页为生产取图和CSS只读投影，不写存档。"
+}

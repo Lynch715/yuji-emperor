@@ -92,6 +92,30 @@ test('清单完整预留377张，专属像只按当前剧本与姓名查，未�
  const q=initialTurn(applyScenario(createState(),'qing-kangxi')),e=q.court.officials.find(o=>o.id===q.court.posts[8].holder);
  assert.match(portraitPool(q,e),/^qing\/official-/);
 });
+test('汉郎中令下标8取文官、中书谒者令下标10取宦官，其他朝代分池不变',()=>{
+ const han=initialTurn(applyScenario(createState({seed:'汉官制取图'}),'han-wudi'));
+ const wang=han.court.officials.find(p=>p.name==='王臧'),before=JSON.stringify(han);
+ assert.equal(han.court.posts[8].holder,wang.id);
+ assert.equal(portraitPool(han,wang),'han/official-mature');
+ assert.equal(JSON.stringify(han),before,'取图不修改人物或官职');
+ const cases=[
+  [null,'ming/eunuch-all','ming/official-mature'],
+  ['han-wudi','han/official-mature','han/eunuch-all'],
+  ['tang-taizong','tang/eunuch-all','tang/official-mature'],
+  ['song-renzong','song/eunuch-all','song/official-mature'],
+  ['ming-wanli','ming/eunuch-all','ming/official-mature'],
+  ['ming-chongzhen','ming/eunuch-all','ming/official-mature'],
+  ['qing-kangxi','qing/official-mature','qing/official-mature'],
+  ['qing-yongzheng','qing/official-mature','qing/official-mature'],
+ ];
+ for(const [id,at8,at10] of cases)for(const [index,expected] of [[8,at8],[10,at10]]){
+  const s=id?initialTurn(applyScenario(createState({seed:'官制回归'}),id)):start('大晟官制');
+  const p={...s.court.officials[0],id:'art-post-probe',age:40,post:s.court.posts[index].id};
+  s.court.officials=[p];for(const post of s.court.posts)post.holder=null;
+  s.court.posts[index].holder=p.id;
+  assert.equal(portraitPool(s,p),expected,`${id||'大晟'}下标${index}`);
+ }
+});
 test('场景按行动和地点取图，章节可选显示元数据不改结算和预演',()=>{
  assert.equal(sceneKey({kind:'上朝'}),'court');assert.equal(sceneKey({kind:'歇息'},'夜'),'desk-night');
  assert.equal(sceneKey({kind:'自拟情节',place:'花园凉亭'}),'garden');assert.equal(sceneKey({kind:'自拟情节',place:'城外驿站'}),'tour');
@@ -101,8 +125,8 @@ test('场景按行动和地点取图，章节可选显示元数据不改结算�
  assert.equal(JSON.stringify(f),raw);assert.deepEqual(art.nation,done.nation);assert.deepEqual(withChapterArt(art,f),art);
  assert.equal(sceneHTML('不存在'), '');
 });
-test('唐宋明清六剧本全部开局人物优先取专属像，40岁切换老年像，同名不串剧本',()=>{
- for(const id of ['tang-taizong','song-renzong','ming-wanli','ming-chongzhen','qing-kangxi','qing-yongzheng']){
+test('汉唐宋明清七剧本全部开局人物优先取专属像，40岁切换老年像，同名不串剧本',()=>{
+ for(const id of ['han-wudi','tang-taizong','song-renzong','ming-wanli','ming-chongzhen','qing-kangxi','qing-yongzheng']){
   const sc=SCENARIOS.find(x=>x.id===id),s=initialTurn(applyScenario(createState({seed:'专属取图'}),id)),before=JSON.stringify(s);
   const base=`assets/art/portraits/unique/${id}/emperor-01.webp`,old=`assets/art/portraits/unique/${id}/emperor-01-old.webp`;
   assert.equal(portraitSource(s,s.emperor),s.emperor.age>=40?old:base);
@@ -120,7 +144,7 @@ test('清单仅引用已导出的WebP，尺寸体积预算与文件一一对应'
   ...Object.values({...ART_SCENES,...ART_HALLS}).flatMap(s=>[s.src,s.small])].filter(Boolean);
  const actual=[];function walk(dir){for(const e of readdirSync(dir,{withFileTypes:true})){const path=dir+'/'+e.name;if(e.isDirectory())walk(path);else actual.push(path);}}
  walk('assets/art');assert.deepEqual([...new Set(paths)].sort(),actual.sort());
- assert.equal(actual.length,337,'一期145文件、二期79张、唐制62张、宋制51张；汉制仍为空位');
+ assert.equal(actual.length,390,'377张原画及13个场景720派生档；汉制池33张、汉武帝专属20张全部完成');
  assert.ok(actual.reduce((sum,path)=>sum+statSync(path).size,0)<=12000000);
  for(const path of actual){assert.match(path,/\.webp$/);assert.ok(statSync(path).size<=(path.includes('/portraits/')?30000:path.includes('/halls/')?100000:path.endsWith('-720.webp')?60000:150000));}
 });

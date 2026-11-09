@@ -1,0 +1,161 @@
+{
+  "summary": {
+    "baseline": "2f882b618da9259492fd64f2e1408b31b30ddcd1",
+    "replacedWebP": 2,
+    "unchangedWebP": 388,
+    "unchangedSourceAndHtmlFiles": 108,
+    "portraitCountHan": 53,
+    "hanBytes": 439232,
+    "totalWebP": 390,
+    "totalBytes": 5059892,
+    "headTopRange": [
+      0.1084,
+      0.1284
+    ],
+    "eyeRange": [
+      0.3977,
+      0.3987
+    ],
+    "saveVersion": 25
+  },
+  "assets": [
+    {
+      "id": "han-wudi/official-01",
+      "file": "assets/art/portraits/unique/han-wudi/official-01.webp",
+      "job": "han-release-official-01-r1",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-han/revision-20261109-release/han-release-official-01-r1.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 557.64,
+      "headTop": 180,
+      "faceBox": [
+        474.4347048997879,
+        440.9368608593941,
+        378.0122614502907,
+        378.0122557878494
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "eyeRatio": 0.3977,
+      "headTopRatio": 0.1284,
+      "bytes": 8814,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "beforeBytes": 7380,
+      "beforeSha256": "d8b0580b297dc10eca4e1867a6dd1233decc865bebd70a0244d2dbf3fa2a9e71",
+      "sha256": "72a4a6988b33168964476266b70f33180051cbfc3e6c664c69f3f664f22f7dcc",
+      "faceCard": {
+        "id": "han-wudi/official-01",
+        "name": "窦婴",
+        "scenario": "han-wudi",
+        "age": 50,
+        "dims": [
+          "LONG BROAD RECTANGULAR face, high strong cheekbones and blunt long chin",
+          "LONG FULL flowing beard divided into THREE BROAD tapered locks reaching the upper chest, predominantly black with clear GRAY streaks, thick straight moustache",
+          "thick level brows and large clear wide-set steady eyes",
+          "long broad high straight nose and full firm straight lips",
+          "sturdy upright medium neck and broad level shoulders",
+          "warm medium wheat skin",
+          "clearly GRAY TEMPLES, mature forehead lines, crow-feet and deep left nasolabial crease, small cheek dimple",
+          "generous proud decisive scholarly confidence"
+        ],
+        "costume": "HAN JINXIAN CROWN: rigid narrow BLACK WEDGE on bound topknot, FRONT clearly HIGH and REAR very LOW, two obvious raised top beams sloping DOWN30–40degrees from front to rear; front is forehead side, not back. Tall forward edge, low rear edge, ears and side hair visible, no lateral wings or rods, no soft cap or cylinder. Muted INK-BLACK robe with deep RED border. HAN Y-shaped CROSS COLLAR, wearers LEFT lapel OVER RIGHT, WIDE DARK CONTRASTING collar edging, several diagonal wrap layers at upper chest. Entire chest and shoulders covered, no round/standing collar, rank patch or modern embroidery.",
+        "context": "剧本职位下标0；性格：好儒术，任侠自喜；秘密：与太皇太后同族，却力推儒术，夹在两宫之间。",
+        "historySource": "https://zh.wikisource.org/zh-hans/史記/卷107",
+        "facing": "RIGHT",
+        "variant": "base",
+        "sourceType": "historical-unique",
+        "file": "assets/art/portraits/unique/han-wudi/official-01.webp",
+        "face": "50-year-old ADULT MAN, LONG BROAD RECTANGULAR face, high strong cheekbones and blunt long chin, LONG FULL flowing beard divided into THREE BROAD tapered locks reaching the upper chest, predominantly black with clear GRAY streaks, thick straight moustache, thick level brows and large clear wide-set steady eyes, long broad high straight nose and full firm straight lips, sturdy upright medium neck and broad level shoulders, warm medium wheat skin, clearly GRAY TEMPLES, mature forehead lines, crow-feet and deep left nasolabial crease, small cheek dimple, generous proud decisive scholarly confidence; facing RIGHT",
+        "sourceNote": "开局年龄、性格与秘密以scenarios.js和本轮玩家指定为准；史书辅助性情、事迹、李广体态及冠服。未明载的五官、须形、肤色、痣等为美术区分设计，不冒称真实容貌。未配置年龄的外君只设绘制档，不改游戏状态。",
+        "role": "official",
+        "index": 1
+      }
+    },
+    {
+      "id": "han-wudi/official-05",
+      "file": "assets/art/portraits/unique/han-wudi/official-05.webp",
+      "job": "han-release-official-05-r1",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-han/revision-20261109-release/han-release-official-05-r1.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 559.03,
+      "headTop": 152,
+      "faceBox": [
+        507.626236975193,
+        443.8370924592018,
+        313.05938279628754,
+        313.0593855381012
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "eyeRatio": 0.3987,
+      "headTopRatio": 0.1084,
+      "bytes": 5958,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "beforeBytes": 6378,
+      "beforeSha256": "bb4bde4019c098884c72fa937e281d529d0da046baaec0239eb6de735bfc4073",
+      "sha256": "541c4d1a8de8a948d220aa1346942bc764c582fca14167c1096716588711192f",
+      "faceCard": {
+        "id": "han-wudi/official-05",
+        "name": "董仲舒",
+        "scenario": "han-wudi",
+        "age": 39,
+        "dims": [
+          "NARROW LONG HEART-SHAPED adult male face, thoughtful broad forehead, hollow thin cheeks and firm fine angular chin",
+          "COMPLETELY CLEAN SHAVEN: no upper-lip moustache and no chin or jaw beard, neat male sideburns",
+          "fine HORIZONTAL male brows with a defined brow ridge, long quietly thoughtful lowered eyes",
+          "small high narrow straight nose and thin plain UNPAINTED closed lips",
+          "long thin adult male neck with subtle Adams apple, very narrow slightly stooped scholarly shoulders",
+          "cool pale porcelain ivory skin",
+          "tiny right mouth beauty mark",
+          "inward absorbed dignified scholarly concentration"
+        ],
+        "costume": "HAN JINXIAN CROWN: rigid narrow BLACK WEDGE on bound topknot, FRONT clearly HIGH and REAR very LOW, two obvious raised top beams sloping DOWN30–40degrees from front to rear; front is forehead side, not back. Tall forward edge, low rear edge, ears and side hair visible, no lateral wings or rods, no soft cap or cylinder. Muted deep BLUE-GREEN robe with BLACK border. HAN Y-shaped CROSS COLLAR, wearers LEFT lapel OVER RIGHT, WIDE DARK CONTRASTING collar edging, several diagonal wrap layers at upper chest. Entire chest and shoulders covered, no round/standing collar, rank patch or modern embroidery.",
+        "context": "剧本职位下标19；性格：治公羊春秋，三年不窥园；秘密：私撰灾异之书，言辞多有讥刺。",
+        "historySource": "https://zh.wikisource.org/zh-hans/史記/卷121",
+        "facing": "RIGHT",
+        "variant": "base",
+        "sourceType": "historical-unique",
+        "file": "assets/art/portraits/unique/han-wudi/official-05.webp",
+        "face": "39-year-old ADULT MAN, NARROW LONG HEART-SHAPED adult male face, thoughtful broad forehead, hollow thin cheeks and firm fine angular chin, COMPLETELY CLEAN SHAVEN: no upper-lip moustache and no chin or jaw beard, neat male sideburns, fine HORIZONTAL male brows with a defined brow ridge, long quietly thoughtful lowered eyes, small high narrow straight nose and thin plain UNPAINTED closed lips, long thin adult male neck with subtle Adams apple, very narrow slightly stooped scholarly shoulders, cool pale porcelain ivory skin, tiny right mouth beauty mark, inward absorbed dignified scholarly concentration; facing RIGHT",
+        "sourceNote": "开局年龄、性格与秘密以scenarios.js和本轮玩家指定为准；史书辅助性情、事迹、李广体态及冠服。未明载的五官、须形、肤色、痣等为美术区分设计，不冒称真实容貌。未配置年龄的外君只设绘制档，不改游戏状态。",
+        "role": "official",
+        "index": 5
+      }
+    }
+  ]
+}

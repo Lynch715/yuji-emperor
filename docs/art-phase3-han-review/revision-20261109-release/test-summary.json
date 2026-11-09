@@ -1,0 +1,17 @@
+{
+  "tests": 609,
+  "passed": 609,
+  "failed": 0,
+  "simulation": {
+    "years": 200,
+    "turns": 7200,
+    "reigns": 6,
+    "finalTreasury": 2040,
+    "ending": null
+  },
+  "htmlBytes": 854145,
+  "htmlSha256": "70948580b2d7bfd9086d5a8c572cb38240a3a480ae6dcdd2a163626b7822b1cc",
+  "saveVersion": 25,
+  "sourceAndHtmlEqualToAccepted2f882b6": true,
+  "lighthouse": "沿用2f882b6全量验收的六次100；本轮src/HTML/CSS逐字节保持，未宣称重新审计。"
+}

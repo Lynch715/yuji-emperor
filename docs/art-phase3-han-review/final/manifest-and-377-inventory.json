@@ -1,0 +1,644 @@
+{
+  "logicalWorks": 377,
+  "portraitPool": 207,
+  "uniquePortraitVariants": 154,
+  "scenes": 13,
+  "halls": 3,
+  "scene720Derivatives": 13,
+  "physicalWebPFiles": 390,
+  "totalBytes": 5058878,
+  "nonHanManifestDeepEqual": true,
+  "openingHistoricalPeople": 142,
+  "openingRecords": 145,
+  "scenarios": [
+    {
+      "id": "han-wudi",
+      "openingPeople": 19,
+      "openingRecords": 19,
+      "people": [
+        {
+          "name": "刘彻",
+          "source": "assets/art/portraits/unique/han-wudi/emperor-01.webp"
+        },
+        {
+          "name": "窦婴",
+          "source": "assets/art/portraits/unique/han-wudi/official-01.webp"
+        },
+        {
+          "name": "田蚡",
+          "source": "assets/art/portraits/unique/han-wudi/official-02.webp"
+        },
+        {
+          "name": "赵绾",
+          "source": "assets/art/portraits/unique/han-wudi/official-03.webp"
+        },
+        {
+          "name": "王臧",
+          "source": "assets/art/portraits/unique/han-wudi/official-04.webp"
+        },
+        {
+          "name": "董仲舒",
+          "source": "assets/art/portraits/unique/han-wudi/official-05.webp"
+        },
+        {
+          "name": "汲黯",
+          "source": "assets/art/portraits/unique/han-wudi/official-06.webp"
+        },
+        {
+          "name": "韩安国",
+          "source": "assets/art/portraits/unique/han-wudi/official-07.webp"
+        },
+        {
+          "name": "李广",
+          "source": "assets/art/portraits/unique/han-wudi/official-08.webp"
+        },
+        {
+          "name": "程不识",
+          "source": "assets/art/portraits/unique/han-wudi/official-09.webp"
+        },
+        {
+          "name": "庄助",
+          "source": "assets/art/portraits/unique/han-wudi/official-10.webp"
+        },
+        {
+          "name": "陈阿娇",
+          "source": "assets/art/portraits/unique/han-wudi/consort-01.webp"
+        },
+        {
+          "name": "卫子夫",
+          "source": "assets/art/portraits/unique/han-wudi/consort-02.webp"
+        },
+        {
+          "name": "军臣单于",
+          "source": "assets/art/portraits/unique/han-wudi/foreign-01.webp"
+        },
+        {
+          "name": "猎骄靡",
+          "source": "assets/art/portraits/unique/han-wudi/foreign-02.webp"
+        },
+        {
+          "name": "赵佗",
+          "source": "assets/art/portraits/unique/han-wudi/foreign-03.webp"
+        },
+        {
+          "name": "驺郢",
+          "source": "assets/art/portraits/unique/han-wudi/foreign-04.webp"
+        },
+        {
+          "name": "驺望",
+          "source": "assets/art/portraits/unique/han-wudi/foreign-05.webp"
+        },
+        {
+          "name": "窦太皇太后",
+          "source": "assets/art/portraits/unique/han-wudi/dowager-01.webp"
+        }
+      ]
+    },
+    {
+      "id": "tang-taizong",
+      "openingPeople": 25,
+      "openingRecords": 25,
+      "people": [
+        {
+          "name": "李世民",
+          "source": "assets/art/portraits/unique/tang-taizong/emperor-01.webp"
+        },
+        {
+          "name": "房玄龄",
+          "source": "assets/art/portraits/unique/tang-taizong/official-01.webp"
+        },
+        {
+          "name": "杜如晦",
+          "source": "assets/art/portraits/unique/tang-taizong/official-02.webp"
+        },
+        {
+          "name": "长孙无忌",
+          "source": "assets/art/portraits/unique/tang-taizong/official-03.webp"
+        },
+        {
+          "name": "魏征",
+          "source": "assets/art/portraits/unique/tang-taizong/official-04.webp"
+        },
+        {
+          "name": "王珪",
+          "source": "assets/art/portraits/unique/tang-taizong/official-05.webp"
+        },
+        {
+          "name": "萧瑀",
+          "source": "assets/art/portraits/unique/tang-taizong/official-06.webp"
+        },
+        {
+          "name": "封德彝",
+          "source": "assets/art/portraits/unique/tang-taizong/official-07.webp"
+        },
+        {
+          "name": "高士廉",
+          "source": "assets/art/portraits/unique/tang-taizong/official-08.webp"
+        },
+        {
+          "name": "戴胄",
+          "source": "assets/art/portraits/unique/tang-taizong/official-09.webp"
+        },
+        {
+          "name": "尉迟敬德",
+          "source": "assets/art/portraits/unique/tang-taizong/official-10.webp"
+        },
+        {
+          "name": "李靖",
+          "source": "assets/art/portraits/unique/tang-taizong/official-11.webp"
+        },
+        {
+          "name": "李勣",
+          "source": "assets/art/portraits/unique/tang-taizong/official-12.webp"
+        },
+        {
+          "name": "李孝恭",
+          "source": "assets/art/portraits/unique/tang-taizong/official-13.webp"
+        },
+        {
+          "name": "长孙氏",
+          "source": "assets/art/portraits/unique/tang-taizong/consort-01.webp"
+        },
+        {
+          "name": "杨氏",
+          "source": "assets/art/portraits/unique/tang-taizong/consort-02.webp"
+        },
+        {
+          "name": "韦珪",
+          "source": "assets/art/portraits/unique/tang-taizong/consort-03.webp"
+        },
+        {
+          "name": "李承乾",
+          "source": "assets/art/portraits/unique/tang-taizong/child-01.webp"
+        },
+        {
+          "name": "李泰",
+          "source": "assets/art/portraits/unique/tang-taizong/child-02.webp"
+        },
+        {
+          "name": "李恪",
+          "source": "assets/art/portraits/unique/tang-taizong/child-03.webp"
+        },
+        {
+          "name": "颉利可汗",
+          "source": "assets/art/portraits/unique/tang-taizong/foreign-01.webp"
+        },
+        {
+          "name": "伏允",
+          "source": "assets/art/portraits/unique/tang-taizong/foreign-02.webp"
+        },
+        {
+          "name": "高建武",
+          "source": "assets/art/portraits/unique/tang-taizong/foreign-03.webp"
+        },
+        {
+          "name": "扶余璋",
+          "source": "assets/art/portraits/unique/tang-taizong/foreign-04.webp"
+        },
+        {
+          "name": "夷男",
+          "source": "assets/art/portraits/unique/tang-taizong/foreign-05.webp"
+        }
+      ]
+    },
+    {
+      "id": "song-renzong",
+      "openingPeople": 17,
+      "openingRecords": 18,
+      "people": [
+        {
+          "name": "赵祯",
+          "source": "assets/art/portraits/unique/song-renzong/emperor-01.webp"
+        },
+        {
+          "name": "丁谓",
+          "source": "assets/art/portraits/unique/song-renzong/official-01.webp"
+        },
+        {
+          "name": "王曾",
+          "source": "assets/art/portraits/unique/song-renzong/official-02.webp"
+        },
+        {
+          "name": "吕夷简",
+          "source": "assets/art/portraits/unique/song-renzong/official-03.webp"
+        },
+        {
+          "name": "晏殊",
+          "source": "assets/art/portraits/unique/song-renzong/official-04.webp"
+        },
+        {
+          "name": "鲁宗道",
+          "source": "assets/art/portraits/unique/song-renzong/official-05.webp"
+        },
+        {
+          "name": "曹利用",
+          "source": "assets/art/portraits/unique/song-renzong/official-06.webp"
+        },
+        {
+          "name": "钱惟演",
+          "source": "assets/art/portraits/unique/song-renzong/official-07.webp"
+        },
+        {
+          "name": "张士逊",
+          "source": "assets/art/portraits/unique/song-renzong/official-08.webp"
+        },
+        {
+          "name": "雷允恭",
+          "source": "assets/art/portraits/unique/song-renzong/official-09.webp"
+        },
+        {
+          "name": "范仲淹",
+          "source": "assets/art/portraits/unique/song-renzong/official-10.webp"
+        },
+        {
+          "name": "赵祯",
+          "source": "assets/art/portraits/unique/song-renzong/emperor-01.webp"
+        },
+        {
+          "name": "耶律隆绪",
+          "source": "assets/art/portraits/unique/song-renzong/foreign-01.webp"
+        },
+        {
+          "name": "李德明",
+          "source": "assets/art/portraits/unique/song-renzong/foreign-02.webp"
+        },
+        {
+          "name": "唃厮啰",
+          "source": "assets/art/portraits/unique/song-renzong/foreign-03.webp"
+        },
+        {
+          "name": "李公蕴",
+          "source": "assets/art/portraits/unique/song-renzong/foreign-04.webp"
+        },
+        {
+          "name": "王询",
+          "source": "assets/art/portraits/unique/song-renzong/foreign-05.webp"
+        },
+        {
+          "name": "刘太后",
+          "source": "assets/art/portraits/unique/song-renzong/dowager-01.webp"
+        }
+      ]
+    },
+    {
+      "id": "ming-wanli",
+      "openingPeople": 19,
+      "openingRecords": 20,
+      "people": [
+        {
+          "name": "朱翊钧",
+          "source": "assets/art/portraits/unique/ming-wanli/emperor-01.webp"
+        },
+        {
+          "name": "张居正",
+          "source": "assets/art/portraits/unique/ming-wanli/official-01.webp"
+        },
+        {
+          "name": "冯保",
+          "source": "assets/art/portraits/unique/ming-wanli/official-02.webp"
+        },
+        {
+          "name": "吕调阳",
+          "source": "assets/art/portraits/unique/ming-wanli/official-03.webp"
+        },
+        {
+          "name": "张四维",
+          "source": "assets/art/portraits/unique/ming-wanli/official-04.webp"
+        },
+        {
+          "name": "申时行",
+          "source": "assets/art/portraits/unique/ming-wanli/official-05.webp"
+        },
+        {
+          "name": "王锡爵",
+          "source": "assets/art/portraits/unique/ming-wanli/official-06.webp"
+        },
+        {
+          "name": "王国光",
+          "source": "assets/art/portraits/unique/ming-wanli/official-07.webp"
+        },
+        {
+          "name": "杨博",
+          "source": "assets/art/portraits/unique/ming-wanli/official-08.webp"
+        },
+        {
+          "name": "谭纶",
+          "source": "assets/art/portraits/unique/ming-wanli/official-09.webp"
+        },
+        {
+          "name": "潘季驯",
+          "source": "assets/art/portraits/unique/ming-wanli/official-10.webp"
+        },
+        {
+          "name": "戚继光",
+          "source": "assets/art/portraits/unique/ming-wanli/official-11.webp"
+        },
+        {
+          "name": "李成梁",
+          "source": "assets/art/portraits/unique/ming-wanli/official-12.webp"
+        },
+        {
+          "name": "朱翊钧",
+          "source": "assets/art/portraits/unique/ming-wanli/emperor-01.webp"
+        },
+        {
+          "name": "俺答汗",
+          "source": "assets/art/portraits/unique/ming-wanli/foreign-01.webp"
+        },
+        {
+          "name": "王杲",
+          "source": "assets/art/portraits/unique/ming-wanli/foreign-02.webp"
+        },
+        {
+          "name": "李昖",
+          "source": "assets/art/portraits/unique/ming-wanli/foreign-03.webp"
+        },
+        {
+          "name": "莫茂洽",
+          "source": "assets/art/portraits/unique/ming-wanli/foreign-04.webp"
+        },
+        {
+          "name": "织田信长",
+          "source": "assets/art/portraits/unique/ming-wanli/foreign-05.webp"
+        },
+        {
+          "name": "李太后",
+          "source": "assets/art/portraits/unique/ming-wanli/dowager-01.webp"
+        }
+      ]
+    },
+    {
+      "id": "ming-chongzhen",
+      "openingPeople": 19,
+      "openingRecords": 19,
+      "people": [
+        {
+          "name": "朱由检",
+          "source": "assets/art/portraits/unique/ming-chongzhen/emperor-01.webp"
+        },
+        {
+          "name": "魏忠贤",
+          "source": "assets/art/portraits/unique/ming-chongzhen/official-01.webp"
+        },
+        {
+          "name": "崔呈秀",
+          "source": "assets/art/portraits/unique/ming-chongzhen/official-02.webp"
+        },
+        {
+          "name": "黄立极",
+          "source": "assets/art/portraits/unique/ming-chongzhen/official-03.webp"
+        },
+        {
+          "name": "温体仁",
+          "source": "assets/art/portraits/unique/ming-chongzhen/official-04.webp"
+        },
+        {
+          "name": "周延儒",
+          "source": "assets/art/portraits/unique/ming-chongzhen/official-05.webp"
+        },
+        {
+          "name": "毕自严",
+          "source": "assets/art/portraits/unique/ming-chongzhen/official-06.webp"
+        },
+        {
+          "name": "王永光",
+          "source": "assets/art/portraits/unique/ming-chongzhen/official-07.webp"
+        },
+        {
+          "name": "袁崇焕",
+          "source": "assets/art/portraits/unique/ming-chongzhen/official-08.webp"
+        },
+        {
+          "name": "洪承畴",
+          "source": "assets/art/portraits/unique/ming-chongzhen/official-09.webp"
+        },
+        {
+          "name": "卢象升",
+          "source": "assets/art/portraits/unique/ming-chongzhen/official-10.webp"
+        },
+        {
+          "name": "周氏",
+          "source": "assets/art/portraits/unique/ming-chongzhen/consort-01.webp"
+        },
+        {
+          "name": "田氏",
+          "source": "assets/art/portraits/unique/ming-chongzhen/consort-02.webp"
+        },
+        {
+          "name": "袁氏",
+          "source": "assets/art/portraits/unique/ming-chongzhen/consort-03.webp"
+        },
+        {
+          "name": "林丹汗",
+          "source": "assets/art/portraits/unique/ming-chongzhen/foreign-01.webp"
+        },
+        {
+          "name": "皇太极",
+          "source": "assets/art/portraits/unique/ming-chongzhen/foreign-02.webp"
+        },
+        {
+          "name": "李倧",
+          "source": "assets/art/portraits/unique/ming-chongzhen/foreign-03.webp"
+        },
+        {
+          "name": "德川家光",
+          "source": "assets/art/portraits/unique/ming-chongzhen/foreign-04.webp"
+        },
+        {
+          "name": "懿安皇后",
+          "source": "assets/art/portraits/unique/ming-chongzhen/dowager-01.webp"
+        }
+      ]
+    },
+    {
+      "id": "qing-kangxi",
+      "openingPeople": 17,
+      "openingRecords": 18,
+      "people": [
+        {
+          "name": "玄烨",
+          "source": "assets/art/portraits/unique/qing-kangxi/emperor-01.webp"
+        },
+        {
+          "name": "索尼",
+          "source": "assets/art/portraits/unique/qing-kangxi/official-01.webp"
+        },
+        {
+          "name": "苏克萨哈",
+          "source": "assets/art/portraits/unique/qing-kangxi/official-02.webp"
+        },
+        {
+          "name": "遏必隆",
+          "source": "assets/art/portraits/unique/qing-kangxi/official-03.webp"
+        },
+        {
+          "name": "鳌拜",
+          "source": "assets/art/portraits/unique/qing-kangxi/official-04.webp"
+        },
+        {
+          "name": "索额图",
+          "source": "assets/art/portraits/unique/qing-kangxi/official-05.webp"
+        },
+        {
+          "name": "明珠",
+          "source": "assets/art/portraits/unique/qing-kangxi/official-06.webp"
+        },
+        {
+          "name": "熊赐履",
+          "source": "assets/art/portraits/unique/qing-kangxi/official-07.webp"
+        },
+        {
+          "name": "魏裔介",
+          "source": "assets/art/portraits/unique/qing-kangxi/official-08.webp"
+        },
+        {
+          "name": "汤若望",
+          "source": "assets/art/portraits/unique/qing-kangxi/official-09.webp"
+        },
+        {
+          "name": "杰书",
+          "source": "assets/art/portraits/unique/qing-kangxi/official-10.webp"
+        },
+        {
+          "name": "玄烨",
+          "source": "assets/art/portraits/unique/qing-kangxi/emperor-01.webp"
+        },
+        {
+          "name": "阿列克谢",
+          "source": "assets/art/portraits/unique/qing-kangxi/foreign-01.webp"
+        },
+        {
+          "name": "僧格",
+          "source": "assets/art/portraits/unique/qing-kangxi/foreign-02.webp"
+        },
+        {
+          "name": "吴三桂",
+          "source": "assets/art/portraits/unique/qing-kangxi/foreign-03.webp"
+        },
+        {
+          "name": "郑成功",
+          "source": "assets/art/portraits/unique/qing-kangxi/foreign-04.webp"
+        },
+        {
+          "name": "李棩",
+          "source": "assets/art/portraits/unique/qing-kangxi/foreign-05.webp"
+        },
+        {
+          "name": "孝庄太皇太后",
+          "source": "assets/art/portraits/unique/qing-kangxi/dowager-01.webp"
+        }
+      ]
+    },
+    {
+      "id": "qing-yongzheng",
+      "openingPeople": 26,
+      "openingRecords": 26,
+      "people": [
+        {
+          "name": "胤禛",
+          "source": "assets/art/portraits/unique/qing-yongzheng/emperor-01-old.webp"
+        },
+        {
+          "name": "允禩",
+          "source": "assets/art/portraits/unique/qing-yongzheng/official-01.webp"
+        },
+        {
+          "name": "允祥",
+          "source": "assets/art/portraits/unique/qing-yongzheng/official-02.webp"
+        },
+        {
+          "name": "马齐",
+          "source": "assets/art/portraits/unique/qing-yongzheng/official-03.webp"
+        },
+        {
+          "name": "隆科多",
+          "source": "assets/art/portraits/unique/qing-yongzheng/official-04.webp"
+        },
+        {
+          "name": "张廷玉",
+          "source": "assets/art/portraits/unique/qing-yongzheng/official-05.webp"
+        },
+        {
+          "name": "年羹尧",
+          "source": "assets/art/portraits/unique/qing-yongzheng/official-06.webp"
+        },
+        {
+          "name": "鄂尔泰",
+          "source": "assets/art/portraits/unique/qing-yongzheng/official-07.webp"
+        },
+        {
+          "name": "田文镜",
+          "source": "assets/art/portraits/unique/qing-yongzheng/official-08.webp"
+        },
+        {
+          "name": "李卫",
+          "source": "assets/art/portraits/unique/qing-yongzheng/official-09.webp"
+        },
+        {
+          "name": "允禟",
+          "source": "assets/art/portraits/unique/qing-yongzheng/official-10.webp"
+        },
+        {
+          "name": "允禵",
+          "source": "assets/art/portraits/unique/qing-yongzheng/official-11.webp"
+        },
+        {
+          "name": "岳钟琪",
+          "source": "assets/art/portraits/unique/qing-yongzheng/official-12.webp"
+        },
+        {
+          "name": "乌拉那拉氏",
+          "source": "assets/art/portraits/unique/qing-yongzheng/consort-01.webp"
+        },
+        {
+          "name": "年氏",
+          "source": "assets/art/portraits/unique/qing-yongzheng/consort-02.webp"
+        },
+        {
+          "name": "钮祜禄氏",
+          "source": "assets/art/portraits/unique/qing-yongzheng/consort-03.webp"
+        },
+        {
+          "name": "李氏",
+          "source": "assets/art/portraits/unique/qing-yongzheng/consort-04.webp"
+        },
+        {
+          "name": "弘时",
+          "source": "assets/art/portraits/unique/qing-yongzheng/child-01.webp"
+        },
+        {
+          "name": "弘历",
+          "source": "assets/art/portraits/unique/qing-yongzheng/child-02.webp"
+        },
+        {
+          "name": "福惠",
+          "source": "assets/art/portraits/unique/qing-yongzheng/child-03.webp"
+        },
+        {
+          "name": "彼得一世",
+          "source": "assets/art/portraits/unique/qing-yongzheng/foreign-01.webp"
+        },
+        {
+          "name": "策妄阿拉布坦",
+          "source": "assets/art/portraits/unique/qing-yongzheng/foreign-02.webp"
+        },
+        {
+          "name": "罗卜藏丹津",
+          "source": "assets/art/portraits/unique/qing-yongzheng/foreign-03.webp"
+        },
+        {
+          "name": "黎维祹",
+          "source": "assets/art/portraits/unique/qing-yongzheng/foreign-04.webp"
+        },
+        {
+          "name": "李昀",
+          "source": "assets/art/portraits/unique/qing-yongzheng/foreign-05.webp"
+        },
+        {
+          "name": "仁寿皇太后",
+          "source": "assets/art/portraits/unique/qing-yongzheng/dowager-01.webp"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "tests": 609,
+  "passed": 609,
+  "failed": 0,
+  "durationMs": 44782.341125,
+  "simulation": {
+    "years": 200,
+    "turns": 7200,
+    "reigns": 6,
+    "finalTreasury": 2040,
+    "modelCalls": 0
+  },
+  "htmlBytes": 854145,
+  "htmlBudget": 860000,
+  "htmlSHA256": "70948580b2d7bfd9086d5a8c572cb38240a3a480ae6dcdd2a163626b7822b1cc",
+  "scriptBytes": 793170,
+  "saveVersion": 25,
+  "unchangedCoreLlmCssFiles": 65,
+  "mainBaseline": "dbffc28",
+  "previousWebPFilesUnchanged": 337,
+  "otherHanToneFilesUnchanged": 3
+}

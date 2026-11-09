@@ -1,0 +1,23 @@
+{
+  "viewport": 1280,
+  "sampling": "fresh reload after viewport settled; no other browser requests",
+  "artRequestCount": 3,
+  "artRequests": [
+    {
+      "time": "2026-11-09T15:14:27.144Z",
+      "path": "/assets/art/scenes/accession-1440.webp",
+      "offline": false
+    },
+    {
+      "time": "2026-11-09T15:14:27.144Z",
+      "path": "/assets/art/portraits/unique/han-wudi/official-07.webp",
+      "offline": false
+    },
+    {
+      "time": "2026-11-09T15:14:27.145Z",
+      "path": "/assets/art/portraits/han/official-mature-09.webp",
+      "offline": false
+    }
+  ],
+  "allRequestCount": 4
+}
