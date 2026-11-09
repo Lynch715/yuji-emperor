@@ -101,8 +101,8 @@ test('场景按行动和地点取图，章节可选显示元数据不改结算�
  assert.equal(JSON.stringify(f),raw);assert.deepEqual(art.nation,done.nation);assert.deepEqual(withChapterArt(art,f),art);
  assert.equal(sceneHTML('不存在'), '');
 });
-test('唐明清五剧本全部开局人物优先取专属像，40岁切换老年像，同名不串剧本',()=>{
- for(const id of ['tang-taizong','ming-wanli','ming-chongzhen','qing-kangxi','qing-yongzheng']){
+test('唐宋明清六剧本全部开局人物优先取专属像，40岁切换老年像，同名不串剧本',()=>{
+ for(const id of ['tang-taizong','song-renzong','ming-wanli','ming-chongzhen','qing-kangxi','qing-yongzheng']){
   const sc=SCENARIOS.find(x=>x.id===id),s=initialTurn(applyScenario(createState({seed:'专属取图'}),id)),before=JSON.stringify(s);
   const base=`assets/art/portraits/unique/${id}/emperor-01.webp`,old=`assets/art/portraits/unique/${id}/emperor-01-old.webp`;
   assert.equal(portraitSource(s,s.emperor),s.emperor.age>=40?old:base);
@@ -120,7 +120,7 @@ test('清单仅引用已导出的WebP，尺寸体积预算与文件一一对应'
   ...Object.values({...ART_SCENES,...ART_HALLS}).flatMap(s=>[s.src,s.small])].filter(Boolean);
  const actual=[];function walk(dir){for(const e of readdirSync(dir,{withFileTypes:true})){const path=dir+'/'+e.name;if(e.isDirectory())walk(path);else actual.push(path);}}
  walk('assets/art');assert.deepEqual([...new Set(paths)].sort(),actual.sort());
- assert.equal(actual.length,290,'一期145文件、二期79张、唐制62张、宋制定调4张；汉制和宋制其余槽位仍为空位');
+ assert.equal(actual.length,337,'一期145文件、二期79张、唐制62张、宋制51张；汉制仍为空位');
  assert.ok(actual.reduce((sum,path)=>sum+statSync(path).size,0)<=12000000);
  for(const path of actual){assert.match(path,/\.webp$/);assert.ok(statSync(path).size<=(path.includes('/portraits/')?30000:path.includes('/halls/')?100000:path.endsWith('-720.webp')?60000:150000));}
 });

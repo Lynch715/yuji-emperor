@@ -1,6 +1,82 @@
 # 美术三期 · 唐、宋验收
 
-## 三期第二批 · 宋制定调第1步 · 2026-11-09（等待玩家确认）
+## 三期第二批 · 宋制全量完成 · 2026-11-09
+
+宋制画风已获玩家确认。本轮补齐其余47张，并按反馈替换青年皇帝池01；当前**51／51张（池33＋宋仁宗专属18）**。分支`feat/art-phase3-song`；主线基准`608a92c`，定调基准`d3ea61b`。已更新[草稿PR #8](https://github.com/Lynch715/yuji-emperor/pull/8)，**未合并、未发布Pages**。本页唐制发布历史与宋制第1步记录保留在下方。
+
+### 服饰、年龄与完整对照
+
+- 宋制文官均为圆领公服、无补子与长而硬的水平直脚幞头；和唐软垂脚、明短椭圆展角、清顶戴朝珠分开。池内通过脸型、须形、眉眼、颈肩、肤色与神情区分；没有靠换袍色冒充不同的脸。
+- 皇帝青池01改为**28岁成年男子、赭黄圆领袍、明显团龙纹**；63岁老年池同制。赵祯开局12岁另用本人少年专属，50岁老年专属保留本人眼鼻口线索，赭黄团龙并有灰鬓须；没有把成年池套给少年赵祯。
+- 正位为龙凤花钗冠、额头与双颊白珍珠妆，常位为低髻小花冠、直领对襟褙子。新常位02／05初稿的上竖发环已改成低后／侧髻，保持各自脸型与体态；五张常位都是二十多岁年轻成年女子，无白发老态。皇子少年用总角、圆领袍；公主褙子与小花冠，男女轮廓明确。
+- 雷允恭按无须、面白的40岁内侍；刘太后为54岁成熟妇人绘制档、花钗冠珍珠妆。五位外邦分别用契丹毡冠、党项毡帽、吐蕃缠头皮袍、交趾缠头短衣、高丽短上折幞头宽袍，与宋长直脚分开，不丑化。
+
+史事／性格／秘密取自scenarios.js与原典索引；未明载的五官与痣等是区分人物的美术创作，外邦与太后年龄是绘制档，不写入游戏数值。全部实际提示词、长相卡与修订原因见[ART-PROMPTS](ART-PROMPTS.md)。
+
+![皇帝池与赵祯年龄、袍服对照](art-phase3-song-review/final/emperor-age-and-costume.png)
+
+![宋池33张完整图与44px](art-phase3-song-review/final/song-pool-full.png)
+
+![宋池33张44px总条](art-phase3-song-review/final/song-pool-44.png)
+
+![宋仁宗18张完整专属与44px](art-phase3-song-review/final/song-renzong-full.png)
+
+![宋仁宗完整18张44px条](art-phase3-song-review/final/song-renzong-44.png)
+
+本轮完整44px人工检查未见明显撞脸；赵祯少年／老年是同一人的年龄变体。池内74对长相卡、专属不同人物152对均至少四维不同，脸型或须形／发际线不同；文字维度检查与上述实图检查结合，不以服饰或卡片字符串代替辨脸。全51张25左／26右，池16左／17右、专属9左／9右。[最终长相卡](art-phase3-song-review/final/face-cards.json)、[池卡及构图检查](art-phase3-song-review/final/asset-checks.json)、[专属卡逐对检查](art-phase3-song-review/final/unique-card-pairs.json)。
+
+分池原尺寸44px条也存`qa/art/`，仓库镜像：
+
+[文官壮](art-phase3-song-review/final/pools/song-official-mature-44.png) · [文官老](art-phase3-song-review/final/pools/song-official-old-44.png) · [武将](art-phase3-song-review/final/pools/song-general-all-44.png) · [宦官](art-phase3-song-review/final/pools/song-eunuch-all-44.png) · [正位](art-phase3-song-review/final/pools/song-consort-high-44.png) · [常位](art-phase3-song-review/final/pools/song-consort-regular-44.png) · [皇帝青](art-phase3-song-review/final/pools/song-emperor-young-44.png) · [皇帝老](art-phase3-song-review/final/pools/song-emperor-old-44.png) · [皇子少](art-phase3-song-review/final/pools/song-prince-teen-44.png) · [皇子成](art-phase3-song-review/final/pools/song-prince-adult-44.png) · [公主少](art-phase3-song-review/final/pools/song-princess-teen-44.png) · [公主成](art-phase3-song-review/final/pools/song-princess-adult-44.png)。
+
+### 生成、清单和体积
+
+全部使用内置imagegen。池图先写卡、按同池2×2出稿，尾组空格不导出；专属单张，赵祯老年另传本人少年原稿。自皇帝池按反馈修订后，每次都同时传入一期四张完整板＋更新后的宋制四张完整板；编辑另传本人目标，保留八幅参考。构图不合格稿件单独保身份校正，宽松原稿18%／42%只是中间步骤，最终导出仍严格原线。导出只裁切、等比缩放、WebP编码，不手工修脸、调色或补画。原图PNG与全部修订仅本机`art-source/phase3-song/`。
+
+| 范围 | 实际张数 | 字节 |
+| --- | ---: | ---: |
+| 宋制池图 | 33 | 见逐文件记录 |
+| 宋仁宗专属 | 18（17位开局人物＋赵祯老年） | 见逐文件记录 |
+| 本批宋制合计 | **51** | **410,192** |
+| assets/art全目录 | **337个WebP** | **4,619,464（约4.62MB）** |
+
+全部400×500／q75，最大16,326字节，均≤30KB；完整帽冠顶10.00–14.00%，双眼36.23–39.99%，由Vision探针结合全图人工检查。总目录低于12MB。前批286个WebP与明清唐清单、场景／殿阁／焦点逐字节或逐数据项保持；三张非皇帝宋制定调样张也与d3ea61b逐字节相同。相对定调提交新增47个WebP，只替换青年皇帝池01。[完整资产／散列记录](art-phase3-song-review/final/asset-checks.json)。
+
+宋池33槽与专属18槽全部填齐；宋仁宗**17位开局历史人物均优先取到本剧本专属像**，包括12岁皇帝、10位大臣、5位外邦、刘太后。王曾召见实际取official-02，雷允恭取official-09。清单与337个实际文件一一对应，其他朝代保持。为守原860,000字节HTML预算，清单仅折叠数据空白、每池／每个人物一行；未改取图规则或放宽预算。core、LLM、CSS、存档v25均未改。[清单及开局逐人检查](art-phase3-song-review/final/manifest-checks.json)。
+
+### 测试、浏览器、退回与预算
+
+**608／608测试、200年／7200旬无模型模拟、构建通过**。模拟命令`node scripts/simulate.mjs 200`，默认尽职策略，6朝、5次传承、无亡国，终局国库2040；HTML859,561字节，低于原860,000预算。既有专属取图测试增加宋仁宗，文件总数断言更新到337；没有改引擎测试门槛。[测试／模拟／构建摘要与散列](art-phase3-song-review/final/test-summary.json)。
+
+应用内浏览器在独立`http://127.0.0.1:4215`空卷第1卷开宋仁宗试读，只查看、打开王曾召见纸面，未垂询、未推进旬、模型请求0，不接触线上或私人旧卷。开局预览、朝堂、召见均完成1280／768／390截图；实际取图与400×500加载正常。手机行动头图112px、object-fit:cover，使用audience-720，裁切不露出画面边缘；召见像桌面200×250、手机120×150。360宽scrollWidth=360，无横向溢出。
+
+宋开局无后妃，女性池用生产palacePanel／portraitHTML／CSS的**只读投影**做三档后宫样式检查，虚构状态未写入开局或存档。另有51张完整图册，使用生产取图函数，153个纸面／卡片／圆章实例全部400×500加载，51个来源无失败。
+
+本机QA服务仅中断WebP连接，序章章节头／朝堂殿阁头图均naturalWidth0、opacity0，名册退回44×44首字圆章，文字和导航继续可用；恢复响应后加载正常。此项是**图片断连模拟，未做整机物理断网**。设置关闭插图并刷新后，所有图片无src、场景display:none，名册仍44px；最终恢复开启，视口恢复默认。游戏及投影warn／error为空。[浏览器实测读数](art-phase3-song-review/final/browser-results.json)。
+
+首屏预算用Lighthouse完成后独立刷新记录，1280宽宋试读卷0旬首屏共**5次图片请求／3个不同文件**，≤6。[请求明细](art-phase3-song-review/final/first-screen-budget.json)。按实际DOM前景与纸面／案面背景计算，标题、纸面正文与输入标签等最低**6.99:1**，均≥4.5；文字未直接压在插图上。[对比度读数](art-phase3-song-review/final/contrast-checks.json)。
+
+官方Lighthouse对生产朝堂、后宫投影、召见纸面各跑1280／390，共六次，可访问性均**100**。真实交互与截图均在应用内浏览器；无头Chrome只用于官方Lighthouse审计。原始报告本机保留，仓库记录版本、时间、失败项与原报告SHA-256。[Lighthouse六次摘要](art-phase3-song-review/final/lighthouse-summary.json)。
+
+### 三档截图
+
+| 视口 | 真实开局 | 真实朝堂 | 真实召见 | 后妃只读投影 |
+| --- | --- | --- | --- | --- |
+| 1280 | [开局](art-phase3-song-review/final/opening-1280.jpg) | [朝堂](art-phase3-song-review/final/court-1280.jpg) | [召见](art-phase3-song-review/final/paper-1280.jpg) | [后妃](art-phase3-song-review/final/harem-projection-1280.jpg) |
+| 768 | [开局](art-phase3-song-review/final/opening-768.jpg) | [朝堂](art-phase3-song-review/final/court-768.jpg) | [召见](art-phase3-song-review/final/paper-768.jpg) | [后妃](art-phase3-song-review/final/harem-projection-768.jpg) |
+| 390 | [开局](art-phase3-song-review/final/opening-390.jpg) | [朝堂](art-phase3-song-review/final/court-390.jpg) | [召见](art-phase3-song-review/final/paper-390.jpg) | [常位](art-phase3-song-review/final/harem-projection-390.jpg)／[正位](art-phase3-song-review/final/harem-projection-high-390.jpg) |
+
+![390真实召见与112px头图](art-phase3-song-review/final/paper-390.jpg)
+
+[断图序章](art-phase3-song-review/final/offline-prologue-390.jpg) · [断图朝堂](art-phase3-song-review/final/offline-court-390.jpg) · [关闭插图序章](art-phase3-song-review/final/illustrations-off-prologue-390.jpg) · [关闭插图名册](art-phase3-song-review/final/illustrations-off-court-390.jpg) · [360实际游戏](art-phase3-song-review/final/game-360.jpg) · [1280独立刷新首屏](art-phase3-song-review/final/first-screen-1280.jpg)。
+
+Pages线上验证留待玩家批准合并发布后执行；本分支未合并、未部署，没有把本地验收称为上线。
+
+
+<details>
+<summary>宋制定调第1步历史（已确认；原少年皇帝池后改成年）</summary>
+
+## 三期第二批 · 宋制定调第1步 · 2026-11-09（历史记录：已确认）
 
 从最新main／`608a92c`新建`feat/art-phase3-song`。本步完成**4／51张**：文官壮、常位后妃、正位后妃、皇帝青各01，全部接入池图清单；**尚余47张，必须等画风确认后再生成**。仅开草稿PR，不合并、不发布。
 
@@ -61,6 +137,8 @@
 剩余**29张池图＋18张专属像＝47张**尚未生成。确认后每池先补全长相卡，同池任意两张至少4维不同且脸型／胡须不同，后妃脸格外拉开；专属卡依据scenarios.js与史料，宋仁宗17位开局人物逐一接入专属，含12岁赵祯、雷允恭及5位外邦冠服，另画赵祯老年像；少年儿童男女必须明确。
 
 完整§9验收在批量完成后执行：全员专属取图、1280／768／390完整三档、资源断网退回、首屏请求预算、对比度与Lighthouse本步**尚未宣称通过**。本步已完成测试、200年模拟、构图体积、两档样张截图、360溢出、插图开关；未合并、未部署Pages。
+
+</details>
 
 ---
 

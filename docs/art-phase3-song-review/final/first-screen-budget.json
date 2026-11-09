@@ -1,0 +1,35 @@
+{
+  "surface": "1280宽宋仁宗试读卷0旬，Lighthouse结束后的独立刷新首屏",
+  "started": "2026-11-09T12:42:22.838Z",
+  "finished": "2026-11-09T12:42:23.260Z",
+  "imageRequests": 5,
+  "distinctImageFiles": 3,
+  "limit": 6,
+  "requests": [
+    {
+      "time": "2026-11-09T12:42:22.839Z",
+      "path": "/assets/art/portraits/song/official-mature-07.webp",
+      "offline": false
+    },
+    {
+      "time": "2026-11-09T12:42:22.839Z",
+      "path": "/assets/art/portraits/song/official-mature-08.webp",
+      "offline": false
+    },
+    {
+      "time": "2026-11-09T12:42:23.104Z",
+      "path": "/assets/art/scenes/accession-1440.webp",
+      "offline": false
+    },
+    {
+      "time": "2026-11-09T12:42:23.104Z",
+      "path": "/assets/art/portraits/song/official-mature-07.webp",
+      "offline": false
+    },
+    {
+      "time": "2026-11-09T12:42:23.104Z",
+      "path": "/assets/art/portraits/song/official-mature-08.webp",
+      "offline": false
+    }
+  ]
+}
