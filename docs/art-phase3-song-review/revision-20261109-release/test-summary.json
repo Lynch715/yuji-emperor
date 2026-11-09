@@ -1,0 +1,15 @@
+{
+  "testCommand": "npm test",
+  "tests": 608,
+  "passed": 608,
+  "failed": 0,
+  "exitCode": 0,
+  "testLogSha256": "e97c5f0f4abfede8100edbd465a454e45313e4e01ce30a873ed3ef9a1a4294e8",
+  "simulationCommand": "node scripts/simulate.mjs 200",
+  "simulationExitCode": 0,
+  "simulationFile": "simulation-200y.json",
+  "buildCommand": "npm run build",
+  "buildExitCode": 0,
+  "htmlBytes": 859561,
+  "htmlSha256": "ea60ef01bc5791456cea55ef110c752dcc49d6ec54a33393650d970cd4b54497"
+}

@@ -1,0 +1,81 @@
+{
+  "baseline": "608a92c",
+  "songPoolSlots": 33,
+  "songUniqueSlots": 18,
+  "allProduced": true,
+  "openingHistoricalPeople": [
+    {
+      "name": "赵祯",
+      "path": "assets/art/portraits/unique/song-renzong/emperor-01.webp"
+    },
+    {
+      "name": "丁谓",
+      "path": "assets/art/portraits/unique/song-renzong/official-01.webp"
+    },
+    {
+      "name": "王曾",
+      "path": "assets/art/portraits/unique/song-renzong/official-02.webp"
+    },
+    {
+      "name": "吕夷简",
+      "path": "assets/art/portraits/unique/song-renzong/official-03.webp"
+    },
+    {
+      "name": "晏殊",
+      "path": "assets/art/portraits/unique/song-renzong/official-04.webp"
+    },
+    {
+      "name": "鲁宗道",
+      "path": "assets/art/portraits/unique/song-renzong/official-05.webp"
+    },
+    {
+      "name": "曹利用",
+      "path": "assets/art/portraits/unique/song-renzong/official-06.webp"
+    },
+    {
+      "name": "钱惟演",
+      "path": "assets/art/portraits/unique/song-renzong/official-07.webp"
+    },
+    {
+      "name": "张士逊",
+      "path": "assets/art/portraits/unique/song-renzong/official-08.webp"
+    },
+    {
+      "name": "雷允恭",
+      "path": "assets/art/portraits/unique/song-renzong/official-09.webp"
+    },
+    {
+      "name": "范仲淹",
+      "path": "assets/art/portraits/unique/song-renzong/official-10.webp"
+    },
+    {
+      "name": "耶律隆绪",
+      "path": "assets/art/portraits/unique/song-renzong/foreign-01.webp"
+    },
+    {
+      "name": "李德明",
+      "path": "assets/art/portraits/unique/song-renzong/foreign-02.webp"
+    },
+    {
+      "name": "唃厮啰",
+      "path": "assets/art/portraits/unique/song-renzong/foreign-03.webp"
+    },
+    {
+      "name": "李公蕴",
+      "path": "assets/art/portraits/unique/song-renzong/foreign-04.webp"
+    },
+    {
+      "name": "王询",
+      "path": "assets/art/portraits/unique/song-renzong/foreign-05.webp"
+    },
+    {
+      "name": "刘太后",
+      "path": "assets/art/portraits/unique/song-renzong/dowager-01.webp"
+    }
+  ],
+  "otherDynastiesScenesHallsFocusUnchanged": true,
+  "coreLLMRetrievalCSSUnchanged": true,
+  "saveVersion": 25,
+  "manifestFilesMatchActual": 337,
+  "compactWhitespaceReason": "保留每池／每个人物一行数据，减少清单空白以守原860000字节HTML预算；未放宽预算或改规则。"
+}

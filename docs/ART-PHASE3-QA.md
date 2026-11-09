@@ -1,5 +1,32 @@
 # 美术三期 · 唐、宋验收
 
+## 宋制合并前修订与发布验收 · 2026-11-09
+
+玩家已验收51张并授权本轮修订后合并发布。本轮恰好替换**刘太后、丁谓、钱惟演、范仲淹4张专属像**，其他333个WebP逐字节保持；HTML及core／LLM／UI共103个文件与已验收98cffe1相同，存档仍v25。合并与线上发布核验待执行，完成后在本节补记提交与部署证据。
+
+- 刘太后按开局53岁画成五十多岁的端庄妇人：补成熟面颊、眼周与口周，保持花钗冠、额头及双颊珍珠妆、紫袍与朝右姿态。
+- 丁谓56岁改为长宽方脸、花白短满须与明显银白鬓发；钱惟演45岁收窄菱形脸、三绺细长黑须与细长颈肩，神情文雅谨慎；范仲淹33岁改清瘦长脸、黑鬓无须、挺直颈肩与清癯刚直神情。三人不靠袍色区分，完整18张专属44px条已重新检查。
+
+![四张修订前后与44px对照](art-phase3-song-review/revision-20261109-release/revision-before-after.jpg)
+
+![宋仁宗完整18张专属44px条 · 本轮修订](art-phase3-song-review/revision-20261109-release/song-renzong-44.png)
+
+[完整专属图册](art-phase3-song-review/revision-20261109-release/song-renzong-full.png) · [当前长相卡](art-phase3-song-review/revision-20261109-release/face-cards.json) · [资产与构图](art-phase3-song-review/revision-20261109-release/asset-checks.json) · [替换范围与源码散列检查](art-phase3-song-review/revision-20261109-release/revision-scope.json)。四张用内置imagegen逐张修订，每次传入一期四图板＋宋制四图板＋本人现图，PNG只保留本机art-source；提示词已在生成前写入ART-PROMPTS。导出仅裁切、等比缩放与WebP编码，没有手工修脸或调色。
+
+宋制仍51张，共**411,388字节**；assets/art全目录**337个WebP／4,620,660字节（约4.62MB）**。全部400×500、q75、单张≤30KB；四张帽冠顶10.00–12.84%、双眼37.54–40.00%，不放宽§7构图线。前批286张和三张非皇帝宋制定调图保持；宋17位开局历史人物仍全部命中专属像，[取图逐人复验](art-phase3-song-review/revision-20261109-release/manifest-checks.json)。
+
+本轮重新运行**608／608测试、200年／7200旬无模型模拟、构建**，均通过。[测试摘要](art-phase3-song-review/revision-20261109-release/test-summary.json) · [模拟完整结果](art-phase3-song-review/revision-20261109-release/simulation-200y.json)。本轮仅四张资产与文档改变，HTML和CSS逐字节保持，沿用下方全量验收中的断图／关闭插图、对比度6.99:1及六次官方Lighthouse可访问性100证据，没有声称重新跑Lighthouse。
+
+应用内浏览器在独立localhost4216空卷1做宋仁宗试读：实际朝堂丁谓与召见纸面加载正常，未垂询、未推进旬；四位真实历史人物的生产取图与CSS只读图册共12个实例全部400×500加载，1280纸面200×250、390纸面120×150、圆章44×44，390无横向溢出。手机行动头图实际340×112、audience-720／cover，裁切不露边。console warn／error为空。[本轮浏览器读数](art-phase3-song-review/revision-20261109-release/local-browser.json)。
+
+| 本轮截图 | 1280 | 390 |
+| --- | --- | --- |
+| 真实朝堂 | [朝堂](art-phase3-song-review/revision-20261109-release/local-court-1280.jpg) | [朝堂](art-phase3-song-review/revision-20261109-release/local-court-390.jpg) |
+| 四位历史人物生产取图只读图册 | [图册](art-phase3-song-review/revision-20261109-release/local-gallery-1280.jpg) | [图册](art-phase3-song-review/revision-20261109-release/local-gallery-390.jpg) |
+| 丁谓真实召见纸面 | — | [纸面](art-phase3-song-review/revision-20261109-release/local-paper-390.jpg) |
+
+以下为98cffe1全量验收时的历史记录，当时尚为草稿PR；本轮最终状态以本节发布记录为准。
+
 ## 三期第二批 · 宋制全量完成 · 2026-11-09
 
 宋制画风已获玩家确认。本轮补齐其余47张，并按反馈替换青年皇帝池01；当前**51／51张（池33＋宋仁宗专属18）**。分支`feat/art-phase3-song`；主线基准`608a92c`，定调基准`d3ea61b`。已更新[草稿PR #8](https://github.com/Lynch715/yuji-emperor/pull/8)，**未合并、未发布Pages**。本页唐制发布历史与宋制第1步记录保留在下方。

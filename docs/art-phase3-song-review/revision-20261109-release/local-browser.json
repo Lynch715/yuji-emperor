@@ -1,0 +1,219 @@
+{
+  "gallery1280": {
+    "images": [
+      {
+        "height": 250,
+        "naturalHeight": 500,
+        "naturalWidth": 400,
+        "src": "assets/art/portraits/unique/song-renzong/official-01.webp",
+        "width": 200
+      },
+      {
+        "height": 44,
+        "naturalHeight": 500,
+        "naturalWidth": 400,
+        "src": "assets/art/portraits/unique/song-renzong/official-01.webp",
+        "width": 44
+      },
+      {
+        "height": 80,
+        "naturalHeight": 500,
+        "naturalWidth": 400,
+        "src": "assets/art/portraits/unique/song-renzong/official-01.webp",
+        "width": 64
+      },
+      {
+        "height": 250,
+        "naturalHeight": 500,
+        "naturalWidth": 400,
+        "src": "assets/art/portraits/unique/song-renzong/official-07.webp",
+        "width": 200
+      },
+      {
+        "height": 44,
+        "naturalHeight": 500,
+        "naturalWidth": 400,
+        "src": "assets/art/portraits/unique/song-renzong/official-07.webp",
+        "width": 44
+      },
+      {
+        "height": 80,
+        "naturalHeight": 500,
+        "naturalWidth": 400,
+        "src": "assets/art/portraits/unique/song-renzong/official-07.webp",
+        "width": 64
+      },
+      {
+        "height": 250,
+        "naturalHeight": 500,
+        "naturalWidth": 400,
+        "src": "assets/art/portraits/unique/song-renzong/official-10.webp",
+        "width": 200
+      },
+      {
+        "height": 44,
+        "naturalHeight": 500,
+        "naturalWidth": 400,
+        "src": "assets/art/portraits/unique/song-renzong/official-10.webp",
+        "width": 44
+      },
+      {
+        "height": 80,
+        "naturalHeight": 500,
+        "naturalWidth": 400,
+        "src": "assets/art/portraits/unique/song-renzong/official-10.webp",
+        "width": 64
+      },
+      {
+        "height": 250,
+        "naturalHeight": 500,
+        "naturalWidth": 400,
+        "src": "assets/art/portraits/unique/song-renzong/dowager-01.webp",
+        "width": 200
+      },
+      {
+        "height": 44,
+        "naturalHeight": 500,
+        "naturalWidth": 400,
+        "src": "assets/art/portraits/unique/song-renzong/dowager-01.webp",
+        "width": 44
+      },
+      {
+        "height": 80,
+        "naturalHeight": 500,
+        "naturalWidth": 400,
+        "src": "assets/art/portraits/unique/song-renzong/dowager-01.webp",
+        "width": 64
+      }
+    ],
+    "scrollWidth": 1280,
+    "width": 1280
+  },
+  "gallery390": {
+    "images": [
+      {
+        "height": 150,
+        "naturalHeight": 500,
+        "naturalWidth": 400,
+        "src": "assets/art/portraits/unique/song-renzong/official-01.webp",
+        "width": 120
+      },
+      {
+        "height": 44,
+        "naturalHeight": 500,
+        "naturalWidth": 400,
+        "src": "assets/art/portraits/unique/song-renzong/official-01.webp",
+        "width": 44
+      },
+      {
+        "height": 80,
+        "naturalHeight": 500,
+        "naturalWidth": 400,
+        "src": "assets/art/portraits/unique/song-renzong/official-01.webp",
+        "width": 64
+      },
+      {
+        "height": 150,
+        "naturalHeight": 500,
+        "naturalWidth": 400,
+        "src": "assets/art/portraits/unique/song-renzong/official-07.webp",
+        "width": 120
+      },
+      {
+        "height": 44,
+        "naturalHeight": 500,
+        "naturalWidth": 400,
+        "src": "assets/art/portraits/unique/song-renzong/official-07.webp",
+        "width": 44
+      },
+      {
+        "height": 80,
+        "naturalHeight": 500,
+        "naturalWidth": 400,
+        "src": "assets/art/portraits/unique/song-renzong/official-07.webp",
+        "width": 64
+      },
+      {
+        "height": 150,
+        "naturalHeight": 500,
+        "naturalWidth": 400,
+        "src": "assets/art/portraits/unique/song-renzong/official-10.webp",
+        "width": 120
+      },
+      {
+        "height": 44,
+        "naturalHeight": 500,
+        "naturalWidth": 400,
+        "src": "assets/art/portraits/unique/song-renzong/official-10.webp",
+        "width": 44
+      },
+      {
+        "height": 80,
+        "naturalHeight": 500,
+        "naturalWidth": 400,
+        "src": "assets/art/portraits/unique/song-renzong/official-10.webp",
+        "width": 64
+      },
+      {
+        "height": 150,
+        "naturalHeight": 500,
+        "naturalWidth": 400,
+        "src": "assets/art/portraits/unique/song-renzong/dowager-01.webp",
+        "width": 120
+      },
+      {
+        "height": 44,
+        "naturalHeight": 500,
+        "naturalWidth": 400,
+        "src": "assets/art/portraits/unique/song-renzong/dowager-01.webp",
+        "width": 44
+      },
+      {
+        "height": 80,
+        "naturalHeight": 500,
+        "naturalWidth": 400,
+        "src": "assets/art/portraits/unique/song-renzong/dowager-01.webp",
+        "width": 64
+      }
+    ],
+    "scrollWidth": 390,
+    "width": 390
+  },
+  "localPaper": {
+    "images": [
+      {
+        "currentSrc": "http://127.0.0.1:4216/assets/art/scenes/audience-720.webp",
+        "natural": [
+          720,
+          405
+        ],
+        "objectFit": "cover",
+        "objectPosition": "50% 50%",
+        "size": [
+          340,
+          112
+        ],
+        "src": "assets/art/scenes/audience-1440.webp"
+      },
+      {
+        "currentSrc": "http://127.0.0.1:4216/assets/art/portraits/unique/song-renzong/official-01.webp",
+        "natural": [
+          400,
+          500
+        ],
+        "objectFit": "contain",
+        "objectPosition": "50% 50%",
+        "size": [
+          120,
+          150
+        ],
+        "src": "assets/art/portraits/unique/song-renzong/official-01.webp"
+      }
+    ],
+    "scrollWidth": 390,
+    "title": "召见 · 丁谓",
+    "width": 390
+  },
+  "logs": [],
+  "scope": "独立localhost4216空卷1，宋仁宗试读0旬；仅打开名册与召见纸面，未垂询、未推进旬。四人图册采用真实历史人物的生产取图和CSS只读投影，不读写存档。"
+}
