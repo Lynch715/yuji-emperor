@@ -98,14 +98,22 @@ test('汉郎中令下标8取文官、中书谒者令下标10取宦官，其他�
  assert.equal(han.court.posts[8].holder,wang.id);
  assert.equal(portraitPool(han,wang),'han/official-mature');
  assert.equal(JSON.stringify(han),before,'取图不修改人物或官职');
- for(const id of [null,...SCENARIOS.map(sc=>sc.id)])for(const index of [8,10]){
+ const cases=[
+  [null,'ming/eunuch-all','ming/official-mature'],
+  ['han-wudi','han/official-mature','han/eunuch-all'],
+  ['tang-taizong','tang/eunuch-all','tang/official-mature'],
+  ['song-renzong','song/eunuch-all','song/official-mature'],
+  ['ming-wanli','ming/eunuch-all','ming/official-mature'],
+  ['ming-chongzhen','ming/eunuch-all','ming/official-mature'],
+  ['qing-kangxi','qing/official-mature','qing/official-mature'],
+  ['qing-yongzheng','qing/official-mature','qing/official-mature'],
+ ];
+ for(const [id,at8,at10] of cases)for(const [index,expected] of [[8,at8],[10,at10]]){
   const s=id?initialTurn(applyScenario(createState({seed:'官制回归'}),id)):start('大晟官制');
-  const dynasty=SCENARIOS.find(sc=>sc.id===id)?.posts||'ming';
   const p={...s.court.officials[0],id:'art-post-probe',age:40,post:s.court.posts[index].id};
   s.court.officials=[p];for(const post of s.court.posts)post.holder=null;
   s.court.posts[index].holder=p.id;
-  const eunuch=dynasty==='han'?index===10:index===8&&dynasty!=='qing';
-  assert.equal(portraitPool(s,p),dynasty+'/'+(eunuch?'eunuch-all':'official-mature'),`${id||'大晟'}下标${index}`);
+  assert.equal(portraitPool(s,p),expected,`${id||'大晟'}下标${index}`);
  }
 });
 test('场景按行动和地点取图，章节可选显示元数据不改结算和预演',()=>{

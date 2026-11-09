@@ -16,5 +16,13 @@
   "htmlSha256": "1636edf31ee8e29cbd4897274ca2b30c515cba1e3ae4e3c123beac6e4576b832",
   "coreLlmCssUnchanged": true,
   "saveVersion": 25,
-  "fullStage3QA": "等待四张定调确认并完成剩余49张后执行，不复用宋制Lighthouse分数"
+  "fullStage3QA": "等待四张定调确认并完成剩余49张后执行，不复用宋制Lighthouse分数",
+  "finalTargetedRegression": {
+    "command": "node --test test/art.test.js",
+    "tests": 12,
+    "passed": 12,
+    "failed": 0,
+    "testLogSha256": "b2a8c2e5ccb070fc876a20cee2915f28e388ba67b63e0a1fb8c276e76dd48d80",
+    "expectedResults": "literal table for dynasty post8/post10, independent from implementation conditional"
+  }
 }
