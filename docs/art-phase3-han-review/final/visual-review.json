@@ -1,0 +1,28 @@
+{
+  "reviewedFullPortraits": 53,
+  "reviewedPoolPairs": 74,
+  "reviewedOpeningUniquePeople": 19,
+  "additionalSameIdentityVariant": "刘彻50岁，保留少年骨相与右颊痣",
+  "resolvedFlags": [
+    {
+      "id": "han/official-mature-02",
+      "resolution": "增加短宽矩形黑上唇须、粗平眉与男性眉骨，保留富态圆脸和友善神情"
+    },
+    {
+      "id": "han/official-mature-09",
+      "resolution": "保留无须、小菱形脸、29岁，增强男性眉骨、下颌与鬓发"
+    }
+  ],
+  "remainingFlags": [],
+  "framing": {
+    "headTop": [
+      0.1,
+      0.14
+    ],
+    "eyes": [
+      0.3601,
+      0.4
+    ]
+  },
+  "nonHanImagesChanged": 0
+}
