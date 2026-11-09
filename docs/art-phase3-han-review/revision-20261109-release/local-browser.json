@@ -1,0 +1,1054 @@
+{
+  "gallery-1280": {
+    "images": [
+      {
+        "display": [
+          200,
+          250
+        ],
+        "fit": "contain",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-01.webp"
+      },
+      {
+        "display": [
+          44,
+          44
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-01.webp"
+      },
+      {
+        "display": [
+          64,
+          80
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-01.webp"
+      },
+      {
+        "display": [
+          200,
+          250
+        ],
+        "fit": "contain",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-07.webp"
+      },
+      {
+        "display": [
+          44,
+          44
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-07.webp"
+      },
+      {
+        "display": [
+          64,
+          80
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-07.webp"
+      },
+      {
+        "display": [
+          200,
+          250
+        ],
+        "fit": "contain",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-05.webp"
+      },
+      {
+        "display": [
+          44,
+          44
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-05.webp"
+      },
+      {
+        "display": [
+          64,
+          80
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-05.webp"
+      },
+      {
+        "display": [
+          200,
+          250
+        ],
+        "fit": "contain",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-03.webp"
+      },
+      {
+        "display": [
+          44,
+          44
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-03.webp"
+      },
+      {
+        "display": [
+          64,
+          80
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-03.webp"
+      }
+    ],
+    "scrollWidth": 1280,
+    "width": 1280
+  },
+  "gallery-390": {
+    "images": [
+      {
+        "display": [
+          120,
+          150
+        ],
+        "fit": "contain",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-01.webp"
+      },
+      {
+        "display": [
+          44,
+          44
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-01.webp"
+      },
+      {
+        "display": [
+          64,
+          80
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-01.webp"
+      },
+      {
+        "display": [
+          120,
+          150
+        ],
+        "fit": "contain",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-07.webp"
+      },
+      {
+        "display": [
+          44,
+          44
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-07.webp"
+      },
+      {
+        "display": [
+          64,
+          80
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-07.webp"
+      },
+      {
+        "display": [
+          120,
+          150
+        ],
+        "fit": "contain",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-05.webp"
+      },
+      {
+        "display": [
+          44,
+          44
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-05.webp"
+      },
+      {
+        "display": [
+          64,
+          80
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-05.webp"
+      },
+      {
+        "display": [
+          120,
+          150
+        ],
+        "fit": "contain",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-03.webp"
+      },
+      {
+        "display": [
+          44,
+          44
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-03.webp"
+      },
+      {
+        "display": [
+          64,
+          80
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-03.webp"
+      }
+    ],
+    "scrollWidth": 390,
+    "width": 390
+  },
+  "gallery-360": {
+    "images": [
+      {
+        "display": [
+          120,
+          150
+        ],
+        "fit": "contain",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-01.webp"
+      },
+      {
+        "display": [
+          44,
+          44
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-01.webp"
+      },
+      {
+        "display": [
+          64,
+          80
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-01.webp"
+      },
+      {
+        "display": [
+          120,
+          150
+        ],
+        "fit": "contain",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-07.webp"
+      },
+      {
+        "display": [
+          44,
+          44
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-07.webp"
+      },
+      {
+        "display": [
+          64,
+          80
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-07.webp"
+      },
+      {
+        "display": [
+          120,
+          150
+        ],
+        "fit": "contain",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-05.webp"
+      },
+      {
+        "display": [
+          44,
+          44
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-05.webp"
+      },
+      {
+        "display": [
+          64,
+          80
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-05.webp"
+      },
+      {
+        "display": [
+          120,
+          150
+        ],
+        "fit": "contain",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-03.webp"
+      },
+      {
+        "display": [
+          44,
+          44
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-03.webp"
+      },
+      {
+        "display": [
+          64,
+          80
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-03.webp"
+      }
+    ],
+    "scrollWidth": 360,
+    "width": 360
+  },
+  "galleryLogs": [],
+  "court": {
+    "images": [
+      {
+        "display": [
+          508,
+          120
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          1280,
+          720
+        ],
+        "src": "assets/art/scenes/accession-1440.webp"
+      },
+      {
+        "display": [
+          28,
+          28
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-07.webp"
+      },
+      {
+        "display": [
+          28,
+          28
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/han/official-mature-09.webp"
+      },
+      {
+        "display": [
+          28,
+          28
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-07.webp"
+      },
+      {
+        "display": [
+          1142,
+          180
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          1280,
+          720
+        ],
+        "src": "assets/art/scenes/court-1440.webp"
+      },
+      {
+        "display": [
+          64,
+          80
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-01.webp"
+      },
+      {
+        "display": [
+          64,
+          80
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-02.webp"
+      },
+      {
+        "display": [
+          64,
+          80
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-03.webp"
+      },
+      {
+        "display": [
+          64,
+          80
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-04.webp"
+      },
+      {
+        "display": [
+          64,
+          80
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-05.webp"
+      },
+      {
+        "display": [
+          64,
+          80
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-06.webp"
+      },
+      {
+        "display": [
+          0,
+          80
+        ],
+        "fit": "cover",
+        "loaded": false,
+        "natural": [
+          0,
+          0
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-07.webp"
+      },
+      {
+        "display": [
+          64,
+          80
+        ],
+        "fit": "cover",
+        "loaded": false,
+        "natural": [
+          0,
+          0
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-08.webp"
+      },
+      {
+        "display": [
+          64,
+          80
+        ],
+        "fit": "cover",
+        "loaded": false,
+        "natural": [
+          0,
+          0
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-09.webp"
+      },
+      {
+        "display": [
+          64,
+          80
+        ],
+        "fit": "cover",
+        "loaded": false,
+        "natural": [
+          0,
+          0
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-10.webp"
+      },
+      {
+        "display": [
+          64,
+          80
+        ],
+        "fit": "cover",
+        "loaded": false,
+        "natural": [
+          0,
+          0
+        ],
+        "src": "assets/art/portraits/han/official-old-01.webp"
+      },
+      {
+        "display": [
+          64,
+          80
+        ],
+        "fit": "cover",
+        "loaded": false,
+        "natural": [
+          0,
+          0
+        ],
+        "src": "assets/art/portraits/han/official-old-02.webp"
+      },
+      {
+        "display": [
+          64,
+          80
+        ],
+        "fit": "cover",
+        "loaded": false,
+        "natural": [
+          0,
+          0
+        ],
+        "src": "assets/art/portraits/han/official-old-03.webp"
+      },
+      {
+        "display": [
+          64,
+          80
+        ],
+        "fit": "cover",
+        "loaded": false,
+        "natural": [
+          0,
+          0
+        ],
+        "src": "assets/art/portraits/han/official-mature-09.webp"
+      },
+      {
+        "display": [
+          64,
+          80
+        ],
+        "fit": "cover",
+        "loaded": false,
+        "natural": [
+          0,
+          0
+        ],
+        "src": "assets/art/portraits/han/general-all-03.webp"
+      },
+      {
+        "display": [
+          64,
+          80
+        ],
+        "fit": "cover",
+        "loaded": false,
+        "natural": [
+          0,
+          0
+        ],
+        "src": "assets/art/portraits/han/eunuch-all-01.webp"
+      },
+      {
+        "display": [
+          64,
+          80
+        ],
+        "fit": "cover",
+        "loaded": false,
+        "natural": [
+          0,
+          0
+        ],
+        "src": "assets/art/portraits/han/official-mature-10.webp"
+      },
+      {
+        "display": [
+          64,
+          80
+        ],
+        "fit": "cover",
+        "loaded": false,
+        "natural": [
+          0,
+          0
+        ],
+        "src": "assets/art/portraits/han/official-mature-08.webp"
+      },
+      {
+        "display": [
+          64,
+          80
+        ],
+        "fit": "cover",
+        "loaded": false,
+        "natural": [
+          0,
+          0
+        ],
+        "src": "assets/art/portraits/han/official-old-04.webp"
+      },
+      {
+        "display": [
+          64,
+          80
+        ],
+        "fit": "cover",
+        "loaded": false,
+        "natural": [
+          0,
+          0
+        ],
+        "src": "assets/art/portraits/han/official-mature-10.webp"
+      },
+      {
+        "display": [
+          64,
+          80
+        ],
+        "fit": "cover",
+        "loaded": false,
+        "natural": [
+          0,
+          0
+        ],
+        "src": "assets/art/portraits/han/official-mature-01.webp"
+      },
+      {
+        "display": [
+          64,
+          80
+        ],
+        "fit": "cover",
+        "loaded": false,
+        "natural": [
+          0,
+          0
+        ],
+        "src": "assets/art/portraits/han/official-mature-02.webp"
+      },
+      {
+        "display": [
+          64,
+          80
+        ],
+        "fit": "cover",
+        "loaded": false,
+        "natural": [
+          0,
+          0
+        ],
+        "src": "assets/art/portraits/han/official-mature-03.webp"
+      },
+      {
+        "display": [
+          64,
+          80
+        ],
+        "fit": "cover",
+        "loaded": false,
+        "natural": [
+          0,
+          0
+        ],
+        "src": "assets/art/portraits/han/official-old-05.webp"
+      },
+      {
+        "display": [
+          64,
+          80
+        ],
+        "fit": "cover",
+        "loaded": false,
+        "natural": [
+          0,
+          0
+        ],
+        "src": "assets/art/portraits/han/official-mature-05.webp"
+      }
+    ],
+    "scrollWidth": 1280,
+    "width": 1280
+  },
+  "douPaper": {
+    "images": [
+      {
+        "display": [
+          318,
+          96
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          720,
+          405
+        ],
+        "src": "assets/art/scenes/accession-1440.webp"
+      },
+      {
+        "display": [
+          0,
+          0
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-07.webp"
+      },
+      {
+        "display": [
+          0,
+          0
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/han/official-mature-09.webp"
+      },
+      {
+        "display": [
+          0,
+          0
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-07.webp"
+      },
+      {
+        "display": [
+          340,
+          112
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          720,
+          405
+        ],
+        "src": "assets/art/scenes/audience-1440.webp"
+      },
+      {
+        "display": [
+          120,
+          150
+        ],
+        "fit": "contain",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-01.webp"
+      }
+    ],
+    "scrollWidth": 390,
+    "width": 390
+  },
+  "dongPaper": {
+    "images": [
+      {
+        "display": [
+          318,
+          96
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          720,
+          405
+        ],
+        "src": "assets/art/scenes/accession-1440.webp"
+      },
+      {
+        "display": [
+          0,
+          0
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-07.webp"
+      },
+      {
+        "display": [
+          0,
+          0
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/han/official-mature-09.webp"
+      },
+      {
+        "display": [
+          0,
+          0
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-07.webp"
+      },
+      {
+        "display": [
+          340,
+          112
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          720,
+          405
+        ],
+        "src": "assets/art/scenes/audience-1440.webp"
+      },
+      {
+        "display": [
+          120,
+          150
+        ],
+        "fit": "contain",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/official-05.webp"
+      }
+    ],
+    "scrollWidth": 390,
+    "width": 390
+  },
+  "gameLogs": []
+}

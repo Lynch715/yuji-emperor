@@ -1,5 +1,36 @@
 # 美术三期 · 汉、唐、宋验收
 
+## 汉制发布前两张修订 · 2026-11-09
+
+玩家已验收汉制53张，并授权本轮修订后合并发布。本轮恰好替换**窦婴、董仲舒2张专属像**，其余388个WebP逐字节保持；全部src与HTML共108个文件与已验收`2f882b6`相同，存档仍v25。当前本地验收已完成；合并、Pages部署及线上390文件核对完成后在本节补充发布结果。
+
+- 窦婴仍50岁、原长方骨相与朝右姿态，增加灰鬓、额纹和眼周成熟纹理，改为垂至上胸的黑灰宽长髯，与韩安国短方颏须拉开。
+- 董仲舒仍39岁、朝右、深青宽黑领缘交领，改清瘦成年男性书生、细长颈肩，完全无须，与赵绾三绺稀疏长须、紧蹙眉目分开。仅调整美术长相卡，不更改剧本年龄或游戏数值。
+
+![两张修订前后及44px](art-phase3-han-review/revision-20261109-release/revision-before-after.jpg)
+
+![两对人物差异](art-phase3-han-review/revision-20261109-release/two-pairs.png)
+
+![汉武帝完整20张专属44px条](art-phase3-han-review/revision-20261109-release/han-wudi-44.png)
+
+[完整专属图册](art-phase3-han-review/revision-20261109-release/han-wudi-full.png) · [当前长相卡](art-phase3-han-review/revision-20261109-release/face-cards.json) · [构图与散列](art-phase3-han-review/revision-20261109-release/asset-checks.json) · [替换范围与源码逐字节检查](art-phase3-han-review/revision-20261109-release/revision-scope.json)。两张用内置imagegen逐张修订，每次传一期完整四图板＋汉制完整四图板＋本人目标；提示词先记ART-PROMPTS，原PNG仅保留本机art-source，导出只裁切、等比缩放及WebP编码。
+
+两张400×500／q75，冠顶10.84–12.84%、双眼39.77–39.87%，分别8,814与5,958字节。汉制仍53张，共439,232字节；assets/art总计**390个WebP／5,059,892字节**。377张原画加13个场景720派生档的口径保持。
+
+本轮重新运行**609／609测试、200年／7200旬无模型模拟及构建**，均通过，模拟6朝、终局国库2040。HTML854,145字节且SHA-256保持；本轮仅资产与文档变化，沿用下方2f882b6全量验收的退回、对比度及六次Lighthouse100证据，没有宣称重跑Lighthouse。[测试摘要](art-phase3-han-review/revision-20261109-release/test-summary.json) · [模拟完整结果](art-phase3-han-review/revision-20261109-release/simulation-200y.json)。
+
+应用内浏览器在独立localhost4219试读局仅打开真实朝堂及窦婴、董仲舒召见，未垂询或推进旬；两对人物生产取图只读图册12实例全部400×500加载。1280纸面200×250、390纸面120×150，圆章44×44，360无溢出，console warn／error为空。[本轮浏览器读数](art-phase3-han-review/revision-20261109-release/local-browser.json)。
+
+| 本轮截图 | 1280 | 390 |
+| --- | --- | --- |
+| 两对人物生产取图图册 | [桌面](art-phase3-han-review/revision-20261109-release/local-gallery-1280.jpg) | [手机](art-phase3-han-review/revision-20261109-release/local-gallery-390.jpg) |
+| 窦婴真实召见 | [桌面](art-phase3-han-review/revision-20261109-release/local-dou-paper-1280.jpg) | [手机](art-phase3-han-review/revision-20261109-release/local-dou-paper-390.jpg) |
+| 董仲舒真实召见 | — | [手机](art-phase3-han-review/revision-20261109-release/local-dong-paper-390.jpg) |
+
+以下为53张全量验收的历史记录，当时为草稿PR；最终发布状态以本节后续记录为准。
+
+---
+
 ## 三期第三批 · 汉制53张完成 · 2026-11-09
 
 玩家已确认汉制画风，本轮补齐余49张，并加强文官壮01的进贤冠斜梁。当前**53／53张：汉池33＋汉武帝专属20**。分支`feat/art-phase3-han`，最新main基准`dbffc28`；更新同一[草稿PR #9](https://github.com/Lynch715/yuji-emperor/pull/9)，**不合并、不发布Pages**。下方定调第1步与宋、唐记录为历史记录。
