@@ -1,8 +1,8 @@
 # 美术三期 · 汉、唐、宋验收
 
-## 汉制发布前两张修订 · 2026-11-09
+## 汉制发布与最终两张修订 · 2026-11-09
 
-玩家已验收汉制53张，并授权本轮修订后合并发布。本轮恰好替换**窦婴、董仲舒2张专属像**，其余388个WebP逐字节保持；全部src与HTML共108个文件与已验收`2f882b6`相同，存档仍v25。当前本地验收已完成；合并、Pages部署及线上390文件核对完成后在本节补充发布结果。
+玩家已验收汉制53张，并授权本轮修订后合并发布。本轮恰好替换**窦婴、董仲舒2张专属像**，其余388个WebP逐字节保持；全部src与HTML共108个文件与已验收`2f882b6`相同，存档仍v25。已按玩家授权将[PR #9](https://github.com/Lynch715/yuji-emperor/pull/9)合并main，合并提交`61910bc`；[Pages测试、构建与部署成功](https://github.com/Lynch715/yuji-emperor/actions/runs/42659113456)，线上全部390张WebP已验证，详见下方。
 
 - 窦婴仍50岁、原长方骨相与朝右姿态，增加灰鬓、额纹和眼周成熟纹理，改为垂至上胸的黑灰宽长髯，与韩安国短方颏须拉开。
 - 董仲舒仍39岁、朝右、深青宽黑领缘交领，改清瘦成年男性书生、细长颈肩，完全无须，与赵绾三绺稀疏长须、紧蹙眉目分开。仅调整美术长相卡，不更改剧本年龄或游戏数值。
@@ -27,7 +27,24 @@
 | 窦婴真实召见 | [桌面](art-phase3-han-review/revision-20261109-release/local-dou-paper-1280.jpg) | [手机](art-phase3-han-review/revision-20261109-release/local-dou-paper-390.jpg) |
 | 董仲舒真实召见 | — | [手机](art-phase3-han-review/revision-20261109-release/local-dong-paper-390.jpg) |
 
-以下为53张全量验收的历史记录，当时为草稿PR；最终发布状态以本节后续记录为准。
+### 线上发布与只读抽查
+
+正式站点：[御极](https://lynch715.github.io/yuji-emperor/)。合并提交`61910bc9c5141731ec9b4f934059418ec54d7408`与已测试分支头`083703c678c833f6ee291fc98c15cfa827ffcc94`的src、HTML和assets/art完全一致。工作流`42659113456`测试、构建、deploy均success；[合并与工作流步骤](art-phase3-han-review/revision-20261109-release/release-status.json)。
+
+下载该工作流已部署的github-pages产物，清单恰有**390个WebP**；HTML及390图共391文件与合并版本逐字节一致，[部署包逐文件核对](art-phase3-han-review/revision-20261109-release/pages-artifact-inventory.json)。再逐一请求正式URL，**391／391项HTTP200且SHA-256匹配**，覆盖全部390张美术；线上WebP总大小**5,059,892字节**。HTML854,145字节，SHA-256为`70948580b2d7bfd9086d5a8c572cb38240a3a480ae6dcdd2a163626b7822b1cc`。[全部线上文件HTTP、大小与散列](art-phase3-han-review/revision-20261109-release/pages-all-hashes.json) · [汉制头像样本](art-phase3-han-review/revision-20261109-release/pages-samples.json)。
+
+应用内浏览器在正式站点仅打开汉武帝开局预览，没有按“承天践祚”、切卷或推进游戏。刘彻16岁专属像1280／390均400×500加载、显示64×80，390无横向溢出；另打开正式窦婴、董仲舒WebP，均400×500完成加载，可见灰鬓长髯和无须清瘦轮廓。[线上浏览器读数](art-phase3-han-review/revision-20261109-release/online-browser.json)。
+
+此次**发布后的只读预览前后**，既有第3卷万历0旬“导出当前存档”均38,163字节，SHA-256均为`44fa7e68aac173da77068995b5e17b4baed065966d58d56604e0ce5bc1da4d82`；第1／2卷仍空。原卷逐字节保持，未调整插图设置；这不是发布前存档基准，原JSON只留本机，仓库仅记录字节与散列。
+
+| 线上截图 | 证据 |
+| --- | --- |
+| 汉武帝预览1280 | [桌面](art-phase3-han-review/revision-20261109-release/online-han-preview-1280.jpg) |
+| 汉武帝预览390 | [手机](art-phase3-han-review/revision-20261109-release/online-han-preview-390.jpg) |
+| 窦婴正式修订文件 | [截图](art-phase3-han-review/revision-20261109-release/online-dou-ying.jpg) |
+| 董仲舒正式修订文件 | [截图](art-phase3-han-review/revision-20261109-release/online-dong-zhongshu.jpg) |
+
+以下为53张全量验收的历史记录，当时为草稿PR；本轮最终发布状态以本节为准。
 
 ---
 

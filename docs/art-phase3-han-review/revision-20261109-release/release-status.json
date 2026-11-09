@@ -1,0 +1,80 @@
+{
+  "pr": 9,
+  "featureHead": "083703c678c833f6ee291fc98c15cfa827ffcc94",
+  "mergeCommit": "61910bc9c5141731ec9b4f934059418ec54d7408",
+  "mergedAt": "2026-11-09T16:52:26Z",
+  "workflowRun": 42659113456,
+  "workflowUrl": "https://github.com/Lynch715/yuji-emperor/actions/runs/42659113456",
+  "jobs": [
+    {
+      "name": "build",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v6",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-node@v7",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run tests",
+          "conclusion": "success"
+        },
+        {
+          "name": "Build game",
+          "conclusion": "success"
+        },
+        {
+          "name": "Package public website",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/configure-pages@v5",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/upload-pages-artifact@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-node@v7",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v6",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "name": "deploy",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Deploy",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ],
+  "payloadEqualToTestedBranch": true,
+  "artifactWebPCount": 390
+}

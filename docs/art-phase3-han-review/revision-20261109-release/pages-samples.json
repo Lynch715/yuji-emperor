@@ -1,0 +1,58 @@
+{
+  "commit": "61910bc9c5141731ec9b4f934059418ec54d7408",
+  "timeUTC": "2026-11-09T17:23:22Z",
+  "baseUrl": "https://lynch715.github.io/yuji-emperor/",
+  "mode": "serial curl, connection reuse, stop on first mismatch",
+  "checked": 5,
+  "expected": 5,
+  "passed": 5,
+  "failed": 0,
+  "error": null,
+  "rows": [
+    {
+      "file": "index.html",
+      "http": "200",
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 854145,
+      "expectedSha256": "70948580b2d7bfd9086d5a8c572cb38240a3a480ae6dcdd2a163626b7822b1cc",
+      "actualSha256": "70948580b2d7bfd9086d5a8c572cb38240a3a480ae6dcdd2a163626b7822b1cc",
+      "match": true
+    },
+    {
+      "file": "assets/art/portraits/unique/han-wudi/emperor-01.webp",
+      "http": "200",
+      "contentType": "image/webp",
+      "bytes": 6166,
+      "expectedSha256": "4cb9fac3bdae3663397d643c39c1c2b6eea8dd0247ff3643dc40d8569fe9f0d1",
+      "actualSha256": "4cb9fac3bdae3663397d643c39c1c2b6eea8dd0247ff3643dc40d8569fe9f0d1",
+      "match": true
+    },
+    {
+      "file": "assets/art/portraits/unique/han-wudi/official-01.webp",
+      "http": "200",
+      "contentType": "image/webp",
+      "bytes": 8814,
+      "expectedSha256": "72a4a6988b33168964476266b70f33180051cbfc3e6c664c69f3f664f22f7dcc",
+      "actualSha256": "72a4a6988b33168964476266b70f33180051cbfc3e6c664c69f3f664f22f7dcc",
+      "match": true
+    },
+    {
+      "file": "assets/art/portraits/unique/han-wudi/official-05.webp",
+      "http": "200",
+      "contentType": "image/webp",
+      "bytes": 5958,
+      "expectedSha256": "541c4d1a8de8a948d220aa1346942bc764c582fca14167c1096716588711192f",
+      "actualSha256": "541c4d1a8de8a948d220aa1346942bc764c582fca14167c1096716588711192f",
+      "match": true
+    },
+    {
+      "file": "assets/art/portraits/unique/han-wudi/dowager-01.webp",
+      "http": "200",
+      "contentType": "image/webp",
+      "bytes": 9268,
+      "expectedSha256": "d078e399c26facf5061e1520c0b8750dbd4a7267e15e7bf616e415d2c4e4a243",
+      "actualSha256": "d078e399c26facf5061e1520c0b8750dbd4a7267e15e7bf616e415d2c4e4a243",
+      "match": true
+    }
+  ]
+}

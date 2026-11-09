@@ -1,0 +1,218 @@
+{
+  "saveBefore": {
+    "bytes": 38163,
+    "sha256": "44fa7e68aac173da77068995b5e17b4baed065966d58d56604e0ce5bc1da4d82"
+  },
+  "preview-1280": {
+    "images": [
+      {
+        "display": [
+          508,
+          120
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          1280,
+          720
+        ],
+        "src": "assets/art/scenes/accession-1440.webp"
+      },
+      {
+        "display": [
+          28,
+          28
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/ming-wanli/official-01.webp"
+      },
+      {
+        "display": [
+          28,
+          28
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/ming-wanli/official-07.webp"
+      },
+      {
+        "display": [
+          28,
+          28
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/ming-wanli/official-08.webp"
+      },
+      {
+        "display": [
+          680,
+          160
+        ],
+        "fit": "cover",
+        "loaded": false,
+        "natural": [
+          0,
+          0
+        ],
+        "src": "assets/art/scenes/court-1440.webp"
+      },
+      {
+        "display": [
+          64,
+          80
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/emperor-01.webp"
+      }
+    ],
+    "scrollWidth": 1280,
+    "width": 1280
+  },
+  "preview-390": {
+    "images": [
+      {
+        "display": [
+          318,
+          96
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          720,
+          405
+        ],
+        "src": "assets/art/scenes/accession-1440.webp"
+      },
+      {
+        "display": [
+          0,
+          0
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/ming-wanli/official-01.webp"
+      },
+      {
+        "display": [
+          0,
+          0
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/ming-wanli/official-07.webp"
+      },
+      {
+        "display": [
+          0,
+          0
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/ming-wanli/official-08.webp"
+      },
+      {
+        "display": [
+          318,
+          112
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          720,
+          405
+        ],
+        "src": "assets/art/scenes/court-1440.webp"
+      },
+      {
+        "display": [
+          64,
+          80
+        ],
+        "fit": "cover",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/han-wudi/emperor-01.webp"
+      }
+    ],
+    "scrollWidth": 390,
+    "width": 390
+  },
+  "saveAfter": {
+    "bytes": 38163,
+    "sha256": "44fa7e68aac173da77068995b5e17b4baed065966d58d56604e0ce5bc1da4d82"
+  },
+  "saveIdentical": true,
+  "logs": [],
+  "douAsset": {
+    "images": [
+      {
+        "display": [
+          400,
+          500
+        ],
+        "fit": "fill",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "https://lynch715.github.io/yuji-emperor/assets/art/portraits/unique/han-wudi/official-01.webp?han-release=61910bc"
+      }
+    ],
+    "scrollWidth": 1280,
+    "width": 1280
+  },
+  "dongAsset": {
+    "images": [
+      {
+        "display": [
+          400,
+          500
+        ],
+        "fit": "fill",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "https://lynch715.github.io/yuji-emperor/assets/art/portraits/unique/han-wudi/official-05.webp?han-release=61910bc"
+      }
+    ],
+    "scrollWidth": 1280,
+    "width": 1280
+  }
+}
