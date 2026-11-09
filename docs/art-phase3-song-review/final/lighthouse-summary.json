@@ -1,0 +1,71 @@
+{
+  "method": "官方Lighthouse；生产HTML/CSS只读投影。真实交互另用Codex In-app Browser。原始报告仅本机留存。",
+  "runs": [
+    {
+      "surface": "court",
+      "device": "desktop",
+      "score": 100,
+      "url": "http://127.0.0.1:4215/qa/art-phase3-song/lh-court.html",
+      "lighthouseVersion": "13.6.0",
+      "fetchTime": "2026-11-09T12:24:40.771Z",
+      "failedAudits": [],
+      "reportSha256": "f6b9b0626e249408181a33aed797e58de862418cf4e1c5a251ca6a35a48d915a",
+      "reportBytes": 133473
+    },
+    {
+      "surface": "court",
+      "device": "mobile",
+      "score": 100,
+      "url": "http://127.0.0.1:4215/qa/art-phase3-song/lh-court.html",
+      "lighthouseVersion": "13.6.0",
+      "fetchTime": "2026-11-09T12:24:40.742Z",
+      "failedAudits": [],
+      "reportSha256": "d18c4e9a90e7efa6a673e888ab3662c5a16cb89d27af48668e5149b67c81381b",
+      "reportBytes": 121669
+    },
+    {
+      "surface": "harem",
+      "device": "desktop",
+      "score": 100,
+      "url": "http://127.0.0.1:4215/qa/art-phase3-song/lh-harem.html",
+      "lighthouseVersion": "13.6.0",
+      "fetchTime": "2026-11-09T12:24:58.352Z",
+      "failedAudits": [],
+      "reportSha256": "e418ed44143c1990b9c6c0ac91b31ea5a8aa887c478e537e4fb6cc9aa2d5d45f",
+      "reportBytes": 135485
+    },
+    {
+      "surface": "harem",
+      "device": "mobile",
+      "score": 100,
+      "url": "http://127.0.0.1:4215/qa/art-phase3-song/lh-harem.html",
+      "lighthouseVersion": "13.6.0",
+      "fetchTime": "2026-11-09T12:24:59.952Z",
+      "failedAudits": [],
+      "reportSha256": "766980747078fad3b411970ff0727bef596356ea175336dfc61283562b82a1b8",
+      "reportBytes": 116780
+    },
+    {
+      "surface": "paper",
+      "device": "desktop",
+      "score": 100,
+      "url": "http://127.0.0.1:4215/qa/art-phase3-song/lh-paper.html",
+      "lighthouseVersion": "13.6.0",
+      "fetchTime": "2026-11-09T12:25:10.753Z",
+      "failedAudits": [],
+      "reportSha256": "445a2a4555a05e0f17892c95efee57ea6a5868f3f481641283828c7886977f6f",
+      "reportBytes": 120164
+    },
+    {
+      "surface": "paper",
+      "device": "mobile",
+      "score": 100,
+      "url": "http://127.0.0.1:4215/qa/art-phase3-song/lh-paper.html",
+      "lighthouseVersion": "13.6.0",
+      "fetchTime": "2026-11-09T12:25:15.132Z",
+      "failedAudits": [],
+      "reportSha256": "9c29d26e99a97c66ea80a885529f7a2ad5d171ff320810048bc8e47e3a8216d7",
+      "reportBytes": 110476
+    }
+  ]
+}

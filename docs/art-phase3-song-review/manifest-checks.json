@@ -1,0 +1,13 @@
+{
+  "baseline": "608a92c",
+  "changedPoolFirstSlots": [
+    "song/official-mature",
+    "song/consort-high",
+    "song/consort-regular",
+    "song/emperor-young"
+  ],
+  "remainingSongPoolNulls": 29,
+  "songUniqueSlots": 18,
+  "songUniqueNonNull": 0,
+  "otherPoolsAndAllUniqueScenesHallsFocusUnchanged": true
+}

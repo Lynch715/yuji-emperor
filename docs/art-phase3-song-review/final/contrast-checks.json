@@ -1,0 +1,56 @@
+{
+  "method": "实际DOM计算样式的前景／最近不透明纸面或案面背景，WCAG相对亮度；文字不压插图。",
+  "minimumRatio": 6.99,
+  "readings": [
+    {
+      "background": "rgb(18, 14, 12)",
+      "color": "rgb(242, 232, 214)",
+      "fontSize": "18px",
+      "fontWeight": "600",
+      "selector": "#modal-title",
+      "text": "召见 · 王曾",
+      "ratio": 15.81,
+      "required": 4.5
+    },
+    {
+      "background": "rgb(239, 230, 211)",
+      "color": "rgb(42, 36, 32)",
+      "fontSize": "20px",
+      "fontWeight": "600",
+      "selector": "#modal .action-document h3",
+      "text": "王曾",
+      "ratio": 12.34,
+      "required": 4.5
+    },
+    {
+      "background": "rgb(239, 230, 211)",
+      "color": "rgb(42, 36, 32)",
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "selector": "#modal .action-document p",
+      "text": "参知政事",
+      "ratio": 12.34,
+      "required": 4.5
+    },
+    {
+      "background": "rgb(18, 14, 12)",
+      "color": "rgb(168, 154, 136)",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "selector": "#modal label[for=\"talk-line\"]",
+      "text": "御前垂询",
+      "ratio": 6.99,
+      "required": 4.5
+    },
+    {
+      "background": "rgb(239, 230, 211)",
+      "color": "rgb(42, 36, 32)",
+      "fontSize": "20px",
+      "fontWeight": "600",
+      "selector": "#scroll h2",
+      "text": "天圣新政",
+      "ratio": 12.34,
+      "required": 4.5
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "date": "2026-11-09",
+  "test": {
+    "command": "npm test",
+    "tests": 608,
+    "pass": 608,
+    "fail": 0,
+    "exitCode": 0,
+    "sha256": "0d86cc96368d6da40cbf615e080cf717010290bc6f6366a5948dcbcc748e317b"
+  },
+  "simulationCommand": "node scripts/simulate.mjs 200",
+  "simulationExitCode": 0,
+  "simulation": {
+    "seed": "御极·两百年",
+    "years": 200,
+    "actualYears": 200,
+    "turns": 7200,
+    "reigns": 6,
+    "successionCount": 5,
+    "collapseCount": 0,
+    "finalTreasury": 2040
+  },
+  "simulationSha256": "b0e2a7493c9f0b5eccb0b9924b47ba5813560f0db3468c7045838aece402a827",
+  "build": {
+    "command": "npm run build",
+    "exitCode": 0,
+    "htmlBytes": 859561,
+    "htmlSha256": "ea60ef01bc5791456cea55ef110c752dcc49d6ec54a33393650d970cd4b54497",
+    "budgetBytes": 860000
+  }
+}

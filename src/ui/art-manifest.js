@@ -1,901 +1,267 @@
 // ART-SPEC: empty slots are intentional; never request an unproduced file.
 // Paths are relative to index.html so project GitHub Pages subpaths work.
+// Compact data rows preserve the existing single-file HTML size budget.
 export const ART_FOCUS = {
-  "avatar": "50% 32%",
-  "card": "50% 25%",
-  "paper": "50% 50%"
-};
-export const ART_POOLS = {
-  "ming/official-mature": [
-    "assets/art/portraits/ming/official-mature-01.webp",
-    "assets/art/portraits/ming/official-mature-02.webp",
-    "assets/art/portraits/ming/official-mature-03.webp",
-    "assets/art/portraits/ming/official-mature-04.webp",
-    "assets/art/portraits/ming/official-mature-05.webp",
-    "assets/art/portraits/ming/official-mature-06.webp",
-    "assets/art/portraits/ming/official-mature-07.webp",
-    "assets/art/portraits/ming/official-mature-08.webp",
-    "assets/art/portraits/ming/official-mature-09.webp",
-    "assets/art/portraits/ming/official-mature-10.webp",
-    "assets/art/portraits/ming/official-mature-11.webp",
-    "assets/art/portraits/ming/official-mature-12.webp",
-    "assets/art/portraits/ming/official-mature-13.webp",
-    "assets/art/portraits/ming/official-mature-14.webp",
-    "assets/art/portraits/ming/official-mature-15.webp",
-    "assets/art/portraits/ming/official-mature-16.webp"
-  ],
-  "ming/official-old": [
-    "assets/art/portraits/ming/official-old-01.webp",
-    "assets/art/portraits/ming/official-old-02.webp",
-    "assets/art/portraits/ming/official-old-03.webp",
-    "assets/art/portraits/ming/official-old-04.webp",
-    "assets/art/portraits/ming/official-old-05.webp",
-    "assets/art/portraits/ming/official-old-06.webp",
-    "assets/art/portraits/ming/official-old-07.webp",
-    "assets/art/portraits/ming/official-old-08.webp",
-    "assets/art/portraits/ming/official-old-09.webp",
-    "assets/art/portraits/ming/official-old-10.webp"
-  ],
-  "ming/general-all": [
-    "assets/art/portraits/ming/general-all-01.webp",
-    "assets/art/portraits/ming/general-all-02.webp",
-    "assets/art/portraits/ming/general-all-03.webp",
-    "assets/art/portraits/ming/general-all-04.webp"
-  ],
-  "ming/eunuch-all": [
-    "assets/art/portraits/ming/eunuch-all-01.webp",
-    "assets/art/portraits/ming/eunuch-all-02.webp"
-  ],
-  "ming/consort-high": [
-    "assets/art/portraits/ming/consort-high-01.webp",
-    "assets/art/portraits/ming/consort-high-02.webp",
-    "assets/art/portraits/ming/consort-high-03.webp"
-  ],
-  "ming/consort-regular": [
-    "assets/art/portraits/ming/consort-regular-01.webp",
-    "assets/art/portraits/ming/consort-regular-02.webp",
-    "assets/art/portraits/ming/consort-regular-03.webp",
-    "assets/art/portraits/ming/consort-regular-04.webp",
-    "assets/art/portraits/ming/consort-regular-05.webp",
-    "assets/art/portraits/ming/consort-regular-06.webp",
-    "assets/art/portraits/ming/consort-regular-07.webp",
-    "assets/art/portraits/ming/consort-regular-08.webp"
-  ],
-  "ming/dowager-all": [
-    "assets/art/portraits/ming/dowager-all-01.webp"
-  ],
-  "ming/emperor-young": [
-    "assets/art/portraits/ming/emperor-young-01.webp",
-    "assets/art/portraits/ming/emperor-young-02.webp"
-  ],
-  "ming/emperor-old": [
-    "assets/art/portraits/ming/emperor-old-01.webp",
-    "assets/art/portraits/ming/emperor-old-02.webp"
-  ],
-  "ming/prince-teen": [
-    "assets/art/portraits/ming/prince-teen-01.webp",
-    "assets/art/portraits/ming/prince-teen-02.webp"
-  ],
-  "ming/prince-adult": [
-    "assets/art/portraits/ming/prince-adult-01.webp",
-    "assets/art/portraits/ming/prince-adult-02.webp"
-  ],
-  "ming/princess-teen": [
-    "assets/art/portraits/ming/princess-teen-01.webp",
-    "assets/art/portraits/ming/princess-teen-02.webp"
-  ],
-  "ming/princess-adult": [
-    "assets/art/portraits/ming/princess-adult-01.webp",
-    "assets/art/portraits/ming/princess-adult-02.webp"
-  ],
-  "qing/official-mature": [
-    "assets/art/portraits/qing/official-mature-01.webp",
-    "assets/art/portraits/qing/official-mature-02.webp",
-    "assets/art/portraits/qing/official-mature-03.webp",
-    "assets/art/portraits/qing/official-mature-04.webp",
-    "assets/art/portraits/qing/official-mature-05.webp",
-    "assets/art/portraits/qing/official-mature-06.webp",
-    "assets/art/portraits/qing/official-mature-07.webp",
-    "assets/art/portraits/qing/official-mature-08.webp",
-    "assets/art/portraits/qing/official-mature-09.webp",
-    "assets/art/portraits/qing/official-mature-10.webp"
-  ],
-  "qing/official-old": [
-    "assets/art/portraits/qing/official-old-01.webp",
-    "assets/art/portraits/qing/official-old-02.webp",
-    "assets/art/portraits/qing/official-old-03.webp",
-    "assets/art/portraits/qing/official-old-04.webp",
-    "assets/art/portraits/qing/official-old-05.webp",
-    "assets/art/portraits/qing/official-old-06.webp"
-  ],
-  "qing/general-all": [
-    "assets/art/portraits/qing/general-all-01.webp",
-    "assets/art/portraits/qing/general-all-02.webp",
-    "assets/art/portraits/qing/general-all-03.webp"
-  ],
-  "qing/consort-high": [
-    "assets/art/portraits/qing/consort-high-01.webp",
-    "assets/art/portraits/qing/consort-high-02.webp"
-  ],
-  "qing/consort-regular": [
-    "assets/art/portraits/qing/consort-regular-01.webp",
-    "assets/art/portraits/qing/consort-regular-02.webp",
-    "assets/art/portraits/qing/consort-regular-03.webp",
-    "assets/art/portraits/qing/consort-regular-04.webp",
-    "assets/art/portraits/qing/consort-regular-05.webp"
-  ],
-  "qing/emperor-young": [
-    "assets/art/portraits/qing/emperor-young-01.webp"
-  ],
-  "qing/emperor-old": [
-    "assets/art/portraits/qing/emperor-old-01.webp"
-  ],
-  "qing/prince-teen": [
-    "assets/art/portraits/qing/prince-teen-01.webp"
-  ],
-  "qing/prince-adult": [
-    "assets/art/portraits/qing/prince-adult-01.webp"
-  ],
-  "qing/princess-teen": [
-    "assets/art/portraits/qing/princess-teen-01.webp"
-  ],
-  "qing/princess-adult": [
-    "assets/art/portraits/qing/princess-adult-01.webp"
-  ],
-  "han/official-mature": [
-    null,
-    null,
-    null,
-    null,
-    null,
-    null,
-    null,
-    null,
-    null,
-    null
-  ],
-  "han/official-old": [
-    null,
-    null,
-    null,
-    null,
-    null,
-    null
-  ],
-  "han/general-all": [
-    null,
-    null,
-    null
-  ],
-  "han/eunuch-all": [
-    null
-  ],
-  "han/consort-high": [
-    null,
-    null
-  ],
-  "han/consort-regular": [
-    null,
-    null,
-    null,
-    null,
-    null
-  ],
-  "han/emperor-young": [
-    null
-  ],
-  "han/emperor-old": [
-    null
-  ],
-  "han/prince-teen": [
-    null
-  ],
-  "han/prince-adult": [
-    null
-  ],
-  "han/princess-teen": [
-    null
-  ],
-  "han/princess-adult": [
-    null
-  ],
-  "tang/official-mature": [
-    "assets/art/portraits/tang/official-mature-01.webp",
-    "assets/art/portraits/tang/official-mature-02.webp",
-    "assets/art/portraits/tang/official-mature-03.webp",
-    "assets/art/portraits/tang/official-mature-04.webp",
-    "assets/art/portraits/tang/official-mature-05.webp",
-    "assets/art/portraits/tang/official-mature-06.webp",
-    "assets/art/portraits/tang/official-mature-07.webp",
-    "assets/art/portraits/tang/official-mature-08.webp",
-    "assets/art/portraits/tang/official-mature-09.webp",
-    "assets/art/portraits/tang/official-mature-10.webp"
-  ],
-  "tang/official-old": [
-    "assets/art/portraits/tang/official-old-01.webp",
-    "assets/art/portraits/tang/official-old-02.webp",
-    "assets/art/portraits/tang/official-old-03.webp",
-    "assets/art/portraits/tang/official-old-04.webp",
-    "assets/art/portraits/tang/official-old-05.webp",
-    "assets/art/portraits/tang/official-old-06.webp"
-  ],
-  "tang/general-all": [
-    "assets/art/portraits/tang/general-all-01.webp",
-    "assets/art/portraits/tang/general-all-02.webp",
-    "assets/art/portraits/tang/general-all-03.webp"
-  ],
-  "tang/eunuch-all": [
-    "assets/art/portraits/tang/eunuch-all-01.webp"
-  ],
-  "tang/consort-high": [
-    "assets/art/portraits/tang/consort-high-01.webp",
-    "assets/art/portraits/tang/consort-high-02.webp"
-  ],
-  "tang/consort-regular": [
-    "assets/art/portraits/tang/consort-regular-01.webp",
-    "assets/art/portraits/tang/consort-regular-02.webp",
-    "assets/art/portraits/tang/consort-regular-03.webp",
-    "assets/art/portraits/tang/consort-regular-04.webp",
-    "assets/art/portraits/tang/consort-regular-05.webp"
-  ],
-  "tang/emperor-young": [
-    "assets/art/portraits/tang/emperor-young-01.webp"
-  ],
-  "tang/emperor-old": [
-    "assets/art/portraits/tang/emperor-old-01.webp"
-  ],
-  "tang/prince-teen": [
-    "assets/art/portraits/tang/prince-teen-01.webp"
-  ],
-  "tang/prince-adult": [
-    "assets/art/portraits/tang/prince-adult-01.webp"
-  ],
-  "tang/princess-teen": [
-    "assets/art/portraits/tang/princess-teen-01.webp"
-  ],
-  "tang/princess-adult": [
-    "assets/art/portraits/tang/princess-adult-01.webp"
-  ],
-  "song/official-mature": [
-    null,
-    null,
-    null,
-    null,
-    null,
-    null,
-    null,
-    null,
-    null,
-    null
-  ],
-  "song/official-old": [
-    null,
-    null,
-    null,
-    null,
-    null,
-    null
-  ],
-  "song/general-all": [
-    null,
-    null,
-    null
-  ],
-  "song/eunuch-all": [
-    null
-  ],
-  "song/consort-high": [
-    null,
-    null
-  ],
-  "song/consort-regular": [
-    null,
-    null,
-    null,
-    null,
-    null
-  ],
-  "song/emperor-young": [
-    null
-  ],
-  "song/emperor-old": [
-    null
-  ],
-  "song/prince-teen": [
-    null
-  ],
-  "song/prince-adult": [
-    null
-  ],
-  "song/princess-teen": [
-    null
-  ],
-  "song/princess-adult": [
-    null
-  ],
-  "shared/foreign-north": [
-    "assets/art/portraits/shared/foreign-north-01.webp",
-    "assets/art/portraits/shared/foreign-north-02.webp"
-  ],
-  "shared/foreign-west": [
-    "assets/art/portraits/shared/foreign-west-01.webp",
-    "assets/art/portraits/shared/foreign-west-02.webp"
-  ],
-  "shared/foreign-south": [
-    "assets/art/portraits/shared/foreign-south-01.webp",
-    "assets/art/portraits/shared/foreign-south-02.webp"
-  ],
-  "shared/foreign-east": [
-    "assets/art/portraits/shared/foreign-east-01.webp",
-    "assets/art/portraits/shared/foreign-east-02.webp"
-  ],
-  "shared/boy-young": [
-    "assets/art/portraits/shared/boy-young-01.webp",
-    "assets/art/portraits/shared/boy-young-02.webp"
-  ],
-  "shared/girl-young": [
-    "assets/art/portraits/shared/girl-young-01.webp",
-    "assets/art/portraits/shared/girl-young-02.webp"
-  ],
-  "shared/scholar-young": [
-    "assets/art/portraits/shared/scholar-young-01.webp",
-    "assets/art/portraits/shared/scholar-young-02.webp",
-    "assets/art/portraits/shared/scholar-young-03.webp",
-    "assets/art/portraits/shared/scholar-young-04.webp"
-  ],
-  "shared/scholar-mature": [
-    "assets/art/portraits/shared/scholar-mature-01.webp",
-    "assets/art/portraits/shared/scholar-mature-02.webp",
-    "assets/art/portraits/shared/scholar-mature-03.webp",
-    "assets/art/portraits/shared/scholar-mature-04.webp"
-  ]
-};
-export const ART_UNIQUE = {
-  "han-wudi": {
-    "刘彻": {
-      "base": null,
-      "old": null
-    },
-    "窦婴": {
-      "base": null
-    },
-    "田蚡": {
-      "base": null
-    },
-    "赵绾": {
-      "base": null
-    },
-    "王臧": {
-      "base": null
-    },
-    "董仲舒": {
-      "base": null
-    },
-    "汲黯": {
-      "base": null
-    },
-    "韩安国": {
-      "base": null
-    },
-    "李广": {
-      "base": null
-    },
-    "程不识": {
-      "base": null
-    },
-    "庄助": {
-      "base": null
-    },
-    "陈阿娇": {
-      "base": null
-    },
-    "卫子夫": {
-      "base": null
-    },
-    "军臣单于": {
-      "base": null
-    },
-    "猎骄靡": {
-      "base": null
-    },
-    "赵佗": {
-      "base": null
-    },
-    "驺郢": {
-      "base": null
-    },
-    "驺望": {
-      "base": null
-    },
-    "窦太皇太后": {
-      "base": null
-    }
-  },
-  "tang-taizong": {
-    "李世民": {
-      "base": "assets/art/portraits/unique/tang-taizong/emperor-01.webp",
-      "old": "assets/art/portraits/unique/tang-taizong/emperor-01-old.webp"
-    },
-    "房玄龄": {
-      "base": "assets/art/portraits/unique/tang-taizong/official-01.webp"
-    },
-    "杜如晦": {
-      "base": "assets/art/portraits/unique/tang-taizong/official-02.webp"
-    },
-    "长孙无忌": {
-      "base": "assets/art/portraits/unique/tang-taizong/official-03.webp"
-    },
-    "魏征": {
-      "base": "assets/art/portraits/unique/tang-taizong/official-04.webp"
-    },
-    "王珪": {
-      "base": "assets/art/portraits/unique/tang-taizong/official-05.webp"
-    },
-    "萧瑀": {
-      "base": "assets/art/portraits/unique/tang-taizong/official-06.webp"
-    },
-    "封德彝": {
-      "base": "assets/art/portraits/unique/tang-taizong/official-07.webp"
-    },
-    "高士廉": {
-      "base": "assets/art/portraits/unique/tang-taizong/official-08.webp"
-    },
-    "戴胄": {
-      "base": "assets/art/portraits/unique/tang-taizong/official-09.webp"
-    },
-    "尉迟敬德": {
-      "base": "assets/art/portraits/unique/tang-taizong/official-10.webp"
-    },
-    "李靖": {
-      "base": "assets/art/portraits/unique/tang-taizong/official-11.webp"
-    },
-    "李勣": {
-      "base": "assets/art/portraits/unique/tang-taizong/official-12.webp"
-    },
-    "李孝恭": {
-      "base": "assets/art/portraits/unique/tang-taizong/official-13.webp"
-    },
-    "长孙氏": {
-      "base": "assets/art/portraits/unique/tang-taizong/consort-01.webp"
-    },
-    "杨氏": {
-      "base": "assets/art/portraits/unique/tang-taizong/consort-02.webp"
-    },
-    "韦珪": {
-      "base": "assets/art/portraits/unique/tang-taizong/consort-03.webp"
-    },
-    "李承乾": {
-      "base": "assets/art/portraits/unique/tang-taizong/child-01.webp",
-      "adult": "assets/art/portraits/unique/tang-taizong/child-01-adult.webp"
-    },
-    "李泰": {
-      "base": "assets/art/portraits/unique/tang-taizong/child-02.webp",
-      "adult": "assets/art/portraits/unique/tang-taizong/child-02-adult.webp"
-    },
-    "李恪": {
-      "base": "assets/art/portraits/unique/tang-taizong/child-03.webp",
-      "adult": "assets/art/portraits/unique/tang-taizong/child-03-adult.webp"
-    },
-    "颉利可汗": {
-      "base": "assets/art/portraits/unique/tang-taizong/foreign-01.webp"
-    },
-    "伏允": {
-      "base": "assets/art/portraits/unique/tang-taizong/foreign-02.webp"
-    },
-    "高建武": {
-      "base": "assets/art/portraits/unique/tang-taizong/foreign-03.webp"
-    },
-    "扶余璋": {
-      "base": "assets/art/portraits/unique/tang-taizong/foreign-04.webp"
-    },
-    "夷男": {
-      "base": "assets/art/portraits/unique/tang-taizong/foreign-05.webp"
-    }
-  },
-  "song-renzong": {
-    "赵祯": {
-      "base": null,
-      "old": null
-    },
-    "丁谓": {
-      "base": null
-    },
-    "王曾": {
-      "base": null
-    },
-    "吕夷简": {
-      "base": null
-    },
-    "晏殊": {
-      "base": null
-    },
-    "鲁宗道": {
-      "base": null
-    },
-    "曹利用": {
-      "base": null
-    },
-    "钱惟演": {
-      "base": null
-    },
-    "张士逊": {
-      "base": null
-    },
-    "雷允恭": {
-      "base": null
-    },
-    "范仲淹": {
-      "base": null
-    },
-    "耶律隆绪": {
-      "base": null
-    },
-    "李德明": {
-      "base": null
-    },
-    "唃厮啰": {
-      "base": null
-    },
-    "李公蕴": {
-      "base": null
-    },
-    "王询": {
-      "base": null
-    },
-    "刘太后": {
-      "base": null
-    }
-  },
-  "ming-wanli": {
-    "朱翊钧": {
-      "base": "assets/art/portraits/unique/ming-wanli/emperor-01.webp",
-      "old": "assets/art/portraits/unique/ming-wanli/emperor-01-old.webp"
-    },
-    "张居正": {
-      "base": "assets/art/portraits/unique/ming-wanli/official-01.webp"
-    },
-    "冯保": {
-      "base": "assets/art/portraits/unique/ming-wanli/official-02.webp"
-    },
-    "吕调阳": {
-      "base": "assets/art/portraits/unique/ming-wanli/official-03.webp"
-    },
-    "张四维": {
-      "base": "assets/art/portraits/unique/ming-wanli/official-04.webp"
-    },
-    "申时行": {
-      "base": "assets/art/portraits/unique/ming-wanli/official-05.webp"
-    },
-    "王锡爵": {
-      "base": "assets/art/portraits/unique/ming-wanli/official-06.webp"
-    },
-    "王国光": {
-      "base": "assets/art/portraits/unique/ming-wanli/official-07.webp"
-    },
-    "杨博": {
-      "base": "assets/art/portraits/unique/ming-wanli/official-08.webp"
-    },
-    "谭纶": {
-      "base": "assets/art/portraits/unique/ming-wanli/official-09.webp"
-    },
-    "潘季驯": {
-      "base": "assets/art/portraits/unique/ming-wanli/official-10.webp"
-    },
-    "戚继光": {
-      "base": "assets/art/portraits/unique/ming-wanli/official-11.webp"
-    },
-    "李成梁": {
-      "base": "assets/art/portraits/unique/ming-wanli/official-12.webp"
-    },
-    "俺答汗": {
-      "base": "assets/art/portraits/unique/ming-wanli/foreign-01.webp"
-    },
-    "王杲": {
-      "base": "assets/art/portraits/unique/ming-wanli/foreign-02.webp"
-    },
-    "李昖": {
-      "base": "assets/art/portraits/unique/ming-wanli/foreign-03.webp"
-    },
-    "莫茂洽": {
-      "base": "assets/art/portraits/unique/ming-wanli/foreign-04.webp"
-    },
-    "织田信长": {
-      "base": "assets/art/portraits/unique/ming-wanli/foreign-05.webp"
-    },
-    "李太后": {
-      "base": "assets/art/portraits/unique/ming-wanli/dowager-01.webp"
-    }
-  },
-  "ming-chongzhen": {
-    "朱由检": {
-      "base": "assets/art/portraits/unique/ming-chongzhen/emperor-01.webp",
-      "old": "assets/art/portraits/unique/ming-chongzhen/emperor-01-old.webp"
-    },
-    "魏忠贤": {
-      "base": "assets/art/portraits/unique/ming-chongzhen/official-01.webp"
-    },
-    "崔呈秀": {
-      "base": "assets/art/portraits/unique/ming-chongzhen/official-02.webp"
-    },
-    "黄立极": {
-      "base": "assets/art/portraits/unique/ming-chongzhen/official-03.webp"
-    },
-    "温体仁": {
-      "base": "assets/art/portraits/unique/ming-chongzhen/official-04.webp"
-    },
-    "周延儒": {
-      "base": "assets/art/portraits/unique/ming-chongzhen/official-05.webp"
-    },
-    "毕自严": {
-      "base": "assets/art/portraits/unique/ming-chongzhen/official-06.webp"
-    },
-    "王永光": {
-      "base": "assets/art/portraits/unique/ming-chongzhen/official-07.webp"
-    },
-    "袁崇焕": {
-      "base": "assets/art/portraits/unique/ming-chongzhen/official-08.webp"
-    },
-    "洪承畴": {
-      "base": "assets/art/portraits/unique/ming-chongzhen/official-09.webp"
-    },
-    "卢象升": {
-      "base": "assets/art/portraits/unique/ming-chongzhen/official-10.webp"
-    },
-    "周氏": {
-      "base": "assets/art/portraits/unique/ming-chongzhen/consort-01.webp"
-    },
-    "田氏": {
-      "base": "assets/art/portraits/unique/ming-chongzhen/consort-02.webp"
-    },
-    "袁氏": {
-      "base": "assets/art/portraits/unique/ming-chongzhen/consort-03.webp"
-    },
-    "林丹汗": {
-      "base": "assets/art/portraits/unique/ming-chongzhen/foreign-01.webp"
-    },
-    "皇太极": {
-      "base": "assets/art/portraits/unique/ming-chongzhen/foreign-02.webp"
-    },
-    "李倧": {
-      "base": "assets/art/portraits/unique/ming-chongzhen/foreign-03.webp"
-    },
-    "德川家光": {
-      "base": "assets/art/portraits/unique/ming-chongzhen/foreign-04.webp"
-    },
-    "懿安皇后": {
-      "base": "assets/art/portraits/unique/ming-chongzhen/dowager-01.webp"
-    }
-  },
-  "qing-kangxi": {
-    "玄烨": {
-      "base": "assets/art/portraits/unique/qing-kangxi/emperor-01.webp",
-      "old": "assets/art/portraits/unique/qing-kangxi/emperor-01-old.webp"
-    },
-    "索尼": {
-      "base": "assets/art/portraits/unique/qing-kangxi/official-01.webp"
-    },
-    "苏克萨哈": {
-      "base": "assets/art/portraits/unique/qing-kangxi/official-02.webp"
-    },
-    "遏必隆": {
-      "base": "assets/art/portraits/unique/qing-kangxi/official-03.webp"
-    },
-    "鳌拜": {
-      "base": "assets/art/portraits/unique/qing-kangxi/official-04.webp"
-    },
-    "索额图": {
-      "base": "assets/art/portraits/unique/qing-kangxi/official-05.webp"
-    },
-    "明珠": {
-      "base": "assets/art/portraits/unique/qing-kangxi/official-06.webp"
-    },
-    "熊赐履": {
-      "base": "assets/art/portraits/unique/qing-kangxi/official-07.webp"
-    },
-    "魏裔介": {
-      "base": "assets/art/portraits/unique/qing-kangxi/official-08.webp"
-    },
-    "汤若望": {
-      "base": "assets/art/portraits/unique/qing-kangxi/official-09.webp"
-    },
-    "杰书": {
-      "base": "assets/art/portraits/unique/qing-kangxi/official-10.webp"
-    },
-    "阿列克谢": {
-      "base": "assets/art/portraits/unique/qing-kangxi/foreign-01.webp"
-    },
-    "僧格": {
-      "base": "assets/art/portraits/unique/qing-kangxi/foreign-02.webp"
-    },
-    "吴三桂": {
-      "base": "assets/art/portraits/unique/qing-kangxi/foreign-03.webp"
-    },
-    "郑成功": {
-      "base": "assets/art/portraits/unique/qing-kangxi/foreign-04.webp"
-    },
-    "李棩": {
-      "base": "assets/art/portraits/unique/qing-kangxi/foreign-05.webp"
-    },
-    "孝庄太皇太后": {
-      "base": "assets/art/portraits/unique/qing-kangxi/dowager-01.webp"
-    }
-  },
-  "qing-yongzheng": {
-    "胤禛": {
-      "base": "assets/art/portraits/unique/qing-yongzheng/emperor-01.webp",
-      "old": "assets/art/portraits/unique/qing-yongzheng/emperor-01-old.webp"
-    },
-    "允禩": {
-      "base": "assets/art/portraits/unique/qing-yongzheng/official-01.webp"
-    },
-    "允祥": {
-      "base": "assets/art/portraits/unique/qing-yongzheng/official-02.webp"
-    },
-    "马齐": {
-      "base": "assets/art/portraits/unique/qing-yongzheng/official-03.webp"
-    },
-    "隆科多": {
-      "base": "assets/art/portraits/unique/qing-yongzheng/official-04.webp"
-    },
-    "张廷玉": {
-      "base": "assets/art/portraits/unique/qing-yongzheng/official-05.webp"
-    },
-    "年羹尧": {
-      "base": "assets/art/portraits/unique/qing-yongzheng/official-06.webp"
-    },
-    "鄂尔泰": {
-      "base": "assets/art/portraits/unique/qing-yongzheng/official-07.webp"
-    },
-    "田文镜": {
-      "base": "assets/art/portraits/unique/qing-yongzheng/official-08.webp"
-    },
-    "李卫": {
-      "base": "assets/art/portraits/unique/qing-yongzheng/official-09.webp"
-    },
-    "允禟": {
-      "base": "assets/art/portraits/unique/qing-yongzheng/official-10.webp"
-    },
-    "允禵": {
-      "base": "assets/art/portraits/unique/qing-yongzheng/official-11.webp"
-    },
-    "岳钟琪": {
-      "base": "assets/art/portraits/unique/qing-yongzheng/official-12.webp"
-    },
-    "乌拉那拉氏": {
-      "base": "assets/art/portraits/unique/qing-yongzheng/consort-01.webp"
-    },
-    "年氏": {
-      "base": "assets/art/portraits/unique/qing-yongzheng/consort-02.webp"
-    },
-    "钮祜禄氏": {
-      "base": "assets/art/portraits/unique/qing-yongzheng/consort-03.webp"
-    },
-    "李氏": {
-      "base": "assets/art/portraits/unique/qing-yongzheng/consort-04.webp"
-    },
-    "弘时": {
-      "base": "assets/art/portraits/unique/qing-yongzheng/child-01.webp"
-    },
-    "弘历": {
-      "base": "assets/art/portraits/unique/qing-yongzheng/child-02.webp",
-      "adult": "assets/art/portraits/unique/qing-yongzheng/child-02-adult.webp"
-    },
-    "福惠": {
-      "base": "assets/art/portraits/unique/qing-yongzheng/child-03.webp",
-      "adult": "assets/art/portraits/unique/qing-yongzheng/child-03-adult.webp"
-    },
-    "彼得一世": {
-      "base": "assets/art/portraits/unique/qing-yongzheng/foreign-01.webp"
-    },
-    "策妄阿拉布坦": {
-      "base": "assets/art/portraits/unique/qing-yongzheng/foreign-02.webp"
-    },
-    "罗卜藏丹津": {
-      "base": "assets/art/portraits/unique/qing-yongzheng/foreign-03.webp"
-    },
-    "黎维祹": {
-      "base": "assets/art/portraits/unique/qing-yongzheng/foreign-04.webp"
-    },
-    "李昀": {
-      "base": "assets/art/portraits/unique/qing-yongzheng/foreign-05.webp"
-    },
-    "仁寿皇太后": {
-      "base": "assets/art/portraits/unique/qing-yongzheng/dowager-01.webp"
-    }
-  }
-};
-export const ART_SCENES = {
-  "desk-day": {
-    "src": "assets/art/scenes/desk-day-1440.webp",
-    "small": "assets/art/scenes/desk-day-720.webp",
-    "focus": "50% 50%"
-  },
-  "desk-night": {
-    "src": "assets/art/scenes/desk-night-1440.webp",
-    "small": "assets/art/scenes/desk-night-720.webp",
-    "focus": "50% 50%"
-  },
-  "court": {
-    "src": "assets/art/scenes/court-1440.webp",
-    "small": "assets/art/scenes/court-720.webp",
-    "focus": "50% 50%"
-  },
-  "audience": {
-    "src": "assets/art/scenes/audience-1440.webp",
-    "small": "assets/art/scenes/audience-720.webp",
-    "focus": "50% 50%"
-  },
-  "banquet": {
-    "src": "assets/art/scenes/banquet-1440.webp",
-    "small": "assets/art/scenes/banquet-720.webp",
-    "focus": "50% 50%"
-  },
-  "palace": {
-    "src": "assets/art/scenes/palace-1440.webp",
-    "small": "assets/art/scenes/palace-720.webp",
-    "focus": "50% 50%"
-  },
-  "garden": {
-    "src": "assets/art/scenes/garden-1440.webp",
-    "small": "assets/art/scenes/garden-720.webp",
-    "focus": "50% 50%"
-  },
-  "study": {
-    "src": "assets/art/scenes/study-1440.webp",
-    "small": "assets/art/scenes/study-720.webp",
-    "focus": "50% 50%"
-  },
-  "exam": {
-    "src": "assets/art/scenes/exam-1440.webp",
-    "small": "assets/art/scenes/exam-720.webp",
-    "focus": "50% 50%"
-  },
-  "tour": {
-    "src": "assets/art/scenes/tour-1440.webp",
-    "small": "assets/art/scenes/tour-720.webp",
-    "focus": "50% 50%"
-  },
-  "camp": {
-    "src": "assets/art/scenes/camp-1440.webp",
-    "small": "assets/art/scenes/camp-720.webp",
-    "focus": "50% 50%"
-  },
-  "accession": {
-    "src": "assets/art/scenes/accession-1440.webp",
-    "small": "assets/art/scenes/accession-720.webp",
-    "focus": "50% 50%"
-  },
-  "ending": {
-    "src": "assets/art/scenes/ending-1440.webp",
-    "small": "assets/art/scenes/ending-720.webp",
-    "focus": "50% 70%"
-  }
+"avatar":"50% 32%",
+"card":"50% 25%",
+"paper":"50% 50%"
 };
 export const ART_HALLS = {
-  "hall-realm": {
-    "src": "assets/art/halls/hall-realm-1440.webp",
-    "small": null,
-    "focus": "50% 50%"
-  },
-  "hall-treasury": {
-    "src": "assets/art/halls/hall-treasury-1440.webp",
-    "small": null,
-    "focus": "50% 50%"
-  },
-  "hall-archive": {
-    "src": "assets/art/halls/hall-archive-1440.webp",
-    "small": null,
-    "focus": "50% 50%"
-  }
+"hall-realm":{"src":"assets/art/halls/hall-realm-1440.webp","small":null,"focus":"50% 50%"},
+"hall-treasury":{"src":"assets/art/halls/hall-treasury-1440.webp","small":null,"focus":"50% 50%"},
+"hall-archive":{"src":"assets/art/halls/hall-archive-1440.webp","small":null,"focus":"50% 50%"}
+};
+export const ART_POOLS = {
+"ming/official-mature":["assets/art/portraits/ming/official-mature-01.webp","assets/art/portraits/ming/official-mature-02.webp","assets/art/portraits/ming/official-mature-03.webp","assets/art/portraits/ming/official-mature-04.webp","assets/art/portraits/ming/official-mature-05.webp","assets/art/portraits/ming/official-mature-06.webp","assets/art/portraits/ming/official-mature-07.webp","assets/art/portraits/ming/official-mature-08.webp","assets/art/portraits/ming/official-mature-09.webp","assets/art/portraits/ming/official-mature-10.webp","assets/art/portraits/ming/official-mature-11.webp","assets/art/portraits/ming/official-mature-12.webp","assets/art/portraits/ming/official-mature-13.webp","assets/art/portraits/ming/official-mature-14.webp","assets/art/portraits/ming/official-mature-15.webp","assets/art/portraits/ming/official-mature-16.webp"],
+"ming/official-old":["assets/art/portraits/ming/official-old-01.webp","assets/art/portraits/ming/official-old-02.webp","assets/art/portraits/ming/official-old-03.webp","assets/art/portraits/ming/official-old-04.webp","assets/art/portraits/ming/official-old-05.webp","assets/art/portraits/ming/official-old-06.webp","assets/art/portraits/ming/official-old-07.webp","assets/art/portraits/ming/official-old-08.webp","assets/art/portraits/ming/official-old-09.webp","assets/art/portraits/ming/official-old-10.webp"],
+"ming/general-all":["assets/art/portraits/ming/general-all-01.webp","assets/art/portraits/ming/general-all-02.webp","assets/art/portraits/ming/general-all-03.webp","assets/art/portraits/ming/general-all-04.webp"],
+"ming/eunuch-all":["assets/art/portraits/ming/eunuch-all-01.webp","assets/art/portraits/ming/eunuch-all-02.webp"],
+"ming/consort-high":["assets/art/portraits/ming/consort-high-01.webp","assets/art/portraits/ming/consort-high-02.webp","assets/art/portraits/ming/consort-high-03.webp"],
+"ming/consort-regular":["assets/art/portraits/ming/consort-regular-01.webp","assets/art/portraits/ming/consort-regular-02.webp","assets/art/portraits/ming/consort-regular-03.webp","assets/art/portraits/ming/consort-regular-04.webp","assets/art/portraits/ming/consort-regular-05.webp","assets/art/portraits/ming/consort-regular-06.webp","assets/art/portraits/ming/consort-regular-07.webp","assets/art/portraits/ming/consort-regular-08.webp"],
+"ming/dowager-all":["assets/art/portraits/ming/dowager-all-01.webp"],
+"ming/emperor-young":["assets/art/portraits/ming/emperor-young-01.webp","assets/art/portraits/ming/emperor-young-02.webp"],
+"ming/emperor-old":["assets/art/portraits/ming/emperor-old-01.webp","assets/art/portraits/ming/emperor-old-02.webp"],
+"ming/prince-teen":["assets/art/portraits/ming/prince-teen-01.webp","assets/art/portraits/ming/prince-teen-02.webp"],
+"ming/prince-adult":["assets/art/portraits/ming/prince-adult-01.webp","assets/art/portraits/ming/prince-adult-02.webp"],
+"ming/princess-teen":["assets/art/portraits/ming/princess-teen-01.webp","assets/art/portraits/ming/princess-teen-02.webp"],
+"ming/princess-adult":["assets/art/portraits/ming/princess-adult-01.webp","assets/art/portraits/ming/princess-adult-02.webp"],
+"qing/official-mature":["assets/art/portraits/qing/official-mature-01.webp","assets/art/portraits/qing/official-mature-02.webp","assets/art/portraits/qing/official-mature-03.webp","assets/art/portraits/qing/official-mature-04.webp","assets/art/portraits/qing/official-mature-05.webp","assets/art/portraits/qing/official-mature-06.webp","assets/art/portraits/qing/official-mature-07.webp","assets/art/portraits/qing/official-mature-08.webp","assets/art/portraits/qing/official-mature-09.webp","assets/art/portraits/qing/official-mature-10.webp"],
+"qing/official-old":["assets/art/portraits/qing/official-old-01.webp","assets/art/portraits/qing/official-old-02.webp","assets/art/portraits/qing/official-old-03.webp","assets/art/portraits/qing/official-old-04.webp","assets/art/portraits/qing/official-old-05.webp","assets/art/portraits/qing/official-old-06.webp"],
+"qing/general-all":["assets/art/portraits/qing/general-all-01.webp","assets/art/portraits/qing/general-all-02.webp","assets/art/portraits/qing/general-all-03.webp"],
+"qing/consort-high":["assets/art/portraits/qing/consort-high-01.webp","assets/art/portraits/qing/consort-high-02.webp"],
+"qing/consort-regular":["assets/art/portraits/qing/consort-regular-01.webp","assets/art/portraits/qing/consort-regular-02.webp","assets/art/portraits/qing/consort-regular-03.webp","assets/art/portraits/qing/consort-regular-04.webp","assets/art/portraits/qing/consort-regular-05.webp"],
+"qing/emperor-young":["assets/art/portraits/qing/emperor-young-01.webp"],
+"qing/emperor-old":["assets/art/portraits/qing/emperor-old-01.webp"],
+"qing/prince-teen":["assets/art/portraits/qing/prince-teen-01.webp"],
+"qing/prince-adult":["assets/art/portraits/qing/prince-adult-01.webp"],
+"qing/princess-teen":["assets/art/portraits/qing/princess-teen-01.webp"],
+"qing/princess-adult":["assets/art/portraits/qing/princess-adult-01.webp"],
+"han/official-mature":[null,null,null,null,null,null,null,null,null,null],
+"han/official-old":[null,null,null,null,null,null],
+"han/general-all":[null,null,null],
+"han/eunuch-all":[null],
+"han/consort-high":[null,null],
+"han/consort-regular":[null,null,null,null,null],
+"han/emperor-young":[null],
+"han/emperor-old":[null],
+"han/prince-teen":[null],
+"han/prince-adult":[null],
+"han/princess-teen":[null],
+"han/princess-adult":[null],
+"tang/official-mature":["assets/art/portraits/tang/official-mature-01.webp","assets/art/portraits/tang/official-mature-02.webp","assets/art/portraits/tang/official-mature-03.webp","assets/art/portraits/tang/official-mature-04.webp","assets/art/portraits/tang/official-mature-05.webp","assets/art/portraits/tang/official-mature-06.webp","assets/art/portraits/tang/official-mature-07.webp","assets/art/portraits/tang/official-mature-08.webp","assets/art/portraits/tang/official-mature-09.webp","assets/art/portraits/tang/official-mature-10.webp"],
+"tang/official-old":["assets/art/portraits/tang/official-old-01.webp","assets/art/portraits/tang/official-old-02.webp","assets/art/portraits/tang/official-old-03.webp","assets/art/portraits/tang/official-old-04.webp","assets/art/portraits/tang/official-old-05.webp","assets/art/portraits/tang/official-old-06.webp"],
+"tang/general-all":["assets/art/portraits/tang/general-all-01.webp","assets/art/portraits/tang/general-all-02.webp","assets/art/portraits/tang/general-all-03.webp"],
+"tang/eunuch-all":["assets/art/portraits/tang/eunuch-all-01.webp"],
+"tang/consort-high":["assets/art/portraits/tang/consort-high-01.webp","assets/art/portraits/tang/consort-high-02.webp"],
+"tang/consort-regular":["assets/art/portraits/tang/consort-regular-01.webp","assets/art/portraits/tang/consort-regular-02.webp","assets/art/portraits/tang/consort-regular-03.webp","assets/art/portraits/tang/consort-regular-04.webp","assets/art/portraits/tang/consort-regular-05.webp"],
+"tang/emperor-young":["assets/art/portraits/tang/emperor-young-01.webp"],
+"tang/emperor-old":["assets/art/portraits/tang/emperor-old-01.webp"],
+"tang/prince-teen":["assets/art/portraits/tang/prince-teen-01.webp"],
+"tang/prince-adult":["assets/art/portraits/tang/prince-adult-01.webp"],
+"tang/princess-teen":["assets/art/portraits/tang/princess-teen-01.webp"],
+"tang/princess-adult":["assets/art/portraits/tang/princess-adult-01.webp"],
+"song/official-mature":["assets/art/portraits/song/official-mature-01.webp","assets/art/portraits/song/official-mature-02.webp","assets/art/portraits/song/official-mature-03.webp","assets/art/portraits/song/official-mature-04.webp","assets/art/portraits/song/official-mature-05.webp","assets/art/portraits/song/official-mature-06.webp","assets/art/portraits/song/official-mature-07.webp","assets/art/portraits/song/official-mature-08.webp","assets/art/portraits/song/official-mature-09.webp","assets/art/portraits/song/official-mature-10.webp"],
+"song/official-old":["assets/art/portraits/song/official-old-01.webp","assets/art/portraits/song/official-old-02.webp","assets/art/portraits/song/official-old-03.webp","assets/art/portraits/song/official-old-04.webp","assets/art/portraits/song/official-old-05.webp","assets/art/portraits/song/official-old-06.webp"],
+"song/general-all":["assets/art/portraits/song/general-all-01.webp","assets/art/portraits/song/general-all-02.webp","assets/art/portraits/song/general-all-03.webp"],
+"song/eunuch-all":["assets/art/portraits/song/eunuch-all-01.webp"],
+"song/consort-high":["assets/art/portraits/song/consort-high-01.webp","assets/art/portraits/song/consort-high-02.webp"],
+"song/consort-regular":["assets/art/portraits/song/consort-regular-01.webp","assets/art/portraits/song/consort-regular-02.webp","assets/art/portraits/song/consort-regular-03.webp","assets/art/portraits/song/consort-regular-04.webp","assets/art/portraits/song/consort-regular-05.webp"],
+"song/emperor-young":["assets/art/portraits/song/emperor-young-01.webp"],
+"song/emperor-old":["assets/art/portraits/song/emperor-old-01.webp"],
+"song/prince-teen":["assets/art/portraits/song/prince-teen-01.webp"],
+"song/prince-adult":["assets/art/portraits/song/prince-adult-01.webp"],
+"song/princess-teen":["assets/art/portraits/song/princess-teen-01.webp"],
+"song/princess-adult":["assets/art/portraits/song/princess-adult-01.webp"],
+"shared/foreign-north":["assets/art/portraits/shared/foreign-north-01.webp","assets/art/portraits/shared/foreign-north-02.webp"],
+"shared/foreign-west":["assets/art/portraits/shared/foreign-west-01.webp","assets/art/portraits/shared/foreign-west-02.webp"],
+"shared/foreign-south":["assets/art/portraits/shared/foreign-south-01.webp","assets/art/portraits/shared/foreign-south-02.webp"],
+"shared/foreign-east":["assets/art/portraits/shared/foreign-east-01.webp","assets/art/portraits/shared/foreign-east-02.webp"],
+"shared/boy-young":["assets/art/portraits/shared/boy-young-01.webp","assets/art/portraits/shared/boy-young-02.webp"],
+"shared/girl-young":["assets/art/portraits/shared/girl-young-01.webp","assets/art/portraits/shared/girl-young-02.webp"],
+"shared/scholar-young":["assets/art/portraits/shared/scholar-young-01.webp","assets/art/portraits/shared/scholar-young-02.webp","assets/art/portraits/shared/scholar-young-03.webp","assets/art/portraits/shared/scholar-young-04.webp"],
+"shared/scholar-mature":["assets/art/portraits/shared/scholar-mature-01.webp","assets/art/portraits/shared/scholar-mature-02.webp","assets/art/portraits/shared/scholar-mature-03.webp","assets/art/portraits/shared/scholar-mature-04.webp"]
+};
+export const ART_SCENES = {
+"desk-day":{"src":"assets/art/scenes/desk-day-1440.webp","small":"assets/art/scenes/desk-day-720.webp","focus":"50% 50%"},
+"desk-night":{"src":"assets/art/scenes/desk-night-1440.webp","small":"assets/art/scenes/desk-night-720.webp","focus":"50% 50%"},
+"court":{"src":"assets/art/scenes/court-1440.webp","small":"assets/art/scenes/court-720.webp","focus":"50% 50%"},
+"audience":{"src":"assets/art/scenes/audience-1440.webp","small":"assets/art/scenes/audience-720.webp","focus":"50% 50%"},
+"banquet":{"src":"assets/art/scenes/banquet-1440.webp","small":"assets/art/scenes/banquet-720.webp","focus":"50% 50%"},
+"palace":{"src":"assets/art/scenes/palace-1440.webp","small":"assets/art/scenes/palace-720.webp","focus":"50% 50%"},
+"garden":{"src":"assets/art/scenes/garden-1440.webp","small":"assets/art/scenes/garden-720.webp","focus":"50% 50%"},
+"study":{"src":"assets/art/scenes/study-1440.webp","small":"assets/art/scenes/study-720.webp","focus":"50% 50%"},
+"exam":{"src":"assets/art/scenes/exam-1440.webp","small":"assets/art/scenes/exam-720.webp","focus":"50% 50%"},
+"tour":{"src":"assets/art/scenes/tour-1440.webp","small":"assets/art/scenes/tour-720.webp","focus":"50% 50%"},
+"camp":{"src":"assets/art/scenes/camp-1440.webp","small":"assets/art/scenes/camp-720.webp","focus":"50% 50%"},
+"accession":{"src":"assets/art/scenes/accession-1440.webp","small":"assets/art/scenes/accession-720.webp","focus":"50% 50%"},
+"ending":{"src":"assets/art/scenes/ending-1440.webp","small":"assets/art/scenes/ending-720.webp","focus":"50% 70%"}
+};
+export const ART_UNIQUE = {
+"han-wudi":{
+"刘彻":{"base":null,"old":null},
+"窦婴":{"base":null},
+"田蚡":{"base":null},
+"赵绾":{"base":null},
+"王臧":{"base":null},
+"董仲舒":{"base":null},
+"汲黯":{"base":null},
+"韩安国":{"base":null},
+"李广":{"base":null},
+"程不识":{"base":null},
+"庄助":{"base":null},
+"陈阿娇":{"base":null},
+"卫子夫":{"base":null},
+"军臣单于":{"base":null},
+"猎骄靡":{"base":null},
+"赵佗":{"base":null},
+"驺郢":{"base":null},
+"驺望":{"base":null},
+"窦太皇太后":{"base":null}
+},
+"tang-taizong":{
+"李世民":{"base":"assets/art/portraits/unique/tang-taizong/emperor-01.webp","old":"assets/art/portraits/unique/tang-taizong/emperor-01-old.webp"},
+"房玄龄":{"base":"assets/art/portraits/unique/tang-taizong/official-01.webp"},
+"杜如晦":{"base":"assets/art/portraits/unique/tang-taizong/official-02.webp"},
+"长孙无忌":{"base":"assets/art/portraits/unique/tang-taizong/official-03.webp"},
+"魏征":{"base":"assets/art/portraits/unique/tang-taizong/official-04.webp"},
+"王珪":{"base":"assets/art/portraits/unique/tang-taizong/official-05.webp"},
+"萧瑀":{"base":"assets/art/portraits/unique/tang-taizong/official-06.webp"},
+"封德彝":{"base":"assets/art/portraits/unique/tang-taizong/official-07.webp"},
+"高士廉":{"base":"assets/art/portraits/unique/tang-taizong/official-08.webp"},
+"戴胄":{"base":"assets/art/portraits/unique/tang-taizong/official-09.webp"},
+"尉迟敬德":{"base":"assets/art/portraits/unique/tang-taizong/official-10.webp"},
+"李靖":{"base":"assets/art/portraits/unique/tang-taizong/official-11.webp"},
+"李勣":{"base":"assets/art/portraits/unique/tang-taizong/official-12.webp"},
+"李孝恭":{"base":"assets/art/portraits/unique/tang-taizong/official-13.webp"},
+"长孙氏":{"base":"assets/art/portraits/unique/tang-taizong/consort-01.webp"},
+"杨氏":{"base":"assets/art/portraits/unique/tang-taizong/consort-02.webp"},
+"韦珪":{"base":"assets/art/portraits/unique/tang-taizong/consort-03.webp"},
+"李承乾":{"base":"assets/art/portraits/unique/tang-taizong/child-01.webp","adult":"assets/art/portraits/unique/tang-taizong/child-01-adult.webp"},
+"李泰":{"base":"assets/art/portraits/unique/tang-taizong/child-02.webp","adult":"assets/art/portraits/unique/tang-taizong/child-02-adult.webp"},
+"李恪":{"base":"assets/art/portraits/unique/tang-taizong/child-03.webp","adult":"assets/art/portraits/unique/tang-taizong/child-03-adult.webp"},
+"颉利可汗":{"base":"assets/art/portraits/unique/tang-taizong/foreign-01.webp"},
+"伏允":{"base":"assets/art/portraits/unique/tang-taizong/foreign-02.webp"},
+"高建武":{"base":"assets/art/portraits/unique/tang-taizong/foreign-03.webp"},
+"扶余璋":{"base":"assets/art/portraits/unique/tang-taizong/foreign-04.webp"},
+"夷男":{"base":"assets/art/portraits/unique/tang-taizong/foreign-05.webp"}
+},
+"song-renzong":{
+"赵祯":{"base":"assets/art/portraits/unique/song-renzong/emperor-01.webp","old":"assets/art/portraits/unique/song-renzong/emperor-01-old.webp"},
+"丁谓":{"base":"assets/art/portraits/unique/song-renzong/official-01.webp"},
+"王曾":{"base":"assets/art/portraits/unique/song-renzong/official-02.webp"},
+"吕夷简":{"base":"assets/art/portraits/unique/song-renzong/official-03.webp"},
+"晏殊":{"base":"assets/art/portraits/unique/song-renzong/official-04.webp"},
+"鲁宗道":{"base":"assets/art/portraits/unique/song-renzong/official-05.webp"},
+"曹利用":{"base":"assets/art/portraits/unique/song-renzong/official-06.webp"},
+"钱惟演":{"base":"assets/art/portraits/unique/song-renzong/official-07.webp"},
+"张士逊":{"base":"assets/art/portraits/unique/song-renzong/official-08.webp"},
+"雷允恭":{"base":"assets/art/portraits/unique/song-renzong/official-09.webp"},
+"范仲淹":{"base":"assets/art/portraits/unique/song-renzong/official-10.webp"},
+"耶律隆绪":{"base":"assets/art/portraits/unique/song-renzong/foreign-01.webp"},
+"李德明":{"base":"assets/art/portraits/unique/song-renzong/foreign-02.webp"},
+"唃厮啰":{"base":"assets/art/portraits/unique/song-renzong/foreign-03.webp"},
+"李公蕴":{"base":"assets/art/portraits/unique/song-renzong/foreign-04.webp"},
+"王询":{"base":"assets/art/portraits/unique/song-renzong/foreign-05.webp"},
+"刘太后":{"base":"assets/art/portraits/unique/song-renzong/dowager-01.webp"}
+},
+"ming-wanli":{
+"朱翊钧":{"base":"assets/art/portraits/unique/ming-wanli/emperor-01.webp","old":"assets/art/portraits/unique/ming-wanli/emperor-01-old.webp"},
+"张居正":{"base":"assets/art/portraits/unique/ming-wanli/official-01.webp"},
+"冯保":{"base":"assets/art/portraits/unique/ming-wanli/official-02.webp"},
+"吕调阳":{"base":"assets/art/portraits/unique/ming-wanli/official-03.webp"},
+"张四维":{"base":"assets/art/portraits/unique/ming-wanli/official-04.webp"},
+"申时行":{"base":"assets/art/portraits/unique/ming-wanli/official-05.webp"},
+"王锡爵":{"base":"assets/art/portraits/unique/ming-wanli/official-06.webp"},
+"王国光":{"base":"assets/art/portraits/unique/ming-wanli/official-07.webp"},
+"杨博":{"base":"assets/art/portraits/unique/ming-wanli/official-08.webp"},
+"谭纶":{"base":"assets/art/portraits/unique/ming-wanli/official-09.webp"},
+"潘季驯":{"base":"assets/art/portraits/unique/ming-wanli/official-10.webp"},
+"戚继光":{"base":"assets/art/portraits/unique/ming-wanli/official-11.webp"},
+"李成梁":{"base":"assets/art/portraits/unique/ming-wanli/official-12.webp"},
+"俺答汗":{"base":"assets/art/portraits/unique/ming-wanli/foreign-01.webp"},
+"王杲":{"base":"assets/art/portraits/unique/ming-wanli/foreign-02.webp"},
+"李昖":{"base":"assets/art/portraits/unique/ming-wanli/foreign-03.webp"},
+"莫茂洽":{"base":"assets/art/portraits/unique/ming-wanli/foreign-04.webp"},
+"织田信长":{"base":"assets/art/portraits/unique/ming-wanli/foreign-05.webp"},
+"李太后":{"base":"assets/art/portraits/unique/ming-wanli/dowager-01.webp"}
+},
+"ming-chongzhen":{
+"朱由检":{"base":"assets/art/portraits/unique/ming-chongzhen/emperor-01.webp","old":"assets/art/portraits/unique/ming-chongzhen/emperor-01-old.webp"},
+"魏忠贤":{"base":"assets/art/portraits/unique/ming-chongzhen/official-01.webp"},
+"崔呈秀":{"base":"assets/art/portraits/unique/ming-chongzhen/official-02.webp"},
+"黄立极":{"base":"assets/art/portraits/unique/ming-chongzhen/official-03.webp"},
+"温体仁":{"base":"assets/art/portraits/unique/ming-chongzhen/official-04.webp"},
+"周延儒":{"base":"assets/art/portraits/unique/ming-chongzhen/official-05.webp"},
+"毕自严":{"base":"assets/art/portraits/unique/ming-chongzhen/official-06.webp"},
+"王永光":{"base":"assets/art/portraits/unique/ming-chongzhen/official-07.webp"},
+"袁崇焕":{"base":"assets/art/portraits/unique/ming-chongzhen/official-08.webp"},
+"洪承畴":{"base":"assets/art/portraits/unique/ming-chongzhen/official-09.webp"},
+"卢象升":{"base":"assets/art/portraits/unique/ming-chongzhen/official-10.webp"},
+"周氏":{"base":"assets/art/portraits/unique/ming-chongzhen/consort-01.webp"},
+"田氏":{"base":"assets/art/portraits/unique/ming-chongzhen/consort-02.webp"},
+"袁氏":{"base":"assets/art/portraits/unique/ming-chongzhen/consort-03.webp"},
+"林丹汗":{"base":"assets/art/portraits/unique/ming-chongzhen/foreign-01.webp"},
+"皇太极":{"base":"assets/art/portraits/unique/ming-chongzhen/foreign-02.webp"},
+"李倧":{"base":"assets/art/portraits/unique/ming-chongzhen/foreign-03.webp"},
+"德川家光":{"base":"assets/art/portraits/unique/ming-chongzhen/foreign-04.webp"},
+"懿安皇后":{"base":"assets/art/portraits/unique/ming-chongzhen/dowager-01.webp"}
+},
+"qing-kangxi":{
+"玄烨":{"base":"assets/art/portraits/unique/qing-kangxi/emperor-01.webp","old":"assets/art/portraits/unique/qing-kangxi/emperor-01-old.webp"},
+"索尼":{"base":"assets/art/portraits/unique/qing-kangxi/official-01.webp"},
+"苏克萨哈":{"base":"assets/art/portraits/unique/qing-kangxi/official-02.webp"},
+"遏必隆":{"base":"assets/art/portraits/unique/qing-kangxi/official-03.webp"},
+"鳌拜":{"base":"assets/art/portraits/unique/qing-kangxi/official-04.webp"},
+"索额图":{"base":"assets/art/portraits/unique/qing-kangxi/official-05.webp"},
+"明珠":{"base":"assets/art/portraits/unique/qing-kangxi/official-06.webp"},
+"熊赐履":{"base":"assets/art/portraits/unique/qing-kangxi/official-07.webp"},
+"魏裔介":{"base":"assets/art/portraits/unique/qing-kangxi/official-08.webp"},
+"汤若望":{"base":"assets/art/portraits/unique/qing-kangxi/official-09.webp"},
+"杰书":{"base":"assets/art/portraits/unique/qing-kangxi/official-10.webp"},
+"阿列克谢":{"base":"assets/art/portraits/unique/qing-kangxi/foreign-01.webp"},
+"僧格":{"base":"assets/art/portraits/unique/qing-kangxi/foreign-02.webp"},
+"吴三桂":{"base":"assets/art/portraits/unique/qing-kangxi/foreign-03.webp"},
+"郑成功":{"base":"assets/art/portraits/unique/qing-kangxi/foreign-04.webp"},
+"李棩":{"base":"assets/art/portraits/unique/qing-kangxi/foreign-05.webp"},
+"孝庄太皇太后":{"base":"assets/art/portraits/unique/qing-kangxi/dowager-01.webp"}
+},
+"qing-yongzheng":{
+"胤禛":{"base":"assets/art/portraits/unique/qing-yongzheng/emperor-01.webp","old":"assets/art/portraits/unique/qing-yongzheng/emperor-01-old.webp"},
+"允禩":{"base":"assets/art/portraits/unique/qing-yongzheng/official-01.webp"},
+"允祥":{"base":"assets/art/portraits/unique/qing-yongzheng/official-02.webp"},
+"马齐":{"base":"assets/art/portraits/unique/qing-yongzheng/official-03.webp"},
+"隆科多":{"base":"assets/art/portraits/unique/qing-yongzheng/official-04.webp"},
+"张廷玉":{"base":"assets/art/portraits/unique/qing-yongzheng/official-05.webp"},
+"年羹尧":{"base":"assets/art/portraits/unique/qing-yongzheng/official-06.webp"},
+"鄂尔泰":{"base":"assets/art/portraits/unique/qing-yongzheng/official-07.webp"},
+"田文镜":{"base":"assets/art/portraits/unique/qing-yongzheng/official-08.webp"},
+"李卫":{"base":"assets/art/portraits/unique/qing-yongzheng/official-09.webp"},
+"允禟":{"base":"assets/art/portraits/unique/qing-yongzheng/official-10.webp"},
+"允禵":{"base":"assets/art/portraits/unique/qing-yongzheng/official-11.webp"},
+"岳钟琪":{"base":"assets/art/portraits/unique/qing-yongzheng/official-12.webp"},
+"乌拉那拉氏":{"base":"assets/art/portraits/unique/qing-yongzheng/consort-01.webp"},
+"年氏":{"base":"assets/art/portraits/unique/qing-yongzheng/consort-02.webp"},
+"钮祜禄氏":{"base":"assets/art/portraits/unique/qing-yongzheng/consort-03.webp"},
+"李氏":{"base":"assets/art/portraits/unique/qing-yongzheng/consort-04.webp"},
+"弘时":{"base":"assets/art/portraits/unique/qing-yongzheng/child-01.webp"},
+"弘历":{"base":"assets/art/portraits/unique/qing-yongzheng/child-02.webp","adult":"assets/art/portraits/unique/qing-yongzheng/child-02-adult.webp"},
+"福惠":{"base":"assets/art/portraits/unique/qing-yongzheng/child-03.webp","adult":"assets/art/portraits/unique/qing-yongzheng/child-03-adult.webp"},
+"彼得一世":{"base":"assets/art/portraits/unique/qing-yongzheng/foreign-01.webp"},
+"策妄阿拉布坦":{"base":"assets/art/portraits/unique/qing-yongzheng/foreign-02.webp"},
+"罗卜藏丹津":{"base":"assets/art/portraits/unique/qing-yongzheng/foreign-03.webp"},
+"黎维祹":{"base":"assets/art/portraits/unique/qing-yongzheng/foreign-04.webp"},
+"李昀":{"base":"assets/art/portraits/unique/qing-yongzheng/foreign-05.webp"},
+"仁寿皇太后":{"base":"assets/art/portraits/unique/qing-yongzheng/dowager-01.webp"}
+}
 };
 export const HALL_SCENES = {
-  "朝堂": "court",
-  "后宫": "garden",
-  "宗室": "accession",
-  "格物": "study",
-  "科举": "exam",
-  "天下": "hall-realm",
-  "国势全览": "hall-realm",
-  "内库": "hall-treasury",
-  "史馆": "hall-archive"
+"朝堂":"court",
+"后宫":"garden",
+"宗室":"accession",
+"格物":"study",
+"科举":"exam",
+"天下":"hall-realm",
+"国势全览":"hall-realm",
+"内库":"hall-treasury",
+"史馆":"hall-archive"
 };

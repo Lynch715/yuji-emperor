@@ -1,0 +1,27 @@
+{
+  "baseline": "98cffe1b705598c4667ef36e2bad1b64e2345aa4",
+  "replacedWebP": [
+    "assets/art/portraits/unique/song-renzong/dowager-01.webp",
+    "assets/art/portraits/unique/song-renzong/official-01.webp",
+    "assets/art/portraits/unique/song-renzong/official-07.webp",
+    "assets/art/portraits/unique/song-renzong/official-10.webp"
+  ],
+  "unchangedWebP": 333,
+  "totalWebP": 337,
+  "sourceAndHTMLUnchangedSinceAccepted": true,
+  "unchangedSourceFiles": 103,
+  "indexHtmlBytes": 859561,
+  "indexSha256": "ea60ef01bc5791456cea55ef110c752dcc49d6ec54a33393650d970cd4b54497",
+  "validation": {
+    "tests": 608,
+    "passed": 608,
+    "failed": 0,
+    "simulationYears": 200,
+    "simulationTurns": 7200,
+    "saveVersion": 25
+  },
+  "lighthouseReuse": {
+    "reason": "Only four portraits and documentation changed; source, HTML and CSS byte-identical to accepted98cffe1. Six prior official Lighthouse audits remain applicable.",
+    "evidence": "../final/lighthouse-summary.json"
+  }
+}

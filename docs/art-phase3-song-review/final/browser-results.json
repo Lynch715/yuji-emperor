@@ -1,0 +1,625 @@
+{
+  "opening1280": {
+    "images": [
+      {
+        "currentSrc": "http://127.0.0.1:4215/assets/art/scenes/court-1440.webp",
+        "height": 720,
+        "opacity": "1",
+        "src": "assets/art/scenes/court-1440.webp",
+        "width": 1280
+      },
+      {
+        "currentSrc": "http://127.0.0.1:4215/assets/art/portraits/unique/song-renzong/emperor-01.webp",
+        "height": 500,
+        "opacity": "1",
+        "src": "assets/art/portraits/unique/song-renzong/emperor-01.webp",
+        "width": 400
+      }
+    ],
+    "scrollWidth": 1280,
+    "width": 1280
+  },
+  "opening768": {
+    "images": [
+      {
+        "currentSrc": "http://127.0.0.1:4215/assets/art/scenes/court-1440.webp",
+        "height": 432,
+        "opacity": "1",
+        "src": "assets/art/scenes/court-1440.webp",
+        "width": 768
+      },
+      {
+        "currentSrc": "http://127.0.0.1:4215/assets/art/portraits/unique/song-renzong/emperor-01.webp",
+        "height": 500,
+        "opacity": "1",
+        "src": "assets/art/portraits/unique/song-renzong/emperor-01.webp",
+        "width": 400
+      }
+    ],
+    "scrollWidth": 768,
+    "width": 768
+  },
+  "opening390": {
+    "images": [
+      {
+        "currentSrc": "http://127.0.0.1:4215/assets/art/scenes/court-720.webp",
+        "height": 405,
+        "opacity": "1",
+        "src": "assets/art/scenes/court-1440.webp",
+        "width": 720
+      },
+      {
+        "currentSrc": "http://127.0.0.1:4215/assets/art/portraits/unique/song-renzong/emperor-01.webp",
+        "height": 500,
+        "opacity": "1",
+        "src": "assets/art/portraits/unique/song-renzong/emperor-01.webp",
+        "width": 400
+      }
+    ],
+    "scrollWidth": 390,
+    "width": 390
+  },
+  "firstScreenCutoff": "2026-11-09T12:17:26.619Z",
+  "openingAndPrologueCutoff": "2026-11-09T12:18:40.803Z",
+  "prologue": {
+    "images": [
+      {
+        "currentSrc": "http://127.0.0.1:4215/assets/art/scenes/accession-1440.webp",
+        "height": 720,
+        "opacity": "1",
+        "src": "assets/art/scenes/accession-1440.webp",
+        "width": 1280
+      },
+      {
+        "currentSrc": "http://127.0.0.1:4215/assets/art/portraits/song/official-mature-07.webp",
+        "height": 500,
+        "opacity": "1",
+        "src": "assets/art/portraits/song/official-mature-07.webp",
+        "width": 400
+      },
+      {
+        "currentSrc": "http://127.0.0.1:4215/assets/art/portraits/song/official-mature-07.webp",
+        "height": 500,
+        "opacity": "1",
+        "src": "assets/art/portraits/song/official-mature-07.webp",
+        "width": 400
+      },
+      {
+        "currentSrc": "http://127.0.0.1:4215/assets/art/portraits/song/official-mature-08.webp",
+        "height": 500,
+        "opacity": "1",
+        "src": "assets/art/portraits/song/official-mature-08.webp",
+        "width": 400
+      },
+      {
+        "currentSrc": "http://127.0.0.1:4215/assets/art/scenes/court-1440.webp",
+        "height": 720,
+        "opacity": "1",
+        "src": "assets/art/scenes/court-1440.webp",
+        "width": 1280
+      },
+      {
+        "currentSrc": "http://127.0.0.1:4215/assets/art/portraits/unique/song-renzong/emperor-01.webp",
+        "height": 500,
+        "opacity": "1",
+        "src": "assets/art/portraits/unique/song-renzong/emperor-01.webp",
+        "width": 400
+      }
+    ],
+    "scrollWidth": 1280,
+    "width": 1280
+  },
+  "court": {
+    "390": {
+      "images": [
+        {
+          "height": 500,
+          "loaded": true,
+          "opacity": "1",
+          "src": "assets/art/portraits/unique/song-renzong/official-02.webp",
+          "width": 400
+        },
+        {
+          "height": 500,
+          "loaded": true,
+          "opacity": "1",
+          "src": "assets/art/portraits/unique/song-renzong/official-03.webp",
+          "width": 400
+        }
+      ],
+      "scrollWidth": 390,
+      "width": 390
+    },
+    "768": {
+      "images": [
+        {
+          "height": 500,
+          "loaded": true,
+          "opacity": "1",
+          "src": "assets/art/portraits/unique/song-renzong/official-01.webp",
+          "width": 400
+        },
+        {
+          "height": 500,
+          "loaded": true,
+          "opacity": "1",
+          "src": "assets/art/portraits/unique/song-renzong/official-02.webp",
+          "width": 400
+        },
+        {
+          "height": 500,
+          "loaded": true,
+          "opacity": "1",
+          "src": "assets/art/portraits/unique/song-renzong/official-03.webp",
+          "width": 400
+        },
+        {
+          "height": 500,
+          "loaded": true,
+          "opacity": "1",
+          "src": "assets/art/portraits/unique/song-renzong/official-04.webp",
+          "width": 400
+        }
+      ],
+      "scrollWidth": 768,
+      "width": 768
+    },
+    "1280": {
+      "images": [
+        {
+          "height": 500,
+          "loaded": true,
+          "opacity": "1",
+          "src": "assets/art/portraits/unique/song-renzong/official-01.webp",
+          "width": 400
+        },
+        {
+          "height": 500,
+          "loaded": true,
+          "opacity": "1",
+          "src": "assets/art/portraits/unique/song-renzong/official-02.webp",
+          "width": 400
+        },
+        {
+          "height": 500,
+          "loaded": true,
+          "opacity": "1",
+          "src": "assets/art/portraits/unique/song-renzong/official-03.webp",
+          "width": 400
+        },
+        {
+          "height": 500,
+          "loaded": true,
+          "opacity": "1",
+          "src": "assets/art/portraits/unique/song-renzong/official-04.webp",
+          "width": 400
+        }
+      ],
+      "scrollWidth": 1280,
+      "width": 1280
+    }
+  },
+  "paper": {
+    "390": {
+      "headers": [
+        {
+          "fit": "cover",
+          "height": 112,
+          "source": "http://127.0.0.1:4215/assets/art/scenes/audience-720.webp",
+          "width": 340
+        }
+      ],
+      "portrait": [
+        {
+          "height": 150,
+          "loaded": true,
+          "source": "assets/art/portraits/unique/song-renzong/official-02.webp",
+          "width": 120
+        }
+      ],
+      "scrollWidth": 390,
+      "width": 390
+    },
+    "768": {
+      "headers": [
+        {
+          "fit": "cover",
+          "height": 160,
+          "source": "http://127.0.0.1:4215/assets/art/scenes/audience-1440.webp",
+          "width": 718
+        }
+      ],
+      "portrait": [
+        {
+          "height": 250,
+          "loaded": true,
+          "source": "assets/art/portraits/unique/song-renzong/official-02.webp",
+          "width": 200
+        }
+      ],
+      "scrollWidth": 768,
+      "width": 768
+    },
+    "1280": {
+      "headers": [
+        {
+          "fit": "cover",
+          "height": 160,
+          "source": "http://127.0.0.1:4215/assets/art/scenes/audience-1440.webp",
+          "width": 1142
+        }
+      ],
+      "portrait": [
+        {
+          "height": 250,
+          "loaded": true,
+          "source": "assets/art/portraits/unique/song-renzong/official-02.webp",
+          "width": 200
+        }
+      ],
+      "scrollWidth": 1280,
+      "width": 1280
+    }
+  },
+  "contrast": [
+    {
+      "background": "rgb(18, 14, 12)",
+      "color": "rgb(242, 232, 214)",
+      "fontSize": "18px",
+      "fontWeight": "600",
+      "selector": "#modal-title",
+      "text": "召见 · 王曾"
+    },
+    {
+      "background": "rgb(239, 230, 211)",
+      "color": "rgb(42, 36, 32)",
+      "fontSize": "20px",
+      "fontWeight": "600",
+      "selector": "#modal .action-document h3",
+      "text": "王曾"
+    },
+    {
+      "background": "rgb(239, 230, 211)",
+      "color": "rgb(42, 36, 32)",
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "selector": "#modal .action-document p",
+      "text": "参知政事"
+    },
+    {
+      "background": "rgb(18, 14, 12)",
+      "color": "rgb(168, 154, 136)",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "selector": "#modal label[for=\"talk-line\"]",
+      "text": "御前垂询"
+    },
+    {
+      "background": "rgb(239, 230, 211)",
+      "color": "rgb(42, 36, 32)",
+      "fontSize": "20px",
+      "fontWeight": "600",
+      "selector": "#scroll h2",
+      "text": "天圣新政"
+    }
+  ],
+  "offlinePrologue": {
+    "chapterImages": [
+      {
+        "complete": true,
+        "opacity": "0",
+        "src": "assets/art/scenes/accession-1440.webp",
+        "width": 0
+      }
+    ],
+    "scrollWidth": 390,
+    "width": 390
+  },
+  "offlineCourt": {
+    "portraits": [
+      {
+        "failed": true,
+        "height": 44,
+        "natural": 0,
+        "text": "丁",
+        "width": 44
+      },
+      {
+        "failed": true,
+        "height": 44,
+        "natural": 0,
+        "text": "王",
+        "width": 44
+      },
+      {
+        "failed": true,
+        "height": 44,
+        "natural": 0,
+        "text": "吕",
+        "width": 44
+      },
+      {
+        "failed": true,
+        "height": 44,
+        "natural": 0,
+        "text": "晏",
+        "width": 44
+      },
+      {
+        "failed": true,
+        "height": 44,
+        "natural": 0,
+        "text": "鲁",
+        "width": 44
+      },
+      {
+        "failed": true,
+        "height": 44,
+        "natural": 0,
+        "text": "曹",
+        "width": 44
+      }
+    ],
+    "scene": [
+      {
+        "complete": true,
+        "opacity": "0",
+        "width": 0
+      }
+    ],
+    "scrollWidth": 390,
+    "width": 390
+  },
+  "recovery": {
+    "chapterImages": [
+      {
+        "height": 405,
+        "opacity": "1",
+        "width": 720
+      }
+    ],
+    "scrollWidth": 390,
+    "width": 390
+  },
+  "illustrationsOff": {
+    "off": true,
+    "sceneDisplay": [
+      "none"
+    ],
+    "scrollWidth": 390,
+    "sources": [
+      null,
+      null,
+      null,
+      null
+    ],
+    "width": 390
+  },
+  "offCourt": {
+    "off": true,
+    "portraits": [
+      {
+        "height": 44,
+        "text": "丁",
+        "width": 44
+      },
+      {
+        "height": 44,
+        "text": "王",
+        "width": 44
+      },
+      {
+        "height": 44,
+        "text": "吕",
+        "width": 44
+      },
+      {
+        "height": 44,
+        "text": "晏",
+        "width": 44
+      },
+      {
+        "height": 44,
+        "text": "鲁",
+        "width": 44
+      },
+      {
+        "height": 44,
+        "text": "曹",
+        "width": 44
+      }
+    ],
+    "sources": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ]
+  },
+  "game360": {
+    "off": false,
+    "scrollWidth": 360,
+    "width": 360
+  },
+  "console": [],
+  "gallery": {
+    "distinctSources": [
+      "assets/art/portraits/song/official-mature-01.webp",
+      "assets/art/portraits/song/official-mature-02.webp",
+      "assets/art/portraits/song/official-mature-03.webp",
+      "assets/art/portraits/song/official-mature-04.webp",
+      "assets/art/portraits/song/official-mature-05.webp",
+      "assets/art/portraits/song/official-mature-06.webp",
+      "assets/art/portraits/song/official-mature-07.webp",
+      "assets/art/portraits/song/official-mature-08.webp",
+      "assets/art/portraits/song/official-mature-09.webp",
+      "assets/art/portraits/song/official-mature-10.webp",
+      "assets/art/portraits/song/official-old-01.webp",
+      "assets/art/portraits/song/official-old-02.webp",
+      "assets/art/portraits/song/official-old-03.webp",
+      "assets/art/portraits/song/official-old-04.webp",
+      "assets/art/portraits/song/official-old-05.webp",
+      "assets/art/portraits/song/official-old-06.webp",
+      "assets/art/portraits/song/general-all-01.webp",
+      "assets/art/portraits/song/general-all-02.webp",
+      "assets/art/portraits/song/general-all-03.webp",
+      "assets/art/portraits/song/eunuch-all-01.webp",
+      "assets/art/portraits/song/consort-high-01.webp",
+      "assets/art/portraits/song/consort-high-02.webp",
+      "assets/art/portraits/song/consort-regular-01.webp",
+      "assets/art/portraits/song/consort-regular-02.webp",
+      "assets/art/portraits/song/consort-regular-03.webp",
+      "assets/art/portraits/song/consort-regular-04.webp",
+      "assets/art/portraits/song/consort-regular-05.webp",
+      "assets/art/portraits/song/emperor-young-01.webp",
+      "assets/art/portraits/song/emperor-old-01.webp",
+      "assets/art/portraits/song/prince-teen-01.webp",
+      "assets/art/portraits/song/prince-adult-01.webp",
+      "assets/art/portraits/song/princess-teen-01.webp",
+      "assets/art/portraits/song/princess-adult-01.webp",
+      "assets/art/portraits/unique/song-renzong/emperor-01.webp",
+      "assets/art/portraits/unique/song-renzong/official-01.webp",
+      "assets/art/portraits/unique/song-renzong/official-02.webp",
+      "assets/art/portraits/unique/song-renzong/official-03.webp",
+      "assets/art/portraits/unique/song-renzong/official-04.webp",
+      "assets/art/portraits/unique/song-renzong/official-05.webp",
+      "assets/art/portraits/unique/song-renzong/official-06.webp",
+      "assets/art/portraits/unique/song-renzong/official-07.webp",
+      "assets/art/portraits/unique/song-renzong/official-08.webp",
+      "assets/art/portraits/unique/song-renzong/official-09.webp",
+      "assets/art/portraits/unique/song-renzong/official-10.webp",
+      "assets/art/portraits/unique/song-renzong/foreign-01.webp",
+      "assets/art/portraits/unique/song-renzong/foreign-02.webp",
+      "assets/art/portraits/unique/song-renzong/foreign-03.webp",
+      "assets/art/portraits/unique/song-renzong/foreign-04.webp",
+      "assets/art/portraits/unique/song-renzong/foreign-05.webp",
+      "assets/art/portraits/unique/song-renzong/dowager-01.webp",
+      "assets/art/portraits/unique/song-renzong/emperor-01-old.webp"
+    ],
+    "failures": [],
+    "instances": 153,
+    "loaded": 153,
+    "scrollWidth": 1280,
+    "width": 1280
+  },
+  "haremProjection": {
+    "390": {
+      "portraits": [
+        {
+          "height": 500,
+          "loaded": true,
+          "src": "assets/art/portraits/song/consort-regular-01.webp",
+          "width": 400
+        },
+        {
+          "height": 500,
+          "loaded": true,
+          "src": "assets/art/portraits/song/consort-high-01.webp",
+          "width": 400
+        }
+      ],
+      "scrollWidth": 390,
+      "width": 390
+    },
+    "768": {
+      "portraits": [
+        {
+          "height": 500,
+          "loaded": true,
+          "src": "assets/art/portraits/song/consort-regular-01.webp",
+          "width": 400
+        },
+        {
+          "height": 500,
+          "loaded": true,
+          "src": "assets/art/portraits/song/consort-high-01.webp",
+          "width": 400
+        }
+      ],
+      "scrollWidth": 768,
+      "width": 768
+    },
+    "1280": {
+      "portraits": [
+        {
+          "height": 500,
+          "loaded": true,
+          "src": "assets/art/portraits/song/consort-regular-01.webp",
+          "width": 400
+        },
+        {
+          "height": 500,
+          "loaded": true,
+          "src": "assets/art/portraits/song/consort-high-01.webp",
+          "width": 400
+        }
+      ],
+      "scrollWidth": 1280,
+      "width": 1280
+    }
+  },
+  "projectionConsole": [],
+  "budgetReloadStarted": "2026-11-09T12:42:22.838Z",
+  "budgetReloadFinished": "2026-11-09T12:42:23.260Z",
+  "firstScreen": {
+    "scrollWidth": 1280,
+    "visibleImages": [
+      {
+        "loaded": true,
+        "naturalWidth": 1280,
+        "source": "http://127.0.0.1:4215/assets/art/scenes/accession-1440.webp"
+      },
+      {
+        "loaded": true,
+        "naturalWidth": 400,
+        "source": "http://127.0.0.1:4215/assets/art/portraits/song/official-mature-07.webp"
+      },
+      {
+        "loaded": true,
+        "naturalWidth": 400,
+        "source": "http://127.0.0.1:4215/assets/art/portraits/song/official-mature-07.webp"
+      },
+      {
+        "loaded": true,
+        "naturalWidth": 400,
+        "source": "http://127.0.0.1:4215/assets/art/portraits/song/official-mature-08.webp"
+      }
+    ],
+    "width": 1280
+  },
+  "scope": {
+    "source": "fresh local Song Renzong trial slot1, turn0",
+    "privateSavesTouched": false,
+    "modelRequests": 0,
+    "openingHistoricalPortraits": 17,
+    "poolPortraits": 33,
+    "uniquePortraitsIncludingOld": 18,
+    "harem": "read-only production HTML/CSS projection; no consorts inserted into actual opening",
+    "offline": "local QA server interrupted WebP responses only, then restored; no physical network shutdown",
+    "illustrations": "restored ON",
+    "browser": "Codex In-app Browser"
+  },
+  "consoleAfterRecovery": []
+}
