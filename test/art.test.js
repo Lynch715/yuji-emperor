@@ -120,7 +120,7 @@ test('清单仅引用已导出的WebP，尺寸体积预算与文件一一对应'
   ...Object.values({...ART_SCENES,...ART_HALLS}).flatMap(s=>[s.src,s.small])].filter(Boolean);
  const actual=[];function walk(dir){for(const e of readdirSync(dir,{withFileTypes:true})){const path=dir+'/'+e.name;if(e.isDirectory())walk(path);else actual.push(path);}}
  walk('assets/art');assert.deepEqual([...new Set(paths)].sort(),actual.sort());
- assert.equal(actual.length,286,'一期145文件、二期79张、唐制62张；汉宋仍为空位');
+ assert.equal(actual.length,290,'一期145文件、二期79张、唐制62张、宋制定调4张；汉制和宋制其余槽位仍为空位');
  assert.ok(actual.reduce((sum,path)=>sum+statSync(path).size,0)<=12000000);
  for(const path of actual){assert.match(path,/\.webp$/);assert.ok(statSync(path).size<=(path.includes('/portraits/')?30000:path.includes('/halls/')?100000:path.endsWith('-720.webp')?60000:150000));}
 });

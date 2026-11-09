@@ -257,7 +257,7 @@ export const ART_POOLS = {
     "assets/art/portraits/tang/princess-adult-01.webp"
   ],
   "song/official-mature": [
-    null,
+    "assets/art/portraits/song/official-mature-01.webp",
     null,
     null,
     null,
@@ -285,18 +285,18 @@ export const ART_POOLS = {
     null
   ],
   "song/consort-high": [
-    null,
+    "assets/art/portraits/song/consort-high-01.webp",
     null
   ],
   "song/consort-regular": [
-    null,
+    "assets/art/portraits/song/consort-regular-01.webp",
     null,
     null,
     null,
     null
   ],
   "song/emperor-young": [
-    null
+    "assets/art/portraits/song/emperor-young-01.webp"
   ],
   "song/emperor-old": [
     null

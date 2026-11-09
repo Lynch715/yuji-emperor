@@ -1,6 +1,6 @@
 # 御极 · 美术实际提示词
 
-工具：内置 `imagegen`，未使用 CLI / 外部 API。一期与二期清制画风均已确认，二期79张及验收修订已合并发布。三期第一批唐制画风已确认，现已完成池图33张与唐太宗专属29张，并按玩家意见重出正位01的大高髻、凤钗与垂珠；全部62张与最终三张修订已通过PR #7合并main并发布Pages；验收与线上验证见ART-PHASE3-QA。历史提示词保留以便追溯。
+工具：内置 `imagegen`，未使用 CLI / 外部 API。一期与二期清制画风均已确认，二期79张及验收修订已合并发布。三期第一批唐制画风已确认，现已完成池图33张与唐太宗专属29张，并按玩家意见重出正位01的大高髻、凤钗与垂珠；全部62张与最终三张修订已通过PR #7合并main并发布Pages；验收与线上验证见ART-PHASE3-QA。三期第二批宋制已完成四张定调池图，等待玩家确认，未开始其余47张。历史提示词保留以便追溯。
 
 ## 美术二期 · 清制定调样张（第1步历史记录，已确认）
 
@@ -4958,3 +4958,99 @@ ONLY CHANGE AGE CUES: Gao Shilian is51, must look clearly older and more experie
 Use case: identity-preserve. Image1 contains ALL FOUR approved Phase1 style paintings; image2 contains ALL FOUR approved Tang tone paintings. They are style references only; do not copy faces or Ming costumes. Image3 is the EXACT SINGLE PERSON EDIT TARGET. Preserve exact face identity, age, expression, pose, skin tone, eyes/nose/mouth, proportions, clothing colors and clean BAIMIAO light flat washes. Plain near-smooth #E3D7BE paper, few folds, minimal flat shade. ONE SINGLE4:5 HEAD AND SHOULDERS portrait, no hands or props. Keep complete cap/hair top at12% of canvas height (strict10–14%) and both eye centers at38% (strict36–40%). On1122x1402 canvas top168 and eyes533. Preserve original approved framing. No text, writing, labels, numbers, guides, borders, seals, watermark, photo,3D,anime or actor likeness. Natural full Tang hairline, never Qing shaven forehead. No rigid Ming/Song hat wings.
 ONLY CHANGE AGE CUES of the EXACT original man in image3. Gao Shilian is51. Keep this exact RIGHT-facing man, his short WIDE INVERTED TRAPEZOID face, wide upper cheekbones, flat blunt chin, medium neck, calm mature gaze and purple robe. DO NOT mirror or turn him to face left. DO NOT make him round-faced, jolly, double-chinned or overweight. Keep his chin and cheeks bare. Add conspicuous SILVER-GRAY side temples and short sideburns immediately below cap on BOTH sides, gray flecks in his heavy downturned WALRUS MOUSTACHE, slightly graying brows, mature crow-feet, subtle under-eye bags, forehead creases and nasolabial lines. Healthy mature51, not frail elderly. He must look clearly older than a35-year-old with black hair and plump round cheeks. Preserve exact original face shape, nose, eyes, lips, RIGHT-facing pose, soft Tang futou and robe. No new person. Cap top12%, eyes38%, original face scale. No text or guides.
 ```
+
+## 美术三期第二批 · 宋制定调样张 · 2026-11-09（待确认）
+
+从最新main／608a92c建立feat/art-phase3-song。本步仅四张池图样张；宋制目标51张（池33＋宋仁宗专属18），其余47张等画风确认后再做，不合并、不发布。皇帝青年池01先画12岁少年，以符合当前宋仁宗开局的临时池图；这是虚构池图，赵祯正式专属像将在第二步另画，雷允恭按宦官画。所有年龄与五官不写入游戏数值。
+
+### 宋制服饰要点（全部宋制生成共同沿用）
+
+- 宋直脚幞头：两脚又长又硬，细直水平向两侧伸，宽度明显超过肩膀；可以被画框两侧截断，但必须看出笔直长杆。禁唐式软垂脚、明式短小扁椭圆展角；皇帝同样用直脚幞头，禁翼善冠、冕旒、清顶戴。
+- 文官圆领公服，按品级用紫、绯、绿，不画补子，整体清瘦素雅。武将圆领袍外罩甲或兜鍪披甲；宦官圆领袍配幞头，无须、面白。
+- 皇帝红色或赭黄圆领袍配直脚幞头。赵祯开局12岁须明显少年，保留男童五官和小颈肩，不加胡须、不成人化。
+- 正位后妃戴开敞的龙凤花钗冠，花簇与龙凤大轮廓简画；额头、双颊点醒目的白珍珠妆，必须一眼认出宋后像。常位穿直领对襟褙子，两条直领前襟明确可见，戴较小花冠／团冠、低髻。两档冠饰体量、珍珠妆要在44px拉开，整体清雅纤瘦，不套唐代高髻、花钿、披帛与丰腴艳丽。
+- 皇子圆领袍、男童总角；公主褙子、小花冠。男女轮廓必须清楚，男童不配易误认女童的蝴蝶结／两侧发带。
+- 外邦按剧本各自冠服：辽耶律隆绪契丹髡发或毡冠、圆领窄袖；西夏李德明秃发或党项毡帽；唃厮啰吐蕃缠头皮袍；交趾李公蕴南方缠头短衣；高丽王询幞头宽袍，冠服与宋君臣明确分开。不丑化，不统一套宋直脚。
+- 图中禁任何文字、印章、水印、演员／影视形象；平涂淡彩、近纯#E3D7BE纸底。完整帽／冠顶距10–14%，眼位36–40%，头肩4:5，少年儿童不成人化。
+
+### 本步参照与展示范围
+
+四张样张初次生成时宋制四张尚不存在，沿用清／唐定调办法逐张生成并传一期四张完整参照板。四张出齐后拼宋制板，后续编辑和批量每次同时传一期四张板＋宋四张板，八幅参考全部保留；此两板方式沿用前两期完整参考画面的做法，不减少参考内容。除样张与个别校正外，确认后的池图仍按同池2×2，专属像单张。原图PNG只留本机art-source/phase3-song。
+
+宋剧本配置没有开局后妃／皇嗣；引擎保留的少年赵祯本人宗室条目不是新增皇嗣。此步不改剧本或存档，不把虚构后妃加入开局；两档后妃样张用生产portraitSource／portraitHTML与CSS的只读投影展示。真实开局预览和朝堂分别验证少年皇帝、壮年文官池图。完整§9收尾在画风确认并完成剩余47张后再执行。
+
+### 四张定调长相卡与实际提示词（先记后生成）
+
+#### `song/official-mature-01` · 壮年文官01
+
+44-year-old ADULT MAN, long NARROW RECTANGULAR face with lean angular cheeks and a small firm chin, fine pencil moustache and SHORT TWO-FORK pointed CHIN BEARD, cheeks bare, thin level slightly drooping brows and small thoughtful long eyes, long narrow gently bent nose and thin closed lips, LEAN upright long neck and narrow modest shoulders, warm pale beige skin, small right cheek mole and faint mouth folds, restrained studious serious patience; facing LEFT
+
+```text
+Use case: game character portrait, historical-scene illustration. The reference board contains ALL FOUR approved Phase1 paintings (Ming official, Ming regular consort, desk-night, court). Reference STYLE ONLY: clean restrained BAIMIAO ink outlines, light FLAT muted color washes, minimal shading with at most one faint flat shade, simple few costume folds, plain near-smooth #E3D7BE paper. Do NOT copy faces or Ming costumes. One SINGLE4:5 head-and-shoulders person,1024x1280. Three-quarter view, gaze slightly off camera. COMPLETE HEAD/CAP/CROWN TOP12% from upper edge (strict10–14%); BOTH EYE CENTERS38% of total height (strict36–40%). On1122x1402 invisible anchors TOP168 and EYES533. Face centered, head and neck normal proportions, naturally continued shoulders fill bottom edge. For tall crown scale whole head/crown to fit anchors. Song long FUTOU side rods may be clipped at LEFT/RIGHT edges, as required; this exception is only horizontal, never clip cap/crown top. No body below upper chest, no hands or props. No text, writing, plaques, seals, signatures, labels, numbers, guide lines, borders, watermark, photography,3D,anime,actor/TV likeness, glow or dramatic lighting. Song people are SLENDER and ELEGANT, not Tang plump and ornate.
+SUBJECT FACE CARD: 44-year-old ADULT MAN, long NARROW RECTANGULAR face with lean angular cheeks and a small firm chin, fine pencil moustache and SHORT TWO-FORK pointed CHIN BEARD, cheeks bare, thin level slightly drooping brows and small thoughtful long eyes, long narrow gently bent nose and thin closed lips, LEAN upright long neck and narrow modest shoulders, warm pale beige skin, small right cheek mole and faint mouth folds, restrained studious serious patience; facing LEFT
+SONG COSTUME: Muted dark CINNABAR-SCARLET Song round-collar public official robe, plain pale inner collar, NO square rank patch or necklace. Black SONG STRAIGHT-FOOT FUTOU: compact soft-black central cap with TWO EXTREMELY LONG NARROW RIGID STRAIGHT BLACK BARS extending HORIZONTALLY to BOTH SIDES. Bars are thin rectangular rods, thickness0.8% of canvas height; total implied width far BEYOND shoulders and canvas. Show straight bars continuously from cap to both frame edges; their far ends are INTENTIONALLY CROPPED. No oval paddles, no soft hanging fabric, no bending or short Ming wings.
+```
+
+#### `song/consort-regular-01` · 常位后妃01
+
+24-year-old ADULT WOMAN, short soft HEART face with delicate round cheeks and small tapered chin, LOW compact round back bun and simple small ROUND FLOWER CAP, soft shallow curved hairline, fine gently curved brows and bright small rounded gentle eyes, small rounded nose and small softly full lips, slender short graceful neck and small sloping shoulders, cool pale ivory beige skin, tiny left temple mole, gentle reserved youthful warmth; facing RIGHT
+
+```text
+Use case: game character portrait, historical-scene illustration. The reference board contains ALL FOUR approved Phase1 paintings (Ming official, Ming regular consort, desk-night, court). Reference STYLE ONLY: clean restrained BAIMIAO ink outlines, light FLAT muted color washes, minimal shading with at most one faint flat shade, simple few costume folds, plain near-smooth #E3D7BE paper. Do NOT copy faces or Ming costumes. One SINGLE4:5 head-and-shoulders person,1024x1280. Three-quarter view, gaze slightly off camera. COMPLETE HEAD/CAP/CROWN TOP12% from upper edge (strict10–14%); BOTH EYE CENTERS38% of total height (strict36–40%). On1122x1402 invisible anchors TOP168 and EYES533. Face centered, head and neck normal proportions, naturally continued shoulders fill bottom edge. For tall crown scale whole head/crown to fit anchors. Song long FUTOU side rods may be clipped at LEFT/RIGHT edges, as required; this exception is only horizontal, never clip cap/crown top. No body below upper chest, no hands or props. No text, writing, plaques, seals, signatures, labels, numbers, guide lines, borders, watermark, photography,3D,anime,actor/TV likeness, glow or dramatic lighting. Song people are SLENDER and ELEGANT, not Tang plump and ornate.
+SUBJECT FACE CARD: 24-year-old ADULT WOMAN, short soft HEART face with delicate round cheeks and small tapered chin, LOW compact round back bun and simple small ROUND FLOWER CAP, soft shallow curved hairline, fine gently curved brows and bright small rounded gentle eyes, small rounded nose and small softly full lips, slender short graceful neck and small sloping shoulders, cool pale ivory beige skin, tiny left temple mole, gentle reserved youthful warmth; facing RIGHT
+SONG COSTUME: SONG consort in a plain muted LAKE-GREEN BEIZI jacket: STRAIGHT VERTICAL COLLAR EDGES, front-opening TWO PARALLEL LAPELS falling straight DOWN, pale edging and a modest muted dusty-mauve inner garment. Entire chest and shoulders COVERED. Low compact round hair bun with a small circular floral coronet and two small flowers, simple pins only. NO red Tang forehead huadian, no pearl face makeup, no large phoenix/dragon crown, no Tang high bun or pibo scarf, no Ming/Qing standing collar or Qing two-wing hairstyle.
+```
+
+#### `song/consort-high-01` · 正位后妃01
+
+34-year-old ADULT WOMAN, long slender DIAMOND-OVAL face with high fine cheekbones and narrow rounded chin, low neatly gathered hair with a BROAD OPEN DRAGON-PHOENIX FLOWER-HAIRPIN CORONET, fine high gently angled brows and long calm narrow soft feminine eyes, high narrow straight nose and finely shaped thin soft closed lips, very slender upright long neck and narrow level shoulders, warm light cream-beige skin, small right mouth-corner mole, conspicuous WHITE PEARL GROUPS on forehead and BOTH cheeks, composed dignified quiet mature kindness; facing LEFT
+
+```text
+Use case: game character portrait, historical-scene illustration. The reference board contains ALL FOUR approved Phase1 paintings (Ming official, Ming regular consort, desk-night, court). Reference STYLE ONLY: clean restrained BAIMIAO ink outlines, light FLAT muted color washes, minimal shading with at most one faint flat shade, simple few costume folds, plain near-smooth #E3D7BE paper. Do NOT copy faces or Ming costumes. One SINGLE4:5 head-and-shoulders person,1024x1280. Three-quarter view, gaze slightly off camera. COMPLETE HEAD/CAP/CROWN TOP12% from upper edge (strict10–14%); BOTH EYE CENTERS38% of total height (strict36–40%). On1122x1402 invisible anchors TOP168 and EYES533. Face centered, head and neck normal proportions, naturally continued shoulders fill bottom edge. For tall crown scale whole head/crown to fit anchors. Song long FUTOU side rods may be clipped at LEFT/RIGHT edges, as required; this exception is only horizontal, never clip cap/crown top. No body below upper chest, no hands or props. No text, writing, plaques, seals, signatures, labels, numbers, guide lines, borders, watermark, photography,3D,anime,actor/TV likeness, glow or dramatic lighting. Song people are SLENDER and ELEGANT, not Tang plump and ornate.
+SUBJECT FACE CARD: 34-year-old ADULT WOMAN, long slender DIAMOND-OVAL face with high fine cheekbones and narrow rounded chin, low neatly gathered hair with a BROAD OPEN DRAGON-PHOENIX FLOWER-HAIRPIN CORONET, fine high gently angled brows and long calm narrow soft feminine eyes, high narrow straight nose and finely shaped thin soft closed lips, very slender upright long neck and narrow level shoulders, warm light cream-beige skin, small right mouth-corner mole, conspicuous WHITE PEARL GROUPS on forehead and BOTH cheeks, composed dignified quiet mature kindness; facing LEFT
+SONG COSTUME: SONG EMPRESS: broad OPEN LIGHT BRANCH-LIKE DRAGON-PHOENIX FLOWER-HAIRPIN ceremonial CROWN, five simple golden flower clusters, two stylized GOLD PHOENIX BIRD silhouettes and one small DRAGON outline on open stems. Entire crown fits from top12% to roughly26% height; low compact hair underneath, NEVER a tall Tang stacked bun. Crown visibly MUCH broader and grander than ordinary small flower cap, but keep graphic SIMPLE. WHITE PEARL FACE MAKEUP is mandatory: 3–5 clearly visible small round white pearls on FOREHEAD and a small GROUP OF THREE on EACH CHEEK near outer eye/temple. Pearls are rounded white dots with thin pale-ink outline, NOT freckles, red flowers or gold face paint. This is Song empress portrait iconography. Muted deep INDIGO-BLUE Song ceremonial outer robe, neat pale inner collar, covered modest chest, a few simple gold trim lines only. NO Qing dianzi, no Ming domed phoenix helmet, no dangling pearl face curtain, no Tang red huadian or low-cut ruqun/pibo.
+```
+
+#### `song/emperor-young-01` · 少年皇帝01
+
+12-year-old BOY, REAL twelve-year-old BOY with short soft OVAL face, rounded youthful cheeks and small chin, BEARDLESS BOY, natural full hairline, fitted small BLACK SONG LONG-STRAIGHT-FOOT FUTOU, soft straight boy brows and large clear alert BOY eyes, small short straight child nose and small natural closed lips, short thin CHILD neck and narrow small CHILD shoulders, warm light wheat-cream child skin, tiny left brow-tail mole, earnest slightly uncertain but composed young ruler; facing RIGHT
+
+```text
+Use case: game character portrait, historical-scene illustration. The reference board contains ALL FOUR approved Phase1 paintings (Ming official, Ming regular consort, desk-night, court). Reference STYLE ONLY: clean restrained BAIMIAO ink outlines, light FLAT muted color washes, minimal shading with at most one faint flat shade, simple few costume folds, plain near-smooth #E3D7BE paper. Do NOT copy faces or Ming costumes. One SINGLE4:5 head-and-shoulders person,1024x1280. Three-quarter view, gaze slightly off camera. COMPLETE HEAD/CAP/CROWN TOP12% from upper edge (strict10–14%); BOTH EYE CENTERS38% of total height (strict36–40%). On1122x1402 invisible anchors TOP168 and EYES533. Face centered, head and neck normal proportions, naturally continued shoulders fill bottom edge. For tall crown scale whole head/crown to fit anchors. Song long FUTOU side rods may be clipped at LEFT/RIGHT edges, as required; this exception is only horizontal, never clip cap/crown top. No body below upper chest, no hands or props. No text, writing, plaques, seals, signatures, labels, numbers, guide lines, borders, watermark, photography,3D,anime,actor/TV likeness, glow or dramatic lighting. Song people are SLENDER and ELEGANT, not Tang plump and ornate.
+SUBJECT FACE CARD: 12-year-old BOY, REAL twelve-year-old BOY with short soft OVAL face, rounded youthful cheeks and small chin, BEARDLESS BOY, natural full hairline, fitted small BLACK SONG LONG-STRAIGHT-FOOT FUTOU, soft straight boy brows and large clear alert BOY eyes, small short straight child nose and small natural closed lips, short thin CHILD neck and narrow small CHILD shoulders, warm light wheat-cream child skin, tiny left brow-tail mole, earnest slightly uncertain but composed young ruler; facing RIGHT
+SONG COSTUME: REAL12-YEAR-OLD BOY EMPEROR, not adult, not woman, no cosmetics or facial hair. Muted cinnabar-RED Song ROUND-COLLAR imperial robe with neat pale undercollar, simple small symbolic gold motif optional, no intricate embroidery. Fitted compact SONG straight-foot black FUTOU with TWO EXTREMELY LONG THIN RIGID STRAIGHT HORIZONTAL BARS reaching BEYOND shoulders and clipped by BOTH canvas edges. Width much longer than Ming short oval wings. Never soft hanging Tang tails, never Ming yishan crown, never pearl-curtain mianguan or Qing finial. Child anatomy, NOT mini adult.
+```
+
+### 宋制定调样张：构图校正 r1（2026-11-09）
+
+初稿服饰保留；文官已通过。常位、正位与少年皇帝初稿的冠顶/眼位未同时达到 10–14% / 36–40%，按 §7.4 用内置 imagegen 保身份重构图；每次同时传入一期四样张拼板、宋制四候选拼板与目标原图，只调整完整人物的比例与画幅位置，不手绘修饰。
+
+#### song-tone-consort-regular-01-framing-r1
+
+```text
+Edit ONLY the framing of the THIRD reference image. The first reference is the approved four-image phase-one style board; the second is the four Song tone candidates for consistency. Preserve EXACTLY the third image identity, age, face proportions, expression, hairstyle, costume, crown ornaments and flat pale ink-and-color painting style. Do not turn it into another face. Recompose a complete 4:5 head-and-upper-torso painting, uncropped crown/hat. The topmost crown ornament/hat/hair pixel must be at 12% of total canvas height, both eye pupils centered at 38% of total canvas height. Reduce the whole figure as needed and extend natural paper background and the existing torso downwards; no blank borders, no frames, no lettering, no guides. All head ornaments must be inside the canvas. Preserve complete Song details: small flower round coronet, low compact bun, gentle young feminine face, lake-green straight vertical open-front beizi over a modest mauve inner garment. No face pearls, no tall Tang bun, no Qing horizontal hair wings. Move the face slightly lower so pupils at y=38%, highest coronet at y=12%.
+```
+
+#### song-tone-consort-high-01-framing-r1
+
+```text
+Edit ONLY the framing of the THIRD reference image. The first reference is the approved four-image phase-one style board; the second is the four Song tone candidates for consistency. Preserve EXACTLY the third image identity, age, face proportions, expression, hairstyle, costume, crown ornaments and flat pale ink-and-color painting style. Do not turn it into another face. Recompose a complete 4:5 head-and-upper-torso painting, uncropped crown/hat. The topmost crown ornament/hat/hair pixel must be at 12% of total canvas height, both eye pupils centered at 38% of total canvas height. Reduce the whole figure as needed and extend natural paper background and the existing torso downwards; no blank borders, no frames, no lettering, no guides. All head ornaments must be inside the canvas. Preserve complete Song details: open broad dragon-phoenix flower hairpin crown, discrete white pearl groups on forehead AND both cheeks, low gathered hair, slender feminine face, indigo robe. Keep the forehead and cheek pearl decoration clearly visible. Crown should remain much more elaborate than regular consort, but its highest tip starts at y=12%; pupils at y=38%.
+```
+
+#### song-tone-emperor-young-01-framing-r1
+
+```text
+Edit ONLY the framing of the THIRD reference image. The first reference is the approved four-image phase-one style board; the second is the four Song tone candidates for consistency. Preserve EXACTLY the third image identity, age, face proportions, expression, hairstyle, costume, crown ornaments and flat pale ink-and-color painting style. Do not turn it into another face. Recompose a complete 4:5 head-and-upper-torso painting, uncropped crown/hat. The topmost crown ornament/hat/hair pixel must be at 12% of total canvas height, both eye pupils centered at 38% of total canvas height. Reduce the whole figure as needed and extend natural paper background and the existing torso downwards; no blank borders, no frames, no lettering, no guides. All head ornaments must be inside the canvas. Preserve complete Song details: a TWELVE-YEAR-OLD BOY, small child shoulders, red round collar robe, black Song straight-foot futou with very long thin rigid straight horizontal rods crossing beyond both shoulders and cropped at left/right canvas edges. These are straight thin bars, NOT short Ming oval paddles, NOT Tang drooping tails. Do not add a beard or adult jaw. Highest hat at y=12%; pupils at y=38%.
+```
+
+### 宋正位样张构图校正 r2
+
+r1仍为冠顶8.56%、眼位39.60%，无法只靠裁切同时满足规范。保留脸、服饰与珍珠妆，仅在生成端压低花钗冠上部枝梗，不改变宽度、花、龙凤辨识；再检查完整冠顶。
+
+```text
+Edit the THIRD reference only. Preserve this exact Song empress face, expression, neck, shoulders, indigo costume, low gathered hair, and ALL WHITE PEARL GROUPS on forehead and both cheeks. First two reference boards only establish ink-and-pale-color style. One targeted correction: make her OPEN GOLD DRAGON-PHOENIX FLOWER-HAIRPIN CROWN 35% LOWER IN VERTICAL HEIGHT by shortening its open stems, keeping the same broad width, five gold flowers, two phoenix birds and little dragon. Leave a clear full 12% canvas-height gap above the highest crown tip. The current crown tip is too high, at8.5%, so visibly lower that highest tip to12–14%. Keep both eyes at38% height. Do NOT just add an empty border, do NOT crop or remove ornaments, do not change facial identity or pearl makeup. Keep the face around its current size and position; compress ONLY the crown upper stems into a lower broad open coronet. It should still be far more elaborate than a small ordinary flower cap. Complete 4:5 head-and-shoulders portrait, pure warm paper background, no text, no guides or frame.
+```
+
+### 宋制定调第1步导出与检查结果
+
+四张均400×500、WebP q75，完整冠帽／发顶10.00–14.00%、双眼36.66–39.99%，两左两右。新增32,166字节，最大单张12,422字节；assets/art累计290个WebP／4,241,438字节，既有286张逐字节相同。只有四个池01槽接入，宋池其余29槽及宋仁宗18个专属槽均保持空。四张完整候选参照已保存为本机song-reference-board.png，待玩家确认后作为后续全部宋图参照。44px与四朝并排、两档截图见ART-PHASE3-QA。

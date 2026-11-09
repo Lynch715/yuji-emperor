@@ -1,0 +1,328 @@
+{
+  "opening1280": {
+    "images": [
+      {
+        "height": 720,
+        "opacity": "1",
+        "src": "assets/art/scenes/court-1440.webp",
+        "width": 1280
+      },
+      {
+        "height": 500,
+        "opacity": "1",
+        "src": "assets/art/portraits/song/emperor-young-01.webp",
+        "width": 400
+      }
+    ],
+    "scrollWidth": 1280,
+    "width": 1280
+  },
+  "opening390": {
+    "images": [
+      {
+        "height": 405,
+        "opacity": "1",
+        "src": "assets/art/scenes/court-1440.webp",
+        "width": 720
+      },
+      {
+        "height": 500,
+        "opacity": "1",
+        "src": "assets/art/portraits/song/emperor-young-01.webp",
+        "width": 400
+      }
+    ],
+    "scrollWidth": 390,
+    "width": 390
+  },
+  "court390": {
+    "images": [
+      {
+        "height": 500,
+        "opacity": "1",
+        "src": "assets/art/portraits/song/official-mature-01.webp",
+        "width": 400
+      },
+      {
+        "height": 500,
+        "opacity": "0",
+        "src": "assets/art/portraits/song/official-mature-01.webp",
+        "width": 400
+      }
+    ],
+    "scrollWidth": 390,
+    "width": 390
+  },
+  "court1280": {
+    "images": [
+      {
+        "height": 500,
+        "opacity": "1",
+        "src": "assets/art/portraits/song/official-mature-01.webp",
+        "width": 400
+      },
+      {
+        "height": 500,
+        "opacity": "0",
+        "src": "assets/art/portraits/song/official-mature-01.webp",
+        "width": 400
+      }
+    ],
+    "scrollWidth": 1280,
+    "width": 1280
+  },
+  "samples1280": {
+    "images": [
+      {
+        "height": 500,
+        "opacity": "1",
+        "src": "assets/art/portraits/song/official-mature-01.webp",
+        "width": 400
+      },
+      {
+        "height": 500,
+        "opacity": "1",
+        "src": "assets/art/portraits/song/official-mature-01.webp",
+        "width": 400
+      },
+      {
+        "height": 500,
+        "opacity": "1",
+        "src": "assets/art/portraits/song/official-mature-01.webp",
+        "width": 400
+      },
+      {
+        "height": 500,
+        "opacity": "1",
+        "src": "assets/art/portraits/song/consort-regular-01.webp",
+        "width": 400
+      },
+      {
+        "height": 500,
+        "opacity": "1",
+        "src": "assets/art/portraits/song/consort-regular-01.webp",
+        "width": 400
+      },
+      {
+        "height": 500,
+        "opacity": "1",
+        "src": "assets/art/portraits/song/consort-regular-01.webp",
+        "width": 400
+      },
+      {
+        "height": 500,
+        "opacity": "1",
+        "src": "assets/art/portraits/song/consort-high-01.webp",
+        "width": 400
+      },
+      {
+        "height": 500,
+        "opacity": "1",
+        "src": "assets/art/portraits/song/consort-high-01.webp",
+        "width": 400
+      },
+      {
+        "height": 500,
+        "opacity": "1",
+        "src": "assets/art/portraits/song/consort-high-01.webp",
+        "width": 400
+      },
+      {
+        "height": 500,
+        "opacity": "1",
+        "src": "assets/art/portraits/song/emperor-young-01.webp",
+        "width": 400
+      },
+      {
+        "height": 500,
+        "opacity": "1",
+        "src": "assets/art/portraits/song/emperor-young-01.webp",
+        "width": 400
+      },
+      {
+        "height": 500,
+        "opacity": "1",
+        "src": "assets/art/portraits/song/emperor-young-01.webp",
+        "width": 400
+      }
+    ],
+    "scrollWidth": 1280,
+    "width": 1280
+  },
+  "samples390": {
+    "images": [
+      {
+        "height": 500,
+        "opacity": "1",
+        "src": "assets/art/portraits/song/official-mature-01.webp",
+        "width": 400
+      },
+      {
+        "height": 500,
+        "opacity": "1",
+        "src": "assets/art/portraits/song/official-mature-01.webp",
+        "width": 400
+      },
+      {
+        "height": 500,
+        "opacity": "1",
+        "src": "assets/art/portraits/song/official-mature-01.webp",
+        "width": 400
+      },
+      {
+        "height": 500,
+        "opacity": "1",
+        "src": "assets/art/portraits/song/consort-regular-01.webp",
+        "width": 400
+      },
+      {
+        "height": 500,
+        "opacity": "1",
+        "src": "assets/art/portraits/song/consort-regular-01.webp",
+        "width": 400
+      },
+      {
+        "height": 500,
+        "opacity": "1",
+        "src": "assets/art/portraits/song/consort-regular-01.webp",
+        "width": 400
+      },
+      {
+        "height": 500,
+        "opacity": "1",
+        "src": "assets/art/portraits/song/consort-high-01.webp",
+        "width": 400
+      },
+      {
+        "height": 500,
+        "opacity": "1",
+        "src": "assets/art/portraits/song/consort-high-01.webp",
+        "width": 400
+      },
+      {
+        "height": 500,
+        "opacity": "1",
+        "src": "assets/art/portraits/song/consort-high-01.webp",
+        "width": 400
+      },
+      {
+        "height": 500,
+        "opacity": "1",
+        "src": "assets/art/portraits/song/emperor-young-01.webp",
+        "width": 400
+      },
+      {
+        "height": 500,
+        "opacity": "1",
+        "src": "assets/art/portraits/song/emperor-young-01.webp",
+        "width": 400
+      },
+      {
+        "height": 500,
+        "opacity": "1",
+        "src": "assets/art/portraits/song/emperor-young-01.webp",
+        "width": 400
+      }
+    ],
+    "scrollWidth": 390,
+    "width": 390
+  },
+  "samples360": {
+    "scrollWidth": 360,
+    "width": 360
+  },
+  "game360": {
+    "scrollWidth": 360,
+    "width": 360
+  },
+  "illustrationsOff": {
+    "badges": [
+      {
+        "height": 44,
+        "text": "王",
+        "width": 44
+      },
+      {
+        "height": 44,
+        "text": "王",
+        "width": 44
+      },
+      {
+        "height": 44,
+        "text": "王",
+        "width": 44
+      },
+      {
+        "height": 44,
+        "text": "常",
+        "width": 44
+      },
+      {
+        "height": 44,
+        "text": "常",
+        "width": 44
+      },
+      {
+        "height": 44,
+        "text": "常",
+        "width": 44
+      },
+      {
+        "height": 44,
+        "text": "正",
+        "width": 44
+      },
+      {
+        "height": 44,
+        "text": "正",
+        "width": 44
+      },
+      {
+        "height": 44,
+        "text": "正",
+        "width": 44
+      },
+      {
+        "height": 44,
+        "text": "赵",
+        "width": 44
+      },
+      {
+        "height": 44,
+        "text": "赵",
+        "width": 44
+      },
+      {
+        "height": 44,
+        "text": "赵",
+        "width": 44
+      }
+    ],
+    "off": true,
+    "scrollWidth": 390,
+    "sources": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "width": 390
+  },
+  "console": [],
+  "scope": {
+    "stage": 1,
+    "actualGame": "Song Renzong fresh local trial slot1, turn0; opening preview and court Wang Zeng",
+    "femaleSamples": "read-only production portraitSource/portraitHTML/CSS projection; no save writes",
+    "remainingImages": 47,
+    "fullSection9": "deferred until style confirmation and full batch completion"
+  },
+  "projectionConsole": []
+}

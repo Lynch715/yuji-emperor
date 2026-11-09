@@ -1,0 +1,267 @@
+{
+  "summary": {
+    "baseline": "608a92c",
+    "scope": "第1步定调，未开展其余47张",
+    "phase3SongTarget": 51,
+    "generatedPortraits": 4,
+    "remainingPortraits": 47,
+    "poolPortraits": 4,
+    "uniquePortraits": 0,
+    "sampleBytes": 32166,
+    "maximumSampleBytes": 12422,
+    "totalWebPFiles": 290,
+    "totalBytes": 4241438,
+    "unchangedPriorFiles": 286,
+    "headTopRange": [
+      0.1,
+      0.14
+    ],
+    "eyeRange": [
+      0.3666,
+      0.3999
+    ],
+    "saveVersion": 25
+  },
+  "assets": [
+    {
+      "id": "song/official-mature-01",
+      "file": "assets/art/portraits/song/official-mature-01.webp",
+      "job": "song-tone-official-mature-01",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-song/bulk/song-tone-official-mature-01.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 511.39,
+      "headTop": 129,
+      "faceBox": [
+        286.594313621521,
+        416.2904702723026,
+        337.55815172195435,
+        337.55815729498863
+      ],
+      "status": "exported",
+      "crop": [
+        45,
+        0,
+        1077,
+        1290
+      ],
+      "eyeRatio": 0.3964,
+      "headTopRatio": 0.1,
+      "bytes": 6916,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "487951e06b731f72ef96a45329b9e01b53ca3ab1d0484694ada4e588a9bedb6d",
+      "faceCard": {
+        "id": "song/official-mature-01",
+        "age": 44,
+        "facing": "LEFT",
+        "label": "壮年文官01",
+        "dims": [
+          "long NARROW RECTANGULAR face with lean angular cheeks and a small firm chin",
+          "fine pencil moustache and SHORT TWO-FORK pointed CHIN BEARD, cheeks bare",
+          "thin level slightly drooping brows and small thoughtful long eyes",
+          "long narrow gently bent nose and thin closed lips",
+          "LEAN upright long neck and narrow modest shoulders",
+          "warm pale beige skin",
+          "small right cheek mole and faint mouth folds",
+          "restrained studious serious patience"
+        ],
+        "costume": "Muted dark CINNABAR-SCARLET Song round-collar public official robe, plain pale inner collar, NO square rank patch or necklace. Black SONG STRAIGHT-FOOT FUTOU: compact soft-black central cap with TWO EXTREMELY LONG NARROW RIGID STRAIGHT BLACK BARS extending HORIZONTALLY to BOTH SIDES. Bars are thin rectangular rods, thickness0.8% of canvas height; total implied width far BEYOND shoulders and canvas. Show straight bars continuously from cap to both frame edges; their far ends are INTENTIONALLY CROPPED. No oval paddles, no soft hanging fabric, no bending or short Ming wings.",
+        "file": "assets/art/portraits/song/official-mature-01.webp",
+        "sourceType": "fictional-pool-tone",
+        "face": "44-year-old ADULT MAN, long NARROW RECTANGULAR face with lean angular cheeks and a small firm chin, fine pencil moustache and SHORT TWO-FORK pointed CHIN BEARD, cheeks bare, thin level slightly drooping brows and small thoughtful long eyes, long narrow gently bent nose and thin closed lips, LEAN upright long neck and narrow modest shoulders, warm pale beige skin, small right cheek mole and faint mouth folds, restrained studious serious patience; facing LEFT"
+      }
+    },
+    {
+      "id": "song/consort-regular-01",
+      "file": "assets/art/portraits/song/consort-regular-01.webp",
+      "job": "song-tone-consort-regular-01-framing-r1",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-song/bulk/song-tone-consort-regular-01-framing-r1.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 513.91,
+      "headTop": 168,
+      "faceBox": [
+        523.8906805515289,
+        422.57736948132515,
+        310.47293758392334,
+        310.47292229533195
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "eyeRatio": 0.3666,
+      "headTopRatio": 0.1198,
+      "bytes": 6350,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "019800909e361bcc52c75fe2fa53025c4bd5a970f5c906fb94d574d52ba56b3a",
+      "faceCard": {
+        "id": "song/consort-regular-01",
+        "age": 24,
+        "facing": "RIGHT",
+        "label": "常位后妃01",
+        "dims": [
+          "short soft HEART face with delicate round cheeks and small tapered chin",
+          "LOW compact round back bun and simple small ROUND FLOWER CAP, soft shallow curved hairline",
+          "fine gently curved brows and bright small rounded gentle eyes",
+          "small rounded nose and small softly full lips",
+          "slender short graceful neck and small sloping shoulders",
+          "cool pale ivory beige skin",
+          "tiny left temple mole",
+          "gentle reserved youthful warmth"
+        ],
+        "costume": "SONG consort in a plain muted LAKE-GREEN BEIZI jacket: STRAIGHT VERTICAL COLLAR EDGES, front-opening TWO PARALLEL LAPELS falling straight DOWN, pale edging and a modest muted dusty-mauve inner garment. Entire chest and shoulders COVERED. Low compact round hair bun with a small circular floral coronet and two small flowers, simple pins only. NO red Tang forehead huadian, no pearl face makeup, no large phoenix/dragon crown, no Tang high bun or pibo scarf, no Ming/Qing standing collar or Qing two-wing hairstyle.",
+        "file": "assets/art/portraits/song/consort-regular-01.webp",
+        "sourceType": "fictional-pool-tone",
+        "face": "24-year-old ADULT WOMAN, short soft HEART face with delicate round cheeks and small tapered chin, LOW compact round back bun and simple small ROUND FLOWER CAP, soft shallow curved hairline, fine gently curved brows and bright small rounded gentle eyes, small rounded nose and small softly full lips, slender short graceful neck and small sloping shoulders, cool pale ivory beige skin, tiny left temple mole, gentle reserved youthful warmth; facing RIGHT"
+      }
+    },
+    {
+      "id": "song/consort-high-01",
+      "file": "assets/art/portraits/song/consort-high-01.webp",
+      "job": "song-tone-consort-high-01-framing-r2",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-song/bulk/song-tone-consort-high-01-framing-r2.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 554.94,
+      "headTop": 198,
+      "faceBox": [
+        333.30297285318375,
+        471.88024121522903,
+        286.1817196011543,
+        286.18172776699066
+      ],
+      "status": "exported",
+      "crop": [
+        1,
+        2,
+        1121,
+        1402
+      ],
+      "eyeRatio": 0.395,
+      "headTopRatio": 0.14,
+      "bytes": 12422,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "4bcf1912c5d4fc36bd14658d8a848d5ebfb346d14bb371220ea8abfa8551094a",
+      "faceCard": {
+        "id": "song/consort-high-01",
+        "age": 34,
+        "facing": "LEFT",
+        "label": "正位后妃01",
+        "dims": [
+          "long slender DIAMOND-OVAL face with high fine cheekbones and narrow rounded chin",
+          "low neatly gathered hair with a BROAD OPEN DRAGON-PHOENIX FLOWER-HAIRPIN CORONET",
+          "fine high gently angled brows and long calm narrow soft feminine eyes",
+          "high narrow straight nose and finely shaped thin soft closed lips",
+          "very slender upright long neck and narrow level shoulders",
+          "warm light cream-beige skin",
+          "small right mouth-corner mole, conspicuous WHITE PEARL GROUPS on forehead and BOTH cheeks",
+          "composed dignified quiet mature kindness"
+        ],
+        "costume": "SONG EMPRESS: broad OPEN LIGHT BRANCH-LIKE DRAGON-PHOENIX FLOWER-HAIRPIN ceremonial CROWN, five simple golden flower clusters, two stylized GOLD PHOENIX BIRD silhouettes and one small DRAGON outline on open stems. Entire crown fits from top12% to roughly26% height; low compact hair underneath, NEVER a tall Tang stacked bun. Crown visibly MUCH broader and grander than ordinary small flower cap, but keep graphic SIMPLE. WHITE PEARL FACE MAKEUP is mandatory: 3–5 clearly visible small round white pearls on FOREHEAD and a small GROUP OF THREE on EACH CHEEK near outer eye/temple. Pearls are rounded white dots with thin pale-ink outline, NOT freckles, red flowers or gold face paint. This is Song empress portrait iconography. Muted deep INDIGO-BLUE Song ceremonial outer robe, neat pale inner collar, covered modest chest, a few simple gold trim lines only. NO Qing dianzi, no Ming domed phoenix helmet, no dangling pearl face curtain, no Tang red huadian or low-cut ruqun/pibo.",
+        "file": "assets/art/portraits/song/consort-high-01.webp",
+        "sourceType": "fictional-pool-tone",
+        "face": "34-year-old ADULT WOMAN, long slender DIAMOND-OVAL face with high fine cheekbones and narrow rounded chin, low neatly gathered hair with a BROAD OPEN DRAGON-PHOENIX FLOWER-HAIRPIN CORONET, fine high gently angled brows and long calm narrow soft feminine eyes, high narrow straight nose and finely shaped thin soft closed lips, very slender upright long neck and narrow level shoulders, warm light cream-beige skin, small right mouth-corner mole, conspicuous WHITE PEARL GROUPS on forehead and BOTH cheeks, composed dignified quiet mature kindness; facing LEFT"
+      }
+    },
+    {
+      "id": "song/emperor-young-01",
+      "file": "assets/art/portraits/song/emperor-young-01.webp",
+      "job": "song-tone-emperor-young-01-framing-r1",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-song/bulk/song-tone-emperor-young-01-framing-r1.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 561.32,
+      "headTop": 157,
+      "faceBox": [
+        496.71769112348557,
+        468.0349858701229,
+        314.6847470998764,
+        314.68475952744484
+      ],
+      "status": "exported",
+      "crop": [
+        0,
+        1,
+        1121,
+        1402
+      ],
+      "eyeRatio": 0.3999,
+      "headTopRatio": 0.1113,
+      "bytes": 6478,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "fe30840872b1974869ec0aabff733fc16f0479b4013f148c82cea338fd07f156",
+      "faceCard": {
+        "id": "song/emperor-young-01",
+        "age": 12,
+        "facing": "RIGHT",
+        "label": "少年皇帝01",
+        "dims": [
+          "REAL twelve-year-old BOY with short soft OVAL face, rounded youthful cheeks and small chin",
+          "BEARDLESS BOY, natural full hairline, fitted small BLACK SONG LONG-STRAIGHT-FOOT FUTOU",
+          "soft straight boy brows and large clear alert BOY eyes",
+          "small short straight child nose and small natural closed lips",
+          "short thin CHILD neck and narrow small CHILD shoulders",
+          "warm light wheat-cream child skin",
+          "tiny left brow-tail mole",
+          "earnest slightly uncertain but composed young ruler"
+        ],
+        "costume": "REAL12-YEAR-OLD BOY EMPEROR, not adult, not woman, no cosmetics or facial hair. Muted cinnabar-RED Song ROUND-COLLAR imperial robe with neat pale undercollar, simple small symbolic gold motif optional, no intricate embroidery. Fitted compact SONG straight-foot black FUTOU with TWO EXTREMELY LONG THIN RIGID STRAIGHT HORIZONTAL BARS reaching BEYOND shoulders and clipped by BOTH canvas edges. Width much longer than Ming short oval wings. Never soft hanging Tang tails, never Ming yishan crown, never pearl-curtain mianguan or Qing finial. Child anatomy, NOT mini adult.",
+        "file": "assets/art/portraits/song/emperor-young-01.webp",
+        "sourceType": "fictional-pool-tone",
+        "face": "12-year-old BOY, REAL twelve-year-old BOY with short soft OVAL face, rounded youthful cheeks and small chin, BEARDLESS BOY, natural full hairline, fitted small BLACK SONG LONG-STRAIGHT-FOOT FUTOU, soft straight boy brows and large clear alert BOY eyes, small short straight child nose and small natural closed lips, short thin CHILD neck and narrow small CHILD shoulders, warm light wheat-cream child skin, tiny left brow-tail mole, earnest slightly uncertain but composed young ruler; facing RIGHT"
+      }
+    }
+  ]
+}

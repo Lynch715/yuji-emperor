@@ -1,0 +1,34 @@
+{
+  "date": "2026-11-09",
+  "baseline": "608a92c",
+  "stage": 1,
+  "test": {
+    "command": "npm test",
+    "tests": 608,
+    "pass": 608,
+    "fail": 0,
+    "exitCode": 0,
+    "sha256": "dd96dd375bd516280778e87a255d57dbf5b7f7d0bcd5a9db7a4c916eb02b20d3"
+  },
+  "simulation": {
+    "seed": "御极·两百年",
+    "years": 200,
+    "actualYears": 200,
+    "turns": 7200,
+    "reigns": 6,
+    "successionCount": 5,
+    "collapseCount": 0,
+    "finalTreasury": 2040
+  },
+  "simulationCommand": "node scripts/simulate.mjs 200",
+  "simulationExitCode": 0,
+  "simulationSha256": "b0e2a7493c9f0b5eccb0b9924b47ba5813560f0db3468c7045838aece402a827",
+  "build": {
+    "command": "npm run build",
+    "exitCode": 0,
+    "htmlBytes": 858273,
+    "budgetBytes": 860000,
+    "htmlSha256": "16bbe1a1b6ab52a1ad3dbb5fb8ba28d260a22e63270fe15d26bfbbad5f024dce"
+  },
+  "fullSection9": "pending after style confirmation and remaining47 portraits"
+}
