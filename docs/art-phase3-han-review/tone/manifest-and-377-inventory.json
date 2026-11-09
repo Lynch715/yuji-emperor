@@ -1,0 +1,25 @@
+{
+  "baseline": "dbffc28",
+  "logicalTarget": {
+    "poolPortraits": 207,
+    "uniquePortraits": 154,
+    "scenes": 13,
+    "halls": 3,
+    "total": 377
+  },
+  "physicalTarget": {
+    "primaryWorks": 377,
+    "extra720SceneDerivatives": 13,
+    "webPFiles": 390
+  },
+  "current": {
+    "filledPortraitSlots": 312,
+    "completedLogicalWorks": 328,
+    "actualWebPFiles": 341,
+    "remainingLogicalWorks": 49
+  },
+  "onlyFourHanPoolSlotsFilled": true,
+  "otherDynastiesUniqueScenesHallsFocusUnchanged": true,
+  "hanUniqueSlotsStillPending": 20,
+  "saveVersion": 25
+}

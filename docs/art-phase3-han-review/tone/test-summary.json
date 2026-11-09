@@ -1,0 +1,20 @@
+{
+  "baseline": "dbffc28",
+  "tests": 609,
+  "passed": 609,
+  "failed": 0,
+  "newRegression": "汉郎中令下标8取文官、中书谒者令下标10取宦官；其余六剧本及大晟下标8/10分池不变",
+  "testCommand": "npm test",
+  "testLogSha256": "79b5b9167a67d8f3fac5ad589341673f4143ca55f622f78460a72bc6aa780db2",
+  "simulationCommand": "node scripts/simulate.mjs 200",
+  "simulationYears": 200,
+  "simulationTurns": 7200,
+  "reigns": 6,
+  "finalTreasury": 2040,
+  "buildCommand": "npm run build",
+  "htmlBytes": 859777,
+  "htmlSha256": "1636edf31ee8e29cbd4897274ca2b30c515cba1e3ae4e3c123beac6e4576b832",
+  "coreLlmCssUnchanged": true,
+  "saveVersion": 25,
+  "fullStage3QA": "等待四张定调确认并完成剩余49张后执行，不复用宋制Lighthouse分数"
+}

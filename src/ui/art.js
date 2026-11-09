@@ -57,7 +57,7 @@ export function portraitPool(s, p, role = '') {
     if (p.gender !== '男') return null;
     const index = s.court.posts.findIndex(post => post.holder === p.id || p.post && post.id === p.post);
     return dynasty + '/' + (index === 9 || index >= 25 && index <= 28 ? 'general-all' :
-      index === 8 && dynasty !== 'qing' ? 'eunuch-all' : 'official-' + (p.age < 55 ? 'mature' : 'old'));
+      (dynasty === 'han' ? index === 10 : index === 8 && dynasty !== 'qing') ? 'eunuch-all' : 'official-' + (p.age < 55 ? 'mature' : 'old'));
   }
   if (contains(s.harem.consorts, p) || contains(s.harem.candidates, p))
     return dynasty + '/consort-' + (['皇后', '皇贵妃', '贵妃'].includes(p.rank) ? 'high' : 'regular');

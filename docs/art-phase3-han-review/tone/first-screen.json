@@ -1,0 +1,22 @@
+{
+  "scope": "独立localhost4217汉武帝0旬试读卷，1280宽刷新后，未打开殿阁或样张图册",
+  "imageRequests": 3,
+  "uniqueImages": 2,
+  "requests": [
+    {
+      "time": "2026-11-09T13:53:13.900Z",
+      "path": "/assets/art/scenes/court-1440.webp",
+      "offline": false
+    },
+    {
+      "time": "2026-11-09T13:53:13.900Z",
+      "path": "/assets/art/scenes/accession-1440.webp",
+      "offline": false
+    },
+    {
+      "time": "2026-11-09T13:53:14.071Z",
+      "path": "/assets/art/scenes/accession-1440.webp",
+      "offline": false
+    }
+  ]
+}

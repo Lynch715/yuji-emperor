@@ -1,0 +1,260 @@
+{
+  "summary": {
+    "baseline": "dbffc282484286d5a1f0b8c16b43ff24d7e00c2b",
+    "step": 1,
+    "phaseTarget": 53,
+    "hanProduced": 4,
+    "remainingAwaitingConfirmation": 49,
+    "hanBytes": 32202,
+    "actualWebPFiles": 341,
+    "totalArtBytes": 4652862,
+    "unchangedPriorWebP": 337,
+    "headTopRange": [
+      0.1,
+      0.1269
+    ],
+    "eyeRange": [
+      0.3709,
+      0.3999
+    ],
+    "saveVersion": 25
+  },
+  "assets": [
+    {
+      "id": "han/official-mature-01",
+      "file": "assets/art/portraits/han/official-mature-01.webp",
+      "job": "han-tone-frame-r1-official-mature-01",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-han/bulk/han-tone-frame-r1-official-mature-01.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 621.67,
+      "headTop": 267,
+      "faceBox": [
+        300.23649966716766,
+        524.3360890448093,
+        334.6659809947014,
+        334.6659897863865
+      ],
+      "status": "exported",
+      "crop": [
+        41,
+        102,
+        1081,
+        1402
+      ],
+      "eyeRatio": 0.3997,
+      "headTopRatio": 0.1269,
+      "bytes": 7208,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "2e6d05eba2475fb3331ad3f065729d5ae5e68bd05538216a2568a9d91cb1f63e",
+      "faceCard": {
+        "id": "han/official-mature-01",
+        "role": "文官壮01",
+        "age": 44,
+        "facing": "LEFT",
+        "dims": [
+          "BROAD LONG RECTANGULAR male face with full angular cheeks and broad blunt chin",
+          "THREE BROAD MEDIUM-LONG BLACK BEARD LOCKS and thick straight moustache, black natural sideburns",
+          "thick low gently drooping brows and small steady wide-set almond eyes",
+          "short broad high straight nose and full firm closed lips",
+          "sturdy upright medium neck and broad square shoulders",
+          "warm medium wheat-beige skin",
+          "deep left mouth fold and tiny right brow-tail mole",
+          "calm thoughtful practical confidence"
+        ],
+        "costume": "HAN CIVIL OFFICIAL, JINXIAN CROWN 进贤冠: a SMALL RIGID BLACK ANGLED RIDGE CROWN sitting on a neatly bound high topknot, FRONT higher than BACK, clearly diagonal sloping crown beam/ridge descending backward. Tall narrow hard crown profile, with two simple slim raised longitudinal ridges, ears and side hair exposed; a narrow securing band, NOT a rounded black cloth hat or broad cylinder. NO wings, NO projecting side bars, NO hanging tails, NO imperial gold mountain panel. Dark BLUE-GREEN straight-wrap shenyi robe with a VERY WIDE BLACK collar border, Y-shaped CROSSOVER LEFT-OVER-RIGHT collar, muted OCHRE lining creating a simple contrast stripe, only several plain wrap folds, no square rank patch, dragon motif or necklace.",
+        "face": "44-year-old ADULT MAN, BROAD LONG RECTANGULAR male face with full angular cheeks and broad blunt chin, THREE BROAD MEDIUM-LONG BLACK BEARD LOCKS and thick straight moustache, black natural sideburns, thick low gently drooping brows and small steady wide-set almond eyes, short broad high straight nose and full firm closed lips, sturdy upright medium neck and broad square shoulders, warm medium wheat-beige skin, deep left mouth fold and tiny right brow-tail mole, calm thoughtful practical confidence; facing LEFT",
+        "file": "assets/art/portraits/han/official-mature-01.webp"
+      }
+    },
+    {
+      "id": "han/consort-regular-01",
+      "file": "assets/art/portraits/han/consort-regular-01.webp",
+      "job": "han-tone-consort-regular-01",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-han/bulk/han-tone-consort-regular-01.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 453.11,
+      "headTop": 114,
+      "faceBox": [
+        512.3458725214005,
+        345.81121146678925,
+        369.44512563943863,
+        369.4451407790184
+      ],
+      "status": "exported",
+      "crop": [
+        105,
+        0,
+        1017,
+        1140
+      ],
+      "eyeRatio": 0.3975,
+      "headTopRatio": 0.1,
+      "bytes": 7920,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "685477c07471abc1ad38c95e4437126d354cd59b2257180cd8031b1aba4974be",
+      "faceCard": {
+        "id": "han/consort-regular-01",
+        "role": "常位后妃01",
+        "age": 17,
+        "facing": "RIGHT",
+        "dims": [
+          "small SHORT HEART-SHAPED feminine adolescent face with soft smooth cheeks and small rounded chin",
+          "soft low curved hairline and ONE modest compact FALLING-SIDE COILED BUN behind upper ear, ONE plain dark-gold pin",
+          "fine short gently curved brows and clear large softly rounded youthful eyes",
+          "small short rounded nose and small softly full closed lips",
+          "slender short adolescent neck and narrow gently sloping shoulders",
+          "cool pale ivory cream youthful skin",
+          "tiny left temple beauty mark, no age lines",
+          "gentle modest slightly shy attentive warmth"
+        ],
+        "costume": "HAN REGULAR CONSORT: covered modest HAN QUJU SHENYI wrap gown, muted soft MALACHITE-GREEN, WIDE DARK BURGUNDY edging around clearly Y-SHAPED CROSS COLLAR with wearers LEFT lapel overlapping RIGHT, cream inner layer, two or three broad diagonal fabric wrap layers visible on upper chest. Gathered HAN falling-horse/side-coiled bun with one SIMPLE PLAIN HAIRPIN only. No formal crown, flowers, pearls, ornate dangling jewelry, Tang huadian/pibo, low neckline, Song flower cap/beizi, Ming standing collar or Qing two-wing hair. Clearly a17-year-old adolescent GIRL, respectful fully covered costume, not mature30 or tiny child.",
+        "face": "17-year-old GIRL ADOLESCENT, small SHORT HEART-SHAPED feminine adolescent face with soft smooth cheeks and small rounded chin, soft low curved hairline and ONE modest compact FALLING-SIDE COILED BUN behind upper ear, ONE plain dark-gold pin, fine short gently curved brows and clear large softly rounded youthful eyes, small short rounded nose and small softly full closed lips, slender short adolescent neck and narrow gently sloping shoulders, cool pale ivory cream youthful skin, tiny left temple beauty mark, no age lines, gentle modest slightly shy attentive warmth; facing RIGHT",
+        "file": "assets/art/portraits/han/consort-regular-01.webp"
+      }
+    },
+    {
+      "id": "han/consort-high-01",
+      "file": "assets/art/portraits/han/consort-high-01.webp",
+      "job": "han-tone-frame-r3-consort-high-01",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-han/bulk/han-tone-frame-r3-consort-high-01.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 515.52,
+      "headTop": 139,
+      "faceBox": [
+        319.8655958175659,
+        428.12379291653633,
+        313.5754680633545,
+        313.5754664838314
+      ],
+      "status": "exported",
+      "crop": [
+        5,
+        0,
+        1117,
+        1390
+      ],
+      "eyeRatio": 0.3709,
+      "headTopRatio": 0.1,
+      "bytes": 10596,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "2047247f90949284215d3c0ca1e8a845ae67a7a16cd4c51692292bb85fede857",
+      "faceCard": {
+        "id": "han/consort-high-01",
+        "role": "正位后妃01",
+        "age": 18,
+        "facing": "LEFT",
+        "dims": [
+          "BROAD SOFT SQUARE-OVAL feminine adolescent face with full smooth upper cheeks and rounded jaw",
+          "HIGH ROUNDED hairline and a TALL BROAD UPRIGHT smooth HAN bun with elaborate open gold BUSHAO branches and hanging pearls",
+          "long fine gently lifted brows and large composed slightly downturned almond youthful eyes",
+          "small high straight nose and full small bowed firmly closed lips",
+          "fine long upright youthful neck and broad gently rounded regal shoulders",
+          "warm pale peach-cream youthful skin",
+          "small right mouth-corner beauty mark, no aged lines or pearl face makeup",
+          "proud poised self-possessed youthful dignity"
+        ],
+        "costume": "HAN EMPRESS: HIGH BROAD UPRIGHT BUN decorated by unmistakably grand OPEN GOLD BUSHAO hairpins: THREE clearly separated GOLD BRANCHES with a few LARGE PENDANT WHITE PEARLS hanging at both sides, graphic visible silhouette at44px. Hair and ornaments all stay within frame, crown/bun TOP12%, pupils38%; compact enough vertically for these anchors, not huge overhead empty space. Dark muted CINNABAR-BURGUNDY QUJU SHENYI wrap gown, VERY WIDE BLACK collar edging and narrow simple muted-gold trim, unmistakable Y-SHAPED crossover LEFT-OVER-RIGHT collar and layered diagonal wrapped cloth at upper chest, fully covered. A few SIMPLE broad golden branch strokes, not intricate embroidery. No round/standing collar, no Song flower crown or forehead/cheek pearl makeup, no Ming phoenix helmet or Qing dianzi, no Tang red huadian/pibo. Clearly18-year-old adolescent GIRL with fresh young cheeks and no aging, not mature30.",
+        "face": "18-year-old GIRL ADOLESCENT, BROAD SOFT SQUARE-OVAL feminine adolescent face with full smooth upper cheeks and rounded jaw, HIGH ROUNDED hairline and a TALL BROAD UPRIGHT smooth HAN bun with elaborate open gold BUSHAO branches and hanging pearls, long fine gently lifted brows and large composed slightly downturned almond youthful eyes, small high straight nose and full small bowed firmly closed lips, fine long upright youthful neck and broad gently rounded regal shoulders, warm pale peach-cream youthful skin, small right mouth-corner beauty mark, no aged lines or pearl face makeup, proud poised self-possessed youthful dignity; facing LEFT",
+        "file": "assets/art/portraits/han/consort-high-01.webp"
+      }
+    },
+    {
+      "id": "han/emperor-young-01",
+      "file": "assets/art/portraits/han/emperor-young-01.webp",
+      "job": "han-tone-crown-r4-emperor-young-01",
+      "source": "/Users/ruis/Claude/Projects/皇帝模拟器/art-source/phase3-han/bulk/han-tone-crown-r4-emperor-young-01.png",
+      "cellBox": [
+        0,
+        0,
+        1122,
+        1402
+      ],
+      "rawSize": [
+        1122,
+        1402
+      ],
+      "eyeY": 566.65,
+      "headTop": 170,
+      "faceBox": [
+        511.95437800884247,
+        485.185803681612,
+        252.95455911755562,
+        252.95455917716026
+      ],
+      "status": "exported",
+      "crop": [
+        4,
+        10,
+        1118,
+        1402
+      ],
+      "eyeRatio": 0.3999,
+      "headTopRatio": 0.1149,
+      "bytes": 6478,
+      "quality": 75,
+      "dimensions": [
+        400,
+        500
+      ],
+      "sha256": "4ba6326ea549298dfc5d17ad60b430041e264b7c28e70e1fc27eeb26ed8ee9e7",
+      "faceCard": {
+        "id": "han/emperor-young-01",
+        "role": "皇帝青01",
+        "age": 16,
+        "facing": "RIGHT",
+        "dims": [
+          "LONG SOFT OVAL sixteen-year-old adolescent BOY face with smooth young cheeks and neat small firm chin",
+          "BEARDLESS adolescent boy, full BLACK natural hairline and gathered topknot inside Han Tongtian crown",
+          "thick straight youthful brows and clear large focused gently lifted boy eyes",
+          "small high straight youthful nose and thin firm closed lips",
+          "slim medium adolescent BOY neck and narrow upright adolescent shoulders",
+          "warm light wheat cream young skin",
+          "tiny left brow-tail mole, no wrinkles",
+          "alert ambitious slightly guarded composed youthful authority"
+        ],
+        "costume": "HAN TEENAGE EMPEROR,16-year-old BOY, NOT an adult man or young woman. TONGTIAN CROWN 通天冠: rigid narrow BLACK ancient crown rising above gathered topknot, with a clearly visible TALL UPRIGHT GOLD BOSHAN MOUNTAIN-PANEL on its FRONT. The gold front is a strong simple vertical plaque with TWO stepped mountain-peak curves and three bold gold ridge strokes, not text or embroidery; highest tip12%, pupils38%. Crown taller/more vertical and imperial GOLD than plain BLACK backward-sloping civil Jinxian crown. No dangling bead curtain, no horizontal flat board, no winged Ming cap, soft Tang/Song futou or Qing round finial. Plain XUAN BLACK robe with BROAD DEEP CINNABAR-RED collar borders and clearly Y-SHAPED cross collar, wearers LEFT lapel overlapping RIGHT; tiny cream undercollar and several broad wrap folds. No yellow robe or round collar, no modern dragon embroidery. Fresh16-year-old male adolescent anatomy, no moustache, beard, gray hair or makeup.",
+        "face": "16-year-old BOY ADOLESCENT, LONG SOFT OVAL sixteen-year-old adolescent BOY face with smooth young cheeks and neat small firm chin, BEARDLESS adolescent boy, full BLACK natural hairline and gathered topknot inside Han Tongtian crown, thick straight youthful brows and clear large focused gently lifted boy eyes, small high straight youthful nose and thin firm closed lips, slim medium adolescent BOY neck and narrow upright adolescent shoulders, warm light wheat cream young skin, tiny left brow-tail mole, no wrinkles, alert ambitious slightly guarded composed youthful authority; facing RIGHT",
+        "file": "assets/art/portraits/han/emperor-young-01.webp"
+      }
+    }
+  ]
+}
