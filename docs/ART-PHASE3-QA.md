@@ -1,8 +1,8 @@
 # 美术三期 · 唐、宋验收
 
-## 宋制合并前修订与发布验收 · 2026-11-09
+## 宋制发布与最终四张修订 · 2026-11-09
 
-玩家已验收51张并授权本轮修订后合并发布。本轮恰好替换**刘太后、丁谓、钱惟演、范仲淹4张专属像**，其他333个WebP逐字节保持；HTML及core／LLM／UI共103个文件与已验收98cffe1相同，存档仍v25。合并与线上发布核验待执行，完成后在本节补记提交与部署证据。
+玩家已验收51张并授权本轮修订后合并发布。本轮恰好替换**刘太后、丁谓、钱惟演、范仲淹4张专属像**，其他333个WebP逐字节保持；HTML及core／LLM／UI共103个文件与已验收98cffe1相同，存档仍v25。已按玩家授权合并[PR #8](https://github.com/Lynch715/yuji-emperor/pull/8)到main，合并提交`8457e0a`；[GitHub Pages测试、构建与部署全部成功](https://github.com/Lynch715/yuji-emperor/actions/runs/42623964628)，线上验证如下。
 
 - 刘太后按开局53岁画成五十多岁的端庄妇人：补成熟面颊、眼周与口周，保持花钗冠、额头及双颊珍珠妆、紫袍与朝右姿态。
 - 丁谓56岁改为长宽方脸、花白短满须与明显银白鬓发；钱惟演45岁收窄菱形脸、三绺细长黑须与细长颈肩，神情文雅谨慎；范仲淹33岁改清瘦长脸、黑鬓无须、挺直颈肩与清癯刚直神情。三人不靠袍色区分，完整18张专属44px条已重新检查。
@@ -24,6 +24,23 @@
 | 真实朝堂 | [朝堂](art-phase3-song-review/revision-20261109-release/local-court-1280.jpg) | [朝堂](art-phase3-song-review/revision-20261109-release/local-court-390.jpg) |
 | 四位历史人物生产取图只读图册 | [图册](art-phase3-song-review/revision-20261109-release/local-gallery-1280.jpg) | [图册](art-phase3-song-review/revision-20261109-release/local-gallery-390.jpg) |
 | 丁谓真实召见纸面 | — | [纸面](art-phase3-song-review/revision-20261109-release/local-paper-390.jpg) |
+
+### 线上发布与只读抽查
+
+正式站点：[御极](https://lynch715.github.io/yuji-emperor/)。合并提交`8457e0a45247f235c14294c50bbd2bd5b371a884`与已测试分支头`0aa5fc828d86f11939d742907b2e5277289512bc`的src、HTML及assets/art完全相同。部署工作流`42623964628`的测试、构建与Pages deploy均success，[提交及工作流记录](art-phase3-song-review/revision-20261109-release/release-status.json)。
+
+发布后下载正式URL的HTML及全部337张WebP，**338／338项HTTP200且SHA-256与合并版本完全一致**，包括刘太后和三位文官。HTML859,561字节，SHA-256为`ea60ef01bc5791456cea55ef110c752dcc49d6ec54a33393650d970cd4b54497`。[逐文件HTTP、大小与散列](art-phase3-song-review/revision-20261109-release/pages-all-hashes.json)。
+
+应用内浏览器在正式站点**仅预览宋仁宗开局，没有按“承天践祚”或切换存档**。赵祯12岁专属像在1280／390均400×500加载，显示64×80；390无溢出，court-720头图318×112。另直接打开正式路径丁谓与刘太后WebP，均400×500完成加载，分别可见花白鬓须和五十多岁花钗冠珍珠妆。[线上浏览器读数](art-phase3-song-review/revision-20261109-release/online-browser.json)。
+
+此次**发布完成后的只读预览前后**，现有第3卷万历0旬的UI导出均36,366字节、SHA-256相同；第1／第2卷仍空，未新建或推进旬、未改变插图设置。这是本轮线上抽查前后证明，不冒称发布前的导出基准。原存档内容只留本机，仓库仅记字节数与散列。
+
+| 正式站点截图 | 证据 |
+| --- | --- |
+| 宋仁宗预览1280 | [桌面截图](art-phase3-song-review/revision-20261109-release/online-song-preview-1280.jpg) |
+| 宋仁宗预览390 | [手机截图](art-phase3-song-review/revision-20261109-release/online-song-preview-390.jpg) |
+| 丁谓修订像 | [正式文件截图](art-phase3-song-review/revision-20261109-release/online-ding-wei.jpg) |
+| 刘太后修订像 | [正式文件截图](art-phase3-song-review/revision-20261109-release/online-liu-dowager.jpg) |
 
 以下为98cffe1全量验收时的历史记录，当时尚为草稿PR；本轮最终状态以本节发布记录为准。
 

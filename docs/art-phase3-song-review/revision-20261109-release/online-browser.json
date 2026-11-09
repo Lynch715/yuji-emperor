@@ -1,0 +1,111 @@
+{
+  "online1280": {
+    "images": [
+      {
+        "currentSrc": "https://lynch715.github.io/yuji-emperor/assets/art/scenes/court-1440.webp",
+        "loaded": true,
+        "natural": [
+          1280,
+          720
+        ],
+        "size": [
+          680,
+          160
+        ],
+        "src": "assets/art/scenes/court-1440.webp"
+      },
+      {
+        "currentSrc": "https://lynch715.github.io/yuji-emperor/assets/art/portraits/unique/song-renzong/emperor-01.webp",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "size": [
+          64,
+          80
+        ],
+        "src": "assets/art/portraits/unique/song-renzong/emperor-01.webp"
+      }
+    ],
+    "scrollWidth": 1280,
+    "selected": "song-renzong",
+    "url": "https://lynch715.github.io/yuji-emperor/",
+    "width": 1280
+  },
+  "online390": {
+    "images": [
+      {
+        "currentSrc": "https://lynch715.github.io/yuji-emperor/assets/art/scenes/court-720.webp",
+        "loaded": true,
+        "natural": [
+          720,
+          405
+        ],
+        "size": [
+          318,
+          112
+        ],
+        "src": "assets/art/scenes/court-1440.webp"
+      },
+      {
+        "currentSrc": "https://lynch715.github.io/yuji-emperor/assets/art/portraits/unique/song-renzong/emperor-01.webp",
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "size": [
+          64,
+          80
+        ],
+        "src": "assets/art/portraits/unique/song-renzong/emperor-01.webp"
+      }
+    ],
+    "scrollWidth": 390,
+    "selected": "song-renzong",
+    "url": "https://lynch715.github.io/yuji-emperor/",
+    "width": 390
+  },
+  "liveDing": {
+    "images": [
+      {
+        "complete": true,
+        "natural": [
+          400,
+          500
+        ],
+        "source": "https://lynch715.github.io/yuji-emperor/assets/art/portraits/unique/song-renzong/official-01.webp"
+      }
+    ],
+    "url": "https://lynch715.github.io/yuji-emperor/assets/art/portraits/unique/song-renzong/official-01.webp"
+  },
+  "liveLiu": {
+    "images": [
+      {
+        "complete": true,
+        "natural": [
+          400,
+          500
+        ],
+        "source": "https://lynch715.github.io/yuji-emperor/assets/art/portraits/unique/song-renzong/dowager-01.webp"
+      }
+    ],
+    "url": "https://lynch715.github.io/yuji-emperor/assets/art/portraits/unique/song-renzong/dowager-01.webp"
+  },
+  "saveCheck": {
+    "scope": "发布完成后的线上只读预览前后；没有新建、读入或推进游戏，也没有改变插图设置。",
+    "before": {
+      "bytes": 36366,
+      "sha256": "0635791e40d5fe541aa7e628fd0c61253f81bc6e16f1649f74bdb0bd9d913a95"
+    },
+    "after": {
+      "bytes": 36366,
+      "sha256": "0635791e40d5fe541aa7e628fd0c61253f81bc6e16f1649f74bdb0bd9d913a95"
+    },
+    "identical": true,
+    "slots": "第1与第2卷仍空，第3卷万历0旬"
+  },
+  "logs": [],
+  "scope": "正式站点宋仁宗开局只读预览；没有按承天践祚，不写入新卷。另直接访问丁谓与刘太后正式WebP。"
+}

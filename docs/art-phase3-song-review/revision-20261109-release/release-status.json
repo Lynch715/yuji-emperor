@@ -1,0 +1,166 @@
+{
+  "pullRequest": "https://github.com/Lynch715/yuji-emperor/pull/8",
+  "headCommit": "0aa5fc828d86f11939d742907b2e5277289512bc",
+  "mergeCommit": "8457e0a45247f235c14294c50bbd2bd5b371a884",
+  "mergedAtUTC": "2026-11-09T13:16:02Z",
+  "workflowRun": 42623964628,
+  "workflowUrl": "https://github.com/Lynch715/yuji-emperor/actions/runs/42623964628",
+  "expectedHtmlAndArtIdenticalToTestedHead": true,
+  "baseUrl": "https://lynch715.github.io/yuji-emperor/",
+  "workflow": {
+    "conclusion": "success",
+    "headSha": "8457e0a45247f235c14294c50bbd2bd5b371a884",
+    "jobs": [
+      {
+        "completedAt": "2026-11-09T13:18:05Z",
+        "conclusion": "success",
+        "databaseId": 129182847886,
+        "name": "build",
+        "startedAt": "2026-11-09T13:16:08Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-11-09T13:16:10Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-11-09T13:16:09Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-11-09T13:16:13Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@v6",
+            "number": 2,
+            "startedAt": "2026-11-09T13:16:10Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-11-09T13:16:16Z",
+            "conclusion": "success",
+            "name": "Run actions/setup-node@v7",
+            "number": 3,
+            "startedAt": "2026-11-09T13:16:13Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-11-09T13:18:00Z",
+            "conclusion": "success",
+            "name": "Run tests",
+            "number": 4,
+            "startedAt": "2026-11-09T13:16:16Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-11-09T13:18:01Z",
+            "conclusion": "success",
+            "name": "Build game",
+            "number": 5,
+            "startedAt": "2026-11-09T13:18:00Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-11-09T13:18:02Z",
+            "conclusion": "success",
+            "name": "Package public website",
+            "number": 6,
+            "startedAt": "2026-11-09T13:18:01Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-11-09T13:18:02Z",
+            "conclusion": "success",
+            "name": "Run actions/configure-pages@v5",
+            "number": 7,
+            "startedAt": "2026-11-09T13:18:02Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-11-09T13:18:04Z",
+            "conclusion": "success",
+            "name": "Run actions/upload-pages-artifact@v4",
+            "number": 8,
+            "startedAt": "2026-11-09T13:18:02Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-11-09T13:18:04Z",
+            "conclusion": "success",
+            "name": "Post Run actions/setup-node@v7",
+            "number": 15,
+            "startedAt": "2026-11-09T13:18:04Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-11-09T13:18:04Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@v6",
+            "number": 16,
+            "startedAt": "2026-11-09T13:18:04Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-11-09T13:18:04Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 17,
+            "startedAt": "2026-11-09T13:18:04Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/Lynch715/yuji-emperor/actions/runs/42623964628/job/129182847886"
+      },
+      {
+        "completedAt": "2026-11-09T13:18:45Z",
+        "conclusion": "success",
+        "databaseId": 129183853772,
+        "name": "deploy",
+        "startedAt": "2026-11-09T13:18:10Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-11-09T13:18:11Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-11-09T13:18:10Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-11-09T13:18:44Z",
+            "conclusion": "success",
+            "name": "Deploy",
+            "number": 2,
+            "startedAt": "2026-11-09T13:18:11Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-11-09T13:18:44Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 3,
+            "startedAt": "2026-11-09T13:18:44Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/Lynch715/yuji-emperor/actions/runs/42623964628/job/129183853772"
+      }
+    ],
+    "status": "completed",
+    "url": "https://github.com/Lynch715/yuji-emperor/actions/runs/42623964628"
+  },
+  "liveVerification": {
+    "itemsChecked": 338,
+    "passed": 338,
+    "failed": 0,
+    "httpStatus": "200 for all",
+    "hashComparison": "SHA-256 equals tested merged public payload",
+    "timeUTC": "2026-11-09T13:20:23Z",
+    "evidence": "pages-all-hashes.json",
+    "browserEvidence": "online-browser.json",
+    "songRenzongPreviewLoaded": true,
+    "revisedDingAndLiuLoaded": true,
+    "previewDidNotChangeExistingSave": true,
+    "saveBytesBeforeAfter": 36366
+  }
+}
