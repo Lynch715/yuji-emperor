@@ -1,0 +1,56 @@
+[
+  {
+    "file": "index.html",
+    "url": "https://lynch715.github.io/yuji-emperor/",
+    "status": 200,
+    "bytes": 931696,
+    "sha256": "7b426361a2a7b1a730160d114e2b388520517f6bda75076de6ed58f772095bf9",
+    "expected": "7b426361a2a7b1a730160d114e2b388520517f6bda75076de6ed58f772095bf9",
+    "match": true
+  },
+  {
+    "file": "assets/art/portraits/ming/emperor-young-01.webp",
+    "url": "https://lynch715.github.io/yuji-emperor/assets/art/portraits/ming/emperor-young-01.webp",
+    "status": 200,
+    "bytes": 11138,
+    "sha256": "650803e52c89ecbf7f1b61c77bbbeabbacd5c6c78bbfeabbb27e358e8a863009",
+    "expected": "650803e52c89ecbf7f1b61c77bbbeabbacd5c6c78bbfeabbb27e358e8a863009",
+    "match": true
+  },
+  {
+    "file": "assets/art/portraits/tang/emperor-old-01.webp",
+    "url": "https://lynch715.github.io/yuji-emperor/assets/art/portraits/tang/emperor-old-01.webp",
+    "status": 200,
+    "bytes": 10362,
+    "sha256": "865659de344856a1ccd29ec86af01cb7782bb4e3f5dad921f590cd98d1c9e357",
+    "expected": "865659de344856a1ccd29ec86af01cb7782bb4e3f5dad921f590cd98d1c9e357",
+    "match": true
+  },
+  {
+    "file": "assets/art/portraits/song/emperor-young-01.webp",
+    "url": "https://lynch715.github.io/yuji-emperor/assets/art/portraits/song/emperor-young-01.webp",
+    "status": 200,
+    "bytes": 10072,
+    "sha256": "e84c2a5cfb1f8fdd0088b3b31bb378935367cce32111f64d45e2c8d32ba85221",
+    "expected": "e84c2a5cfb1f8fdd0088b3b31bb378935367cce32111f64d45e2c8d32ba85221",
+    "match": true
+  },
+  {
+    "file": "assets/art/portraits/qing/emperor-young-01.webp",
+    "url": "https://lynch715.github.io/yuji-emperor/assets/art/portraits/qing/emperor-young-01.webp",
+    "status": 200,
+    "bytes": 13648,
+    "sha256": "8fb17bf73954364a69a7de6b28bcb0ac078c01f4cd32abb02dfc221a0d340f30",
+    "expected": "8fb17bf73954364a69a7de6b28bcb0ac078c01f4cd32abb02dfc221a0d340f30",
+    "match": true
+  },
+  {
+    "file": "assets/art/scenes/court-1440.webp",
+    "url": "https://lynch715.github.io/yuji-emperor/assets/art/scenes/court-1440.webp",
+    "status": 200,
+    "bytes": 84522,
+    "sha256": "fc8d2d8c485aeec55e64e4fcb2320183451727228a4d374bf63f01111f0e8f4d",
+    "expected": "fc8d2d8c485aeec55e64e4fcb2320183451727228a4d374bf63f01111f0e8f4d",
+    "match": true
+  }
+]

@@ -1,0 +1,169 @@
+{
+  "url": "https://lynch715.github.io/yuji-emperor/",
+  "previews": [
+    {
+      "emperor": "刘宏",
+      "goals": [
+        "han-lingdi-restore",
+        "han-lingdi-palace-power",
+        "han-lingdi-cai-yong",
+        "han-lingdi-liu-bian"
+      ],
+      "scenario": "han-lingdi",
+      "scrollWidth": 1280,
+      "width": 1280
+    },
+    {
+      "emperor": "赵佶",
+      "goals": [
+        "song-huizong-peace",
+        "song-huizong-border",
+        "song-huizong-letters",
+        "song-huizong-empress"
+      ],
+      "scenario": "song-huizong",
+      "scrollWidth": 1280,
+      "width": 1280
+    },
+    {
+      "emperor": "朱由校",
+      "goals": [
+        "ming-xizong-palace",
+        "ming-xizong-liaodong",
+        "ming-xizong-workshop",
+        "ming-xizong-sun"
+      ],
+      "scenario": "ming-xizong",
+      "scrollWidth": 1280,
+      "width": 1280
+    },
+    {
+      "emperor": "李隆基",
+      "goals": [
+        "tang-xuanzong-command",
+        "tang-xuanzong-peace",
+        "tang-xuanzong-yang",
+        "tang-xuanzong-heir"
+      ],
+      "scenario": "tang-xuanzong",
+      "scrollWidth": 1280,
+      "width": 1280
+    },
+    {
+      "emperor": "赵桓",
+      "goals": [
+        "song-qinzong-defence",
+        "song-qinzong-peace",
+        "song-qinzong-li-gang",
+        "song-qinzong-son"
+      ],
+      "scenario": "song-qinzong",
+      "scrollWidth": 1280,
+      "width": 1280
+    },
+    {
+      "emperor": "颙琰",
+      "goals": [
+        "qing-jiaqing-heshen",
+        "qing-jiaqing-people",
+        "qing-jiaqing-teacher",
+        "qing-jiaqing-minning"
+      ],
+      "scenario": "qing-jiaqing",
+      "scrollWidth": 1280,
+      "width": 1280
+    },
+    {
+      "emperor": "朱祁镇",
+      "goals": [
+        "ming-yingzong-capital",
+        "ming-yingzong-border",
+        "ming-yingzong-yu-qian",
+        "ming-yingzong-empress"
+      ],
+      "scenario": "ming-yingzong",
+      "scrollWidth": 1280,
+      "width": 1280
+    }
+  ],
+  "imageSamples": [
+    {
+      "emperor": "朱祁镇",
+      "goals": [
+        "ming-yingzong-capital",
+        "ming-yingzong-border",
+        "ming-yingzong-yu-qian",
+        "ming-yingzong-empress"
+      ],
+      "images": [
+        {
+          "loaded": true,
+          "src": "https://lynch715.github.io/yuji-emperor/assets/art/scenes/court-1440.webp"
+        },
+        {
+          "loaded": true,
+          "src": "https://lynch715.github.io/yuji-emperor/assets/art/portraits/ming/emperor-young-01.webp"
+        }
+      ],
+      "scenario": "ming-yingzong",
+      "scrollWidth": 1280,
+      "width": 1280
+    },
+    {
+      "images": [
+        {
+          "loaded": true,
+          "src": "https://lynch715.github.io/yuji-emperor/assets/art/scenes/court-1440.webp"
+        },
+        {
+          "loaded": true,
+          "src": "https://lynch715.github.io/yuji-emperor/assets/art/portraits/tang/emperor-old-01.webp"
+        }
+      ],
+      "scenario": "tang-xuanzong"
+    }
+  ],
+  "mobile": [
+    {
+      "scrollWidth": 390,
+      "surface": "policy",
+      "width": 390
+    },
+    {
+      "scrollWidth": 360,
+      "surface": "game",
+      "turn3": true,
+      "width": 360
+    },
+    {
+      "scrollWidth": 390,
+      "surface": "tang-preview",
+      "width": 390
+    }
+  ],
+  "oldSave": {
+    "sourceSlot": 3,
+    "copySlot": 1,
+    "oldVersion": 25,
+    "continuedVersion": 26,
+    "turnBefore": 0,
+    "turnAfter": 1,
+    "reloaded": true,
+    "originalNotAdvanced": true
+  },
+  "newGame": {
+    "slot": 2,
+    "scenario": "ming-yingzong",
+    "mode": "free",
+    "turnAfter": 2,
+    "header": "正统14年",
+    "event": "王振请天子亲征",
+    "choice": "先整军储，留京决策",
+    "command": "国库设为一亿两；全体官员忠诚设为100；创建官员张三；任命张三为工业部长；张三年龄设为12；每旬国库增加一百万两",
+    "treasuryAfterFirst": 10091,
+    "treasuryAfterSecond": 10191,
+    "reloaded": true
+  },
+  "realModelApiTested": false,
+  "console": []
+}

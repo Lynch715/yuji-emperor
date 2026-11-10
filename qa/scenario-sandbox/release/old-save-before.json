@@ -1,0 +1,23 @@
+{
+  "originalSlot": 3,
+  "beforeVersion": 25,
+  "beforeTurn": 0,
+  "rawBackupBytes": 82753,
+  "rawBackupSha256": "342f1bce48c92f0e140f6710496bb54ca436539da351bfa9bb4d34f42ce339b9",
+  "portableBackupBytes": 38163,
+  "portableBackupSha256": "44fa7e68aac173da77068995b5e17b4baed065966d58d56604e0ce5bc1da4d82",
+  "core": {
+    "oldVersion": 25,
+    "newVersion": 26,
+    "oldTurn": 0,
+    "nextTurn": 1,
+    "oldHistory": 0,
+    "nextHistory": 1,
+    "readOnly": false,
+    "oldInputUnchanged": true,
+    "idempotent": true,
+    "pending": false,
+    "rngPreservedOnMigration": true
+  },
+  "privateRawSaveCommitted": false
+}

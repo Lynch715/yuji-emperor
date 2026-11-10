@@ -1,0 +1,142 @@
+{
+  "conclusion": "success",
+  "headSha": "171555c12e78a64e5629a8b74ad41b8cf2a944cd",
+  "jobs": [
+    {
+      "completedAt": "2026-11-10T03:49:48Z",
+      "conclusion": "success",
+      "databaseId": 129616470016,
+      "name": "build",
+      "startedAt": "2026-11-10T03:47:13Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completedAt": "2026-11-10T03:47:16Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "startedAt": "2026-11-10T03:47:14Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-11-10T03:47:20Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@v6",
+          "number": 2,
+          "startedAt": "2026-11-10T03:47:16Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-11-10T03:47:21Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-node@v7",
+          "number": 3,
+          "startedAt": "2026-11-10T03:47:20Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-11-10T03:49:42Z",
+          "conclusion": "success",
+          "name": "Run tests",
+          "number": 4,
+          "startedAt": "2026-11-10T03:47:21Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-11-10T03:49:42Z",
+          "conclusion": "success",
+          "name": "Build game",
+          "number": 5,
+          "startedAt": "2026-11-10T03:49:42Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-11-10T03:49:44Z",
+          "conclusion": "success",
+          "name": "Package public website",
+          "number": 6,
+          "startedAt": "2026-11-10T03:49:42Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-11-10T03:49:44Z",
+          "conclusion": "success",
+          "name": "Run actions/configure-pages@v5",
+          "number": 7,
+          "startedAt": "2026-11-10T03:49:44Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-11-10T03:49:46Z",
+          "conclusion": "success",
+          "name": "Run actions/upload-pages-artifact@v4",
+          "number": 8,
+          "startedAt": "2026-11-10T03:49:44Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-11-10T03:49:46Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-node@v7",
+          "number": 15,
+          "startedAt": "2026-11-10T03:49:46Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-11-10T03:49:46Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@v6",
+          "number": 16,
+          "startedAt": "2026-11-10T03:49:46Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-11-10T03:49:46Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 17,
+          "startedAt": "2026-11-10T03:49:46Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/Lynch715/yuji-emperor/actions/runs/42751668144/job/129616470016"
+    },
+    {
+      "completedAt": "2026-11-10T03:50:31Z",
+      "conclusion": "success",
+      "databaseId": 129617352857,
+      "name": "deploy",
+      "startedAt": "2026-11-10T03:49:54Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completedAt": "2026-11-10T03:49:56Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "startedAt": "2026-11-10T03:49:55Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-11-10T03:50:29Z",
+          "conclusion": "success",
+          "name": "Deploy",
+          "number": 2,
+          "startedAt": "2026-11-10T03:49:56Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-11-10T03:50:30Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 3,
+          "startedAt": "2026-11-10T03:50:29Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/Lynch715/yuji-emperor/actions/runs/42751668144/job/129617352857"
+    }
+  ],
+  "status": "completed",
+  "url": "https://github.com/Lynch715/yuji-emperor/actions/runs/42751668144"
+}

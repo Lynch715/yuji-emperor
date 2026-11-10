@@ -1,5 +1,26 @@
 # 历史事件与言出法随
 
+## 正式发布验收 · 2026-11-09
+
+玩家已授权合并发布。[PR #10](https://github.com/Lynch715/yuji-emperor/pull/10)已合入main，合并提交`171555c12e78a64e5629a8b74ad41b8cf2a944cd`与已验收分支头`e7ff8c1`的完整树一致。[Pages工作流42751668144](https://github.com/Lynch715/yuji-emperor/actions/runs/42751668144)的测试、构建和部署均成功；[步骤记录](../qa/scenario-sandbox/release/pages-first-run.json)。正式站点：[御极](https://lynch715.github.io/yuji-emperor/)。
+
+- 正式Node 24工作流644／644测试通过，[摘要](../qa/scenario-sandbox/release/ci-test-summary.txt)；合并版另跑200年／7200旬无模型模拟，6朝、无异常终止，[结果](../qa/scenario-sandbox/release/simulation-200y.json)。
+- 下载线上HTML、明唐宋清皇帝池头像及court章节场景共6项，均HTTP200且SHA-256与合并代码相同。HTML931,696字节；390个WebP仍为5,059,892字节，原美术未改动。[线上文件散列](../qa/scenario-sandbox/release/live-samples.json)。
+- Codex In-app Browser在正式站点核对七个新增开局的帝名、四项目标；抽查明英宗、唐玄宗预览图片加载正常。实际创建第2卷明英宗试读局，呈现正统十四年及王振亲征固定事件；选「先整军储，留京决策」后正式提交，御批选择保存为opt0，没有强制被俘或历史结局。
+- 同一局实际执行复合御旨：设国库一亿两、全体官员忠诚100、创建张三、任命工业部长、年龄12岁、每旬增银一百万两。导出实际存档确认人物和官职存在、忠诚100；本旬余额10,091万两，再过一旬为10,191万两，每旬规则仅执行一次。刷新后事件决定、人物、官职和制度保留。[实际状态验证](../qa/scenario-sandbox/release/save-and-execution-checks.json)。
+- 发布前导出原第3卷v25万历0旬备份，在空白第1卷导入副本，正式新版迁移至v26、推进至1旬并刷新，正文第1章和进度正常，无只读保护。原第3卷未推进；前后「导出原始副本」均82,753字节，SHA-256均为`342f1bce48c92f0e140f6710496bb54ca436539da351bfa9bb4d34f42ce339b9`，逐字节保持。已切回原第3卷，第1卷保留旧档续玩副本，第2卷保留明英宗试读。私有原始存档只留本机，仓库仅记录字节、散列和验证结果。[旧档基准](../qa/scenario-sandbox/release/old-save-before.json)。
+- 390／360页面无横向溢出，最终console warn／error为空；本轮试读没有调用真实模型API，复杂自然语言模型联调未声称完成。[浏览器记录](../qa/scenario-sandbox/release/online-browser.json)。
+
+| 线上检查 | 截图 |
+| --- | --- |
+| 新剧本预览 | [明英宗1280](../qa/scenario-sandbox/release/ming-yingzong-live-preview-1280.png)；[唐玄宗1280](../qa/scenario-sandbox/release/tang-xuanzong-live-preview-1280.png) |
+| 固定御前事件 | [王振亲征选项1280](../qa/scenario-sandbox/release/event-live-1280.png) |
+| 言出法随执行 | [复合输入1280](../qa/scenario-sandbox/release/fiat-live-input-1280.png)；[执行结果1280](../qa/scenario-sandbox/release/fiat-live-result-1280.png)；[新官员1280](../qa/scenario-sandbox/release/fiat-live-official-1280.png) |
+| 制度与手机续读 | [每旬制度390](../qa/scenario-sandbox/release/fiat-live-policy-390.png)；[刷新续读360](../qa/scenario-sandbox/release/fiat-live-reloaded-360.png) |
+| v25旧档副本推进后重读 | [实际线上1280](../qa/scenario-sandbox/release/old-save-reloaded-1280.png) |
+
+以下为合并前的实现与草稿验收记录。
+
 按玩家本轮要求，在PR #10继续加入明英宗、唐玄宗、宋钦宗、嘉庆帝，使历史预设增至14个；每个预设提供3个固定事件。固定的是事件主题与触发窗口，分支、存亡和后果由游戏状态决定，不预定皇帝被俘、亡国或人物必死。
 
 最自由档free改名「言出法随」，新增通用引擎指令通道：玩家可指定资源、人物属性、任免、复活、新人物与势力、制度及技术；未有专用模块的事物以可保存的自定义对象和规则进入世界，后续叙事读取这些实际设定。普通和写实档继续沿用原判定。

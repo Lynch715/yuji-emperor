@@ -1,0 +1,31 @@
+{
+  "oldSave": {
+    "oldVersion": 25,
+    "newVersion": 26,
+    "turnBefore": 0,
+    "turnAfter": 1,
+    "historyBefore": 0,
+    "historyAfter": 1,
+    "reloaded": true,
+    "originalRawUnchanged": true,
+    "originalBytes": 82753,
+    "originalSha256": "342f1bce48c92f0e140f6710496bb54ca436539da351bfa9bb4d34f42ce339b9"
+  },
+  "fiat": {
+    "turn1": 1,
+    "turn2": 2,
+    "firstTreasury": 10091,
+    "secondTreasury": 10191,
+    "secondTurnIncrease": 100,
+    "createdOfficial": "张三",
+    "age": 12,
+    "post": "工业部长",
+    "allLoyalty100": true,
+    "ruleLastTurn": 2,
+    "oneRule": true,
+    "reloaded": true,
+    "eventId": "ming-yingzong-0",
+    "eventChoice": "opt0"
+  },
+  "privateSavesCommitted": false
+}
