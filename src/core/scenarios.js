@@ -3,6 +3,7 @@
 import { clone } from "./state.js";
 import { clamp } from "./effects.js";
 import { factionPowers } from "./politics.js";
+import { EXTRA_SCENARIOS } from "./extra-scenarios.js";
 // 官职显示名：引擎内部仍按原职名（内阁首辅、户部尚书……）匹配规则，只换给人看的名字。
 // 下标与 POST_NAMES 0–28 对应；省级职官另由 governor 拼接。
 const POSTS = {
@@ -268,6 +269,7 @@ export const SCENARIOS = [
     foreign: ["后金|努尔哈赤|冷淡|10|东|争夺辽东", "察哈尔|林丹汗|冷淡|30|北|抚赏与互市", "朝鲜|李珲|通好|50|东|两边周旋，保境安民", "日本|德川秀忠|冷淡|35|东|海贸与沿海秩序", "安南|黎维祺|朝贡|55|南|册封与边境安稳"],
     facts: ["辽东|失地|沈阳与辽阳已失，关外防线承压", "客氏|地位|受封奉圣夫人，与魏忠贤相互倚重", "熊王|不和|经略与巡抚对守战方略意见相左"],
   },
+  ...EXTRA_SCENARIOS,
 ];
 export function scenarioById(id) {
   return SCENARIOS.find((x) => x.id === id) || null;
@@ -286,7 +288,7 @@ export function postTitle(state, post) {
     return (state.nation.provinces.find((z) => z.id === post.provinceId)?.name || "") + state.governorTitle;
   return state.postNames?.[post.id] || post.title;
 }
-const split = (x) => x.split("|");
+const split = (x) => Array.isArray(x) ? x : x.split("|");
 const nums = (x) => x.trim().split(/\s+/).map(Number);
 export function applyScenario(state, id) {
   const sc = scenarioById(id);
@@ -298,6 +300,7 @@ export function applyScenario(state, id) {
   s.childNaming = sc.childNaming || null;
   s.backstory = sc.blurb;
   s.era.name = s.reign.eraName = sc.era;
+  s.era.baseYear = s.era.year = sc.eraYear || 1;
   // 官制与州郡
   const titles = POSTS[sc.posts].split(" ");
   s.postNames = Object.fromEntries(titles.map((t, i) => ["p" + i, t]));

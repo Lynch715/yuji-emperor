@@ -100,7 +100,7 @@ test('失利可赔银、输粮或自行撤退，零钱粮仍有可行出口',()=
  assert.equal(a.nation.treasury,s.nation.treasury-18);assert.equal(b.nation.grain,s.nation.grain-18);
  assert.equal(war(a).goalAchieved,false);assert.equal(war(b).goalAchieved,false);
  assert.ok(c.nation.army.frontiers[0].threat>a.nation.army.frontiers[0].threat);assert.equal(war(c).goalAchieved,false);
- const poor=structuredClone(s);poor.nation.treasury=0;poor.nation.grain=0;
+ const poor=structuredClone(s);poor.settings.freedom='real';poor.nation.treasury=0;poor.nation.grain=0;
  assert.throws(()=>sign(poor,'silver'),/不足/);assert.throws(()=>sign(poor,'grain'),/不足/);assert.doesNotThrow(()=>sign(poor,'retreat'));
 });
 test('驻军实际离开边军，每月供养只扣一次；到期归建，断饷则失约并损失兵员',()=>{
@@ -175,7 +175,7 @@ test('朱批自由口谕先行议和时，收回过时军令，档案不冒记�
 test('亲征时可在军中批军报，仍不能批普通奏折或进行京中行动',()=>{
  let s=fresh('亲征军报');war(s).personal=true;s=tick(s);const m=report(s,'maneuver');
  assert.equal(actionAvailability(s,'批折'),'');assert.ok(availableMemorials(s).every(m=>m.campaignOrder));
- assert.doesNotThrow(()=>forecastTurn(s,order(s,m,'defend')));assert.match(actionAvailability(s,'外交'),/御驾/);
+ assert.doesNotThrow(()=>forecastTurn(s,order(s,m,'defend')));s.settings.freedom='real';assert.match(actionAvailability(s,'外交'),/御驾/);
  const ordinary=s.memorials.find(m=>!m.campaignOrder);assert.ok(ordinary);
  assert.throws(()=>validateSchedule(s,order(s,ordinary,ordinary.options[0].id)),/亲征/);
 });

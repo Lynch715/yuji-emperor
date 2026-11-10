@@ -11,7 +11,8 @@ import { seedNumber, random, DRAFT } from "./rng.js";
 import { uniqueName } from "./names.js";
 import { chooseRegent, legacyDowagerFaction } from "./regency-info.js";
 import {factionPowers} from './politics.js';
-export const VERSION = 25;
+import {defaultScenarioEvents,defaultFiat,validateSandbox,WORLD_MAX} from './sandbox-schema.js';
+export const VERSION = 26;
 export const TALENTS = ["政略", "权谋", "武略", "文采", "魅力"];
 export const SLOTS = ["朝", "午", "夜"];
 export const POST_NAMES = [
@@ -294,6 +295,7 @@ export function createState(options = {}) {
     dowagerFaction: null,
     edictCooldowns: {},
     era: {
+      baseYear: 1,
       name: String(options.era || "永宁").slice(0, 8),
       year: 1,
       month: 1,
@@ -388,6 +390,8 @@ export function createState(options = {}) {
     })),
     ambitions: [],
     memorials: [],
+    scenarioEvents: defaultScenarioEvents(),
+    fiat: defaultFiat(),
     memorialVariety: [],
     briefings: [],
     threads: [],
@@ -521,6 +525,7 @@ export function migrate(input) {
   // v23 separates read-only departmental reports from petitions. Received
   // petitions and frozen forecasts retain their original text and choices.
   if(input.v<23)s.briefings=[];
+  if(input.v<26){s.scenarioEvents??=defaultScenarioEvents(s.turn);s.fiat??=defaultFiat();s.era.baseYear??=1;}
   s.settings.freedom ??= "mid";
   s.v = VERSION;
   s.volumeIndex ??= [];
@@ -614,6 +619,7 @@ export function migrate(input) {
   return assignFaces(s);
 }
 export function assertState(s) {
+  validateSandbox(s);
   validateKeju(s);
   validateDevelopment(s);
   if (
@@ -628,12 +634,13 @@ export function assertState(s) {
     if (typeof v !== "number" || !Number.isFinite(v) || v < a || v > b)
       throw new Error("数值不在有效范围");
   };
+  const expanded=s.v>=26&&(s.settings?.freedom==='free'||s.fiat?.used),metricMax=expanded?WORLD_MAX:100;
   for (const field of ["health", "mood", "prestige", "virtue"])
-    range(s.emperor[field], 0, 100);
-  for (const t of TALENTS) range(s.emperor.talents?.[t], 0, 100);
-  for (const f of ["morale", "governance"]) range(s.nation[f], 0, 100);
+    range(s.emperor[field], 0, metricMax);
+  for (const t of TALENTS) range(s.emperor.talents?.[t], 0, metricMax);
+  for (const f of ["morale", "governance"]) range(s.nation[f], 0, metricMax);
   for (const f of ["treasury", "privy", "grain"])
-    range(s.nation[f], 0, 1000000);
+    range(s.nation[f], 0, expanded?WORLD_MAX:1000000);
   for (const a of [
     s.court.factions,
     s.court.posts,
@@ -646,19 +653,19 @@ export function assertState(s) {
   ])
     if (!Array.isArray(a)) throw new Error("名册结构无效");
   for (const x of s.court.factions)
-    for (const f of ["power", "attitude"]) range(x[f], 0, 100);
+    for (const f of ["power", "attitude"]) range(x[f], 0, metricMax);
   for (const x of s.nation.army.frontiers) {
-    range(x.threat, 0, 100);
-    range(x.troops, 0, 1000000);
-    range(x.readiness, 0, 100);
+    range(x.threat, 0, metricMax);
+    range(x.troops, 0, expanded?WORLD_MAX:1000000);
+    range(x.readiness, 0, metricMax);
   }
   for (const x of s.nation.provinces) {
-    range(x.morale, 0, 100);
-    range(x.disaster, 0, 100);
+    range(x.morale, 0, metricMax);
+    range(x.disaster, 0, metricMax);
   }
   for (const x of s.harem.consorts) {
-    range(x.health, 0, 100);
-    range(x.favor, 0, 100);
+    range(x.health, 0, metricMax);
+    range(x.favor, 0, metricMax);
   }
   if(s.v>=5){
     if(typeof s.imperialSurname!=='string'||!s.imperialSurname.trim())throw new Error('皇姓资料无效');

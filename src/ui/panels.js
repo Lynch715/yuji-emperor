@@ -1,4 +1,5 @@
 import { portraitHTML, hallArtHTML } from './art.js';
+import {fiatWorldHTML} from './fiat-world.js';
 import { examOfficialView } from '../core/keju.js';
 import {technologyHTML} from './technology.js';
 import {INDUSTRIES} from '../core/tech-rules.js';
@@ -404,6 +405,7 @@ export function palacePanel(s, name) {
           "</details>"
         : "");
   }
+  if(name==='内库')html+=fiatWorldHTML(s);
   openDialog(
     name + "殿",
     html || '<p class="muted">本旬尚无记录。</p>',

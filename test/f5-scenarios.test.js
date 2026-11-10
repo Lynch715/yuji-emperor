@@ -13,8 +13,8 @@ import {createOpening} from '../src/ui/new-game.js';
 const open=id=>initialTurn(applyScenario(createState({seed:'f5-'+id}),id));
 const rest={朝:{kind:'歇息'},午:{kind:'歇息'},夜:{kind:'歇息'}};
 
-test('F5 十个剧本：开局状态合法、核心人物在位、名字不重复',()=>{
-  assert.equal(SCENARIOS.length,10);
+test('F5 十四个剧本：开局状态合法、核心人物在位、名字不重复',()=>{
+  assert.equal(SCENARIOS.length,14);
   for(const sc of SCENARIOS){
     const s=open(sc.id);assertState(s);
     assert.equal(s.emperor.name,sc.emperor[0]);assert.equal(s.era.name,sc.era);assert.equal(s.dynasty,sc.dynasty);

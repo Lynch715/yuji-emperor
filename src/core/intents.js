@@ -11,7 +11,9 @@ import { diplomacy } from './foreign.js';
 import { issueEdict, EDICTS } from './edicts.js';
 import { auditChanges } from './audit.js';
 import { factionPowers } from './politics.js';
-export const INTENT_TYPES=['kill','appoint','dismiss','promote','imprison','war','allocate','favor','decree','other'];
+import {fiatEnabled,normalizeFiatOperations,applyFiatOperations,ensureFiatFunds} from './fiat.js';
+import {WORLD_MAX} from './sandbox-schema.js';
+export const INTENT_TYPES=['kill','appoint','dismiss','promote','imprison','war','allocate','favor','decree','other','fiat'];
 const persons=s=>[...s.court.officials,...s.harem.consorts,...s.harem.children];
 export function normalizeIntents(state,actions,inputs){
  const byId=(list,value)=>list.find(x=>x.id===value||x.name===value);
@@ -19,6 +21,7 @@ export function normalizeIntents(state,actions,inputs){
   const input=inputs.find(x=>x.id===raw?.inputId),type=INTENT_TYPES.includes(raw?.type)?raw.type:'other';
   const a={id:(input?.id||'unknown')+':'+i,inputId:input?.id||'',slot:input?.slot||'朝',type,text:String(raw?.text||input?.text||'').slice(0,TEXT_LIMITS.decree)};
   if(!input)return {...a,type:'other',text:'未能对应原口谕'};
+  if(type==='fiat')return fiatEnabled(state)?{...a,operations:normalizeFiatOperations(raw.operations)}:{...a,type:'other',reason:'此指令仅用于言出法随档'};
   const social=normalizeSocial(state,raw.interaction,input);if(social&&type==='other')a.interaction=social;
   const person=byId(persons(state),raw.targetId||raw.target),country=byId(state.foreign,raw.countryId||raw.country);
   const post=state.court.posts.find(p=>p.id===raw.postId||p.title===raw.postId||state.postNames?.[p.id]===raw.postId);
@@ -46,7 +49,7 @@ export function normalizeIntents(state,actions,inputs){
    a.industry=identifyIndustry(String(raw.industry||input.text));
    a.province=state.nation.provinces.find(p=>p.id===raw.province||input.text.includes(p.name))?.id||null;
   }
-  if(type==='favor'){a.requestedAmount=raw.amount;a.amount=Number.isFinite(raw.amount)?Math.max(-5,Math.min(5,raw.amount)):0;}
+  if(type==='favor'){a.requestedAmount=raw.amount;a.amount=Number.isFinite(raw.amount)?fiatEnabled(state)?raw.amount:Math.max(-5,Math.min(5,raw.amount)):0;}
   if(type==='decree'){if(!EDICTS[raw.edictType])return {...a,type:'other',text:'拟议：'+a.text,reason:'普通叙事口谕'};a.edictType=raw.edictType;a.province=state.nation.provinces.find(p=>p.id===raw.province)?.id||a.province||null;}
   return a;
  });
@@ -54,6 +57,7 @@ export function normalizeIntents(state,actions,inputs){
 export function intentActionKey(a){
  const keys=['type','targetId','postId','countryId','operation','resource','amount','source','destination','edictType','province'];
  if(a.destination==='tech'||['格物','兴业'].includes(a.edictType))keys.push('techId','funding','lead','industry','name','line');
+ if(a.type==='fiat')return JSON.stringify(['fiat',a.operations]);
  return JSON.stringify(keys.map(k=>a[k]??null));
 }
 function killPerson(s,id){
@@ -72,6 +76,11 @@ export function resolveIntents(state,actions,{slot='朝',source='decree',transfe
   const factStart=facts.length;
   const r={id,turn:s.turn,slot:a.slot||slot,type:a.type,status:'failed',inputId:a.inputId,actual:{},clamped:false};
   let success=false;
+  if(a.type==='fiat'){
+   try{const done=applyFiatOperations(s,a.operations,a.id);s=done.state;r.status='success';r.actual={changes:done.changes};r.summary=done.summary;r.facts=done.facts;facts.push(...done.facts);}
+   catch(error){r.status='failed';r.summary='指令尚未执行：'+error.message;r.facts=[];}
+   results.push(r);s.intentResults.push(r);continue;
+  }
   if(a.type==='other'){r.status='narrative';r.summary='拟议：'+a.text;}
   else{
    const die=roll(s);s=die.state;r.die=die.value;
@@ -79,7 +88,7 @@ export function resolveIntents(state,actions,{slot='朝',source='decree',transfe
    const judged=adjudicate(s,['appoint','dismiss','promote','imprison','war','decree'].includes(a.type)?{...verdict,success:true}:verdict,target?.id);s=judged.state;success=judged.verdict.success;r.baseSuccess=verdict.success;r.status=judged.verdict.partial?'partial':success?'success':'failed';if(judged.verdict.cost)r.cost=judged.verdict.cost;
    if(!success)r.summary='口谕未能落实';
    else try{
-    if(s.regency)throw new Error('摄政期间不可下达此口谕');
+    if(s.regency&&!fiatEnabled(s))throw new Error('摄政期间不可下达此口谕');
     if(a.type==='kill'){
      if(!target||target.alive===false||target.health<=0){r.clamped=true;r.summary='此人已不在在世名册';}
      else{killPerson(s,target.id);r.actual={targetId:target.id,name:actor};r.summary=actor+'被赐死';facts.push({kind:'death',actors:[actor]});}
@@ -90,7 +99,7 @@ export function resolveIntents(state,actions,{slot='朝',source='decree',transfe
      if(!post&&operation==='jail'){s.court.officials.find(o=>o.id===target.id).jailed=true;r.actual={targetId:target.id};r.summary=actor+'被下狱';facts.push({kind:'appointment',actors:[actor],operation:'下狱'});r.facts=facts.slice(factStart);s.intentResults.push(r);results.push(r);continue;}
      if(!post&&operation==='remove'){r.clamped=true;r.actual={targetId:target.id};r.summary=actor+'当前并无官职';r.facts=[];s.intentResults.push(r);results.push(r);continue;}
      if(!post)throw new Error('未找到可任免官职');
-     const result=appoint(s,{post:post.id,person:target.id,operation,pardon:false});s=result.state;r.summary=result.note;if(result.check?.partial||result.partial||result.execution?.partial){r.status='partial';r.cost=result.check?.cost||result.cost||result.execution?.cost;}
+     const result=fiatEnabled(s)?(()=>{const done=applyFiatOperations(s,[{op:operation==='appoint'?'appoint':operation==='jail'?'imprison':'dismiss',target:target.id,post:post.id}],a.id);return {state:done.state,note:done.summary};})():appoint(s,{post:post.id,person:target.id,operation,pardon:false});s=result.state;r.summary=result.note;if(result.check?.partial||result.partial||result.execution?.partial){r.status='partial';r.cost=result.check?.cost||result.cost||result.execution?.cost;}
      const done=operation==='appoint'?s.court.posts.find(p=>p.id===post.id)?.holder===target.id:!s.court.posts.find(p=>p.holder===target.id);
      if(!done)r.status='failed';
      else{r.actual={targetId:target.id,postId:post.id};facts.push({kind:'appointment',actors:[actor],operation:operation==='jail'?'下狱':operation==='remove'?'罢免':'任命',post:post.title});}
@@ -98,9 +107,13 @@ export function resolveIntents(state,actions,{slot='朝',source='decree',transfe
      const result=configureResearch(s,{techId:a.techId,name:a.name,line:a.line,funding:a.funding??a.amount,lead:a.lead});s=result.state;
      r.actual={destination:'tech',techId:s.tech.current?.id,funding:s.tech.funding};r.summary=result.note;facts.push({kind:'research_plan',...r.actual});
     }else if(a.type==='allocate'){
-     const room=['treasury','privy','grain'].includes(a.destination)&&a.destination!==a.source?Math.max(0,1000000-s.nation[a.destination]):1000000;
+     if(fiatEnabled(s)&&a.source!==a.destination&&['treasury','privy','grain'].includes(a.source))s=ensureFiatFunds(s,{[a.source]:a.resource==='troops'?a.amount*EDICTS.征兵.cost/3000:a.amount});
+     if(fiatEnabled(s))transferLeft=Infinity;
+     const ceiling=fiatEnabled(s)?WORLD_MAX:1000000;
+     const room=['treasury','privy','grain'].includes(a.destination)&&a.destination!==a.source?Math.max(0,ceiling-s.nation[a.destination]):ceiling;
      const origin=a.source==='capital'?s.nation.army.capital:s.nation.army.frontiers.find(b=>b.dir===a.source);
-     const cap=a.source===a.destination?0:a.resource==='troops'?Math.min(Math.max(0,1000000-((a.destination==='capital'?s.nation.army.capital:s.nation.army.frontiers.find(b=>b.dir===a.destination))?.troops||0)),origin?origin.troops:Math.floor((s.nation[a.source]||0)*3000/EDICTS.征兵.cost),a.source==='treasury'?Math.floor(transferLeft*3000/EDICTS.征兵.cost):Infinity):Math.min(room,s.nation[a.source]||0);
+     if(fiatEnabled(s)&&origin&&origin.troops<a.amount)origin.troops=a.amount;
+     const cap=a.source===a.destination?0:a.resource==='troops'?Math.min(Math.max(0,ceiling-((a.destination==='capital'?s.nation.army.capital:s.nation.army.frontiers.find(b=>b.dir===a.destination))?.troops||0)),origin?origin.troops:Math.floor((s.nation[a.source]||0)*3000/EDICTS.征兵.cost),a.source==='treasury'?Math.floor(transferLeft*3000/EDICTS.征兵.cost):Infinity):Math.min(room,s.nation[a.source]||0);
      const limited=Math.min(Math.max(0,a.amount||0),cap,a.source==='treasury'&&a.resource!=='troops'?transferLeft:Infinity),amount=a.resource==='troops'?Math.floor(limited):limited;
      const treasurySpent=a.source==='treasury'?(a.resource==='troops'?amount*EDICTS.征兵.cost/3000:amount):0;transferLeft-=treasurySpent;r.clamped=amount!==a.amount;
      if(a.resource==='troops'){
@@ -121,8 +134,8 @@ export function resolveIntents(state,actions,{slot='朝',source='decree',transfe
      const personal=budget.filter(r=>r.actual.targetId===target.id).reduce((n,r)=>n+Math.abs(r.actual.amount||0),0);
      const liveTarget=persons(s).find(o=>o.id===target.id);
      const beforeFavor=liveTarget.favor||0;
-     const amount=Math.sign(a.amount)*Math.min(Math.abs(a.amount),Math.max(0,10-used),Math.max(0,5-personal));r.clamped=amount!==a.amount;
-     if(target?.abilities)s=applyPackage(s,{official:{id:target.id,favor:amount}},'口谕赏罚');else if(liveTarget&&'favor' in liveTarget)liveTarget.favor=Math.max(0,Math.min(100,liveTarget.favor+amount));
+     const amount=fiatEnabled(s)?a.amount:Math.sign(a.amount)*Math.min(Math.abs(a.amount),Math.max(0,10-used),Math.max(0,5-personal));r.clamped=amount!==a.amount;
+     if(target?.abilities)s=applyPackage(s,{official:{id:target.id,favor:amount}},'口谕赏罚');else if(liveTarget&&'favor' in liveTarget)liveTarget.favor=Math.max(0,Math.min(fiatEnabled(s)?WORLD_MAX:100,liveTarget.favor+amount));
      r.actual={targetId:target.id,amount:(persons(s).find(o=>o.id===target.id)?.favor||0)-beforeFavor};r.clamped=r.actual.amount!==a.requestedAmount;r.summary=actor+(amount>=0?'受到嘉奖':'受到申饬');
     }else if(a.type==='war'){
      const country=s.foreign.find(f=>f.id===a.countryId);if(!country)throw new Error('外邦不在名册');

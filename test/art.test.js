@@ -24,7 +24,7 @@ test('v23老档按数组顺序补号，不改数值和原预演，不在原存�
  old.harem.children.push({id:'art-child',name:'萧和',sex:'男',born:0,health:90,aptitude:60,education:0,mother:'c0',fatherId:old.runId});
  old.pending={forecast:forecastTurn(old)};
  const bytes=JSON.stringify(old),pending=JSON.stringify(old.pending),next=migrate(old);
- assert.equal(VERSION,25);assert.equal(next.v,25);assert.equal(JSON.stringify(old),bytes);assert.equal(JSON.stringify(next.pending),pending);
+ assert.equal(VERSION,26);assert.equal(next.v,26);assert.equal(JSON.stringify(old),bytes);assert.equal(JSON.stringify(next.pending),pending);
  assert.ok(people(next).every(p=>Number.isSafeInteger(p.faceNo)));
  assert.equal(next.rng,old.rng);assert.deepEqual(next.nation,old.nation);assert.deepEqual(next.emperor.talents,old.emperor.talents);
  assert.deepEqual(next.court.officials.map(p=>p.faceNo),Array.from({length:25},(_,i)=>i));

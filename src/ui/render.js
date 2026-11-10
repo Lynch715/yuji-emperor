@@ -527,7 +527,7 @@ export function renderApp(
                     .filter(
                       (k) =>
                         ACTIONS[k].slots.includes(slot) &&
-                        (!s.regency ||
+                        (!s.regency ||s.settings.freedom==='free'||
                           ["批折", "召见", "自拟情节", "私下行事", "歇息"].includes(k)),
                     )
                     .map((k) => (s.regency && k === "私下行事" ? "经筵" : k))

@@ -12,10 +12,10 @@ function artV24(s){s.v=24;delete s.dowagerFaction;if(s.regency)delete s.regency.
 function frozen(s,shape){const f=forecastTurn(s,rest);shape(s);shape(f.state);s.pending={forecast:f};return f;}
 function assertFrozenCommit(s,f){
  const bytes=JSON.stringify(s),pending=JSON.stringify(s.pending),next=migrate(s);
- assert.equal(VERSION,25);assert.equal(next.v,25);assert.equal(JSON.stringify(s),bytes);assert.equal(JSON.stringify(next.pending),pending);
+ assert.equal(VERSION,26);assert.equal(next.v,26);assert.equal(JSON.stringify(s),bytes);assert.equal(JSON.stringify(next.pending),pending);
  assert.ok(people(next).every(p=>Number.isSafeInteger(p.faceNo)));
  const done=commitTurn(next,next.pending.forecast,{});
- assert.equal(done.v,25);assert.equal(done.lastTurn.die,f.die);assert.equal(done.rng,f.state.rng);
+ assert.equal(done.v,26);assert.equal(done.lastTurn.die,f.die);assert.equal(done.rng,f.state.rng);
  assert.deepEqual(done.nation,f.state.nation);assert.deepEqual(done.emperor.talents,f.state.emperor.talents);
  assert.deepEqual(commitTurn(done,f,{}),done);return next;
 }

@@ -3,8 +3,11 @@ import {localSocial} from '../core/social-rules.js';
 import { normalizeIntents } from '../core/intents.js';
 import { parseNumber, NUMBER_SOURCE } from './quantities.js';
 import { normalizeMemorialAction } from '../core/memorial-decisions.js';
+import {fiatEnabled} from '../core/fiat.js';
+import {fiatIntentMessages,localFiatOperations} from './fiat-intents.js';
 export function intentInputs(schedule){return ['朝','午','夜'].flatMap(slot=>{const a=normalizeMemorialAction(schedule[slot]),inputs=[];if(['下旨','自拟情节'].includes(a?.kind)&&a.text?.trim())inputs.push({id:slot,slot,text:a.text.trim(),...(a.kind==='自拟情节'?{people:a.people,place:a.place||'',scene:true}:{})});for(const [id,d]of Object.entries(a?.decisions||{}))if(d?.remark?.trim())inputs.push({id:slot+':remark:'+id,slot,text:d.remark.trim()});return inputs;});}
 export function intentMessages(state,inputs){
+ if(fiatEnabled(state))return fiatIntentMessages(state,inputs);
  const relevant=inputs.filter(i=>/研制|研究|研习|格物|发明|改良|研新|兴业|兴建|建造|开设|设立/.test(i.text));
  const techNames=[...new Map(relevant.filter(i=>/研|格物|发明|改良/.test(i.text)).map(i=>identifyTech(state,i.text)).filter(Boolean).map(t=>[t.id,{id:t.id,name:t.name,line:t.line}])).values()];
  const industryNames=[...new Set(relevant.map(i=>identifyIndustry(i.text)).filter(Boolean))].map(id=>({id,name:INDUSTRIES[id].name}));
@@ -16,6 +19,8 @@ export function validateIntents(data,state,inputs){if(!Array.isArray(data?.actio
 export function localIntents(state,inputs){
  const actions=[];
  for(const input of inputs){
+  const fiat=localFiatOperations(state,input);
+  if(fiat){actions.push(fiat.error?{inputId:input.id,type:'other',text:fiat.error}:{inputId:input.id,type:'fiat',text:input.text,operations:fiat.operations});continue;}
   const research=/研制|研究|研习|格物|发明|改良|研新/.test(input.text),industrial=/兴建|兴业|建造|设立|开设/.test(input.text)&&identifyIndustry(input.text);
   if(research){
    const known=TECHS.find(t=>input.text.includes(t.name)||t.aliases.some(a=>input.text.includes(a))),tech=known||identifyTech(state,input.text);

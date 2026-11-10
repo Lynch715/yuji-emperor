@@ -17,7 +17,7 @@ import {talkAttempt} from '../src/core/court.js';
 import {callJSON} from '../src/llm/client.js';
 const fresh=()=>initialTurn(createState({seed:'国势全览',freedom:'free'}));
 const near=(a,b)=>assert.ok(Math.abs(a-b)<1e-6,`${a} != ${b}`);
-test('十位预设皇帝各有两宏愿两心事，崇祯使用专属中兴、辽东、周后与毕自严目标',async()=>{
+test('十四位预设皇帝各有两宏愿两心事，崇祯使用专属中兴、辽东、周后与毕自严目标',async()=>{
  for(const sc of SCENARIOS){
   const goals=scenarioRecommendations(sc.id);assert.equal(goals.length,4);assert.equal(new Set(goals.map(g=>g.id)).size,4);
   assert.deepEqual(goals.map(g=>g.kind),['宏愿','宏愿','心事','心事']);assert.ok(goals.every(g=>g.reason));
@@ -41,7 +41,7 @@ test('实际JSON请求只含当前皇帝、已选目标和文风，不携带其�
    rewriteMessages(f,[]),biographyMessages(s,{stats:{},score:50})];
   for(const messages of requests)await callJSON({key:'fixture',base:'https://prompt.test',model:'m'},messages,{fetcher:async(url,init)=>{
    const body=JSON.parse(init.body),wire=JSON.stringify(body.messages);
-   for(const other of SCENARIOS.filter(o=>o.id!==sc.id)){assert.ok(!wire.includes(other.blurb),other.id);assert.ok(!wire.includes(other.emperor[0]),other.emperor[0]);}
+   for(const other of SCENARIOS.filter(o=>o.id!==sc.id)){assert.ok(!wire.includes(other.blurb),other.id);if(![s.emperor,...s.court.officials,...s.harem.consorts,...s.harem.children].some(p=>p.name===other.emperor[0]))assert.ok(!wire.includes(other.emperor[0]),other.emperor[0]);}
    for(const [id,style]of Object.entries(STYLES))if(id!=='modern')assert.ok(!wire.includes(style.sample));
    assert.ok(!wire.includes('推荐宏愿与心事'));assert.ok(!wire.includes('按这个开局推荐'));
    return new Response(JSON.stringify({choices:[{message:{content:'{"ok":true}'}}]}),{headers:{'Content-Type':'application/json'}});
@@ -60,7 +60,7 @@ test('正文、面谈与本纪只发送各自任务格式，保留当前开局�
 });
 test('通俗档位沿用原自由度与难度ID，概率保持不变，上朝改为不限本数',()=>{
  assert.deepEqual(Object.keys(FREEDOM_RULES),['free','mid','real']);assert.equal(FREEDOM_RULES.free.k,1);assert.equal(FREEDOM_RULES.mid.k,0.5);assert.equal(FREEDOM_RULES.real.k,0);
- assert.deepEqual(Object.values(FREEDOM_RULES).map(r=>r.label),['想做就成','多数能成','成败看实力']);
+ assert.deepEqual(Object.values(FREEDOM_RULES).map(r=>r.label),['言出法随','多数能成','成败看实力']);
  assert.deepEqual(Object.keys(DIFFICULTIES),['easy','normal','hard']);assert.equal(FREEDOM_RULES.real.courtLimit,Infinity);
 });
 test('国势测算复用月结季结，币种与债务口径正确且不改变状态或随机数',()=>{

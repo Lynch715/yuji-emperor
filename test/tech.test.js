@@ -74,7 +74,7 @@ test('格物、繁荣和产业损坏拒读并保护原始副本',async()=>{
  }
 });
 test('口谕拨五万两研新式水车映射allocate→tech，仅月结真实扣款',()=>{
- const s=fresh(),schedule={朝:{kind:'下旨',text:'拨五万两研新式水车'}},inputs=intentInputs(schedule),actions=localIntents(s,inputs);
+ const s=fresh();s.settings.freedom='mid';s.emperor.talents.权谋=100;const schedule={朝:{kind:'下旨',text:'拨五万两研新式水车'}},inputs=intentInputs(schedule),actions=localIntents(s,inputs);
  assert.equal(actions.length,1);assert.equal(actions[0].destination,'tech');assert.equal(actions[0].techId,'waterwheel');assert.equal(actions[0].amount,5);
  const f=forecastTurn(s,schedule,actions);assert.equal(f.state.tech.funding,5);assert.equal(f.state.tech.current.id,'waterwheel');assert.equal(f.entries.filter(e=>e.path==='nation.treasury'&&/格物/.test(e.source)).length,0);
  const content=JSON.stringify(intentMessages(s,inputs));assert.match(content,/destination/);assert.match(content,/techId/);assert.ok(!content.includes('炉温准式'),'意图请求仅发送当前涉及的技艺名册');

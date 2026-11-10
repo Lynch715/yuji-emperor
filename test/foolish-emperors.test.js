@@ -53,7 +53,7 @@ for(const id of ids)test(id+' 试读、四目标、存读与待续提交兼容�
  const s=await createOpening({scenario:id,demo:true,seed:'新局-'+id},[],{}, {fetcher:()=>assert.fail('历史开局不请求模型铸世')});
  assert.equal(s.ambitions.length,4);assert.ok(s.ambitions.every(a=>a.scenarioId===id&&a.status==='进行中'));
  const f=forecastTurn(s);s.pending={forecast:f};const bytes=JSON.stringify(s),next=migrate(s);
- assert.equal(VERSION,25);assert.equal(JSON.stringify(s),bytes);assert.deepEqual(next.pending.forecast,f);
+ assert.equal(VERSION,26);assert.equal(JSON.stringify(s),bytes);assert.deepEqual(next.pending.forecast,f);
  const done=commitTurn(next,f,{});assertState(done);assert.deepEqual(commitTurn(done,f,{}),done);
  assert.match(systemPrompt(s),/史实局势开局/);assert.doesNotMatch(systemPrompt(s),/即位之初/);
 });

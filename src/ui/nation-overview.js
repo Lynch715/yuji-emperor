@@ -1,4 +1,5 @@
 import { hallArtHTML } from './art.js';
+import {fiatWorldHTML} from './fiat-world.js';
 import {INDUSTRIES} from '../core/tech-rules.js';
 import { esc, gameText, openDialog } from './common.js';
 import { campaignsHTML, treatyHTML } from './campaigns.js';
@@ -76,7 +77,7 @@ export function nationOverviewHTML(s,span=12,expanded=false) {
     section('各州民情',figures([['总人口',number(d.population),'万人'],['有灾州郡',d.disaster],['州郡总数',d.provinces.length]])+provinces,'所列为原定税额，实收随地方情势而变。')+
     section('京营与四境',armies)+section('朝堂各派',factions)+section('外邦往来',foreign)+section('在途政务',projects)+section('当前战事',wars)+
     section('战役与议约',campaignsHTML(s)+s.foreign.filter(f=>f.treaty).map(f=>'<h4>'+esc(f.name)+'</h4>'+treatyHTML(s,f)).join(''))+
-    section('圣躬与储位',palace);
+    section('圣躬与储位',palace)+fiatWorldHTML(s);
 }
 export function openNationOverview(state) {
   let span=12,expanded=false;

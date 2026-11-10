@@ -10,6 +10,8 @@ import { roll } from "./rng.js";
 import { applyPackage } from "./effects.js";
 import { quarterIndex } from "./finance.js";
 import {factionPowers} from './politics.js';
+import {applyScenarioOutcome} from './scenario-outcomes.js';
+import {ensureFiatFunds} from './fiat.js';
 import { campaignChoiceBlock } from './campaign-rules.js';
 import { applyCampaignDecision, expireCampaignPetition } from './campaigns.js';
 import { TEXT_LIMITS } from './text.js';
@@ -152,6 +154,7 @@ export function resolveMemorial(
     m.options.find((o) => o.id === option) ||
     m.options.find((o) => o.id === (option === "reject" ? "opt1" : "opt0"));
   if (!chosen) throw new Error("无此处置选项");
+  state=ensureFiatFunds(state,Object.fromEntries(['treasury','privy','grain'].map(k=>[k,Math.max(0,-(chosen.effects[k]||0))])));
   const blocked=campaignChoiceBlock(state,m,chosen)||developmentChoiceBlock(state,chosen);if(blocked)throw new Error(blocked);
   for(const [key,label]of [['treasury','国库'],['privy','内帑'],['grain','粮储']])
     if(chosen.effects[key]<0&&state.nation[key]<-chosen.effects[key])throw new Error(label+'不足以办理此事');
@@ -179,6 +182,7 @@ export function resolveMemorial(
       if (province) province.rebellion = false;
     }
   }
+  s=applyScenarioOutcome(s,m,chosen);
   return { state: applyMemorialRemark(s,m,remark,remarkKind), note: m.title + " · " + chosen.label + (chosen.consequence?'：'+chosen.consequence:'') + brushNote };
 }
 function applyMemorialRemark(state,memorial,remark,kind){
