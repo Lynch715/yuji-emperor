@@ -6,6 +6,7 @@ import {applyScenario,postTitle} from '../src/core/scenarios.js';
 import {initialTurn,forecastTurn,commitTurn} from '../src/core/turn.js';
 import {createOpening} from '../src/ui/new-game.js';
 import {portraitPool,portraitSource} from '../src/ui/art.js';
+import {ART_UNIQUE} from '../src/ui/art-manifest.js';
 import {systemPrompt} from '../src/llm/prompts.js';
 import {strongmanCandidate} from '../src/core/court.js';
 
@@ -36,12 +37,12 @@ test('同朝异时官制显示不串局，内部职位与职掌规则仍保留',
  assert.equal(postTitle(x,x.court.posts.find(p=>p.holder===w.id)),'司礼监秉笔');
  assert.equal(postTitle(start('ming-chongzhen'),x.court.posts[8]),'司礼监掌印');
 });
-test('新剧本按朝代池取现成头像，不冒用既有剧本专属像；宋两位宦官均无须',()=>{
+test('新剧本重要人物专属优先，其余按朝代池取图；宋两位宦官分池保持',()=>{
  for(const id of ids){
   const s=start(id),before=JSON.stringify(s);
   for(const p of [s.emperor,...s.court.officials,...s.harem.consorts,...s.harem.children,...s.foreign]){
    const path=portraitSource(s,p);assert.ok(path&&existsSync(path),p.name||p.ruler);
-   assert.ok(!path.includes('/unique/'),path);
+   if(path.includes('/unique/'))assert.ok(Object.values(ART_UNIQUE[id]?.[p.ruler||p.name]||{}).includes(path),'只取已明确映射的本人专属');
   }
   assert.equal(JSON.stringify(s),before,'纯取图不改脸号或随机数');
  }

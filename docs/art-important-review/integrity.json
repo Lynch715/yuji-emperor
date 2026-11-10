@@ -1,0 +1,1964 @@
+{
+  "baseline": "d61ddd37af880cffe3148c2af7875a8cd1316f89",
+  "oldUnchanged": 390,
+  "newFiles": 29,
+  "totalWebp": 419,
+  "newBytes": 298960,
+  "totalBytes": 5358852,
+  "maxNewBytes": 17194,
+  "newDimensions": [
+    "(400, 500)"
+  ],
+  "originalHashes": [
+    {
+      "file": "assets/art/halls/hall-archive-1440.webp",
+      "bytes": 81244,
+      "sha256": "878a745d9e311de4bbcb956539b270e42e4ff760e3b1404506fbe46b1fa06327"
+    },
+    {
+      "file": "assets/art/halls/hall-realm-1440.webp",
+      "bytes": 75110,
+      "sha256": "7a2338cca085708c669297476d87751ab558e8f788642547f5b853cea5ffba95"
+    },
+    {
+      "file": "assets/art/halls/hall-treasury-1440.webp",
+      "bytes": 78688,
+      "sha256": "d2533d6c2c30b2b39b21626b2006220a0b51689acb999200eb3161357b832fc5"
+    },
+    {
+      "file": "assets/art/portraits/han/consort-high-01.webp",
+      "bytes": 10596,
+      "sha256": "2047247f90949284215d3c0ca1e8a845ae67a7a16cd4c51692292bb85fede857"
+    },
+    {
+      "file": "assets/art/portraits/han/consort-high-02.webp",
+      "bytes": 9166,
+      "sha256": "a7f30acd2ef348d6509fd41124769489b954c77ceaa5e57410f6b6cfcaf9bbcc"
+    },
+    {
+      "file": "assets/art/portraits/han/consort-regular-01.webp",
+      "bytes": 7920,
+      "sha256": "685477c07471abc1ad38c95e4437126d354cd59b2257180cd8031b1aba4974be"
+    },
+    {
+      "file": "assets/art/portraits/han/consort-regular-02.webp",
+      "bytes": 8998,
+      "sha256": "194cfd1975af3a42228f387e5e3c3f3c93ecb6a63e53970adb864ee061509f74"
+    },
+    {
+      "file": "assets/art/portraits/han/consort-regular-03.webp",
+      "bytes": 5934,
+      "sha256": "c8b5f8b1397876212c62b7438d51da53b4dd3222359657fde87661700c9c1b62"
+    },
+    {
+      "file": "assets/art/portraits/han/consort-regular-04.webp",
+      "bytes": 9092,
+      "sha256": "5284d59c3b6af0f650a9cafce8983313ddc0a7e2c4d8882594d3f7af875cb491"
+    },
+    {
+      "file": "assets/art/portraits/han/consort-regular-05.webp",
+      "bytes": 7298,
+      "sha256": "6e293b7dc388f377adb2dd6bf6533d3cb1bc1dc4f65d46c5133be0d02da9197b"
+    },
+    {
+      "file": "assets/art/portraits/han/emperor-old-01.webp",
+      "bytes": 7956,
+      "sha256": "6822c1e4f8889b0148094bf8f0347e955b2b7522d4ef250322ad31b698ba711a"
+    },
+    {
+      "file": "assets/art/portraits/han/emperor-young-01.webp",
+      "bytes": 6478,
+      "sha256": "4ba6326ea549298dfc5d17ad60b430041e264b7c28e70e1fc27eeb26ed8ee9e7"
+    },
+    {
+      "file": "assets/art/portraits/han/eunuch-all-01.webp",
+      "bytes": 7584,
+      "sha256": "d986d3c5043102b8de689fd04b0baa8aa6348c087335ebc97c5e319da1d17740"
+    },
+    {
+      "file": "assets/art/portraits/han/general-all-01.webp",
+      "bytes": 15544,
+      "sha256": "da095cfcdfcdc832a3ceb29adbc32a3fc80d9d51c658e52773faa7aa217b7773"
+    },
+    {
+      "file": "assets/art/portraits/han/general-all-02.webp",
+      "bytes": 11824,
+      "sha256": "f69d9b2a1988756f880426a6113713c280362a55d0dda2a477fffd36d0b10583"
+    },
+    {
+      "file": "assets/art/portraits/han/general-all-03.webp",
+      "bytes": 14440,
+      "sha256": "77f2998415fd2139ca4460fdfac36bef2aa71beea98c25e910f57a212f62171c"
+    },
+    {
+      "file": "assets/art/portraits/han/official-mature-01.webp",
+      "bytes": 6808,
+      "sha256": "193832097565ed42048a43b0252ba5e993848af7b3d19d3a115fcf30984c2b84"
+    },
+    {
+      "file": "assets/art/portraits/han/official-mature-02.webp",
+      "bytes": 7796,
+      "sha256": "30e7d4c5fac09196a900ba49f46ab93610f53da106132b96b3af601f4c343401"
+    },
+    {
+      "file": "assets/art/portraits/han/official-mature-03.webp",
+      "bytes": 8092,
+      "sha256": "220a3b822a401d4ddf043a7e812671621faa494d23cdf24c41fed6c60d7df80a"
+    },
+    {
+      "file": "assets/art/portraits/han/official-mature-04.webp",
+      "bytes": 9354,
+      "sha256": "137b86c15acbf82b0f0b6d7ca367c8136d6fb893bc24f72cecb4c7021d0c9ba4"
+    },
+    {
+      "file": "assets/art/portraits/han/official-mature-05.webp",
+      "bytes": 6276,
+      "sha256": "7af4d31ca0c5041cc4229712954016e78226be716eb520da0ba69c4607ffca72"
+    },
+    {
+      "file": "assets/art/portraits/han/official-mature-06.webp",
+      "bytes": 9872,
+      "sha256": "081136e393a0dafe455a947b51acc58561efefb9d8c2e37037a652494b3fc7c4"
+    },
+    {
+      "file": "assets/art/portraits/han/official-mature-07.webp",
+      "bytes": 7790,
+      "sha256": "1a6eabce1fccd540b2d55db6ebeb6c51f1c6abc62846da37c0ba1292474dfb97"
+    },
+    {
+      "file": "assets/art/portraits/han/official-mature-08.webp",
+      "bytes": 6914,
+      "sha256": "e1e658fea2a324ad9cbe2e3171c59b20b0ff65f733fe9e2e5c1bb4b62dfe6ee1"
+    },
+    {
+      "file": "assets/art/portraits/han/official-mature-09.webp",
+      "bytes": 7720,
+      "sha256": "ec0ebc0f6d52a07ab44101c38af499a99a2fa0af83464bfdfc92cc96712d55e9"
+    },
+    {
+      "file": "assets/art/portraits/han/official-mature-10.webp",
+      "bytes": 10110,
+      "sha256": "378a051a7fd54a7c1eaf8ffcde2875aa8a1cd8cd23e3c52c4fd5a11e8f2cb98c"
+    },
+    {
+      "file": "assets/art/portraits/han/official-old-01.webp",
+      "bytes": 7724,
+      "sha256": "643b3e777132830536f982469e5f414c1cc7df5f90fbe9ecb8fff938678a1b2e"
+    },
+    {
+      "file": "assets/art/portraits/han/official-old-02.webp",
+      "bytes": 8586,
+      "sha256": "01795149ee02d11d8d72af071cc291ad8ac20f124da86d5b434579fdacdaa3be"
+    },
+    {
+      "file": "assets/art/portraits/han/official-old-03.webp",
+      "bytes": 8628,
+      "sha256": "b49434d204c67e500cc467175ae530d18796f0ee329dad55ccbc8c467413a206"
+    },
+    {
+      "file": "assets/art/portraits/han/official-old-04.webp",
+      "bytes": 7446,
+      "sha256": "809410c5d1cae8c7a60829b5d1cda831e8b4e46fb9bc3a54ff4b25181ada30ce"
+    },
+    {
+      "file": "assets/art/portraits/han/official-old-05.webp",
+      "bytes": 7704,
+      "sha256": "6e1271369b15ad5fb1fe93f5e21467f2b13cc5ce2c31b68632395d32a98626b5"
+    },
+    {
+      "file": "assets/art/portraits/han/official-old-06.webp",
+      "bytes": 9178,
+      "sha256": "efc4d6e95d7fe0447fd9eb06d266ebfda627f83a12aa1737bd7bd4b8b3371d22"
+    },
+    {
+      "file": "assets/art/portraits/han/prince-adult-01.webp",
+      "bytes": 7804,
+      "sha256": "a5efe1f50bb0d040d8e3c2dc34699045746477cd553ddbad22716125614700dd"
+    },
+    {
+      "file": "assets/art/portraits/han/prince-teen-01.webp",
+      "bytes": 7578,
+      "sha256": "93d3d0a36ef2cd7a2bdde889464bbe585662575c37577a21e15857ba41c10268"
+    },
+    {
+      "file": "assets/art/portraits/han/princess-adult-01.webp",
+      "bytes": 6688,
+      "sha256": "7989a585b71f7298b3d8953988c1a5d1bcabff57378045ef5dd6682e4fc60619"
+    },
+    {
+      "file": "assets/art/portraits/han/princess-teen-01.webp",
+      "bytes": 9448,
+      "sha256": "85eb5d6bafd9add80d49a14d0e7f930f702f1394c49352acfbde24efbdb42da8"
+    },
+    {
+      "file": "assets/art/portraits/ming/consort-high-01.webp",
+      "bytes": 14142,
+      "sha256": "62dde6f49c7579a9ef2232994ce63fc91da0a96bb7dedeebaaeb71137cb4dd7c"
+    },
+    {
+      "file": "assets/art/portraits/ming/consort-high-02.webp",
+      "bytes": 13252,
+      "sha256": "2acbb564656435596bc31995a398eaa1abf719e9795ef1922dab52ce855ae365"
+    },
+    {
+      "file": "assets/art/portraits/ming/consort-high-03.webp",
+      "bytes": 14366,
+      "sha256": "bf9bf2be8f8ae877acaa5bb0c970d09f24e28bae4982197e430624a5f5cbfa95"
+    },
+    {
+      "file": "assets/art/portraits/ming/consort-regular-01.webp",
+      "bytes": 7260,
+      "sha256": "efe48c48d0edeb3a641c2dd3a3f0a5908be3aed09bc15803c440919814303796"
+    },
+    {
+      "file": "assets/art/portraits/ming/consort-regular-02.webp",
+      "bytes": 8528,
+      "sha256": "e009279456dfe0472e641e0ea698861edea43d12db7c8befe612d425aae49f25"
+    },
+    {
+      "file": "assets/art/portraits/ming/consort-regular-03.webp",
+      "bytes": 8580,
+      "sha256": "00d53c0050d9e68dd3bc2174adcedc34278502eca1ef604a8a3e0ce51df12d2f"
+    },
+    {
+      "file": "assets/art/portraits/ming/consort-regular-04.webp",
+      "bytes": 9762,
+      "sha256": "38689147112af2d9e68322b340ca8b859635cb5073a7656344b46ab0c82f62c6"
+    },
+    {
+      "file": "assets/art/portraits/ming/consort-regular-05.webp",
+      "bytes": 9994,
+      "sha256": "ae5c8e6e464e93bd0d320c7a7782b67ccf290dd46edcf9b505a1a83709b66cab"
+    },
+    {
+      "file": "assets/art/portraits/ming/consort-regular-06.webp",
+      "bytes": 10322,
+      "sha256": "ce6abf42a0e248de480cb288c35f9191369e0afaf4722f9d33674e7384d07e5f"
+    },
+    {
+      "file": "assets/art/portraits/ming/consort-regular-07.webp",
+      "bytes": 10344,
+      "sha256": "1676c3133b551e0b5395c148349d4b6523682ae652a3ea834f0226001a4306ef"
+    },
+    {
+      "file": "assets/art/portraits/ming/consort-regular-08.webp",
+      "bytes": 10938,
+      "sha256": "e6851aeff35c71befca22e55614a1c9fa1c7e667768b8c4d264f98736c893e84"
+    },
+    {
+      "file": "assets/art/portraits/ming/dowager-all-01.webp",
+      "bytes": 14812,
+      "sha256": "79354da8428a2094856a91f09c90964e7474eab66d0e03d22d6f3f33cb07687b"
+    },
+    {
+      "file": "assets/art/portraits/ming/emperor-old-01.webp",
+      "bytes": 17482,
+      "sha256": "345dda2e901b268c370fc9a3959779afd72ce4e43dc2486a8429def170f11c4e"
+    },
+    {
+      "file": "assets/art/portraits/ming/emperor-old-02.webp",
+      "bytes": 15604,
+      "sha256": "e15951bb3ed80e9d5a7f8be29eb2914f9dfbc26dd3fea05dcaad4386fa8a1f83"
+    },
+    {
+      "file": "assets/art/portraits/ming/emperor-young-01.webp",
+      "bytes": 11138,
+      "sha256": "650803e52c89ecbf7f1b61c77bbbeabbacd5c6c78bbfeabbb27e358e8a863009"
+    },
+    {
+      "file": "assets/art/portraits/ming/emperor-young-02.webp",
+      "bytes": 13098,
+      "sha256": "cb858f484d7caeee847c3f9af05c5206f12fdc126c9701c5d211ba363cf6471d"
+    },
+    {
+      "file": "assets/art/portraits/ming/eunuch-all-01.webp",
+      "bytes": 9302,
+      "sha256": "ac81984f7dfe75e16f21e1551ccdf40327ec716f85abac82d71d83e04a220020"
+    },
+    {
+      "file": "assets/art/portraits/ming/eunuch-all-02.webp",
+      "bytes": 8654,
+      "sha256": "429d841bc463cc318c7272816e6f5af569e4f8356f39f1d8eab8ca800dc76267"
+    },
+    {
+      "file": "assets/art/portraits/ming/general-all-01.webp",
+      "bytes": 18098,
+      "sha256": "949db43fd83300fa5b8a308b955603054ffc15434d3bcf0146d97027948354ce"
+    },
+    {
+      "file": "assets/art/portraits/ming/general-all-02.webp",
+      "bytes": 16264,
+      "sha256": "51606730697ac252c17b78f9e5fc003aef34950c577fcd83bfdcecb4e5ed9860"
+    },
+    {
+      "file": "assets/art/portraits/ming/general-all-03.webp",
+      "bytes": 17978,
+      "sha256": "76829071dc4c83fc6a62a2aff484d07bb7e05def0b7778a09a095c87c149cd19"
+    },
+    {
+      "file": "assets/art/portraits/ming/general-all-04.webp",
+      "bytes": 17474,
+      "sha256": "4f71ac2cdeed2251181e3425c3948c7bbaaf51fffab926f081b8643a2296fc5c"
+    },
+    {
+      "file": "assets/art/portraits/ming/official-mature-01.webp",
+      "bytes": 10748,
+      "sha256": "554a6be91ecaa185a0b3765edbc4e39eb41be09ee954e5ed0d9c67120524f96e"
+    },
+    {
+      "file": "assets/art/portraits/ming/official-mature-02.webp",
+      "bytes": 12898,
+      "sha256": "4816380f34c4f6dd4121c6c66f244749f51e3c55a5caf9b99e95306a9b951f39"
+    },
+    {
+      "file": "assets/art/portraits/ming/official-mature-03.webp",
+      "bytes": 10002,
+      "sha256": "acb640ee99d5990504fa88cd66bec43e446282ee773e804af577de940fe23d10"
+    },
+    {
+      "file": "assets/art/portraits/ming/official-mature-04.webp",
+      "bytes": 10722,
+      "sha256": "1017741794487981bf102867c6fc00caa741f2f4f9d249ccdc7713bd223b3137"
+    },
+    {
+      "file": "assets/art/portraits/ming/official-mature-05.webp",
+      "bytes": 11090,
+      "sha256": "63d989b106f4bd6c25b364f5eff79f596d7f9cc4996c555d753a83a5f667ef83"
+    },
+    {
+      "file": "assets/art/portraits/ming/official-mature-06.webp",
+      "bytes": 9396,
+      "sha256": "44aad28c23ed2d7935f236a3dae355327c51a2fa3db2360f752a6cc9148d3d28"
+    },
+    {
+      "file": "assets/art/portraits/ming/official-mature-07.webp",
+      "bytes": 10642,
+      "sha256": "da01c7552b919259f05570193c0cdbbd59f86ac78a07aa7399485a808224073d"
+    },
+    {
+      "file": "assets/art/portraits/ming/official-mature-08.webp",
+      "bytes": 10554,
+      "sha256": "4a44acdf0aea2184160d0f113a4889aa8d4debbcdab621d61de2e14f6546012c"
+    },
+    {
+      "file": "assets/art/portraits/ming/official-mature-09.webp",
+      "bytes": 11680,
+      "sha256": "d0faf035cc5e4eacb8e478d9b513ef8c7a6b92a5966d5c19022bc0f1635b21fc"
+    },
+    {
+      "file": "assets/art/portraits/ming/official-mature-10.webp",
+      "bytes": 10302,
+      "sha256": "2f62d9a6c9f50b7963e212b52fb58afd1c6b34207e3e63542db2910dab3ec369"
+    },
+    {
+      "file": "assets/art/portraits/ming/official-mature-11.webp",
+      "bytes": 14202,
+      "sha256": "c4492b32b6fb28a8639f14a728b4275d09ae1ce10e130fb7e5164dd1e8f531f4"
+    },
+    {
+      "file": "assets/art/portraits/ming/official-mature-12.webp",
+      "bytes": 10366,
+      "sha256": "f25ae28c61b1614026fdb448494b045f66f7762473d81487a984665dab9bef32"
+    },
+    {
+      "file": "assets/art/portraits/ming/official-mature-13.webp",
+      "bytes": 9298,
+      "sha256": "522514e562def1f495fb9799efaa7f1cd05bb157c6e407f6d7e9ba9c9d5c23e8"
+    },
+    {
+      "file": "assets/art/portraits/ming/official-mature-14.webp",
+      "bytes": 12062,
+      "sha256": "f920e546a3b198e2d42965aea3a11c12433e4997c7527c3c04945e4902b7bb73"
+    },
+    {
+      "file": "assets/art/portraits/ming/official-mature-15.webp",
+      "bytes": 11336,
+      "sha256": "2c41a054ae44a96b17b06aea8b19cb31c3e0c90214fcb0b23942d95388ec6880"
+    },
+    {
+      "file": "assets/art/portraits/ming/official-mature-16.webp",
+      "bytes": 10148,
+      "sha256": "0886336453da62c48a3de69bd9f99cee034f640f547ba75b76f2dd2fd4be0381"
+    },
+    {
+      "file": "assets/art/portraits/ming/official-old-01.webp",
+      "bytes": 12962,
+      "sha256": "a10115011e9a0da60eb9c1bb6c7493932916140f59387bd7aec83dd0d9879bbb"
+    },
+    {
+      "file": "assets/art/portraits/ming/official-old-02.webp",
+      "bytes": 12048,
+      "sha256": "ed350b32f03374710ad4beed955698d109c41f74663d7666aeafecbf529fc109"
+    },
+    {
+      "file": "assets/art/portraits/ming/official-old-03.webp",
+      "bytes": 12076,
+      "sha256": "4aaab4fb390b4c8610651f9e2366ca48f9154760f532eb53cc62c4c584e2dfaf"
+    },
+    {
+      "file": "assets/art/portraits/ming/official-old-04.webp",
+      "bytes": 12534,
+      "sha256": "aa3fd3a2c4e3dd37a41176af56944b3d0c37e8aa9ead5903ba5959ab21930778"
+    },
+    {
+      "file": "assets/art/portraits/ming/official-old-05.webp",
+      "bytes": 14026,
+      "sha256": "81dd180c74e52b80faf0b4575cd046f8a4eecfac293539d0290f89e4c5fd68d1"
+    },
+    {
+      "file": "assets/art/portraits/ming/official-old-06.webp",
+      "bytes": 11860,
+      "sha256": "16538375c5eb2f93aceac002dd72b9a6c328ebaad70801f5329840c7c59067e2"
+    },
+    {
+      "file": "assets/art/portraits/ming/official-old-07.webp",
+      "bytes": 15908,
+      "sha256": "0ae4d2de83226ba941bb151953a63098a1c0c6020b6a540735cb45cb9ff20462"
+    },
+    {
+      "file": "assets/art/portraits/ming/official-old-08.webp",
+      "bytes": 14598,
+      "sha256": "aad293e02faff7f08080cda21b740c05cb695b4bee358e85c005b535d9d2c3f9"
+    },
+    {
+      "file": "assets/art/portraits/ming/official-old-09.webp",
+      "bytes": 14578,
+      "sha256": "a8e705775502aecc9894576a98df70ba4dd716e8102d3a249f82fb2c82ed2ab4"
+    },
+    {
+      "file": "assets/art/portraits/ming/official-old-10.webp",
+      "bytes": 12558,
+      "sha256": "c71c1bd800aa9376cd6efca2f8f0fd800fa23767037ae4d7ad40f58f07aedf01"
+    },
+    {
+      "file": "assets/art/portraits/ming/prince-adult-01.webp",
+      "bytes": 9656,
+      "sha256": "8ce458896392f2d8a1e0793b423414a7987ca38ac4138202892e657a39362105"
+    },
+    {
+      "file": "assets/art/portraits/ming/prince-adult-02.webp",
+      "bytes": 10418,
+      "sha256": "5d8fe76ec2358bea8f6ff1955279df94f405a6871155247c5644da7d9fc71f2c"
+    },
+    {
+      "file": "assets/art/portraits/ming/prince-teen-01.webp",
+      "bytes": 10884,
+      "sha256": "d86a22c4eded3b966acaa6a31c1125de9a0530991dbd1f0f9128b337e1ddd5fa"
+    },
+    {
+      "file": "assets/art/portraits/ming/prince-teen-02.webp",
+      "bytes": 10760,
+      "sha256": "71ad4810fa51488cae9e2e8c57c42d3497576a6e024d03e6f5ed6dd82675f9c0"
+    },
+    {
+      "file": "assets/art/portraits/ming/princess-adult-01.webp",
+      "bytes": 9406,
+      "sha256": "135547ed2d254eff201d9ae309399478d0cf2dcfc65fec16738c463c6fa20192"
+    },
+    {
+      "file": "assets/art/portraits/ming/princess-adult-02.webp",
+      "bytes": 11124,
+      "sha256": "765912a8187135980cb39ae614adb98e8d78547389c23f11036b2384218c7d7c"
+    },
+    {
+      "file": "assets/art/portraits/ming/princess-teen-01.webp",
+      "bytes": 11270,
+      "sha256": "3fd1339f66769203d4266f4f0187f8604a4ac12dd79cfdcc6280f2cb49e979a2"
+    },
+    {
+      "file": "assets/art/portraits/ming/princess-teen-02.webp",
+      "bytes": 10118,
+      "sha256": "96222ace530973a6928139c3ca12f4900befa39a340fdc5905a436975c123dc7"
+    },
+    {
+      "file": "assets/art/portraits/qing/consort-high-01.webp",
+      "bytes": 8284,
+      "sha256": "aedff5130cd9e1f22e5c3d6a7bc57769b2e8a54521360b3c39f1f1947580bfdd"
+    },
+    {
+      "file": "assets/art/portraits/qing/consort-high-02.webp",
+      "bytes": 8840,
+      "sha256": "7b3017b45191e09633f7d564a3310d7b6eefaa1a4d8f642d53848d304a17ae07"
+    },
+    {
+      "file": "assets/art/portraits/qing/consort-regular-01.webp",
+      "bytes": 8298,
+      "sha256": "53db49056a032a1612dc47052727b967245b2ddfb38120af2180277c5817a982"
+    },
+    {
+      "file": "assets/art/portraits/qing/consort-regular-02.webp",
+      "bytes": 9918,
+      "sha256": "3b263cc984178dbcb998bb3d6160d87db289a023faecfa6daaae0e8abe783e63"
+    },
+    {
+      "file": "assets/art/portraits/qing/consort-regular-03.webp",
+      "bytes": 8954,
+      "sha256": "b910fd6204f9b34c14860d2042affbf3b60c9060623a270ef17e3a0199ad03ac"
+    },
+    {
+      "file": "assets/art/portraits/qing/consort-regular-04.webp",
+      "bytes": 10766,
+      "sha256": "9af88acd65be11a7ea692653fee058d8dc92c20ed3d0e09eedaaf14e345a941b"
+    },
+    {
+      "file": "assets/art/portraits/qing/consort-regular-05.webp",
+      "bytes": 9238,
+      "sha256": "caf50b44fbe2d2f81dccffbd4636e98e49a3bc98a5ac6f52c758b3a1cd20f62d"
+    },
+    {
+      "file": "assets/art/portraits/qing/emperor-old-01.webp",
+      "bytes": 15242,
+      "sha256": "f6440dbf8ae3ae71333ee70145de2872437b4697653b472abad2fb8fad02a3dc"
+    },
+    {
+      "file": "assets/art/portraits/qing/emperor-young-01.webp",
+      "bytes": 13648,
+      "sha256": "8fb17bf73954364a69a7de6b28bcb0ac078c01f4cd32abb02dfc221a0d340f30"
+    },
+    {
+      "file": "assets/art/portraits/qing/general-all-01.webp",
+      "bytes": 11640,
+      "sha256": "d60aa9c0bc9a8a1205cac4b4868474fe1557fd64ffcb9c394e100ea59b74f9a6"
+    },
+    {
+      "file": "assets/art/portraits/qing/general-all-02.webp",
+      "bytes": 9306,
+      "sha256": "b14cc264f64c418bf9aa7ba1f25bebba295f8da5f6c8ab11d9ca5659050dee54"
+    },
+    {
+      "file": "assets/art/portraits/qing/general-all-03.webp",
+      "bytes": 9442,
+      "sha256": "f1cb8bc65f53dfc3262ed7c7768bd4c7a5400556a992ef187e3321152474ce5a"
+    },
+    {
+      "file": "assets/art/portraits/qing/official-mature-01.webp",
+      "bytes": 9884,
+      "sha256": "77f89d3b152ea76b86f41a394e2850a1af8b07adad92d3458628d79f8f62b605"
+    },
+    {
+      "file": "assets/art/portraits/qing/official-mature-02.webp",
+      "bytes": 8814,
+      "sha256": "017135b5e3acd16aab96e4d2ba1596d3d997be35246f1dfc15c57e53bb646daf"
+    },
+    {
+      "file": "assets/art/portraits/qing/official-mature-03.webp",
+      "bytes": 9936,
+      "sha256": "3e7f7e5131c6e9db16768a1a28d1314a78d2c327e83b9c5b8bc199910b68850d"
+    },
+    {
+      "file": "assets/art/portraits/qing/official-mature-04.webp",
+      "bytes": 9088,
+      "sha256": "bcf0212f9045845f7b3f1dbe815bdd0e8c0c3cdf2242ebce1ef2d829c85d8c92"
+    },
+    {
+      "file": "assets/art/portraits/qing/official-mature-05.webp",
+      "bytes": 9552,
+      "sha256": "a73a6f184a5ab71b287426c50617467e581b507e255284bbc301249d820191c5"
+    },
+    {
+      "file": "assets/art/portraits/qing/official-mature-06.webp",
+      "bytes": 11994,
+      "sha256": "cd0f36a491cf6f9a34fc11060bd1a084f47ad9b5862fd0c0acb0254ed5cefbf2"
+    },
+    {
+      "file": "assets/art/portraits/qing/official-mature-07.webp",
+      "bytes": 9788,
+      "sha256": "24fe0fbe7180ea4d033b2a800b4710114b68e30a2d9c2aaaf6ff28fc438396d7"
+    },
+    {
+      "file": "assets/art/portraits/qing/official-mature-08.webp",
+      "bytes": 9312,
+      "sha256": "d2c8041b3bae7709fe94de6e186df09a92a2553e16631d6ee3b5e1665200126c"
+    },
+    {
+      "file": "assets/art/portraits/qing/official-mature-09.webp",
+      "bytes": 10094,
+      "sha256": "fe363b45cf10147e7b389e5dcbd348eac99c04892553f9c5c132269db5a82818"
+    },
+    {
+      "file": "assets/art/portraits/qing/official-mature-10.webp",
+      "bytes": 11954,
+      "sha256": "2b0cda02dd1ffb2d3d79416f8aeb4e393395c3a8b997a975c3cc9f3b06082595"
+    },
+    {
+      "file": "assets/art/portraits/qing/official-old-01.webp",
+      "bytes": 10368,
+      "sha256": "8545faf6b573f429126f91b5099290918e15dde549c567fb93b4445ce7909db0"
+    },
+    {
+      "file": "assets/art/portraits/qing/official-old-02.webp",
+      "bytes": 9994,
+      "sha256": "d5e0cc059848d28edaf2904750732804975de967dbf4642ae5d9cdf09d4f3da1"
+    },
+    {
+      "file": "assets/art/portraits/qing/official-old-03.webp",
+      "bytes": 11652,
+      "sha256": "8a78d225a33315f12d60a09979078b5ac5ffe6b22cb90f2b3209bb5723fef9ea"
+    },
+    {
+      "file": "assets/art/portraits/qing/official-old-04.webp",
+      "bytes": 9712,
+      "sha256": "a428f60c471d77750cf67940d5e32d682109323eeae95dd4c2b3353209bba139"
+    },
+    {
+      "file": "assets/art/portraits/qing/official-old-05.webp",
+      "bytes": 12100,
+      "sha256": "7ca6fbedb9a4934e6439a4e17887527bc3bd3aa1fecaa5dbd69c534ba87917d4"
+    },
+    {
+      "file": "assets/art/portraits/qing/official-old-06.webp",
+      "bytes": 11018,
+      "sha256": "478169a58329e93522a6eef1f8b6984acc26fbdc5276b70f8f39b2bfb797f751"
+    },
+    {
+      "file": "assets/art/portraits/qing/prince-adult-01.webp",
+      "bytes": 7470,
+      "sha256": "e2c0a5d4425c953578f36ca077f2a157e513978f639568b53216011beea6e1c3"
+    },
+    {
+      "file": "assets/art/portraits/qing/prince-teen-01.webp",
+      "bytes": 7798,
+      "sha256": "1e13dbd1f6bbb607073b6b28e671b0774c0461c8a7a96e9ca5296295f3b62a67"
+    },
+    {
+      "file": "assets/art/portraits/qing/princess-adult-01.webp",
+      "bytes": 8264,
+      "sha256": "317d0f74ba670064a53d5cb53446c5b79d01e5c1b416e38f5d7479961f0182db"
+    },
+    {
+      "file": "assets/art/portraits/qing/princess-teen-01.webp",
+      "bytes": 7938,
+      "sha256": "0863a482293fd5f9feb95b66ef3f56d86fa7c59205dc6c450930829111adf585"
+    },
+    {
+      "file": "assets/art/portraits/shared/boy-young-01.webp",
+      "bytes": 9650,
+      "sha256": "ef8e8faac027075812786bf7d222f5bcd0cd8bff7f859b129b1857f2f8bf97cb"
+    },
+    {
+      "file": "assets/art/portraits/shared/boy-young-02.webp",
+      "bytes": 10632,
+      "sha256": "d0cb6592e5d1de283c7fd9ec1685888fea9742eb99f2d38eab86eed6068f38d6"
+    },
+    {
+      "file": "assets/art/portraits/shared/foreign-east-01.webp",
+      "bytes": 11044,
+      "sha256": "d4f4bb5ebef870687a2b6af190ab8d2210dac18f1cd34e7b7f76c9a94d76fb78"
+    },
+    {
+      "file": "assets/art/portraits/shared/foreign-east-02.webp",
+      "bytes": 9624,
+      "sha256": "8eef5f8fd65468d0c08d41f921b538b9937a61c82c49ee8d3f5d1a95a334ed7d"
+    },
+    {
+      "file": "assets/art/portraits/shared/foreign-north-01.webp",
+      "bytes": 12172,
+      "sha256": "293a1a20d0544e35cd62f4f20d0ff781b1b02704d6fb1a1a2d80ea8b07aa79bf"
+    },
+    {
+      "file": "assets/art/portraits/shared/foreign-north-02.webp",
+      "bytes": 15032,
+      "sha256": "20391de2ba4a15a456d7856594df3d8d7565ac76ff42cd73f1a65beb2539ae2d"
+    },
+    {
+      "file": "assets/art/portraits/shared/foreign-south-01.webp",
+      "bytes": 9796,
+      "sha256": "6217d46d45cf6ce522e971e6d943dddfe40b12f4f2a07b8e4d957e50bed9828d"
+    },
+    {
+      "file": "assets/art/portraits/shared/foreign-south-02.webp",
+      "bytes": 10462,
+      "sha256": "5f03aa3b153423192c5128d450f20d610e1ef60bfd73f7ac81b78ee604882c55"
+    },
+    {
+      "file": "assets/art/portraits/shared/foreign-west-01.webp",
+      "bytes": 12998,
+      "sha256": "f273fbc702a10be73830b9bb8292dca188e3afb8a15f7e5fee605eb473e5f110"
+    },
+    {
+      "file": "assets/art/portraits/shared/foreign-west-02.webp",
+      "bytes": 17588,
+      "sha256": "cfbc927eccb9882ae698f917158125c877e1be3a8b1b7d398af3bbbcf64fbaf9"
+    },
+    {
+      "file": "assets/art/portraits/shared/girl-young-01.webp",
+      "bytes": 11018,
+      "sha256": "ffca617b9ab355b44e200e6098d6dc5c9514b59aad3cef21ccbe65b865db9976"
+    },
+    {
+      "file": "assets/art/portraits/shared/girl-young-02.webp",
+      "bytes": 9804,
+      "sha256": "2d105027100ea12a5a3820506cc067b19ec5a5f8171aa7a7bb5b1f82b6ebc737"
+    },
+    {
+      "file": "assets/art/portraits/shared/scholar-mature-01.webp",
+      "bytes": 11120,
+      "sha256": "152385c4dc0a14902c4eb0308ee1787a64f4d259586d781eb220a980fdded223"
+    },
+    {
+      "file": "assets/art/portraits/shared/scholar-mature-02.webp",
+      "bytes": 10790,
+      "sha256": "0165a02780a44691684eb01bf1e20d3241d9d8f726d2fef604fa3d5be06a74dc"
+    },
+    {
+      "file": "assets/art/portraits/shared/scholar-mature-03.webp",
+      "bytes": 12296,
+      "sha256": "cfbc4310a79f038f28c069b180e6a6128aaf8c85effc9b1955d8143e5479a9f5"
+    },
+    {
+      "file": "assets/art/portraits/shared/scholar-mature-04.webp",
+      "bytes": 12808,
+      "sha256": "cc7217b84d48a78506c2adc7e57307af937b428afa7064a3f60ce3458be9da9b"
+    },
+    {
+      "file": "assets/art/portraits/shared/scholar-young-01.webp",
+      "bytes": 9776,
+      "sha256": "25f347e3036e3b8041027618d6dd9e0ca3966a46199bb4ae657877a26a3cf24f"
+    },
+    {
+      "file": "assets/art/portraits/shared/scholar-young-02.webp",
+      "bytes": 12150,
+      "sha256": "397593e7b865f4f9222c2261cfa45adf2b7fb8ca6c5d55b85a790075350c626f"
+    },
+    {
+      "file": "assets/art/portraits/shared/scholar-young-03.webp",
+      "bytes": 13604,
+      "sha256": "6b8465b436737d5819ae3e9ef40bc486745bca5c73c4be5cef9b217163bcc63f"
+    },
+    {
+      "file": "assets/art/portraits/shared/scholar-young-04.webp",
+      "bytes": 12168,
+      "sha256": "cd0a2afa5a8ceea2877c1dc828bef1d88341ecc0c13abf80477765205900a05d"
+    },
+    {
+      "file": "assets/art/portraits/song/consort-high-01.webp",
+      "bytes": 12422,
+      "sha256": "4bcf1912c5d4fc36bd14658d8a848d5ebfb346d14bb371220ea8abfa8551094a"
+    },
+    {
+      "file": "assets/art/portraits/song/consort-high-02.webp",
+      "bytes": 12964,
+      "sha256": "05b6a721a44460ee94ae9e2acfc5ade7b081301f03d9bc2c8bf7ca70e56febe9"
+    },
+    {
+      "file": "assets/art/portraits/song/consort-regular-01.webp",
+      "bytes": 6350,
+      "sha256": "019800909e361bcc52c75fe2fa53025c4bd5a970f5c906fb94d574d52ba56b3a"
+    },
+    {
+      "file": "assets/art/portraits/song/consort-regular-02.webp",
+      "bytes": 7694,
+      "sha256": "c56bf05d4c66fd33d7f4c584a75e01271cacf166e45f4dcd7e2775b10f4b6d85"
+    },
+    {
+      "file": "assets/art/portraits/song/consort-regular-03.webp",
+      "bytes": 6904,
+      "sha256": "5f22ad0f603728d39ba5963e6b776c0ecdb2c0cc7fcaf6d9d201639f6943c011"
+    },
+    {
+      "file": "assets/art/portraits/song/consort-regular-04.webp",
+      "bytes": 7144,
+      "sha256": "53de6668b710e42edf4682cc37aced0504c2591b3a037eac258a5736c7157454"
+    },
+    {
+      "file": "assets/art/portraits/song/consort-regular-05.webp",
+      "bytes": 6522,
+      "sha256": "2e49c47998081b58afe41651446e1f0555976f1b13af6b91c40afcf8a68ed3f4"
+    },
+    {
+      "file": "assets/art/portraits/song/emperor-old-01.webp",
+      "bytes": 12630,
+      "sha256": "a75b3bc96d7fec7f899fafe2e01d237d6cb6bad12cf12560ed6f5278c9823e6c"
+    },
+    {
+      "file": "assets/art/portraits/song/emperor-young-01.webp",
+      "bytes": 10072,
+      "sha256": "e84c2a5cfb1f8fdd0088b3b31bb378935367cce32111f64d45e2c8d32ba85221"
+    },
+    {
+      "file": "assets/art/portraits/song/eunuch-all-01.webp",
+      "bytes": 6378,
+      "sha256": "d8854cb010cf89317e70e68465e7da7d644442f0d3625d3f02bb53540f374b07"
+    },
+    {
+      "file": "assets/art/portraits/song/general-all-01.webp",
+      "bytes": 15766,
+      "sha256": "53c90b138949e38a8aeba41c50b4bfa4bea88a256afb1e30fbc59f57b3872551"
+    },
+    {
+      "file": "assets/art/portraits/song/general-all-02.webp",
+      "bytes": 13572,
+      "sha256": "7ec3b8363343b425b51749947ca7f939b71a6379173eea2edd9c90c2902fc447"
+    },
+    {
+      "file": "assets/art/portraits/song/general-all-03.webp",
+      "bytes": 16326,
+      "sha256": "3a1e6237c0a5d7d7f4e3f9ce61862613a267d92ec88d1e69a9cecb169cef2306"
+    },
+    {
+      "file": "assets/art/portraits/song/official-mature-01.webp",
+      "bytes": 6916,
+      "sha256": "487951e06b731f72ef96a45329b9e01b53ca3ab1d0484694ada4e588a9bedb6d"
+    },
+    {
+      "file": "assets/art/portraits/song/official-mature-02.webp",
+      "bytes": 6516,
+      "sha256": "e8b0ea4dee9f79d20dfd6dda5e89df438b04f2f2c6565435b50b938ce519f1c1"
+    },
+    {
+      "file": "assets/art/portraits/song/official-mature-03.webp",
+      "bytes": 8352,
+      "sha256": "9aea09d96e391db452b34497dccf41dedb7f06692fd051a07035d02a38a4d1d4"
+    },
+    {
+      "file": "assets/art/portraits/song/official-mature-04.webp",
+      "bytes": 6182,
+      "sha256": "6c3d45fb6432d01fb2f6d694888461caa91f6591e287e343bb24c6c3242c8557"
+    },
+    {
+      "file": "assets/art/portraits/song/official-mature-05.webp",
+      "bytes": 7062,
+      "sha256": "ba7ad5e85b31ff32c912c4b624a2248ecac0542cf78a366ab25f6b788be751d3"
+    },
+    {
+      "file": "assets/art/portraits/song/official-mature-06.webp",
+      "bytes": 6066,
+      "sha256": "c18a2277b905ef8f27aee408ddc09551d2df0389742faa9f2064f9d3a03ecbc0"
+    },
+    {
+      "file": "assets/art/portraits/song/official-mature-07.webp",
+      "bytes": 6018,
+      "sha256": "b7ba478254a1e118aea452e29d1a6ce7521fa57b114bbd9b72725d976eac5935"
+    },
+    {
+      "file": "assets/art/portraits/song/official-mature-08.webp",
+      "bytes": 6940,
+      "sha256": "53887dc01415fa34cf5a7d97608199a20664228abd7f69f5e40691dcd5548055"
+    },
+    {
+      "file": "assets/art/portraits/song/official-mature-09.webp",
+      "bytes": 6522,
+      "sha256": "9d0fec89a0428b5c7e704ca3f449721c7455679aca86bea53e867e03a6a3d849"
+    },
+    {
+      "file": "assets/art/portraits/song/official-mature-10.webp",
+      "bytes": 6710,
+      "sha256": "28112eb13d439899e3dcf902817cc6210c7729a122a00e9f7b006ee913978a1e"
+    },
+    {
+      "file": "assets/art/portraits/song/official-old-01.webp",
+      "bytes": 7974,
+      "sha256": "2ac4b1630312947bb6e1379aed402fdc024dd4de5dc34c0a5a54ee196f6d27fa"
+    },
+    {
+      "file": "assets/art/portraits/song/official-old-02.webp",
+      "bytes": 7276,
+      "sha256": "c124f37ef27ee67a1971a7613a30d7236b6bf7248ea711092320147f3a74b083"
+    },
+    {
+      "file": "assets/art/portraits/song/official-old-03.webp",
+      "bytes": 9108,
+      "sha256": "ff79539000491e9ccb05904aa547f528b5ef4ad7122012dfeed485ea09c71646"
+    },
+    {
+      "file": "assets/art/portraits/song/official-old-04.webp",
+      "bytes": 6792,
+      "sha256": "3dfbcccd66dc7cc58f97fc935bfc6c6f518765ecacd5814a8fd21fadb1f7c320"
+    },
+    {
+      "file": "assets/art/portraits/song/official-old-05.webp",
+      "bytes": 8542,
+      "sha256": "8262087cfa9ac5316e5edbd1992feb0545d411bdf4222429e61877e02efc49e7"
+    },
+    {
+      "file": "assets/art/portraits/song/official-old-06.webp",
+      "bytes": 7836,
+      "sha256": "ca73d328943b3f4cffee3a0bd6718c3b3be2c539ee948c03a54a98520c775376"
+    },
+    {
+      "file": "assets/art/portraits/song/prince-adult-01.webp",
+      "bytes": 5572,
+      "sha256": "1ee25063225f4548e7367847898b5c67e5349fac672003425dbbab610284eac7"
+    },
+    {
+      "file": "assets/art/portraits/song/prince-teen-01.webp",
+      "bytes": 7504,
+      "sha256": "f272e53df20e1e8b28e11a657217b4be8f97543b26b6c7af1fcade3e9894e72d"
+    },
+    {
+      "file": "assets/art/portraits/song/princess-adult-01.webp",
+      "bytes": 6990,
+      "sha256": "cca8da93a094b23f488eb96a128d4518db0736db37b3def24d6e3fcd42a48062"
+    },
+    {
+      "file": "assets/art/portraits/song/princess-teen-01.webp",
+      "bytes": 8442,
+      "sha256": "afafd62e65223cb69a288885ea9c81676268f65cfe66a0b17d6c6cbdf1b7123b"
+    },
+    {
+      "file": "assets/art/portraits/tang/consort-high-01.webp",
+      "bytes": 9162,
+      "sha256": "c1cc2257beb0b468fb8acdb6c809dd22263cea0af36e6355441b75aa4d6fc941"
+    },
+    {
+      "file": "assets/art/portraits/tang/consort-high-02.webp",
+      "bytes": 8138,
+      "sha256": "77224b2a24d4197d4e8a30af1130f7cf8d6003c000e22cd2925063d417c8d9f7"
+    },
+    {
+      "file": "assets/art/portraits/tang/consort-regular-01.webp",
+      "bytes": 8800,
+      "sha256": "443a11ecbeebdbe453fed3312cd5b127c44f3457f384cab7bb24eb080f226a26"
+    },
+    {
+      "file": "assets/art/portraits/tang/consort-regular-02.webp",
+      "bytes": 8982,
+      "sha256": "116858155e334457b45be776a6237dde5a40cdb9da1127d0725ded7c684a3c13"
+    },
+    {
+      "file": "assets/art/portraits/tang/consort-regular-03.webp",
+      "bytes": 7984,
+      "sha256": "a4739a8d8c3a43e95b9e08e3cdd1181804effd2e9ca4ec2e793d60f29d94a34c"
+    },
+    {
+      "file": "assets/art/portraits/tang/consort-regular-04.webp",
+      "bytes": 8348,
+      "sha256": "c4101916627f566d5cf1507dcef8f2c945d4a442d178b6c5d6d6797d9d316192"
+    },
+    {
+      "file": "assets/art/portraits/tang/consort-regular-05.webp",
+      "bytes": 7418,
+      "sha256": "f826968b730daaae6fc7da8b196e718ca7e5bfb919f00fe76084a9e58f378ac8"
+    },
+    {
+      "file": "assets/art/portraits/tang/emperor-old-01.webp",
+      "bytes": 10362,
+      "sha256": "865659de344856a1ccd29ec86af01cb7782bb4e3f5dad921f590cd98d1c9e357"
+    },
+    {
+      "file": "assets/art/portraits/tang/emperor-young-01.webp",
+      "bytes": 9256,
+      "sha256": "9909f2d16b1ac32d00e4c4ea47637fe745ea23f9a61048b033f851b26b721344"
+    },
+    {
+      "file": "assets/art/portraits/tang/eunuch-all-01.webp",
+      "bytes": 7736,
+      "sha256": "43891e929506fbf64c60578ea015917e5f05caa54b740534734d39aa6a467004"
+    },
+    {
+      "file": "assets/art/portraits/tang/general-all-01.webp",
+      "bytes": 14886,
+      "sha256": "7c9aa485722c463b64feac42054ce609da9a750cba8003364f9f06bcfb5c8d48"
+    },
+    {
+      "file": "assets/art/portraits/tang/general-all-02.webp",
+      "bytes": 13860,
+      "sha256": "a6e99546c81af02fed24236c90abb6dfad80088d81ead54b3f83f9459b36326d"
+    },
+    {
+      "file": "assets/art/portraits/tang/general-all-03.webp",
+      "bytes": 16378,
+      "sha256": "6e8c5ce1d2a1dcc86217d7cdd1c938a5d9d74e97a61d049c4108405a8da8d539"
+    },
+    {
+      "file": "assets/art/portraits/tang/official-mature-01.webp",
+      "bytes": 6800,
+      "sha256": "ce6c43c33dc77d3357fb62a62c6cc9b73658462fdf91d4d582fea603884a78b5"
+    },
+    {
+      "file": "assets/art/portraits/tang/official-mature-02.webp",
+      "bytes": 7878,
+      "sha256": "9b0870f054d4afa11f7be6ec293d0edfa1941a90bfc36e82e3ce59eaf0742b20"
+    },
+    {
+      "file": "assets/art/portraits/tang/official-mature-03.webp",
+      "bytes": 8504,
+      "sha256": "b7cd412bfb6394db86ae3901633ae6e7a5ebbfba60153392f514d5383dd0ee62"
+    },
+    {
+      "file": "assets/art/portraits/tang/official-mature-04.webp",
+      "bytes": 7538,
+      "sha256": "d6a31514b69d18d070e9c2b9c8dde709c5d27e5f6fb4e2aac68b231431223ffa"
+    },
+    {
+      "file": "assets/art/portraits/tang/official-mature-05.webp",
+      "bytes": 8464,
+      "sha256": "b65656d00546a19257df5a466d1b80ca32536072d5f520f708f74d5016aa9056"
+    },
+    {
+      "file": "assets/art/portraits/tang/official-mature-06.webp",
+      "bytes": 7232,
+      "sha256": "416b76d7cb189cca9f6e589b52bc8f364ab0ede9a7647007ff62c64f29b3c60c"
+    },
+    {
+      "file": "assets/art/portraits/tang/official-mature-07.webp",
+      "bytes": 7982,
+      "sha256": "d25ab8e2e2f9e158eb5384fcbe6f0dbc6227e2d75ad4f48c7c9555c10eef6344"
+    },
+    {
+      "file": "assets/art/portraits/tang/official-mature-08.webp",
+      "bytes": 8406,
+      "sha256": "c48f025642cfdf8fb8a248a4003975aa281e07945cf1e7c9b7edec2557a3456d"
+    },
+    {
+      "file": "assets/art/portraits/tang/official-mature-09.webp",
+      "bytes": 7530,
+      "sha256": "d5e3a72d1160cf1c46a88a14a03d2f97a48dbf93b42ccb05fe538a5737ffe030"
+    },
+    {
+      "file": "assets/art/portraits/tang/official-mature-10.webp",
+      "bytes": 8814,
+      "sha256": "2b9883be0b7a6456c1a24abd51a1b3536f85430395b18951879a4e40b5db95ea"
+    },
+    {
+      "file": "assets/art/portraits/tang/official-old-01.webp",
+      "bytes": 8632,
+      "sha256": "2d795481dd9f8a2f40c55071bb6b302e92e4704dc5510c1de4584c8fc5b83c2f"
+    },
+    {
+      "file": "assets/art/portraits/tang/official-old-02.webp",
+      "bytes": 9412,
+      "sha256": "2401699add06ea7532141be47fc81058718048e50c8e824f9da89be6f6cdbb89"
+    },
+    {
+      "file": "assets/art/portraits/tang/official-old-03.webp",
+      "bytes": 10374,
+      "sha256": "10c86c037582e2d71ef52ed2ea109a69cb0e3d945891749ded81377d0b158070"
+    },
+    {
+      "file": "assets/art/portraits/tang/official-old-04.webp",
+      "bytes": 7312,
+      "sha256": "398a24f2c9743444787af55205696adf3b81ea02e736c79f3e5a51de55047e19"
+    },
+    {
+      "file": "assets/art/portraits/tang/official-old-05.webp",
+      "bytes": 8708,
+      "sha256": "6d16d63d1a8e3debe740d2893947b431258f0399f053d77cc656229ce1bb471e"
+    },
+    {
+      "file": "assets/art/portraits/tang/official-old-06.webp",
+      "bytes": 9242,
+      "sha256": "26d7b5f9a52fe3a9c996be95ad800a1bd6a63c1c8c39b61ac3bcb0e7a9292ddc"
+    },
+    {
+      "file": "assets/art/portraits/tang/prince-adult-01.webp",
+      "bytes": 7890,
+      "sha256": "bf3c2d67a740d1d422c08a3d714c16d3b52fa53ad400b43d5b60888eb9b36808"
+    },
+    {
+      "file": "assets/art/portraits/tang/prince-teen-01.webp",
+      "bytes": 6122,
+      "sha256": "bd8038ecd265d9afe6dfe81c006dea394d90959a0d20243b06c9e72c03ebc382"
+    },
+    {
+      "file": "assets/art/portraits/tang/princess-adult-01.webp",
+      "bytes": 8840,
+      "sha256": "ddc933564c4bd31676234540f15e9a8b6983940d0bd4766283c5525afcf2fd85"
+    },
+    {
+      "file": "assets/art/portraits/tang/princess-teen-01.webp",
+      "bytes": 12612,
+      "sha256": "fcfc8cc278628910e7ade4acd849ab5c81040109ad8d2fcc3fb98ca47666ad93"
+    },
+    {
+      "file": "assets/art/portraits/unique/han-wudi/consort-01.webp",
+      "bytes": 9026,
+      "sha256": "ed5bb2e28a85bf1f206abbb9733d7819530e071484ca5f8d385482fd8bac59ab"
+    },
+    {
+      "file": "assets/art/portraits/unique/han-wudi/consort-02.webp",
+      "bytes": 6544,
+      "sha256": "311509663de97f104ecf71f5ae578a38c58a7faf364573dfec195a2ec837feaf"
+    },
+    {
+      "file": "assets/art/portraits/unique/han-wudi/dowager-01.webp",
+      "bytes": 9268,
+      "sha256": "d078e399c26facf5061e1520c0b8750dbd4a7267e15e7bf616e415d2c4e4a243"
+    },
+    {
+      "file": "assets/art/portraits/unique/han-wudi/emperor-01-old.webp",
+      "bytes": 6544,
+      "sha256": "d1d63641e441b1ee8c786a95dd55dba91a302ffd942224ce2edaa40330338930"
+    },
+    {
+      "file": "assets/art/portraits/unique/han-wudi/emperor-01.webp",
+      "bytes": 6166,
+      "sha256": "4cb9fac3bdae3663397d643c39c1c2b6eea8dd0247ff3643dc40d8569fe9f0d1"
+    },
+    {
+      "file": "assets/art/portraits/unique/han-wudi/foreign-01.webp",
+      "bytes": 8866,
+      "sha256": "36418296da893a07c2ab3a626e97ad5535fcfcfc7f98176df79ab59099c62d20"
+    },
+    {
+      "file": "assets/art/portraits/unique/han-wudi/foreign-02.webp",
+      "bytes": 7748,
+      "sha256": "48064d2495bb026814c3f233dea8d63febfbb2fdda937e5abc4cb88cc70e8c38"
+    },
+    {
+      "file": "assets/art/portraits/unique/han-wudi/foreign-03.webp",
+      "bytes": 8236,
+      "sha256": "59c4519010158fbb9b47df51aab438e9f307129bdd1e43358c729e6dd5ae748b"
+    },
+    {
+      "file": "assets/art/portraits/unique/han-wudi/foreign-04.webp",
+      "bytes": 7838,
+      "sha256": "c2f82d8e5cf873614879b95ace2054d00008fd12c3576cedf60211073585b754"
+    },
+    {
+      "file": "assets/art/portraits/unique/han-wudi/foreign-05.webp",
+      "bytes": 6308,
+      "sha256": "c16232c2ea6bead3a7d72c803833776987e0356085242955ebc5feeb1e853538"
+    },
+    {
+      "file": "assets/art/portraits/unique/han-wudi/official-01.webp",
+      "bytes": 8814,
+      "sha256": "72a4a6988b33168964476266b70f33180051cbfc3e6c664c69f3f664f22f7dcc"
+    },
+    {
+      "file": "assets/art/portraits/unique/han-wudi/official-02.webp",
+      "bytes": 7080,
+      "sha256": "522beec7c47b48cc0c00ee41145b0cf9a13a4fcacd7b0e6b388b5edbc2d931f6"
+    },
+    {
+      "file": "assets/art/portraits/unique/han-wudi/official-03.webp",
+      "bytes": 7132,
+      "sha256": "8cd6d15949a947e780ad6307014cdb1c9247d38c83f59e3068d781b9004f212c"
+    },
+    {
+      "file": "assets/art/portraits/unique/han-wudi/official-04.webp",
+      "bytes": 7744,
+      "sha256": "b9b76dc9828e828c20e6808b8f4a73e98da5b6d60eb2bf3ca5f4f564d1867434"
+    },
+    {
+      "file": "assets/art/portraits/unique/han-wudi/official-05.webp",
+      "bytes": 5958,
+      "sha256": "541c4d1a8de8a948d220aa1346942bc764c582fca14167c1096716588711192f"
+    },
+    {
+      "file": "assets/art/portraits/unique/han-wudi/official-06.webp",
+      "bytes": 7502,
+      "sha256": "5eb0da024255cd8e7174e6e97764fb0190260cb08b8e9fb318d963677d8fac78"
+    },
+    {
+      "file": "assets/art/portraits/unique/han-wudi/official-07.webp",
+      "bytes": 6890,
+      "sha256": "c5320c1838f285a97fc0905ff9807ee7d463d4b334856fed4eae431397cb0656"
+    },
+    {
+      "file": "assets/art/portraits/unique/han-wudi/official-08.webp",
+      "bytes": 11050,
+      "sha256": "4928f741abe14e4f7bad65596e1de153cc8eea7a82c7135ad817d79e816270c7"
+    },
+    {
+      "file": "assets/art/portraits/unique/han-wudi/official-09.webp",
+      "bytes": 10080,
+      "sha256": "eaf0bc32ac6eb6fe82e5095201e15b963235946c0a4b438a2b668856419b005c"
+    },
+    {
+      "file": "assets/art/portraits/unique/han-wudi/official-10.webp",
+      "bytes": 6092,
+      "sha256": "77549f0ad64bb34450e2ba5abc867b1e56db0f3deceffd13262a42eca26b4665"
+    },
+    {
+      "file": "assets/art/portraits/unique/ming-chongzhen/consort-01.webp",
+      "bytes": 11386,
+      "sha256": "ab13f0fda4a1a5bc24928d0a6c8c6470e78065dcc789d3fbd57d5e741a4d258e"
+    },
+    {
+      "file": "assets/art/portraits/unique/ming-chongzhen/consort-02.webp",
+      "bytes": 8000,
+      "sha256": "2b145350100a895af46ff44f1e3c9b30dc12f05af95bf5d518be741b8805f122"
+    },
+    {
+      "file": "assets/art/portraits/unique/ming-chongzhen/consort-03.webp",
+      "bytes": 7274,
+      "sha256": "9bb14bf23697c6d630b1b643bd47573491b08b58a1fe6cab9934f3e353310c48"
+    },
+    {
+      "file": "assets/art/portraits/unique/ming-chongzhen/dowager-01.webp",
+      "bytes": 11376,
+      "sha256": "79ce187b4aea4c18f58e52738c08463d313937df15551b8a8fa1f2f71178f94b"
+    },
+    {
+      "file": "assets/art/portraits/unique/ming-chongzhen/emperor-01-old.webp",
+      "bytes": 11950,
+      "sha256": "26d0dbf1a7d3956647074372ba28ef4371906c366e086191ee6a97de5cfe7a08"
+    },
+    {
+      "file": "assets/art/portraits/unique/ming-chongzhen/emperor-01.webp",
+      "bytes": 10214,
+      "sha256": "9bc791baaf9ce9892ff6c6a85cad80851263e12d14b1f78d73d41f0324755eb5"
+    },
+    {
+      "file": "assets/art/portraits/unique/ming-chongzhen/foreign-01.webp",
+      "bytes": 9074,
+      "sha256": "c35cd36b8e10bc7d8193c4d78df9c6074ccaf673ac16f8ce1958be9152c9fe84"
+    },
+    {
+      "file": "assets/art/portraits/unique/ming-chongzhen/foreign-02.webp",
+      "bytes": 8272,
+      "sha256": "ebf8868921066f44bda6e563d6fc41875b935babd42e3a9f0939c908c9f1cae4"
+    },
+    {
+      "file": "assets/art/portraits/unique/ming-chongzhen/foreign-03.webp",
+      "bytes": 8992,
+      "sha256": "758e2f10dea394b52dd9deb04804ae0d991cde81b2c9e5bf50cc94a5f19a1bad"
+    },
+    {
+      "file": "assets/art/portraits/unique/ming-chongzhen/foreign-04.webp",
+      "bytes": 8572,
+      "sha256": "330f066868a03513fdf6a2af1a87452e9bd0d9a521a5bbabfb110d92df24af18"
+    },
+    {
+      "file": "assets/art/portraits/unique/ming-chongzhen/official-01.webp",
+      "bytes": 7960,
+      "sha256": "281a7b0f79b1268340d7b72af6ccd94c7140868cbad1ba2936890ae35b08f689"
+    },
+    {
+      "file": "assets/art/portraits/unique/ming-chongzhen/official-02.webp",
+      "bytes": 9670,
+      "sha256": "20473f774de91ba0501d047202171a57acc85f59494ea1088a209ad5bfc4d597"
+    },
+    {
+      "file": "assets/art/portraits/unique/ming-chongzhen/official-03.webp",
+      "bytes": 8484,
+      "sha256": "df3cf105b4ef5398e57f66616d819367cb54a5a2be75bb544caaf8d275bf3792"
+    },
+    {
+      "file": "assets/art/portraits/unique/ming-chongzhen/official-04.webp",
+      "bytes": 7328,
+      "sha256": "00ea1e006ed9bcd28afdb5344698041ca48beb34d238919ea60cb1194049776e"
+    },
+    {
+      "file": "assets/art/portraits/unique/ming-chongzhen/official-05.webp",
+      "bytes": 7752,
+      "sha256": "3c41f3935e9fb80387b346f15932fd87ceed522681c383078868f231af580abb"
+    },
+    {
+      "file": "assets/art/portraits/unique/ming-chongzhen/official-06.webp",
+      "bytes": 8300,
+      "sha256": "364b529aa0ada2188be71986ecbd9ca4a5567874f332b57033a313cf24b016be"
+    },
+    {
+      "file": "assets/art/portraits/unique/ming-chongzhen/official-07.webp",
+      "bytes": 9352,
+      "sha256": "799a8ae04ce17aa35a227ab6f166bdcccd60811f0996d77f5155b405b7be34c8"
+    },
+    {
+      "file": "assets/art/portraits/unique/ming-chongzhen/official-08.webp",
+      "bytes": 12684,
+      "sha256": "f1edf2f051c06dfd0b338a3fd004b3169bd26f3f349c8915e7e5f47ae5a1576f"
+    },
+    {
+      "file": "assets/art/portraits/unique/ming-chongzhen/official-09.webp",
+      "bytes": 14276,
+      "sha256": "6c40f99967525b13692b050656678b802c64538b763a32326d9f07d455c95bcd"
+    },
+    {
+      "file": "assets/art/portraits/unique/ming-chongzhen/official-10.webp",
+      "bytes": 12374,
+      "sha256": "df5852f5eec875e6520e9d57b5b7e252e2d147997dd71f2d10955083262a5673"
+    },
+    {
+      "file": "assets/art/portraits/unique/ming-wanli/dowager-01.webp",
+      "bytes": 11148,
+      "sha256": "9f3ee8b1b617b6c76853f22e670fae3967d1487f186e30086574753816683727"
+    },
+    {
+      "file": "assets/art/portraits/unique/ming-wanli/emperor-01-old.webp",
+      "bytes": 9164,
+      "sha256": "9034a34556381ef280a38e99cb77b7740cb7ac554aa94cdb099506821fd3624b"
+    },
+    {
+      "file": "assets/art/portraits/unique/ming-wanli/emperor-01.webp",
+      "bytes": 9536,
+      "sha256": "d0f808dfb8dbdb0d55b4418ea84579806bad3c10347a3d61ec45126ac964ad63"
+    },
+    {
+      "file": "assets/art/portraits/unique/ming-wanli/foreign-01.webp",
+      "bytes": 10544,
+      "sha256": "a0ba8246336e039d40e828b96e6ad260f73d686eef1bc6e17bc9d7a205171087"
+    },
+    {
+      "file": "assets/art/portraits/unique/ming-wanli/foreign-02.webp",
+      "bytes": 8102,
+      "sha256": "64374e9d7f61a4496c244bf3613f803907a44aa677e343b18cee82ddbf5590f9"
+    },
+    {
+      "file": "assets/art/portraits/unique/ming-wanli/foreign-03.webp",
+      "bytes": 8982,
+      "sha256": "4e335913acbf436b2424b2b50391782aef3c59eaadcc5d7a1a6c67f09e29549b"
+    },
+    {
+      "file": "assets/art/portraits/unique/ming-wanli/foreign-04.webp",
+      "bytes": 8008,
+      "sha256": "f5874cab2de58de0c00bad9449f1f52fdee93172ab430e588915c376fa695d74"
+    },
+    {
+      "file": "assets/art/portraits/unique/ming-wanli/foreign-05.webp",
+      "bytes": 8188,
+      "sha256": "a64e924064d653be659e6a07fb45301dacbe498f096a2a356ba9bea49453a979"
+    },
+    {
+      "file": "assets/art/portraits/unique/ming-wanli/official-01.webp",
+      "bytes": 9170,
+      "sha256": "29ef37d2fd75beaa40d425117e8bceb896bd11e0d7c2a4ea4c50e86a0ee4ad50"
+    },
+    {
+      "file": "assets/art/portraits/unique/ming-wanli/official-02.webp",
+      "bytes": 7090,
+      "sha256": "77271bfa416c6404559793c48880b76fe6705e26375f953a923321f709b79d82"
+    },
+    {
+      "file": "assets/art/portraits/unique/ming-wanli/official-03.webp",
+      "bytes": 9264,
+      "sha256": "c4a1b1c7c0ae2a447971676f3f947b8ba8d5a44c08a12b56b6409a912d3a9e48"
+    },
+    {
+      "file": "assets/art/portraits/unique/ming-wanli/official-04.webp",
+      "bytes": 7096,
+      "sha256": "b67c2251a225556b914f6a0fd6a6735f9bbe1e540bfca8bee7b139840983b6c1"
+    },
+    {
+      "file": "assets/art/portraits/unique/ming-wanli/official-05.webp",
+      "bytes": 7176,
+      "sha256": "c58cd6f68dba3afa364d2d6ae56966188a61010152e421155b7035ba22f93c2d"
+    },
+    {
+      "file": "assets/art/portraits/unique/ming-wanli/official-06.webp",
+      "bytes": 8804,
+      "sha256": "0aa8492c54c0ff9788c4917d3a2191dbae56acf091914f856ec3a54d07c44665"
+    },
+    {
+      "file": "assets/art/portraits/unique/ming-wanli/official-07.webp",
+      "bytes": 9056,
+      "sha256": "56ebef13f9a0384f6466ab73ab3250e408859a9ff95e13c1893d0d3b7df69ffd"
+    },
+    {
+      "file": "assets/art/portraits/unique/ming-wanli/official-08.webp",
+      "bytes": 9972,
+      "sha256": "591544bf5437b2676000c7e27f0e197605e38f993038bf87cb09b52dbd53404b"
+    },
+    {
+      "file": "assets/art/portraits/unique/ming-wanli/official-09.webp",
+      "bytes": 8388,
+      "sha256": "44d60ffb4f840bb6476768cc00a62b3f92a820a57dfe38dbf00cdcdb385c12a2"
+    },
+    {
+      "file": "assets/art/portraits/unique/ming-wanli/official-10.webp",
+      "bytes": 8702,
+      "sha256": "6a2b29c99586adc1d67b988b54d4d12cddc824cc62ac98d75a1bf99e2a035206"
+    },
+    {
+      "file": "assets/art/portraits/unique/ming-wanli/official-11.webp",
+      "bytes": 13380,
+      "sha256": "9ab7e5cf35219a54b09a4a338fe5727d28e3be892973cfa2fdc5cd89320350d6"
+    },
+    {
+      "file": "assets/art/portraits/unique/ming-wanli/official-12.webp",
+      "bytes": 16752,
+      "sha256": "1d6bc0a8729013a0b27bbb7543268bc9c0dfeeb6cefd18dcce975223f8a500a5"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-kangxi/dowager-01.webp",
+      "bytes": 8556,
+      "sha256": "1ffbfe72d2dc3a10bd472aeb192748231aef6a2e5464ced07ca37dc85308aff8"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-kangxi/emperor-01-old.webp",
+      "bytes": 13832,
+      "sha256": "59594e33af548ae6f8436b273c522c181027be93de0220e61ec579474451bc2f"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-kangxi/emperor-01.webp",
+      "bytes": 12426,
+      "sha256": "7c5cace215216bc8bbb3123e4a468def8c14dc5d061701c3181063b689aba729"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-kangxi/foreign-01.webp",
+      "bytes": 8770,
+      "sha256": "c55c98bf714f229caa874ada21495b3d1127e71d227d9ddb069a1c86934e10b4"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-kangxi/foreign-02.webp",
+      "bytes": 7782,
+      "sha256": "d4348e8561ee68093fdd6800fc37e50605c81c760bcfb32aad36220126066520"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-kangxi/foreign-03.webp",
+      "bytes": 8522,
+      "sha256": "0f7f8b781ced91898f8c27a8c019b45a74b52435bed17b89601c5ace154beafc"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-kangxi/foreign-04.webp",
+      "bytes": 7192,
+      "sha256": "626b2ef928ef93406453d114558001bc98716d5483de20097449da2c14ddd05b"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-kangxi/foreign-05.webp",
+      "bytes": 9100,
+      "sha256": "0497a290eb39f4decffe6a40c50db6d7cbc5ef9aa91b22aaa5a9bc4a312c6928"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-kangxi/official-01.webp",
+      "bytes": 9076,
+      "sha256": "c3095955b3c64a5e5479d0ef139369a8056c80754486fc03ea065d46f1581012"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-kangxi/official-02.webp",
+      "bytes": 8022,
+      "sha256": "9d1593d6bd379170ea29458b6313bae76ff06d3793e5175039ea00ccf9b66124"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-kangxi/official-03.webp",
+      "bytes": 9140,
+      "sha256": "4be90eb7a2ce0e9e6969aff731976b8e83978d16cb42044ecce6574611be8c23"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-kangxi/official-04.webp",
+      "bytes": 8680,
+      "sha256": "ba59f153664ea2d14c1773b4c04e482d3bf840c7aa7ae4e68d6c6e3dfeb6632d"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-kangxi/official-05.webp",
+      "bytes": 8782,
+      "sha256": "8c80debf05408a70ff2fe9a1b582244ab771a7a995cd9498c548d1ce03b82621"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-kangxi/official-06.webp",
+      "bytes": 7290,
+      "sha256": "3202afa44a9a380d5a31bf1dd9dcd50447fb93422b042aec5472d7c32880af6b"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-kangxi/official-07.webp",
+      "bytes": 9966,
+      "sha256": "57ded05bfcaf22ccb8bb75af41bed0473908a01373c03d0020508222bc8c2c44"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-kangxi/official-08.webp",
+      "bytes": 8322,
+      "sha256": "391a31123f1db02e70fdf3d53e8e492944c18cb23358ab9704b68df96d9ed153"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-kangxi/official-09.webp",
+      "bytes": 10158,
+      "sha256": "f6c982f5741c4f9edf44373aee09171ed28a6aab8478b23e78cfc3d61fb66795"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-kangxi/official-10.webp",
+      "bytes": 7494,
+      "sha256": "5f96662b475c6dc92e82d42ff6cb1cf6f31e579f566ed22fde7dbcc96ef72346"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-yongzheng/child-01.webp",
+      "bytes": 5994,
+      "sha256": "a1b877497000f8ef9de8d5740f1aee7b945d12e99261e4b888a6d69c86e32cbd"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-yongzheng/child-02-adult.webp",
+      "bytes": 7084,
+      "sha256": "245fcda0ccbc48e30c25c2d295166611da827c9609cecefdb701abd323dea9f0"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-yongzheng/child-02.webp",
+      "bytes": 7074,
+      "sha256": "50ca73085de78c2397093b84fcc160640606601fa098dba467a25c7792ff9f4d"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-yongzheng/child-03-adult.webp",
+      "bytes": 6100,
+      "sha256": "0fa45f2ab97b37d803759e46e3809f77f50809118b6efe4f39cd97cfa47e3667"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-yongzheng/child-03.webp",
+      "bytes": 6538,
+      "sha256": "032ea1bb71afb5d8fe9df093167bab6a1d9955b310c64c03e6d9e5b95e8102b9"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-yongzheng/consort-01.webp",
+      "bytes": 7280,
+      "sha256": "8691552f21bccb216647c4a3c9c42b59ac75289a1d490398c962f655520fd9c6"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-yongzheng/consort-02.webp",
+      "bytes": 7284,
+      "sha256": "04e073c5e937173e38ffa73c07df452f308ef707d7942f674e14cbe4cdc1e0e8"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-yongzheng/consort-03.webp",
+      "bytes": 7724,
+      "sha256": "478eb5ed9f88df29f95e8c760005cd0b73e2790df85cd27b051843c9955d849f"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-yongzheng/consort-04.webp",
+      "bytes": 7258,
+      "sha256": "ef4876755e13cbe3094e4ea3a5dc9ceab4cae7d27707a03f1a8c4bd67f9a4452"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-yongzheng/dowager-01.webp",
+      "bytes": 6802,
+      "sha256": "33687b68ae436e2d452943bc2f2bcf7ab43628ee5706938c1ec8d541a7ed6759"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-yongzheng/emperor-01-old.webp",
+      "bytes": 13450,
+      "sha256": "6582d8f93518107dc023e834e7a1623bf236f4b570d173f58ef0f5ef61f369f7"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-yongzheng/emperor-01.webp",
+      "bytes": 12668,
+      "sha256": "4ddd3c7293019b6485f6442559dd1be3e1576c45acff5572c5f7c83e9034b6db"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-yongzheng/foreign-01.webp",
+      "bytes": 9900,
+      "sha256": "aae398bf66d02c339ca162d1d1f9c8c1d7837bf6785eee828644b00e35c22205"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-yongzheng/foreign-02.webp",
+      "bytes": 9730,
+      "sha256": "98a90459603f1f6c888296a14ebd24ad53eb80756b53bc49ef87dd071e7b2cdc"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-yongzheng/foreign-03.webp",
+      "bytes": 7830,
+      "sha256": "c054678850c8aea8c229e9fea2be904e75b9a252f042f54049406b1f1d05f7bd"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-yongzheng/foreign-04.webp",
+      "bytes": 6644,
+      "sha256": "9a26aa1e70a21fda1c868be7dcc4e5f10aeea1afc6655db3ef9b609c24bcd2f5"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-yongzheng/foreign-05.webp",
+      "bytes": 9592,
+      "sha256": "55935260d6c2115e2e193e2f28bcfcc53fe7c16f11ccf9cdb7c698e9f3df4837"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-yongzheng/official-01.webp",
+      "bytes": 9406,
+      "sha256": "0c4ca1a678807617d7773a3880b11b69e0d57431f8b0992d5fde1f772144c767"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-yongzheng/official-02.webp",
+      "bytes": 8666,
+      "sha256": "7e9d7ffe131c3fde26b89c0d64b062db4e26f61717f7c756f96ba3a992e38eb1"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-yongzheng/official-03.webp",
+      "bytes": 9384,
+      "sha256": "3afd735da36ce41616fd35e27ba0315c0d467448e2f4e1b8d1b51af0bf05a9a9"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-yongzheng/official-04.webp",
+      "bytes": 9256,
+      "sha256": "203f36dcdf47f0fc75899e875f44a1715ebe9b7f5576976c290f132c28700766"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-yongzheng/official-05.webp",
+      "bytes": 8018,
+      "sha256": "9bee6bfe800951d136f46cbb1cbcc637dc8fc2ef70de25cd85ace372b5ea0da5"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-yongzheng/official-06.webp",
+      "bytes": 8162,
+      "sha256": "ef47639bcbf2153e65867349edc992203aefbd2eaf3f5b5f79eacb2f598c8a99"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-yongzheng/official-07.webp",
+      "bytes": 9062,
+      "sha256": "9f90085bb5db1f3cd745a2d381aafc553b95742ba84f4985a9051c5dbde942e2"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-yongzheng/official-08.webp",
+      "bytes": 9330,
+      "sha256": "4345cc3ca3a622aff850df30139b5003f3920ee23b60741a9cb4b536b48b22f6"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-yongzheng/official-09.webp",
+      "bytes": 9452,
+      "sha256": "5d9bbb365fac831a81d1af9d5dabc6e0492f24700c19769317708c425df69820"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-yongzheng/official-10.webp",
+      "bytes": 9544,
+      "sha256": "77f41d496867837377e775dee106bf7537e1b91c91c606724b11185b8f27e765"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-yongzheng/official-11.webp",
+      "bytes": 9246,
+      "sha256": "6136a1beb962063efd359ddf7eb13777cce4005a37398d6ce180e12bfb841d16"
+    },
+    {
+      "file": "assets/art/portraits/unique/qing-yongzheng/official-12.webp",
+      "bytes": 7336,
+      "sha256": "15f8e1c34c1c86ea2e98e717d2e1d8bee510a0720aec87f22b484003d600a128"
+    },
+    {
+      "file": "assets/art/portraits/unique/song-renzong/dowager-01.webp",
+      "bytes": 12788,
+      "sha256": "db7f9660447ec665e1804ae49b31ef835e42b0791bafee168def485fea507e68"
+    },
+    {
+      "file": "assets/art/portraits/unique/song-renzong/emperor-01-old.webp",
+      "bytes": 9704,
+      "sha256": "9af9e4e9abf77020e550615026bf7d952ae1f2acea99f175fbdd780462788d67"
+    },
+    {
+      "file": "assets/art/portraits/unique/song-renzong/emperor-01.webp",
+      "bytes": 8198,
+      "sha256": "4257c43048efd42ed293e79f5047425879e8828ffd6a75619b33ee564dad5e5f"
+    },
+    {
+      "file": "assets/art/portraits/unique/song-renzong/foreign-01.webp",
+      "bytes": 6692,
+      "sha256": "08050c8bdc86c4ae523dbada645800ff532de3b7e24b3f75deba4c6f0fba09c2"
+    },
+    {
+      "file": "assets/art/portraits/unique/song-renzong/foreign-02.webp",
+      "bytes": 6572,
+      "sha256": "3b1a51a78dda88e247553d44ab795add5871ec750718ba71909f8427f2faae7c"
+    },
+    {
+      "file": "assets/art/portraits/unique/song-renzong/foreign-03.webp",
+      "bytes": 8394,
+      "sha256": "5aee121652873906731a3fd58af7f308379268063efff4f6692ba9979012db96"
+    },
+    {
+      "file": "assets/art/portraits/unique/song-renzong/foreign-04.webp",
+      "bytes": 7164,
+      "sha256": "e96678322423bb7ff9fd6deb90116a611c2624f76fdb0cd0fb3c2bcbfea1be3d"
+    },
+    {
+      "file": "assets/art/portraits/unique/song-renzong/foreign-05.webp",
+      "bytes": 5950,
+      "sha256": "ae4a62da6cbc44fc6c10c215c965983f0b9dbf7c6e55fe92554be0d84fbc9214"
+    },
+    {
+      "file": "assets/art/portraits/unique/song-renzong/official-01.webp",
+      "bytes": 6436,
+      "sha256": "63bada89e330177efcebd7f58c51200398b5d5af55febf80ca5fc4452b6b4104"
+    },
+    {
+      "file": "assets/art/portraits/unique/song-renzong/official-02.webp",
+      "bytes": 6188,
+      "sha256": "b3033ca1f7f3a11b9905d483299e9b160725a476952da99f0ee1e8d447339255"
+    },
+    {
+      "file": "assets/art/portraits/unique/song-renzong/official-03.webp",
+      "bytes": 6048,
+      "sha256": "2101305f645fdac76462fc6d6afe68fb526ed6546ccaa63f1ecb80fa309b2d27"
+    },
+    {
+      "file": "assets/art/portraits/unique/song-renzong/official-04.webp",
+      "bytes": 5452,
+      "sha256": "a244ac89f0ac60fb5ff7f194f5f899d7175f96c9e8b6e967d04bc2bb659032ea"
+    },
+    {
+      "file": "assets/art/portraits/unique/song-renzong/official-05.webp",
+      "bytes": 6952,
+      "sha256": "32c45e981f8a8e601704330fbfdc8ad1e3a4a4f1bde178344a41549079d6ad65"
+    },
+    {
+      "file": "assets/art/portraits/unique/song-renzong/official-06.webp",
+      "bytes": 13218,
+      "sha256": "d5c0010fe0e0b96b917ee88ad85208da11bfdb448c037ed94e32f8214ef2e7a7"
+    },
+    {
+      "file": "assets/art/portraits/unique/song-renzong/official-07.webp",
+      "bytes": 5110,
+      "sha256": "79da0185dd0ecd2c20d014505a96e72ae07bc93e5f450f8f13a707d31de7bb3d"
+    },
+    {
+      "file": "assets/art/portraits/unique/song-renzong/official-08.webp",
+      "bytes": 6934,
+      "sha256": "94c25168f6f52e9591ba957d10d5d5d3e59e8c979a16fe811861ba88d0721424"
+    },
+    {
+      "file": "assets/art/portraits/unique/song-renzong/official-09.webp",
+      "bytes": 5682,
+      "sha256": "1c5024a1da37d80cff17adcdede5be0aeb1fa293440f15402f247b41187e6e82"
+    },
+    {
+      "file": "assets/art/portraits/unique/song-renzong/official-10.webp",
+      "bytes": 5842,
+      "sha256": "3b621a70a15bb53bf2c2f027825b9d4346efa95e5bf6c57c68519f1d8d4e3b3d"
+    },
+    {
+      "file": "assets/art/portraits/unique/tang-taizong/child-01-adult.webp",
+      "bytes": 5486,
+      "sha256": "3cad5a0b8428a023fa8a23175d52aba8d7ba8ace258eb37fd3273227e836f036"
+    },
+    {
+      "file": "assets/art/portraits/unique/tang-taizong/child-01.webp",
+      "bytes": 5724,
+      "sha256": "7a7daa34a8990c3cffa736c0f8b632568832e7ad1d3cc5a977eacfaeb37078a6"
+    },
+    {
+      "file": "assets/art/portraits/unique/tang-taizong/child-02-adult.webp",
+      "bytes": 6738,
+      "sha256": "49699ad095ca296b88ae293f156c94ee049c6c176f511f2b1990b87febb62f62"
+    },
+    {
+      "file": "assets/art/portraits/unique/tang-taizong/child-02.webp",
+      "bytes": 6814,
+      "sha256": "bdbebb07c4cd50146d1eb9460d4c0b935710fe9b2902e3147af060a391d4cee5"
+    },
+    {
+      "file": "assets/art/portraits/unique/tang-taizong/child-03-adult.webp",
+      "bytes": 6708,
+      "sha256": "26c8497cfea8be6ceaa473876d7973930b2e2706ca96952ce8c396dbb553bb3b"
+    },
+    {
+      "file": "assets/art/portraits/unique/tang-taizong/child-03.webp",
+      "bytes": 7386,
+      "sha256": "2eb07fc2fd6b8425843ca076092ea761a6b75e736c5dcbe466b20fe2234836fb"
+    },
+    {
+      "file": "assets/art/portraits/unique/tang-taizong/consort-01.webp",
+      "bytes": 8884,
+      "sha256": "3f0f2b2ba5d71a52c0026c5279107fa6e06167ed978c19fc5d6a9fa086cd00e1"
+    },
+    {
+      "file": "assets/art/portraits/unique/tang-taizong/consort-02.webp",
+      "bytes": 7068,
+      "sha256": "212cb63844208fb68b37b88d1d611fdea320787202a60d2cb1dbd098f16ae63c"
+    },
+    {
+      "file": "assets/art/portraits/unique/tang-taizong/consort-03.webp",
+      "bytes": 7056,
+      "sha256": "ae80da79b90f4803d235aed69455d7e1b78ea2fa685d8882c3b435f13086303c"
+    },
+    {
+      "file": "assets/art/portraits/unique/tang-taizong/emperor-01-old.webp",
+      "bytes": 10368,
+      "sha256": "31f04d8f7131a818d557821c84e8e08d96a02118b21c713141ad7c5ca83b5220"
+    },
+    {
+      "file": "assets/art/portraits/unique/tang-taizong/emperor-01.webp",
+      "bytes": 9242,
+      "sha256": "19349928a74b7e8f93d1ce80e18e1d98af34e17332ce7f9a8b1a7019e905e813"
+    },
+    {
+      "file": "assets/art/portraits/unique/tang-taizong/foreign-01.webp",
+      "bytes": 14966,
+      "sha256": "73d8d3337e285473a33c7acee78aadbf4a33bac8e66088944ed8260368a0e231"
+    },
+    {
+      "file": "assets/art/portraits/unique/tang-taizong/foreign-02.webp",
+      "bytes": 8888,
+      "sha256": "188fb1a8d9b8d410853a90f016b9c39d45a94404f19aa549065e2ec09299391d"
+    },
+    {
+      "file": "assets/art/portraits/unique/tang-taizong/foreign-03.webp",
+      "bytes": 7188,
+      "sha256": "e2995720bd69812391c541ab54aa5caa4c28ade3900bcdddc981221c182c3559"
+    },
+    {
+      "file": "assets/art/portraits/unique/tang-taizong/foreign-04.webp",
+      "bytes": 7564,
+      "sha256": "cde925757e4946d4070b4b3375547a61a04fef8b609eb70978a276c5a05fd6d3"
+    },
+    {
+      "file": "assets/art/portraits/unique/tang-taizong/foreign-05.webp",
+      "bytes": 9220,
+      "sha256": "8ab9e2ec27f8b2f0d54bf370f7761c27e37d387edbb0901df55fb322dfcf9633"
+    },
+    {
+      "file": "assets/art/portraits/unique/tang-taizong/official-01.webp",
+      "bytes": 6138,
+      "sha256": "49f07a294c6dba420c3ed101734a61b511e1d3bfc8f6145679576524e0be769e"
+    },
+    {
+      "file": "assets/art/portraits/unique/tang-taizong/official-02.webp",
+      "bytes": 6600,
+      "sha256": "651123a8c847bb46e0d05b26a757fe7c17c67bdc7d65376c859a9530e8178b2f"
+    },
+    {
+      "file": "assets/art/portraits/unique/tang-taizong/official-03.webp",
+      "bytes": 7544,
+      "sha256": "d574e856574ccf5e087e63938193378f2214b95e06855407dc055edba6498db8"
+    },
+    {
+      "file": "assets/art/portraits/unique/tang-taizong/official-04.webp",
+      "bytes": 6118,
+      "sha256": "6226f391bf113ff873c58f7fcd47e96ea698f04a3d73ccd8e1fd8758285801e0"
+    },
+    {
+      "file": "assets/art/portraits/unique/tang-taizong/official-05.webp",
+      "bytes": 6456,
+      "sha256": "2651c1fe862b62a0c91f4928a5567f4e073421b0082b0673b8e66bb1a02f30db"
+    },
+    {
+      "file": "assets/art/portraits/unique/tang-taizong/official-06.webp",
+      "bytes": 7144,
+      "sha256": "569a2e47b61c274e4900389535952ca33e2dd7f0796791d69db5999a8da692b4"
+    },
+    {
+      "file": "assets/art/portraits/unique/tang-taizong/official-07.webp",
+      "bytes": 6550,
+      "sha256": "9980917cae2d3e009bf904dcd21544ab66acf7fa23b08360eb29561cbfd46012"
+    },
+    {
+      "file": "assets/art/portraits/unique/tang-taizong/official-08.webp",
+      "bytes": 7194,
+      "sha256": "c3729306a45b3744dd9269a85f21892fda7c8472e219538ce27f164b509c1c51"
+    },
+    {
+      "file": "assets/art/portraits/unique/tang-taizong/official-09.webp",
+      "bytes": 6964,
+      "sha256": "f97b6114a75bc07f3ab9df8d3dbb60a69bb55a51b0d484a844db68e86e655897"
+    },
+    {
+      "file": "assets/art/portraits/unique/tang-taizong/official-10.webp",
+      "bytes": 13852,
+      "sha256": "1fd360aa3ee9c6cd0747e57c15261c220b358e0231b44d0d67dcf3a25d357692"
+    },
+    {
+      "file": "assets/art/portraits/unique/tang-taizong/official-11.webp",
+      "bytes": 11010,
+      "sha256": "70d2544a6740f596f9e96f8880b07f661c2ecc101da2a082e0b104ae3f9801de"
+    },
+    {
+      "file": "assets/art/portraits/unique/tang-taizong/official-12.webp",
+      "bytes": 9636,
+      "sha256": "f136610536829fa3c23822c127122d697da535297894d10742b7034a66b9c60b"
+    },
+    {
+      "file": "assets/art/portraits/unique/tang-taizong/official-13.webp",
+      "bytes": 6774,
+      "sha256": "fd4407c6de824ec8d0814005092d7b00137e100e413d4b39470bd7b8bedf21d4"
+    },
+    {
+      "file": "assets/art/scenes/accession-1440.webp",
+      "bytes": 81402,
+      "sha256": "807a11c3b32cb195fec02b996de1e9f4b199527e343ca2151267271ec374b387"
+    },
+    {
+      "file": "assets/art/scenes/accession-720.webp",
+      "bytes": 24650,
+      "sha256": "324843f70d75ec5653251f7172037f40cdd58db15d416c14648a3763e802335e"
+    },
+    {
+      "file": "assets/art/scenes/audience-1440.webp",
+      "bytes": 71458,
+      "sha256": "9bc17f773be5e78c3b1ea6284e7446354bcdbd9408ff1939375e8302f84b8ba2"
+    },
+    {
+      "file": "assets/art/scenes/audience-720.webp",
+      "bytes": 22684,
+      "sha256": "df5f7c41bb0bc4a8cb084d904d7ba06b3fbc8a092b31886f7f7ab1e3ac35f168"
+    },
+    {
+      "file": "assets/art/scenes/banquet-1440.webp",
+      "bytes": 99192,
+      "sha256": "caa2bda7d11da373fc819385ac0edad51f2faeac580f5885bafa3e94f00c074c"
+    },
+    {
+      "file": "assets/art/scenes/banquet-720.webp",
+      "bytes": 33714,
+      "sha256": "6f50b4318dd18043a75bd9a220a41ff1ffef45feaaa6342125cb5a0610bafde4"
+    },
+    {
+      "file": "assets/art/scenes/camp-1440.webp",
+      "bytes": 65314,
+      "sha256": "a9741dd3ca7fbd6c9c5c5c19ce0d65722b717cea8b6317fd0d3e3fbff1f030b6"
+    },
+    {
+      "file": "assets/art/scenes/camp-720.webp",
+      "bytes": 20250,
+      "sha256": "d9bc5ee234886fcb04864665e300dfdd0e16a00b655a45835712301fd13c8409"
+    },
+    {
+      "file": "assets/art/scenes/court-1440.webp",
+      "bytes": 84522,
+      "sha256": "fc8d2d8c485aeec55e64e4fcb2320183451727228a4d374bf63f01111f0e8f4d"
+    },
+    {
+      "file": "assets/art/scenes/court-720.webp",
+      "bytes": 29912,
+      "sha256": "5e337bc97359496387000207cc7fb179c15f4404c8ca289e9efe5567d6344344"
+    },
+    {
+      "file": "assets/art/scenes/desk-day-1440.webp",
+      "bytes": 106240,
+      "sha256": "1f4aabb9a19074bd50350c472ef53f0e7192a3b275658be50cc1e2ded31d9c6e"
+    },
+    {
+      "file": "assets/art/scenes/desk-day-720.webp",
+      "bytes": 33028,
+      "sha256": "5a053c908338e5593e08dade3c84efe745e56b2b25322557f6cdf70a1e09e029"
+    },
+    {
+      "file": "assets/art/scenes/desk-night-1440.webp",
+      "bytes": 35992,
+      "sha256": "4056b3602cd633b5882ed0b6ee50a71c0435fa996ea60402289da303b7f5cb09"
+    },
+    {
+      "file": "assets/art/scenes/desk-night-720.webp",
+      "bytes": 11270,
+      "sha256": "21ca9cfe4b7ec961efdfef11e5a8bb99d258f235f9d5ed8dd09d8586630c515c"
+    },
+    {
+      "file": "assets/art/scenes/ending-1440.webp",
+      "bytes": 56374,
+      "sha256": "83e361f1db5f5e46e0874d923856a33efdaa1988588e4718f33de18de572fe15"
+    },
+    {
+      "file": "assets/art/scenes/ending-720.webp",
+      "bytes": 17874,
+      "sha256": "b495a89637b90c4bb31e4db012bbf21d8a9ad91f34a9895069dd6345e6770564"
+    },
+    {
+      "file": "assets/art/scenes/exam-1440.webp",
+      "bytes": 123000,
+      "sha256": "af3bdd7eb018edc44f67f287e0c1e3eb879402f9d36b8543d784bcd1708f39b2"
+    },
+    {
+      "file": "assets/art/scenes/exam-720.webp",
+      "bytes": 43304,
+      "sha256": "1ac2d0ac24b6e88a496791f6aee266c3a3829c76aad9abf13d7fdfe4290d7474"
+    },
+    {
+      "file": "assets/art/scenes/garden-1440.webp",
+      "bytes": 91640,
+      "sha256": "2c0ca049110ccb581dd49df23c41d6a32c8b908573ef65f22203336f47860882"
+    },
+    {
+      "file": "assets/art/scenes/garden-720.webp",
+      "bytes": 36350,
+      "sha256": "500792d0f73790787b3db72ad2653e342482e31922d91b78390385b6901ff083"
+    },
+    {
+      "file": "assets/art/scenes/palace-1440.webp",
+      "bytes": 64298,
+      "sha256": "7eacaad77dae1ac2810406bf2b3ddc6b3f8c66f1c402930b68b7b0f629c5a4ad"
+    },
+    {
+      "file": "assets/art/scenes/palace-720.webp",
+      "bytes": 20044,
+      "sha256": "b28cdd1af7317482c0964d52bdc857c3c40b577506fe7e96990ba4d452e790ad"
+    },
+    {
+      "file": "assets/art/scenes/study-1440.webp",
+      "bytes": 78386,
+      "sha256": "ba80bbdef2a16be41335fe80cb529d54dddde2be203ab11b3c90e868bacf2001"
+    },
+    {
+      "file": "assets/art/scenes/study-720.webp",
+      "bytes": 25866,
+      "sha256": "ebe9e9d2664eb2697ac63939b98b18f84a2688d62ff75be3dcfef4f090c3e319"
+    },
+    {
+      "file": "assets/art/scenes/tour-1440.webp",
+      "bytes": 117772,
+      "sha256": "ea0c121564e47c2c35834a3970782893bb6033f5d933ef84b46ab72f745f113e"
+    },
+    {
+      "file": "assets/art/scenes/tour-720.webp",
+      "bytes": 33616,
+      "sha256": "0c2c9df42175e6248ae7fc750aea81efcab4b33f700a63d40320ce629a5d8059"
+    }
+  ]
+}

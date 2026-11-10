@@ -1,0 +1,72 @@
+[
+  {
+    "scenario": "han-wudi",
+    "unchanged": true,
+    "sha256": "37b4e6bb7e8b4b1cfdcdfb424e2fe21bb573dd3ec512b3eb3abb384e473c57ba"
+  },
+  {
+    "scenario": "tang-taizong",
+    "unchanged": true,
+    "sha256": "75a6f859ba3b7d595eb8b8d89a20ffa9760c9bf8c4f8c8f6f19dac4c906e3851"
+  },
+  {
+    "scenario": "song-renzong",
+    "unchanged": true,
+    "sha256": "e55f8c4d5b21030010c2460e018e40eab387a53017ecec3619dcad9e8c331434"
+  },
+  {
+    "scenario": "ming-wanli",
+    "unchanged": true,
+    "sha256": "0936f76db424aa9f9778b736a6f8570613a4bc3f2abf1755aef746a2fe84b03b"
+  },
+  {
+    "scenario": "ming-chongzhen",
+    "unchanged": true,
+    "sha256": "6bacba62df88318331edb1649354414e401c1e6331d4adef84325267caf30720"
+  },
+  {
+    "scenario": "qing-kangxi",
+    "unchanged": true,
+    "sha256": "868839f97043283812e06678b04b4af87248a54d819e68840da3a254beae8c87"
+  },
+  {
+    "scenario": "qing-yongzheng",
+    "unchanged": true,
+    "sha256": "d986e735f5071a6bf4a9f874bc25b9d75ca4c0c465b4d0d2fc9def03faa63929"
+  },
+  {
+    "scenario": "han-lingdi",
+    "unchanged": true,
+    "sha256": "ee717dac2ca4393f09caa1c0b6f0e77b05eef3308d04ebda6530058e12bcefa6"
+  },
+  {
+    "scenario": "song-huizong",
+    "unchanged": true,
+    "sha256": "d0af8db1c40ac501461bb02c14b917dba909913c8e924f9710e08ccacd60212b"
+  },
+  {
+    "scenario": "ming-xizong",
+    "unchanged": true,
+    "sha256": "c6757ae0a21c77e8d7cca9aaffd436e4605352acc26a36d97d92d22c3ece9d10"
+  },
+  {
+    "scenario": "ming-yingzong",
+    "unchanged": true,
+    "sha256": "b7d78205d90a4509f58a120bdafeb1a680df2aea31d1616ece294548bbbff497"
+  },
+  {
+    "scenario": "tang-xuanzong",
+    "unchanged": true,
+    "sha256": "4f7262685a7d89069b2a025ac3880d1faefbfa922690d6d3ba43b4719d1e3a9f"
+  },
+  {
+    "scenario": "song-qinzong",
+    "unchanged": true,
+    "sha256": "bc712bd8353ca74fe7ce6c4718376a63241206fb9de36bed3d364d839ebdbd73"
+  },
+  {
+    "scenario": "qing-jiaqing",
+    "unchanged": true,
+    "sha256": "8bccda6bd60812b78aef09d23b2a2691c17905f9919098e1c0a75ee7b71c92b0"
+  }
+]

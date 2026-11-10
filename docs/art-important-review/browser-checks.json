@@ -1,0 +1,171 @@
+{
+  "emperorPreviewChecks": [
+    {
+      "scenario": "han-lingdi",
+      "complete": true,
+      "height": 500,
+      "src": "assets/art/portraits/unique/han-lingdi/emperor-01.webp",
+      "width": 400
+    },
+    {
+      "scenario": "song-huizong",
+      "complete": true,
+      "height": 500,
+      "src": "assets/art/portraits/unique/song-huizong/emperor-01.webp",
+      "width": 400
+    },
+    {
+      "scenario": "ming-xizong",
+      "complete": true,
+      "height": 500,
+      "src": "assets/art/portraits/unique/ming-xizong/emperor-01.webp",
+      "width": 400
+    },
+    {
+      "scenario": "ming-yingzong",
+      "complete": true,
+      "height": 500,
+      "src": "assets/art/portraits/unique/ming-yingzong/emperor-01.webp",
+      "width": 400
+    },
+    {
+      "scenario": "tang-xuanzong",
+      "complete": true,
+      "height": 500,
+      "src": "assets/art/portraits/unique/tang-xuanzong/emperor-01.webp",
+      "width": 400
+    },
+    {
+      "scenario": "song-qinzong",
+      "complete": true,
+      "height": 500,
+      "src": "assets/art/portraits/unique/song-qinzong/emperor-01.webp",
+      "width": 400
+    },
+    {
+      "scenario": "qing-jiaqing",
+      "complete": true,
+      "height": 500,
+      "src": "assets/art/portraits/unique/qing-jiaqing/emperor-01.webp",
+      "width": 400
+    }
+  ],
+  "audienceMetrics": [
+    {
+      "natural": [
+        400,
+        500
+      ],
+      "overflow": false,
+      "shown": [
+        200,
+        250
+      ],
+      "src": "assets/art/portraits/unique/ming-yingzong/official-03.webp",
+      "viewport": 1280
+    },
+    {
+      "action": 112,
+      "natural": [
+        400,
+        500
+      ],
+      "overflow": false,
+      "shown": [
+        120,
+        150
+      ],
+      "src": "assets/art/portraits/unique/ming-yingzong/official-03.webp",
+      "viewport": 390
+    }
+  ],
+  "galleryChecks": [
+    {
+      "images": 90,
+      "loaded": 90,
+      "overflow": false,
+      "rendered": [
+        {
+          "class": "portrait art-portrait art-avatar",
+          "h": 44,
+          "w": 44
+        },
+        {
+          "class": "portrait art-portrait art-card",
+          "h": 80,
+          "w": 64
+        },
+        {
+          "class": "portrait art-portrait art-paper",
+          "h": 150,
+          "w": 120
+        }
+      ],
+      "viewport": 390
+    },
+    {
+      "images": 90,
+      "loaded": 90,
+      "overflow": false,
+      "viewport": 768
+    },
+    {
+      "images": 90,
+      "loaded": 90,
+      "overflow": false,
+      "viewport": 1280
+    }
+  ],
+  "narrowCheck": {
+    "failed": 0,
+    "loaded": 90,
+    "overflow": false,
+    "viewport": 360
+  },
+  "offCheck": {
+    "badges": 90,
+    "first": "刘",
+    "hiddenImages": 90,
+    "off": true
+  },
+  "failedCheck": {
+    "height": 44,
+    "text": "刘",
+    "width": 44
+  },
+  "offlineCheck": {
+    "fallback": "刘",
+    "height": 44,
+    "pageUsable": true,
+    "visibleImages": 89,
+    "width": 44
+  },
+  "contrastChecks": [
+    {
+      "background": "rgb(239, 230, 211)",
+      "color": "rgb(42, 36, 32)",
+      "ratio": 12.34,
+      "text": "于谦"
+    },
+    {
+      "background": "rgb(239, 230, 211)",
+      "color": "rgb(42, 36, 32)",
+      "ratio": 12.34,
+      "text": "刚毅廉直，熟知军民"
+    },
+    {
+      "background": "rgb(239, 230, 211)",
+      "color": "rgb(42, 36, 32)",
+      "ratio": 12.34,
+      "text": "51 岁 · 好感 50"
+    },
+    {
+      "background": "rgb(239, 230, 211)",
+      "color": "rgb(110, 97, 85)",
+      "ratio": 4.83,
+      "text": "候见之人已至殿外。"
+    }
+  ],
+  "console": [],
+  "offlineScope": "保留已加载文档后停止本地图片服务器，第一张未加载图片退回首字44px圆章；不声称离线刷新整站可用。"
+}

@@ -246,3 +246,100 @@ export const HALL_SCENES = {
 "内库":"hall-treasury",
 "史馆":"hall-archive"
 };
+
+// 玩家追加的七剧本重要人物；魏忠贤复用本人，唐玄宗开局已是老年。
+Object.assign(ART_UNIQUE, {
+  "han-lingdi": {
+    "刘宏": {
+      "base": "assets/art/portraits/unique/han-lingdi/emperor-01.webp",
+      "old": "assets/art/portraits/unique/han-lingdi/emperor-01-old.webp"
+    },
+    "董太后": {
+      "base": "assets/art/portraits/unique/han-lingdi/dowager-01.webp"
+    },
+    "宋氏": {
+      "base": "assets/art/portraits/unique/han-lingdi/consort-01.webp"
+    },
+    "何氏": {
+      "base": "assets/art/portraits/unique/han-lingdi/consort-02.webp"
+    },
+    "张让": {
+      "base": "assets/art/portraits/unique/han-lingdi/official-03.webp"
+    }
+  },
+  "song-huizong": {
+    "赵佶": {
+      "base": "assets/art/portraits/unique/song-huizong/emperor-01.webp",
+      "old": "assets/art/portraits/unique/song-huizong/emperor-01-old.webp"
+    },
+    "郑氏": {
+      "base": "assets/art/portraits/unique/song-huizong/consort-01.webp"
+    },
+    "蔡京": {
+      "base": "assets/art/portraits/unique/song-huizong/official-01.webp"
+    }
+  },
+  "ming-xizong": {
+    "朱由校": {
+      "base": "assets/art/portraits/unique/ming-xizong/emperor-01.webp",
+      "old": "assets/art/portraits/unique/ming-xizong/emperor-01-old.webp"
+    },
+    "张嫣": {
+      "base": "assets/art/portraits/unique/ming-xizong/consort-01.webp"
+    },
+    "魏忠贤": {
+      "base": "assets/art/portraits/unique/ming-chongzhen/official-01.webp"
+    }
+  },
+  "ming-yingzong": {
+    "朱祁镇": {
+      "base": "assets/art/portraits/unique/ming-yingzong/emperor-01.webp",
+      "old": "assets/art/portraits/unique/ming-yingzong/emperor-01-old.webp"
+    },
+    "孙太后": {
+      "base": "assets/art/portraits/unique/ming-yingzong/dowager-01.webp"
+    },
+    "钱氏": {
+      "base": "assets/art/portraits/unique/ming-yingzong/consort-01.webp"
+    },
+    "于谦": {
+      "base": "assets/art/portraits/unique/ming-yingzong/official-03.webp"
+    }
+  },
+  "song-qinzong": {
+    "赵桓": {
+      "base": "assets/art/portraits/unique/song-qinzong/emperor-01.webp",
+      "old": "assets/art/portraits/unique/song-qinzong/emperor-01-old.webp"
+    },
+    "朱氏": {
+      "base": "assets/art/portraits/unique/song-qinzong/consort-01.webp"
+    },
+    "李纲": {
+      "base": "assets/art/portraits/unique/song-qinzong/official-03.webp"
+    }
+  },
+  "qing-jiaqing": {
+    "颙琰": {
+      "base": "assets/art/portraits/unique/qing-jiaqing/emperor-01.webp",
+      "old": "assets/art/portraits/unique/qing-jiaqing/emperor-01-old.webp"
+    },
+    "钮祜禄氏": {
+      "base": "assets/art/portraits/unique/qing-jiaqing/consort-01.webp"
+    },
+    "和珅": {
+      "base": "assets/art/portraits/unique/qing-jiaqing/official-01.webp"
+    }
+  },
+  "tang-xuanzong": {
+    "李隆基": {
+      "base": "assets/art/portraits/unique/tang-xuanzong/emperor-01.webp",
+      "old": "assets/art/portraits/unique/tang-xuanzong/emperor-01.webp"
+    },
+    "杨玉环": {
+      "base": "assets/art/portraits/unique/tang-xuanzong/consort-01.webp"
+    },
+    "安禄山": {
+      "base": "assets/art/portraits/unique/tang-xuanzong/official-04.webp"
+    }
+  }
+});

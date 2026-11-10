@@ -1,0 +1,22 @@
+<!doctype html><html lang="zh-CN"><head><base href="/"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>新增重要人物 · 取图验收</title><link rel="stylesheet" href="/src/ui/style.css"><style>body{padding:16px;overflow:auto}main{max-width:1120px;margin:auto}h1{font-size:24px}article{padding:16px;margin:12px 0;border:1px solid var(--desk-line,#514638);border-radius:8px;overflow:hidden}.portraits{display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap}.controls{display:flex;gap:12px;flex-wrap:wrap;margin:16px 0}button{min-height:44px}h2{font-size:18px}p{overflow-wrap:anywhere}.portrait.art-card{flex:none}.portrait.art-paper{flex:none}</style></head><body><main><h1>新增七剧本 · 重要人物专属像</h1><p>只读图册，使用游戏正式取图函数与CSS；不读取或写入游戏进度。</p><div class="controls"><button id="art-toggle">切换显示插图</button><button id="art-missing">模拟第一张图片缺失</button></div><div id="gallery"></div></main><script type="module">
+import {createState} from '/src/core/state.js';
+import {applyScenario} from '/src/core/scenarios.js';
+import {initialTurn} from '/src/core/turn.js';
+import {portraitHTML,initArt,setIllustrations,illustrationsEnabled} from '/src/ui/art.js';
+import {ART_UNIQUE} from '/src/ui/art-manifest.js';
+initArt();setIllustrations(true);
+const names={'han-lingdi':['刘宏','董太后','宋氏','何氏','张让'],'song-huizong':['赵佶','郑氏','蔡京'],'ming-xizong':['朱由校','张嫣','魏忠贤'],'ming-yingzong':['朱祁镇','孙太后','钱氏','于谦'],'tang-xuanzong':['李隆基','杨玉环','安禄山'],'song-qinzong':['赵桓','朱氏','李纲'],'qing-jiaqing':['颙琰','钮祜禄氏','和珅']};
+const gallery=document.querySelector('#gallery');
+for(const [id,list]of Object.entries(names)){
+ const s=initialTurn(applyScenario(createState({seed:'重要专属像只读验收'}),id));
+ const people=[s.emperor,...s.court.officials,...s.harem.consorts];
+ for(const name of list){const p=people.find(p=>p.name===name)||{name,age:50},role=name===s.dowager?'dowager':'';
+  const add=label=>{const node=document.createElement('article');node.id=id+'-'+name+label;node.innerHTML='<h2>'+name+' · '+id+' · '+label+'</h2><div class="portraits">'+['avatar','card','paper'].map(size=>portraitHTML(s,p,size,role).replaceAll('loading="lazy"','loading="eager"')).join('')+'</div>';gallery.append(node);};
+  add(p===s.emperor?'开局'+p.age+'岁':p.age+'岁');
+  if(p===s.emperor&&id!=='tang-xuanzong'){p.age=58;add('本人老年');}
+ }
+}
+document.querySelector('#art-toggle').onclick=()=>setIllustrations(!illustrationsEnabled());
+document.querySelector('#art-missing').onclick=()=>{const img=document.querySelector('.art-portrait img');img.src='/assets/art/intentional-missing-portrait.webp';};
+document.documentElement.dataset.ready='true';
+</script></body></html>

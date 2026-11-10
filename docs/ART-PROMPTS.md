@@ -7402,7 +7402,7 @@ Match fine BAIMIAO ink outlines and simple PALE FLAT washes, almost no shading, 
 | song-qinzong/emperor-01 | 赵桓 | 26 | 短宽方卵脸、收紧方下巴 | 干净无须，整齐黑鬓 | 短而较平眉、圆阔警惕眼 | 短高鼻、紧抿小薄唇 | 结实直颈、平肩 | 偏冷苍白米肤 | 右眉心浅折痕 | 戒备忧虑又努力持重／向右 |
 | qing-jiaqing/emperor-01 | 颙琰 | 39 | 长宽梨形脸、饱满下颊 | 短八字髭、细短尖颏须 | 平弯宽眉、沉静细长眼 | 长直厚鼻、宽平唇 | 丰厚稳重肩颈 | 暖黄浅米肤 | 左鼻侧浅法令纹 | 克制勤谨，审慎有决断／向左 |
 | tang-xuanzong/emperor-01 | 李隆基 | 70 | 宽阔圆卵老脸、厚圆下巴 | 银白长八字髭与分叉中长髯、白鬓 | 浓平白眉、略垂饱满老眼 | 宽大高鼻、丰满合唇 | 丰腴宽肩、厚颈 | 暖黄褐成熟肤 | 额纹、眼袋及深鼻唇纹 | 威仪尚存，倦意含在目光中／向左 |
-| han-lingdi/dowager-01 | 董太后 | 50 | 偏长六角卵圆女脸、细圆下颌 | 高折髻、较直高发际线、少量灰鬓 | 细平长眉、微垂狭杏眼 | 长小鼻、薄而轻收唇 | 清瘦端正细颈 | 成熟蜂蜜米肤 | 眼角浅纹、右鼻侧痣 | 端严精明，目光自持／向左 |
+| han-lingdi/dowager-01 | 董太后 | 50 | 偏长六角卵圆女脸、细圆下颌 | 高折髻、较直高发际线、清楚灰鬓 | 细平长眉、微垂狭杏眼 | 长小鼻、薄而轻收唇 | 清瘦端正细颈 | 成熟蜂蜜米肤 | 额纹、眼袋、眼角纹与法令纹、右鼻侧痣 | 端严精明，目光自持／向左 |
 | ming-yingzong/dowager-01 | 孙太后 | 50 | 饱满宽圆女脸、柔圆下巴 | 饱满圆发际线、黑灰高髻藏女式凤冠 | 柔弯宽眉、宽阔低垂杏眼 | 短圆鼻、较丰弓唇 | 丰润端稳肩颈 | 暖白成熟米肤 | 眼下浅纹、左颊浅斑 | 温厚尊贵，镇静有主见／向右 |
 | han-lingdi/consort-01 | 宋氏 | 22 | 细长鹅蛋女脸、柔尖圆下巴 | 低弧发际线、高叠髻配华丽步摇 | 细弯眉、略垂柔杏眼 | 窄直小鼻、细软弓唇 | 细长纤秀肩颈 | 清暖白肤 | 左眉尾极小痣 | 年轻谨慎、忧惧而克制／向左 |
 | han-lingdi/consort-02 | 何氏 | 23 | 饱满短心形女脸、小圆下巴 | 较高尖圆发际线、低堕马髻配单簪 | 较粗柔平眉、大而微挑圆杏眼 | 小翘鼻、丰满短弓唇 | 丰润年轻肩颈 | 玫瑰蜜桃米肤 | 右颊浅酒窝 | 机敏自信、顾盼警觉／向右 |
@@ -7426,3 +7426,387 @@ Match fine BAIMIAO ink outlines and simple PALE FLAT washes, almost no shading, 
 | qing-jiaqing/emperor-01-old | 颙琰 | 58 | 长宽梨形脸、饱满下颊 | 短八字髭与细尖颏须、黑灰鬓 | 平弯宽眉、沉静细长眼 | 长直厚鼻、宽平唇 | 丰厚稳重肩颈 | 暖黄浅米肤，成熟纹理 | 左鼻侧浅法令纹，成熟额纹、眼尾及鼻唇褶 | 克制勤谨，审慎有决断／向左 |
 
 魏忠贤：明熹宗开局53岁，复用`unique/ming-chongzhen/official-01.webp`本人59岁专属，不复制改名文件；保留已验收身份，取图按当前剧本与姓名映射。
+
+### 逐张实际提示词（生成前记录）
+
+#### han-lingdi/emperor-01
+
+参照：一期完整四图板＋han完整四图板。工具：内置imagegen；原PNG仅本机保存。
+
+```text
+Use case: historical-scene. ONE SINGLE person portrait for the Chinese game 御极. The TWO supplied boards each contain four approved paintings; use BOTH boards as STYLE and FRAMING references only. Produce ONE PORTRAIT, NEVER a grid or comparison sheet, no text labels. Match these approved restrained Chinese BAIMIAO clean ink contours with light FLAT muted washes, almost smooth pale paper, at most one faint shading layer; no photorealism, dramatic lighting, gradients, glow, 3D or anime. Pure solid #E3D7BE backdrop to every edge, no props or scene, no border, text, seals, signatures, watermark or actor/TV likeness. HEAD AND SHOULDERS ONLY, crop just below shoulders. Face horizontally centered, 3/4 view looking just off-camera. Portrait4:5,1024x1280. STRICT composition: TOP OF COMPLETE CROWN/HAT/HAIR at12% of canvas (allowed10-14%), BOTH EYE CENTERS at38% (allowed36-40%). Make the headdress compact enough to meet BOTH lines. Do NOT put eyes halfway down. Never draw the guide lines. No cut off crown and no big empty lower torso. Costume details simplified to recognisable major silhouettes.
+SUBJECT: 刘宏, age22, clearly MALE. face: 饱满长卵圆脸、柔软下颌; hair: 无须，乌黑平整鬓角; brows: 浓而微弯眉、细长含笑眼; nose: 高圆鼻、较丰满轻合唇; build: 丰实短颈、宽肩; skin: 暖白米肤; mark: 右颊小痣; expression: 随意自得，眼神精于算计. Face RIGHT.
+PERIOD COSTUME: HAN emperor: BLACK XUAN cross-collar RIGHT-LAPEL robe, very clear Y-shaped overlapping neckline with BROAD DEEP RED collar edges. A black TONGTIAN CROWN with an upright high GOLD BOS HAN crest at its FRONT. Narrow compact vertical crown, immediately different from the backward-sloping scholar crown. No round collar, no futou or Ming/Qing hat.
+```
+
+#### song-huizong/emperor-01
+
+参照：一期完整四图板＋song完整四图板。工具：内置imagegen；原PNG仅本机保存。
+
+```text
+Use case: historical-scene. ONE SINGLE person portrait for the Chinese game 御极. The TWO supplied boards each contain four approved paintings; use BOTH boards as STYLE and FRAMING references only. Produce ONE PORTRAIT, NEVER a grid or comparison sheet, no text labels. Match these approved restrained Chinese BAIMIAO clean ink contours with light FLAT muted washes, almost smooth pale paper, at most one faint shading layer; no photorealism, dramatic lighting, gradients, glow, 3D or anime. Pure solid #E3D7BE backdrop to every edge, no props or scene, no border, text, seals, signatures, watermark or actor/TV likeness. HEAD AND SHOULDERS ONLY, crop just below shoulders. Face horizontally centered, 3/4 view looking just off-camera. Portrait4:5,1024x1280. STRICT composition: TOP OF COMPLETE CROWN/HAT/HAIR at12% of canvas (allowed10-14%), BOTH EYE CENTERS at38% (allowed36-40%). Make the headdress compact enough to meet BOTH lines. Do NOT put eyes halfway down. Never draw the guide lines. No cut off crown and no big empty lower torso. Costume details simplified to recognisable major silhouettes.
+SUBJECT: 赵佶, age37, clearly MALE. face: 清长鹅蛋脸、窄而圆下巴; hair: 细八字髭、三缕纤细短颏须; brows: 细挑长眉、狭长温雅眼; nose: 纤高直鼻、薄弓唇; build: 颀长清瘦肩颈; skin: 浅冷象牙肤; mark: 左眉间浅竖纹; expression: 文雅矜持，稍带疏离. Face LEFT.
+PERIOD COSTUME: SONG emperor: OCHRE-YELLOW round-collar robe with one clearly visible LARGE ROUND DRAGON emblem on upper chest, simplified gold outlined dragon. Black straight-foot FUTOU with TWO VERY LONG HARD STRAIGHT HORIZONTAL RODS extending sideways much wider than shoulders, may be clipped at side edges. No curved drooping Tang feet, no short oval Ming wings.
+```
+
+#### ming-xizong/emperor-01
+
+参照：一期完整四图板＋ming完整四图板。工具：内置imagegen；原PNG仅本机保存。
+
+```text
+Use case: historical-scene. ONE SINGLE person portrait for the Chinese game 御极. The TWO supplied boards each contain four approved paintings; use BOTH boards as STYLE and FRAMING references only. Produce ONE PORTRAIT, NEVER a grid or comparison sheet, no text labels. Match these approved restrained Chinese BAIMIAO clean ink contours with light FLAT muted washes, almost smooth pale paper, at most one faint shading layer; no photorealism, dramatic lighting, gradients, glow, 3D or anime. Pure solid #E3D7BE backdrop to every edge, no props or scene, no border, text, seals, signatures, watermark or actor/TV likeness. HEAD AND SHOULDERS ONLY, crop just below shoulders. Face horizontally centered, 3/4 view looking just off-camera. Portrait4:5,1024x1280. STRICT composition: TOP OF COMPLETE CROWN/HAT/HAIR at12% of canvas (allowed10-14%), BOTH EYE CENTERS at38% (allowed36-40%). Make the headdress compact enough to meet BOTH lines. Do NOT put eyes halfway down. Never draw the guide lines. No cut off crown and no big empty lower torso. Costume details simplified to recognisable major silhouettes.
+SUBJECT: 朱由校, age16, clearly MALE. face: 少年长窄心形脸、小圆下巴; hair: 完全无须、少年黑鬓; brows: 短平浓眉、圆而清亮的少年眼; nose: 小直鼻、丰软少年唇; build: 瘦细少年颈、窄肩; skin: 暖桃米肤; mark: 右眉尾小痣; expression: 好奇专注，稚气未脱. Face RIGHT.
+PERIOD COSTUME: MING emperor: warm YELLOW imperial robe with a simply readable round DRAGON emblem entering at lower chest, white inner collar. Correct BLACK YISHANGUAN: close fitting compact black cap with a clearly higher raised rear section and two upward-folding black wings behind the crown. NOT a civil-official round brimmed hat, NOT Qing red tassel or Tang soft futou.
+```
+
+#### ming-yingzong/emperor-01
+
+参照：一期完整四图板＋ming完整四图板。工具：内置imagegen；原PNG仅本机保存。
+
+```text
+Use case: historical-scene. ONE SINGLE person portrait for the Chinese game 御极. The TWO supplied boards each contain four approved paintings; use BOTH boards as STYLE and FRAMING references only. Produce ONE PORTRAIT, NEVER a grid or comparison sheet, no text labels. Match these approved restrained Chinese BAIMIAO clean ink contours with light FLAT muted washes, almost smooth pale paper, at most one faint shading layer; no photorealism, dramatic lighting, gradients, glow, 3D or anime. Pure solid #E3D7BE backdrop to every edge, no props or scene, no border, text, seals, signatures, watermark or actor/TV likeness. HEAD AND SHOULDERS ONLY, crop just below shoulders. Face horizontally centered, 3/4 view looking just off-camera. Portrait4:5,1024x1280. STRICT composition: TOP OF COMPLETE CROWN/HAT/HAIR at12% of canvas (allowed10-14%), BOTH EYE CENTERS at38% (allowed36-40%). Make the headdress compact enough to meet BOTH lines. Do NOT put eyes halfway down. Never draw the guide lines. No cut off crown and no big empty lower torso. Costume details simplified to recognisable major silhouettes.
+SUBJECT: 朱祁镇, age22, clearly MALE. face: 宽阔圆方面、厚实圆下颌; hair: 短细平髭，下巴无须; brows: 粗直眉、较大的略垂眼; nose: 宽直鼻、厚下唇; build: 挺直壮实宽肩; skin: 浅金米肤; mark: 左颊浅酒窝; expression: 年轻自信，略显轻信. Face LEFT.
+PERIOD COSTUME: MING emperor: warm YELLOW imperial robe with a simply readable round DRAGON emblem entering at lower chest, white inner collar. Correct BLACK YISHANGUAN: close fitting compact black cap with a clearly higher raised rear section and two upward-folding black wings behind the crown. NOT a civil-official round brimmed hat, NOT Qing red tassel or Tang soft futou.
+```
+
+#### song-qinzong/emperor-01
+
+参照：一期完整四图板＋song完整四图板。工具：内置imagegen；原PNG仅本机保存。
+
+```text
+Use case: historical-scene. ONE SINGLE person portrait for the Chinese game 御极. The TWO supplied boards each contain four approved paintings; use BOTH boards as STYLE and FRAMING references only. Produce ONE PORTRAIT, NEVER a grid or comparison sheet, no text labels. Match these approved restrained Chinese BAIMIAO clean ink contours with light FLAT muted washes, almost smooth pale paper, at most one faint shading layer; no photorealism, dramatic lighting, gradients, glow, 3D or anime. Pure solid #E3D7BE backdrop to every edge, no props or scene, no border, text, seals, signatures, watermark or actor/TV likeness. HEAD AND SHOULDERS ONLY, crop just below shoulders. Face horizontally centered, 3/4 view looking just off-camera. Portrait4:5,1024x1280. STRICT composition: TOP OF COMPLETE CROWN/HAT/HAIR at12% of canvas (allowed10-14%), BOTH EYE CENTERS at38% (allowed36-40%). Make the headdress compact enough to meet BOTH lines. Do NOT put eyes halfway down. Never draw the guide lines. No cut off crown and no big empty lower torso. Costume details simplified to recognisable major silhouettes.
+SUBJECT: 赵桓, age26, clearly MALE. face: 短宽方卵脸、收紧方下巴; hair: 干净无须，整齐黑鬓; brows: 短而较平眉、圆阔警惕眼; nose: 短高鼻、紧抿小薄唇; build: 结实直颈、平肩; skin: 偏冷苍白米肤; mark: 右眉心浅折痕; expression: 戒备忧虑又努力持重. Face RIGHT.
+PERIOD COSTUME: SONG emperor: OCHRE-YELLOW round-collar robe with one clearly visible LARGE ROUND DRAGON emblem on upper chest, simplified gold outlined dragon. Black straight-foot FUTOU with TWO VERY LONG HARD STRAIGHT HORIZONTAL RODS extending sideways much wider than shoulders, may be clipped at side edges. No curved drooping Tang feet, no short oval Ming wings.
+```
+
+#### qing-jiaqing/emperor-01
+
+参照：一期完整四图板＋qing完整四图板。工具：内置imagegen；原PNG仅本机保存。
+
+```text
+Use case: historical-scene. ONE SINGLE person portrait for the Chinese game 御极. The TWO supplied boards each contain four approved paintings; use BOTH boards as STYLE and FRAMING references only. Produce ONE PORTRAIT, NEVER a grid or comparison sheet, no text labels. Match these approved restrained Chinese BAIMIAO clean ink contours with light FLAT muted washes, almost smooth pale paper, at most one faint shading layer; no photorealism, dramatic lighting, gradients, glow, 3D or anime. Pure solid #E3D7BE backdrop to every edge, no props or scene, no border, text, seals, signatures, watermark or actor/TV likeness. HEAD AND SHOULDERS ONLY, crop just below shoulders. Face horizontally centered, 3/4 view looking just off-camera. Portrait4:5,1024x1280. STRICT composition: TOP OF COMPLETE CROWN/HAT/HAIR at12% of canvas (allowed10-14%), BOTH EYE CENTERS at38% (allowed36-40%). Make the headdress compact enough to meet BOTH lines. Do NOT put eyes halfway down. Never draw the guide lines. No cut off crown and no big empty lower torso. Costume details simplified to recognisable major silhouettes.
+SUBJECT: 颙琰, age39, clearly MALE. face: 长宽梨形脸、饱满下颊; hair: 短八字髭、细短尖颏须; brows: 平弯宽眉、沉静细长眼; nose: 长直厚鼻、宽平唇; build: 丰厚稳重肩颈; skin: 暖黄浅米肤; mark: 左鼻侧浅法令纹; expression: 克制勤谨，审慎有决断. Face LEFT.
+PERIOD COSTUME: QING emperor: bright but muted MING-YELLOW DRAGON robe with readable simple dragon on upper chest, high neck; QING JIFU crown with compact red tassel low crown and small round finial, dark rolled hat rim. Restrained SHAVEN front forehead contour; no queue hanging over chest. NOT Ming Yishanguan.
+```
+
+#### tang-xuanzong/emperor-01
+
+参照：一期完整四图板＋tang完整四图板。工具：内置imagegen；原PNG仅本机保存。
+
+```text
+Use case: historical-scene. ONE SINGLE person portrait for the Chinese game 御极. The TWO supplied boards each contain four approved paintings; use BOTH boards as STYLE and FRAMING references only. Produce ONE PORTRAIT, NEVER a grid or comparison sheet, no text labels. Match these approved restrained Chinese BAIMIAO clean ink contours with light FLAT muted washes, almost smooth pale paper, at most one faint shading layer; no photorealism, dramatic lighting, gradients, glow, 3D or anime. Pure solid #E3D7BE backdrop to every edge, no props or scene, no border, text, seals, signatures, watermark or actor/TV likeness. HEAD AND SHOULDERS ONLY, crop just below shoulders. Face horizontally centered, 3/4 view looking just off-camera. Portrait4:5,1024x1280. STRICT composition: TOP OF COMPLETE CROWN/HAT/HAIR at12% of canvas (allowed10-14%), BOTH EYE CENTERS at38% (allowed36-40%). Make the headdress compact enough to meet BOTH lines. Do NOT put eyes halfway down. Never draw the guide lines. No cut off crown and no big empty lower torso. Costume details simplified to recognisable major silhouettes.
+SUBJECT: 李隆基, age70, clearly MALE. face: 宽阔圆卵老脸、厚圆下巴; hair: 银白长八字髭与分叉中长髯、白鬓; brows: 浓平白眉、略垂饱满老眼; nose: 宽大高鼻、丰满合唇; build: 丰腴宽肩、厚颈; skin: 暖黄褐成熟肤; mark: 额纹、眼袋及深鼻唇纹; expression: 威仪尚存，倦意含在目光中. Face LEFT.
+PERIOD COSTUME: TANG emperor: OCHRE-YELLOW plain ROUND-COLLAR robe, black SOFT FUTOU with two SOFT FEET DROOPING behind head or bending DOWN. No hard straight Song rods, no short hard horizontal Ming gauze paddles, no imperial diadem curtain.
+```
+
+#### han-lingdi/dowager-01
+
+参照：一期完整四图板＋han完整四图板。工具：内置imagegen；原PNG仅本机保存。
+
+```text
+Use case: historical-scene. ONE SINGLE person portrait for the Chinese game 御极. The TWO supplied boards each contain four approved paintings; use BOTH boards as STYLE and FRAMING references only. Produce ONE PORTRAIT, NEVER a grid or comparison sheet, no text labels. Match these approved restrained Chinese BAIMIAO clean ink contours with light FLAT muted washes, almost smooth pale paper, at most one faint shading layer; no photorealism, dramatic lighting, gradients, glow, 3D or anime. Pure solid #E3D7BE backdrop to every edge, no props or scene, no border, text, seals, signatures, watermark or actor/TV likeness. HEAD AND SHOULDERS ONLY, crop just below shoulders. Face horizontally centered, 3/4 view looking just off-camera. Portrait4:5,1024x1280. STRICT composition: TOP OF COMPLETE CROWN/HAT/HAIR at12% of canvas (allowed10-14%), BOTH EYE CENTERS at38% (allowed36-40%). Make the headdress compact enough to meet BOTH lines. Do NOT put eyes halfway down. Never draw the guide lines. No cut off crown and no big empty lower torso. Costume details simplified to recognisable major silhouettes.
+SUBJECT: 董太后, age50, clearly FEMALE. face: 偏长六角卵圆女脸、细圆下颌; hair: 高折髻、较直高发际线、少量灰鬓; brows: 细平长眉、微垂狭杏眼; nose: 长小鼻、薄而轻收唇; build: 清瘦端正细颈; skin: 成熟蜂蜜米肤; mark: 眼角浅纹、右鼻侧痣; expression: 端严精明，目光自持. Face LEFT.
+PERIOD COSTUME: HAN woman: CROSS-COLLAR RIGHT-LAPEL QUJU robe, a visible Y crossing with broad contrasting dark collar band, wrapped layered shoulders. No round collar, no Song flower crown or Ming phoenix crown. High regal folded bun and luxurious GOLD BRANCH BU YAO with dangling pearl silhouettes, muted burgundy and deep jade robe.
+```
+
+#### ming-yingzong/dowager-01
+
+参照：一期完整四图板＋ming完整四图板。工具：内置imagegen；原PNG仅本机保存。
+
+```text
+Use case: historical-scene. ONE SINGLE person portrait for the Chinese game 御极. The TWO supplied boards each contain four approved paintings; use BOTH boards as STYLE and FRAMING references only. Produce ONE PORTRAIT, NEVER a grid or comparison sheet, no text labels. Match these approved restrained Chinese BAIMIAO clean ink contours with light FLAT muted washes, almost smooth pale paper, at most one faint shading layer; no photorealism, dramatic lighting, gradients, glow, 3D or anime. Pure solid #E3D7BE backdrop to every edge, no props or scene, no border, text, seals, signatures, watermark or actor/TV likeness. HEAD AND SHOULDERS ONLY, crop just below shoulders. Face horizontally centered, 3/4 view looking just off-camera. Portrait4:5,1024x1280. STRICT composition: TOP OF COMPLETE CROWN/HAT/HAIR at12% of canvas (allowed10-14%), BOTH EYE CENTERS at38% (allowed36-40%). Make the headdress compact enough to meet BOTH lines. Do NOT put eyes halfway down. Never draw the guide lines. No cut off crown and no big empty lower torso. Costume details simplified to recognisable major silhouettes.
+SUBJECT: 孙太后, age50, clearly FEMALE. face: 饱满宽圆女脸、柔圆下巴; hair: 饱满圆发际线、黑灰高髻藏女式凤冠; brows: 柔弯宽眉、宽阔低垂杏眼; nose: 短圆鼻、较丰弓唇; build: 丰润端稳肩颈; skin: 暖白成熟米肤; mark: 眼下浅纹、左颊浅斑; expression: 温厚尊贵，镇静有主见. Face RIGHT.
+PERIOD COSTUME: MING royal woman: clearly feminine regal PHOENIX CROWN with recognisable GOLD PHOENIX silhouettes, modest hanging PEARL STRANDS at the sides. Compact crown and high bun, crown top at12%, eyes38%. Fully covered red or muted purple STANDING-COLLAR AO jacket with white inner collar and simple edging; not Qing banner robe, not Tang low-cut dress.
+```
+
+#### han-lingdi/consort-01
+
+参照：一期完整四图板＋han完整四图板。工具：内置imagegen；原PNG仅本机保存。
+
+```text
+Use case: historical-scene. ONE SINGLE person portrait for the Chinese game 御极. The TWO supplied boards each contain four approved paintings; use BOTH boards as STYLE and FRAMING references only. Produce ONE PORTRAIT, NEVER a grid or comparison sheet, no text labels. Match these approved restrained Chinese BAIMIAO clean ink contours with light FLAT muted washes, almost smooth pale paper, at most one faint shading layer; no photorealism, dramatic lighting, gradients, glow, 3D or anime. Pure solid #E3D7BE backdrop to every edge, no props or scene, no border, text, seals, signatures, watermark or actor/TV likeness. HEAD AND SHOULDERS ONLY, crop just below shoulders. Face horizontally centered, 3/4 view looking just off-camera. Portrait4:5,1024x1280. STRICT composition: TOP OF COMPLETE CROWN/HAT/HAIR at12% of canvas (allowed10-14%), BOTH EYE CENTERS at38% (allowed36-40%). Make the headdress compact enough to meet BOTH lines. Do NOT put eyes halfway down. Never draw the guide lines. No cut off crown and no big empty lower torso. Costume details simplified to recognisable major silhouettes.
+SUBJECT: 宋氏, age22, clearly FEMALE. face: 细长鹅蛋女脸、柔尖圆下巴; hair: 低弧发际线、高叠髻配华丽步摇; brows: 细弯眉、略垂柔杏眼; nose: 窄直小鼻、细软弓唇; build: 细长纤秀肩颈; skin: 清暖白肤; mark: 左眉尾极小痣; expression: 年轻谨慎、忧惧而克制. Face LEFT.
+PERIOD COSTUME: HAN woman: CROSS-COLLAR RIGHT-LAPEL QUJU robe, a visible Y crossing with broad contrasting dark collar band, wrapped layered shoulders. No round collar, no Song flower crown or Ming phoenix crown. High regal folded bun and luxurious GOLD BRANCH BU YAO with dangling pearl silhouettes, muted burgundy and deep jade robe.
+```
+
+#### han-lingdi/consort-02
+
+参照：一期完整四图板＋han完整四图板。工具：内置imagegen；原PNG仅本机保存。
+
+```text
+Use case: historical-scene. ONE SINGLE person portrait for the Chinese game 御极. The TWO supplied boards each contain four approved paintings; use BOTH boards as STYLE and FRAMING references only. Produce ONE PORTRAIT, NEVER a grid or comparison sheet, no text labels. Match these approved restrained Chinese BAIMIAO clean ink contours with light FLAT muted washes, almost smooth pale paper, at most one faint shading layer; no photorealism, dramatic lighting, gradients, glow, 3D or anime. Pure solid #E3D7BE backdrop to every edge, no props or scene, no border, text, seals, signatures, watermark or actor/TV likeness. HEAD AND SHOULDERS ONLY, crop just below shoulders. Face horizontally centered, 3/4 view looking just off-camera. Portrait4:5,1024x1280. STRICT composition: TOP OF COMPLETE CROWN/HAT/HAIR at12% of canvas (allowed10-14%), BOTH EYE CENTERS at38% (allowed36-40%). Make the headdress compact enough to meet BOTH lines. Do NOT put eyes halfway down. Never draw the guide lines. No cut off crown and no big empty lower torso. Costume details simplified to recognisable major silhouettes.
+SUBJECT: 何氏, age23, clearly FEMALE. face: 饱满短心形女脸、小圆下巴; hair: 较高尖圆发际线、低堕马髻配单簪; brows: 较粗柔平眉、大而微挑圆杏眼; nose: 小翘鼻、丰满短弓唇; build: 丰润年轻肩颈; skin: 玫瑰蜜桃米肤; mark: 右颊浅酒窝; expression: 机敏自信、顾盼警觉. Face RIGHT.
+PERIOD COSTUME: HAN woman: CROSS-COLLAR RIGHT-LAPEL QUJU robe, a visible Y crossing with broad contrasting dark collar band, wrapped layered shoulders. No round collar, no Song flower crown or Ming phoenix crown. Simple low side-falling bun with ONLY ONE PLAIN HAIRPIN, absolutely no crown or elaborate gold buyao; muted terracotta QUJU robe, cream inner crossing. She is a GUIREN, not empress.
+```
+
+#### song-huizong/consort-01
+
+参照：一期完整四图板＋song完整四图板。工具：内置imagegen；原PNG仅本机保存。
+
+```text
+Use case: historical-scene. ONE SINGLE person portrait for the Chinese game 御极. The TWO supplied boards each contain four approved paintings; use BOTH boards as STYLE and FRAMING references only. Produce ONE PORTRAIT, NEVER a grid or comparison sheet, no text labels. Match these approved restrained Chinese BAIMIAO clean ink contours with light FLAT muted washes, almost smooth pale paper, at most one faint shading layer; no photorealism, dramatic lighting, gradients, glow, 3D or anime. Pure solid #E3D7BE backdrop to every edge, no props or scene, no border, text, seals, signatures, watermark or actor/TV likeness. HEAD AND SHOULDERS ONLY, crop just below shoulders. Face horizontally centered, 3/4 view looking just off-camera. Portrait4:5,1024x1280. STRICT composition: TOP OF COMPLETE CROWN/HAT/HAIR at12% of canvas (allowed10-14%), BOTH EYE CENTERS at38% (allowed36-40%). Make the headdress compact enough to meet BOTH lines. Do NOT put eyes halfway down. Never draw the guide lines. No cut off crown and no big empty lower torso. Costume details simplified to recognisable major silhouettes.
+SUBJECT: 郑氏, age40, clearly FEMALE. face: 饱满宽方卵圆女脸、柔厚下颌; hair: 高圆发际线、整齐高髻藏龙凤花钗冠; brows: 端正平长眉、宽阔沉静杏眼; nose: 宽直小鼻、平缓较厚唇; build: 丰润端方肩颈; skin: 暖浅金米肤; mark: 成熟眼角细纹，额颊珍珠妆; expression: 恭谨沉稳、清雅有威仪. Face RIGHT.
+PERIOD COSTUME: SONG empress: distinctive compact LONGFENG HUACHAI crown with dragon/phoenix floral gold silhouettes and modest pearl tassels. Recognisable PEARL MAKEUP: small separate pale round pearls on forehead and both cheeks. Refined fully covered straight-front BEIZI robe, layered ivory neckline. Not a Qing crown, not Tang big bun alone.
+```
+
+#### ming-xizong/consort-01
+
+参照：一期完整四图板＋ming完整四图板。工具：内置imagegen；原PNG仅本机保存。
+
+```text
+Use case: historical-scene. ONE SINGLE person portrait for the Chinese game 御极. The TWO supplied boards each contain four approved paintings; use BOTH boards as STYLE and FRAMING references only. Produce ONE PORTRAIT, NEVER a grid or comparison sheet, no text labels. Match these approved restrained Chinese BAIMIAO clean ink contours with light FLAT muted washes, almost smooth pale paper, at most one faint shading layer; no photorealism, dramatic lighting, gradients, glow, 3D or anime. Pure solid #E3D7BE backdrop to every edge, no props or scene, no border, text, seals, signatures, watermark or actor/TV likeness. HEAD AND SHOULDERS ONLY, crop just below shoulders. Face horizontally centered, 3/4 view looking just off-camera. Portrait4:5,1024x1280. STRICT composition: TOP OF COMPLETE CROWN/HAT/HAIR at12% of canvas (allowed10-14%), BOTH EYE CENTERS at38% (allowed36-40%). Make the headdress compact enough to meet BOTH lines. Do NOT put eyes halfway down. Never draw the guide lines. No cut off crown and no big empty lower torso. Costume details simplified to recognisable major silhouettes.
+SUBJECT: 张嫣, age15, clearly FEMALE. face: 清小少年少女心形脸、柔圆小下巴; hair: 低圆发际线、端整小髻藏凤冠; brows: 轻柔短眉、大而澄澈少女杏眼; nose: 小圆直鼻、柔软小弓唇; build: 纤细少女短颈窄肩; skin: 清透浅桃白肤; mark: 右嘴角小酒窝; expression: 端正自持、稚气仍清楚. Face LEFT.
+PERIOD COSTUME: MING royal woman: clearly feminine regal PHOENIX CROWN with recognisable GOLD PHOENIX silhouettes, modest hanging PEARL STRANDS at the sides. Compact crown and high bun, crown top at12%, eyes38%. Fully covered red or muted purple STANDING-COLLAR AO jacket with white inner collar and simple edging; not Qing banner robe, not Tang low-cut dress. Clearly FIFTEEN-YEAR-OLD GIRL, youthful facial proportions and small shoulders, fully covered ceremonial clothing, no mature age lines, no adultized body.
+```
+
+#### ming-yingzong/consort-01
+
+参照：一期完整四图板＋ming完整四图板。工具：内置imagegen；原PNG仅本机保存。
+
+```text
+Use case: historical-scene. ONE SINGLE person portrait for the Chinese game 御极. The TWO supplied boards each contain four approved paintings; use BOTH boards as STYLE and FRAMING references only. Produce ONE PORTRAIT, NEVER a grid or comparison sheet, no text labels. Match these approved restrained Chinese BAIMIAO clean ink contours with light FLAT muted washes, almost smooth pale paper, at most one faint shading layer; no photorealism, dramatic lighting, gradients, glow, 3D or anime. Pure solid #E3D7BE backdrop to every edge, no props or scene, no border, text, seals, signatures, watermark or actor/TV likeness. HEAD AND SHOULDERS ONLY, crop just below shoulders. Face horizontally centered, 3/4 view looking just off-camera. Portrait4:5,1024x1280. STRICT composition: TOP OF COMPLETE CROWN/HAT/HAIR at12% of canvas (allowed10-14%), BOTH EYE CENTERS at38% (allowed36-40%). Make the headdress compact enough to meet BOTH lines. Do NOT put eyes halfway down. Never draw the guide lines. No cut off crown and no big empty lower torso. Costume details simplified to recognisable major silhouettes.
+SUBJECT: 钱氏, age23, clearly FEMALE. face: 修长鹅蛋女脸、细圆下巴; hair: 中高圆弧发际线、饱满高髻藏凤冠; brows: 长细柔弯眉、清亮窄杏眼; nose: 小高直鼻、薄而柔和唇; build: 清瘦挺拔细颈; skin: 温润象牙米肤; mark: 左眼尾浅细褶; expression: 温柔坚韧、平静专注. Face LEFT.
+PERIOD COSTUME: MING royal woman: clearly feminine regal PHOENIX CROWN with recognisable GOLD PHOENIX silhouettes, modest hanging PEARL STRANDS at the sides. Compact crown and high bun, crown top at12%, eyes38%. Fully covered red or muted purple STANDING-COLLAR AO jacket with white inner collar and simple edging; not Qing banner robe, not Tang low-cut dress.
+```
+
+#### tang-xuanzong/consort-01
+
+参照：一期完整四图板＋tang完整四图板。工具：内置imagegen；原PNG仅本机保存。
+
+```text
+Use case: historical-scene. ONE SINGLE person portrait for the Chinese game 御极. The TWO supplied boards each contain four approved paintings; use BOTH boards as STYLE and FRAMING references only. Produce ONE PORTRAIT, NEVER a grid or comparison sheet, no text labels. Match these approved restrained Chinese BAIMIAO clean ink contours with light FLAT muted washes, almost smooth pale paper, at most one faint shading layer; no photorealism, dramatic lighting, gradients, glow, 3D or anime. Pure solid #E3D7BE backdrop to every edge, no props or scene, no border, text, seals, signatures, watermark or actor/TV likeness. HEAD AND SHOULDERS ONLY, crop just below shoulders. Face horizontally centered, 3/4 view looking just off-camera. Portrait4:5,1024x1280. STRICT composition: TOP OF COMPLETE CROWN/HAT/HAIR at12% of canvas (allowed10-14%), BOTH EYE CENTERS at38% (allowed36-40%). Make the headdress compact enough to meet BOTH lines. Do NOT put eyes halfway down. Never draw the guide lines. No cut off crown and no big empty lower torso. Costume details simplified to recognisable major silhouettes.
+SUBJECT: 杨玉环, age36, clearly FEMALE. face: 丰腴圆润女脸、饱满颊与圆下巴; hair: 高圆发际线、巨大丰厚高髻与金步摇; brows: 柔弯长眉、舒展微挑大杏眼; nose: 细直小鼻、丰满红润弓唇; build: 丰润优雅肩颈; skin: 浅蜜桃暖白肤; mark: 额上小红花钿、右颊微酒窝; expression: 雍容明媚、神情温柔自信. Face RIGHT.
+PERIOD COSTUME: TANG high consort: LARGE HIGH LUXURIANT COILED BUN, tall and wide but compact enough for crown top12% and eyes38%; GOLD BU YAO with recognisable PHOENIX HAIRPIN and dangling pearl silhouettes, small RED HUADIAN on forehead. Light jade RUQUN shoulders with muted rose P I B O silk scarf; modest dignified layered neckline. More ornate than regular consort, not Song crown or Qing two-handle hairstyle.
+```
+
+#### song-qinzong/consort-01
+
+参照：一期完整四图板＋song完整四图板。工具：内置imagegen；原PNG仅本机保存。
+
+```text
+Use case: historical-scene. ONE SINGLE person portrait for the Chinese game 御极. The TWO supplied boards each contain four approved paintings; use BOTH boards as STYLE and FRAMING references only. Produce ONE PORTRAIT, NEVER a grid or comparison sheet, no text labels. Match these approved restrained Chinese BAIMIAO clean ink contours with light FLAT muted washes, almost smooth pale paper, at most one faint shading layer; no photorealism, dramatic lighting, gradients, glow, 3D or anime. Pure solid #E3D7BE backdrop to every edge, no props or scene, no border, text, seals, signatures, watermark or actor/TV likeness. HEAD AND SHOULDERS ONLY, crop just below shoulders. Face horizontally centered, 3/4 view looking just off-camera. Portrait4:5,1024x1280. STRICT composition: TOP OF COMPLETE CROWN/HAT/HAIR at12% of canvas (allowed10-14%), BOTH EYE CENTERS at38% (allowed36-40%). Make the headdress compact enough to meet BOTH lines. Do NOT put eyes halfway down. Never draw the guide lines. No cut off crown and no big empty lower torso. Costume details simplified to recognisable major silhouettes.
+SUBJECT: 朱氏, age24, clearly FEMALE. face: 窄方圆女脸、圆收下巴; hair: 较低直圆发际线、紧整高髻藏龙凤花钗冠; brows: 清晰柔直眉、圆阔坚定杏眼; nose: 小短高鼻、丰满中弓唇; build: 细实端直肩颈; skin: 清浅暖米肤; mark: 额颊珍珠妆、左唇角小痣; expression: 忧国而坚毅、温柔不怯. Face LEFT.
+PERIOD COSTUME: SONG empress: distinctive compact LONGFENG HUACHAI crown with dragon/phoenix floral gold silhouettes and modest pearl tassels. Recognisable PEARL MAKEUP: small separate pale round pearls on forehead and both cheeks. Refined fully covered straight-front BEIZI robe, layered ivory neckline. Not a Qing crown, not Tang big bun alone.
+```
+
+#### qing-jiaqing/consort-01
+
+参照：一期完整四图板＋qing完整四图板。工具：内置imagegen；原PNG仅本机保存。
+
+```text
+Use case: historical-scene. ONE SINGLE person portrait for the Chinese game 御极. The TWO supplied boards each contain four approved paintings; use BOTH boards as STYLE and FRAMING references only. Produce ONE PORTRAIT, NEVER a grid or comparison sheet, no text labels. Match these approved restrained Chinese BAIMIAO clean ink contours with light FLAT muted washes, almost smooth pale paper, at most one faint shading layer; no photorealism, dramatic lighting, gradients, glow, 3D or anime. Pure solid #E3D7BE backdrop to every edge, no props or scene, no border, text, seals, signatures, watermark or actor/TV likeness. HEAD AND SHOULDERS ONLY, crop just below shoulders. Face horizontally centered, 3/4 view looking just off-camera. Portrait4:5,1024x1280. STRICT composition: TOP OF COMPLETE CROWN/HAT/HAIR at12% of canvas (allowed10-14%), BOTH EYE CENTERS at38% (allowed36-40%). Make the headdress compact enough to meet BOTH lines. Do NOT put eyes halfway down. Never draw the guide lines. No cut off crown and no big empty lower torso. Costume details simplified to recognisable major silhouettes.
+SUBJECT: 钮祜禄氏, age23, clearly FEMALE. face: 清长菱形女脸、细圆下颌; hair: 高弧发际线、整齐髻藏女式钿子; brows: 细平微扬眉、狭长柔和杏眼; nose: 细高直鼻、薄软弓唇; build: 修长纤秀肩颈; skin: 清冷象牙米肤; mark: 右眉尾小痣; expression: 恭谨审慎、温婉端庄. Face RIGHT.
+PERIOD COSTUME: QING empress: clearly FEMALE DIANZI court headdress with simple gold floral motifs and small pearl dangles, NOT a male red tassel JIFU hat. Fully covered standing-collar banner robe, subdued plum-lilac, ivory edging; no imperial bright yellow robe, no Ming phoenix crown.
+```
+
+#### han-lingdi/official-03
+
+参照：一期完整四图板＋han完整四图板。工具：内置imagegen；原PNG仅本机保存。
+
+```text
+Use case: historical-scene. ONE SINGLE person portrait for the Chinese game 御极. The TWO supplied boards each contain four approved paintings; use BOTH boards as STYLE and FRAMING references only. Produce ONE PORTRAIT, NEVER a grid or comparison sheet, no text labels. Match these approved restrained Chinese BAIMIAO clean ink contours with light FLAT muted washes, almost smooth pale paper, at most one faint shading layer; no photorealism, dramatic lighting, gradients, glow, 3D or anime. Pure solid #E3D7BE backdrop to every edge, no props or scene, no border, text, seals, signatures, watermark or actor/TV likeness. HEAD AND SHOULDERS ONLY, crop just below shoulders. Face horizontally centered, 3/4 view looking just off-camera. Portrait4:5,1024x1280. STRICT composition: TOP OF COMPLETE CROWN/HAT/HAIR at12% of canvas (allowed10-14%), BOTH EYE CENTERS at38% (allowed36-40%). Make the headdress compact enough to meet BOTH lines. Do NOT put eyes halfway down. Never draw the guide lines. No cut off crown and no big empty lower torso. Costume details simplified to recognisable major silhouettes.
+SUBJECT: 张让, age43, clearly MALE. face: 清瘦长三角男脸、窄而方圆下巴; hair: 完全无须、紧整黑鬓; brows: 细长平眉、微吊细眼; nose: 窄高鼻、紧合薄唇; build: 瘦削长颈、窄肩; skin: 偏冷白皙肤; mark: 左眼下小痣; expression: 善于察言观色、含蓄微笑. Face RIGHT.
+PERIOD COSTUME: HAN male EUNUCH, completely BEARDLESS but clearly masculine adult bone structure. Small black WUGUAN/DIAOCHAN official crown with modest gold fitting, NOT a scholar diagonal Jinxian crest. Deep muted blue CROSS-COLLAR RIGHT-LAPEL robe with ivory inner edge and broad dark collar, clear Y crossing. No round neckline, no futou or Ming hat.
+```
+
+#### song-huizong/official-01
+
+参照：一期完整四图板＋song完整四图板。工具：内置imagegen；原PNG仅本机保存。
+
+```text
+Use case: historical-scene. ONE SINGLE person portrait for the Chinese game 御极. The TWO supplied boards each contain four approved paintings; use BOTH boards as STYLE and FRAMING references only. Produce ONE PORTRAIT, NEVER a grid or comparison sheet, no text labels. Match these approved restrained Chinese BAIMIAO clean ink contours with light FLAT muted washes, almost smooth pale paper, at most one faint shading layer; no photorealism, dramatic lighting, gradients, glow, 3D or anime. Pure solid #E3D7BE backdrop to every edge, no props or scene, no border, text, seals, signatures, watermark or actor/TV likeness. HEAD AND SHOULDERS ONLY, crop just below shoulders. Face horizontally centered, 3/4 view looking just off-camera. Portrait4:5,1024x1280. STRICT composition: TOP OF COMPLETE CROWN/HAT/HAIR at12% of canvas (allowed10-14%), BOTH EYE CENTERS at38% (allowed36-40%). Make the headdress compact enough to meet BOTH lines. Do NOT put eyes halfway down. Never draw the guide lines. No cut off crown and no big empty lower torso. Costume details simplified to recognisable major silhouettes.
+SUBJECT: 蔡京, age72, clearly MALE. face: 宽短矩形老脸、沉厚方下颌; hair: 灰白长髭与分叉中长髯、灰白鬓; brows: 浓而斜垂灰眉、深眼袋细眼; nose: 大宽高鼻、宽薄嘴; build: 厚颈宽肩、略富态; skin: 暖深金米肤; mark: 深额纹、法令纹; expression: 矜持老练、含笑自负. Face LEFT.
+PERIOD COSTUME: SONG civil official: purple or deep green ROUND-COLLAR robe, no square rank patch. BLACK straight-foot FUTOU with TWO VERY LONG HARD STRAIGHT HORIZONTAL RODS wider than shoulders, may extend out of canvas sides. Not short oval Ming wings, not soft Tang drooping feet.
+```
+
+#### ming-yingzong/official-03
+
+参照：一期完整四图板＋ming完整四图板。工具：内置imagegen；原PNG仅本机保存。
+
+```text
+Use case: historical-scene. ONE SINGLE person portrait for the Chinese game 御极. The TWO supplied boards each contain four approved paintings; use BOTH boards as STYLE and FRAMING references only. Produce ONE PORTRAIT, NEVER a grid or comparison sheet, no text labels. Match these approved restrained Chinese BAIMIAO clean ink contours with light FLAT muted washes, almost smooth pale paper, at most one faint shading layer; no photorealism, dramatic lighting, gradients, glow, 3D or anime. Pure solid #E3D7BE backdrop to every edge, no props or scene, no border, text, seals, signatures, watermark or actor/TV likeness. HEAD AND SHOULDERS ONLY, crop just below shoulders. Face horizontally centered, 3/4 view looking just off-camera. Portrait4:5,1024x1280. STRICT composition: TOP OF COMPLETE CROWN/HAT/HAIR at12% of canvas (allowed10-14%), BOTH EYE CENTERS at38% (allowed36-40%). Make the headdress compact enough to meet BOTH lines. Do NOT put eyes halfway down. Never draw the guide lines. No cut off crown and no big empty lower torso. Costume details simplified to recognisable major silhouettes.
+SUBJECT: 于谦, age51, clearly MALE. face: 清瘦长方男脸、高颧与方下巴; hair: 黑长髭与整齐三绺中长髯、少许灰鬓; brows: 浓直斜扬眉、深而清明细长眼; nose: 高长直鼻、紧抿薄唇; build: 清瘦直颈、挺拔窄肩; skin: 风霜黄褐肤; mark: 清晰眉间竖纹; expression: 刚毅正直、神情专注. Face RIGHT.
+PERIOD COSTUME: MING civil official: GREEN round-collar official robe with the top edge of a simple SQUARE CIVIL RANK PATCH entering at lower edge. Absolutely no yellow or ochre-yellow robe. Black WUSHAMAO with FLAT TOP, FRONT LOW and REAR HIGH, TWO THIN FLAT OVAL GAUZE WINGS emerge from BACK of cap and extend straight sideways; NOT a rounded dome with a continuous brim, not fedora/bowler hat.
+```
+
+#### tang-xuanzong/official-04
+
+参照：一期完整四图板＋tang完整四图板。工具：内置imagegen；原PNG仅本机保存。
+
+```text
+Use case: historical-scene. ONE SINGLE person portrait for the Chinese game 御极. The TWO supplied boards each contain four approved paintings; use BOTH boards as STYLE and FRAMING references only. Produce ONE PORTRAIT, NEVER a grid or comparison sheet, no text labels. Match these approved restrained Chinese BAIMIAO clean ink contours with light FLAT muted washes, almost smooth pale paper, at most one faint shading layer; no photorealism, dramatic lighting, gradients, glow, 3D or anime. Pure solid #E3D7BE backdrop to every edge, no props or scene, no border, text, seals, signatures, watermark or actor/TV likeness. HEAD AND SHOULDERS ONLY, crop just below shoulders. Face horizontally centered, 3/4 view looking just off-camera. Portrait4:5,1024x1280. STRICT composition: TOP OF COMPLETE CROWN/HAT/HAIR at12% of canvas (allowed10-14%), BOTH EYE CENTERS at38% (allowed36-40%). Make the headdress compact enough to meet BOTH lines. Do NOT put eyes halfway down. Never draw the guide lines. No cut off crown and no big empty lower torso. Costume details simplified to recognisable major silhouettes.
+SUBJECT: 安禄山, age52, clearly MALE. face: 极宽饱满圆男脸、明显双颏; hair: 短而浓密黑络腮须连髭; brows: 浓弯短眉、小而机警细眼; nose: 宽圆高鼻、厚唇含笑; build: 肥壮粗颈、极宽肩; skin: 暖麦褐肤; mark: 左眉小浅疤; expression: 笑意亲近，目光精于试探. Face RIGHT.
+PERIOD COSTUME: TANG military commander: Mingguang lamellar ARMOUR with the upper portions of TWO ROUND CHEST MIRROR plates at bottom edge, simple dark red scarf under armour, black SOFT FUTOU with two soft drooping feet behind head. No Song hard rods, no Ming gauze oval paddles. Do not caricature ethnicity or body.
+```
+
+#### song-qinzong/official-03
+
+参照：一期完整四图板＋song完整四图板。工具：内置imagegen；原PNG仅本机保存。
+
+```text
+Use case: historical-scene. ONE SINGLE person portrait for the Chinese game 御极. The TWO supplied boards each contain four approved paintings; use BOTH boards as STYLE and FRAMING references only. Produce ONE PORTRAIT, NEVER a grid or comparison sheet, no text labels. Match these approved restrained Chinese BAIMIAO clean ink contours with light FLAT muted washes, almost smooth pale paper, at most one faint shading layer; no photorealism, dramatic lighting, gradients, glow, 3D or anime. Pure solid #E3D7BE backdrop to every edge, no props or scene, no border, text, seals, signatures, watermark or actor/TV likeness. HEAD AND SHOULDERS ONLY, crop just below shoulders. Face horizontally centered, 3/4 view looking just off-camera. Portrait4:5,1024x1280. STRICT composition: TOP OF COMPLETE CROWN/HAT/HAIR at12% of canvas (allowed10-14%), BOTH EYE CENTERS at38% (allowed36-40%). Make the headdress compact enough to meet BOTH lines. Do NOT put eyes halfway down. Never draw the guide lines. No cut off crown and no big empty lower torso. Costume details simplified to recognisable major silhouettes.
+SUBJECT: 李纲, age43, clearly MALE. face: 清瘦长菱形男脸、尖方下巴; hair: 中长浓黑方髯、清晰八字髭; brows: 浓短直眉、锐利狭眼; nose: 高挺窄鼻、薄平唇; build: 精干挺直细颈; skin: 浅麦成熟肤; mark: 左颧小痣; expression: 刚直敢任、紧迫忧国. Face LEFT.
+PERIOD COSTUME: SONG civil official: purple or deep green ROUND-COLLAR robe, no square rank patch. BLACK straight-foot FUTOU with TWO VERY LONG HARD STRAIGHT HORIZONTAL RODS wider than shoulders, may extend out of canvas sides. Not short oval Ming wings, not soft Tang drooping feet.
+```
+
+#### qing-jiaqing/official-01
+
+参照：一期完整四图板＋qing完整四图板。工具：内置imagegen；原PNG仅本机保存。
+
+```text
+Use case: historical-scene. ONE SINGLE person portrait for the Chinese game 御极. The TWO supplied boards each contain four approved paintings; use BOTH boards as STYLE and FRAMING references only. Produce ONE PORTRAIT, NEVER a grid or comparison sheet, no text labels. Match these approved restrained Chinese BAIMIAO clean ink contours with light FLAT muted washes, almost smooth pale paper, at most one faint shading layer; no photorealism, dramatic lighting, gradients, glow, 3D or anime. Pure solid #E3D7BE backdrop to every edge, no props or scene, no border, text, seals, signatures, watermark or actor/TV likeness. HEAD AND SHOULDERS ONLY, crop just below shoulders. Face horizontally centered, 3/4 view looking just off-camera. Portrait4:5,1024x1280. STRICT composition: TOP OF COMPLETE CROWN/HAT/HAIR at12% of canvas (allowed10-14%), BOTH EYE CENTERS at38% (allowed36-40%). Make the headdress compact enough to meet BOTH lines. Do NOT put eyes halfway down. Never draw the guide lines. No cut off crown and no big empty lower torso. Costume details simplified to recognisable major silhouettes.
+SUBJECT: 和珅, age49, clearly MALE. face: 富态圆梨男脸、圆满下颊; hair: 精细短八字髭、细小尖颏须; brows: 细弯眉、微眯细长眼; nose: 圆厚高鼻、丰满微翘唇; build: 丰厚颈、宽圆肩; skin: 暖白浅金肤; mark: 右鼻侧深法令纹; expression: 圆滑精明、含蓄自负. Face RIGHT.
+PERIOD COSTUME: QING civil official: dark STONE BLUE BUFU overrobe with a clearly SQUARE bird rank patch entering upper chest, court BEAD NECKLACE over both shoulders. Compact winter warm hat with black rolled fur rim, red tassel crown and round finial. Subtle SHAVEN FRONT FOREHEAD contour only, no queue falling on chest, no Ming wings.
+```
+
+#### han-lingdi/emperor-01-old
+
+参照：一期完整四图板＋han完整四图板＋本人青年像。工具：内置imagegen；原PNG仅本机保存。
+
+```text
+Use case: historical-scene. ONE SINGLE person portrait for the Chinese game 御极. The TWO supplied boards each contain four approved paintings; use BOTH boards as STYLE and FRAMING references only. Produce ONE PORTRAIT, NEVER a grid or comparison sheet, no text labels. Match these approved restrained Chinese BAIMIAO clean ink contours with light FLAT muted washes, almost smooth pale paper, at most one faint shading layer; no photorealism, dramatic lighting, gradients, glow, 3D or anime. Pure solid #E3D7BE backdrop to every edge, no props or scene, no border, text, seals, signatures, watermark or actor/TV likeness. HEAD AND SHOULDERS ONLY, crop just below shoulders. Face horizontally centered, 3/4 view looking just off-camera. Portrait4:5,1024x1280. STRICT composition: TOP OF COMPLETE CROWN/HAT/HAIR at12% of canvas (allowed10-14%), BOTH EYE CENTERS at38% (allowed36-40%). Make the headdress compact enough to meet BOTH lines. Do NOT put eyes halfway down. Never draw the guide lines. No cut off crown and no big empty lower torso. Costume details simplified to recognisable major silhouettes.
+SUBJECT: 刘宏, age48, clearly MALE. face: 饱满长卵圆脸、柔软下颌; hair: 短八字髭与两绺短颏须、黑灰鬓; brows: 浓而微弯眉、细长含笑眼; nose: 高圆鼻、较丰满轻合唇; build: 丰实短颈、宽肩; skin: 暖白米肤，成熟纹理; mark: 右颊小痣，成熟额纹、眼尾及鼻唇褶; expression: 随意自得，眼神精于算计. Face RIGHT.
+PERIOD COSTUME: HAN emperor: BLACK XUAN cross-collar RIGHT-LAPEL robe, very clear Y-shaped overlapping neckline with BROAD DEEP RED collar edges. A black TONGTIAN CROWN with an upright high GOLD BOS HAN crest at its FRONT. Narrow compact vertical crown, immediately different from the backward-sloping scholar crown. No round collar, no futou or Ming/Qing hat.
+THIRD IMAGE is his OWN YOUNGER PORTRAIT: preserve this SAME recognisable person, face family, nose, eye spacing, mole and facing direction. Age naturally to48 with mature face and neck, subtle gray-black temples and age folds, 短八字髭与两绺短颏须、黑灰鬓. Do not retain child cheeks or shoulders. Keep same crown design, robe and flat line/wash style; neither a different man nor an eighty-year-old.
+```
+
+#### song-huizong/emperor-01-old
+
+参照：一期完整四图板＋song完整四图板＋本人青年像。工具：内置imagegen；原PNG仅本机保存。
+
+```text
+Use case: historical-scene. ONE SINGLE person portrait for the Chinese game 御极. The TWO supplied boards each contain four approved paintings; use BOTH boards as STYLE and FRAMING references only. Produce ONE PORTRAIT, NEVER a grid or comparison sheet, no text labels. Match these approved restrained Chinese BAIMIAO clean ink contours with light FLAT muted washes, almost smooth pale paper, at most one faint shading layer; no photorealism, dramatic lighting, gradients, glow, 3D or anime. Pure solid #E3D7BE backdrop to every edge, no props or scene, no border, text, seals, signatures, watermark or actor/TV likeness. HEAD AND SHOULDERS ONLY, crop just below shoulders. Face horizontally centered, 3/4 view looking just off-camera. Portrait4:5,1024x1280. STRICT composition: TOP OF COMPLETE CROWN/HAT/HAIR at12% of canvas (allowed10-14%), BOTH EYE CENTERS at38% (allowed36-40%). Make the headdress compact enough to meet BOTH lines. Do NOT put eyes halfway down. Never draw the guide lines. No cut off crown and no big empty lower torso. Costume details simplified to recognisable major silhouettes.
+SUBJECT: 赵佶, age58, clearly MALE. face: 清长鹅蛋脸、窄而圆下巴; hair: 细八字髭与三绺灰黑中长颏须、灰鬓; brows: 细挑长眉、狭长温雅眼; nose: 纤高直鼻、薄弓唇; build: 颀长清瘦肩颈; skin: 浅冷象牙肤，成熟纹理; mark: 左眉间浅竖纹，成熟额纹、眼尾及鼻唇褶; expression: 文雅矜持，稍带疏离. Face LEFT.
+PERIOD COSTUME: SONG emperor: OCHRE-YELLOW round-collar robe with one clearly visible LARGE ROUND DRAGON emblem on upper chest, simplified gold outlined dragon. Black straight-foot FUTOU with TWO VERY LONG HARD STRAIGHT HORIZONTAL RODS extending sideways much wider than shoulders, may be clipped at side edges. No curved drooping Tang feet, no short oval Ming wings.
+THIRD IMAGE is his OWN YOUNGER PORTRAIT: preserve this SAME recognisable person, face family, nose, eye spacing, mole and facing direction. Age naturally to58 with mature face and neck, subtle gray-black temples and age folds, 细八字髭与三绺灰黑中长颏须、灰鬓. Do not retain child cheeks or shoulders. Keep same crown design, robe and flat line/wash style; neither a different man nor an eighty-year-old.
+```
+
+#### ming-xizong/emperor-01-old
+
+参照：一期完整四图板＋ming完整四图板＋本人青年像。工具：内置imagegen；原PNG仅本机保存。
+
+```text
+Use case: historical-scene. ONE SINGLE person portrait for the Chinese game 御极. The TWO supplied boards each contain four approved paintings; use BOTH boards as STYLE and FRAMING references only. Produce ONE PORTRAIT, NEVER a grid or comparison sheet, no text labels. Match these approved restrained Chinese BAIMIAO clean ink contours with light FLAT muted washes, almost smooth pale paper, at most one faint shading layer; no photorealism, dramatic lighting, gradients, glow, 3D or anime. Pure solid #E3D7BE backdrop to every edge, no props or scene, no border, text, seals, signatures, watermark or actor/TV likeness. HEAD AND SHOULDERS ONLY, crop just below shoulders. Face horizontally centered, 3/4 view looking just off-camera. Portrait4:5,1024x1280. STRICT composition: TOP OF COMPLETE CROWN/HAT/HAIR at12% of canvas (allowed10-14%), BOTH EYE CENTERS at38% (allowed36-40%). Make the headdress compact enough to meet BOTH lines. Do NOT put eyes halfway down. Never draw the guide lines. No cut off crown and no big empty lower torso. Costume details simplified to recognisable major silhouettes.
+SUBJECT: 朱由校, age45, clearly MALE. face: 成熟长窄心形脸、小圆下巴; hair: 细八字髭与短尖颏须、微灰鬓; brows: 短平浓眉、圆而清亮的少年眼; nose: 小直鼻、丰软少年唇; build: 清瘦成熟颈、窄肩; skin: 暖桃米肤，成熟纹理; mark: 右眉尾小痣，成熟额纹、眼尾及鼻唇褶; expression: 好奇专注，成熟而专注. Face RIGHT.
+PERIOD COSTUME: MING emperor: warm YELLOW imperial robe with a simply readable round DRAGON emblem entering at lower chest, white inner collar. Correct BLACK YISHANGUAN: close fitting compact black cap with a clearly higher raised rear section and two upward-folding black wings behind the crown. NOT a civil-official round brimmed hat, NOT Qing red tassel or Tang soft futou.
+THIRD IMAGE is his OWN YOUNGER PORTRAIT: preserve this SAME recognisable person, face family, nose, eye spacing, mole and facing direction. Age naturally to45 with mature face and neck, subtle gray-black temples and age folds, 细八字髭与短尖颏须、微灰鬓. Do not retain child cheeks or shoulders. Keep same crown design, robe and flat line/wash style; neither a different man nor an eighty-year-old.
+```
+
+#### ming-yingzong/emperor-01-old
+
+参照：一期完整四图板＋ming完整四图板＋本人青年像。工具：内置imagegen；原PNG仅本机保存。
+
+```text
+Use case: historical-scene. ONE SINGLE person portrait for the Chinese game 御极. The TWO supplied boards each contain four approved paintings; use BOTH boards as STYLE and FRAMING references only. Produce ONE PORTRAIT, NEVER a grid or comparison sheet, no text labels. Match these approved restrained Chinese BAIMIAO clean ink contours with light FLAT muted washes, almost smooth pale paper, at most one faint shading layer; no photorealism, dramatic lighting, gradients, glow, 3D or anime. Pure solid #E3D7BE backdrop to every edge, no props or scene, no border, text, seals, signatures, watermark or actor/TV likeness. HEAD AND SHOULDERS ONLY, crop just below shoulders. Face horizontally centered, 3/4 view looking just off-camera. Portrait4:5,1024x1280. STRICT composition: TOP OF COMPLETE CROWN/HAT/HAIR at12% of canvas (allowed10-14%), BOTH EYE CENTERS at38% (allowed36-40%). Make the headdress compact enough to meet BOTH lines. Do NOT put eyes halfway down. Never draw the guide lines. No cut off crown and no big empty lower torso. Costume details simplified to recognisable major silhouettes.
+SUBJECT: 朱祁镇, age50, clearly MALE. face: 宽阔圆方面、厚实圆下颌; hair: 细平髭与短圆颏须、少量灰鬓; brows: 粗直眉、较大的略垂眼; nose: 宽直鼻、厚下唇; build: 挺直壮实宽肩; skin: 浅金米肤，成熟纹理; mark: 左颊浅酒窝，成熟额纹、眼尾及鼻唇褶; expression: 年轻自信，略显轻信. Face LEFT.
+PERIOD COSTUME: MING emperor: warm YELLOW imperial robe with a simply readable round DRAGON emblem entering at lower chest, white inner collar. Correct BLACK YISHANGUAN: close fitting compact black cap with a clearly higher raised rear section and two upward-folding black wings behind the crown. NOT a civil-official round brimmed hat, NOT Qing red tassel or Tang soft futou.
+THIRD IMAGE is his OWN YOUNGER PORTRAIT: preserve this SAME recognisable person, face family, nose, eye spacing, mole and facing direction. Age naturally to50 with mature face and neck, subtle gray-black temples and age folds, 细平髭与短圆颏须、少量灰鬓. Do not retain child cheeks or shoulders. Keep same crown design, robe and flat line/wash style; neither a different man nor an eighty-year-old.
+```
+
+#### song-qinzong/emperor-01-old
+
+参照：一期完整四图板＋song完整四图板＋本人青年像。工具：内置imagegen；原PNG仅本机保存。
+
+```text
+Use case: historical-scene. ONE SINGLE person portrait for the Chinese game 御极. The TWO supplied boards each contain four approved paintings; use BOTH boards as STYLE and FRAMING references only. Produce ONE PORTRAIT, NEVER a grid or comparison sheet, no text labels. Match these approved restrained Chinese BAIMIAO clean ink contours with light FLAT muted washes, almost smooth pale paper, at most one faint shading layer; no photorealism, dramatic lighting, gradients, glow, 3D or anime. Pure solid #E3D7BE backdrop to every edge, no props or scene, no border, text, seals, signatures, watermark or actor/TV likeness. HEAD AND SHOULDERS ONLY, crop just below shoulders. Face horizontally centered, 3/4 view looking just off-camera. Portrait4:5,1024x1280. STRICT composition: TOP OF COMPLETE CROWN/HAT/HAIR at12% of canvas (allowed10-14%), BOTH EYE CENTERS at38% (allowed36-40%). Make the headdress compact enough to meet BOTH lines. Do NOT put eyes halfway down. Never draw the guide lines. No cut off crown and no big empty lower torso. Costume details simplified to recognisable major silhouettes.
+SUBJECT: 赵桓, age52, clearly MALE. face: 短宽方卵脸、收紧方下巴; hair: 短八字髭与整齐短方颏须、灰鬓; brows: 短而较平眉、圆阔警惕眼; nose: 短高鼻、紧抿小薄唇; build: 结实直颈、平肩; skin: 偏冷苍白米肤，成熟纹理; mark: 右眉心浅折痕，成熟额纹、眼尾及鼻唇褶; expression: 戒备忧虑又努力持重. Face RIGHT.
+PERIOD COSTUME: SONG emperor: OCHRE-YELLOW round-collar robe with one clearly visible LARGE ROUND DRAGON emblem on upper chest, simplified gold outlined dragon. Black straight-foot FUTOU with TWO VERY LONG HARD STRAIGHT HORIZONTAL RODS extending sideways much wider than shoulders, may be clipped at side edges. No curved drooping Tang feet, no short oval Ming wings.
+THIRD IMAGE is his OWN YOUNGER PORTRAIT: preserve this SAME recognisable person, face family, nose, eye spacing, mole and facing direction. Age naturally to52 with mature face and neck, subtle gray-black temples and age folds, 短八字髭与整齐短方颏须、灰鬓. Do not retain child cheeks or shoulders. Keep same crown design, robe and flat line/wash style; neither a different man nor an eighty-year-old.
+```
+
+#### qing-jiaqing/emperor-01-old
+
+参照：一期完整四图板＋qing完整四图板＋本人青年像。工具：内置imagegen；原PNG仅本机保存。
+
+```text
+Use case: historical-scene. ONE SINGLE person portrait for the Chinese game 御极. The TWO supplied boards each contain four approved paintings; use BOTH boards as STYLE and FRAMING references only. Produce ONE PORTRAIT, NEVER a grid or comparison sheet, no text labels. Match these approved restrained Chinese BAIMIAO clean ink contours with light FLAT muted washes, almost smooth pale paper, at most one faint shading layer; no photorealism, dramatic lighting, gradients, glow, 3D or anime. Pure solid #E3D7BE backdrop to every edge, no props or scene, no border, text, seals, signatures, watermark or actor/TV likeness. HEAD AND SHOULDERS ONLY, crop just below shoulders. Face horizontally centered, 3/4 view looking just off-camera. Portrait4:5,1024x1280. STRICT composition: TOP OF COMPLETE CROWN/HAT/HAIR at12% of canvas (allowed10-14%), BOTH EYE CENTERS at38% (allowed36-40%). Make the headdress compact enough to meet BOTH lines. Do NOT put eyes halfway down. Never draw the guide lines. No cut off crown and no big empty lower torso. Costume details simplified to recognisable major silhouettes.
+SUBJECT: 颙琰, age58, clearly MALE. face: 长宽梨形脸、饱满下颊; hair: 短八字髭与细尖颏须、黑灰鬓; brows: 平弯宽眉、沉静细长眼; nose: 长直厚鼻、宽平唇; build: 丰厚稳重肩颈; skin: 暖黄浅米肤，成熟纹理; mark: 左鼻侧浅法令纹，成熟额纹、眼尾及鼻唇褶; expression: 克制勤谨，审慎有决断. Face LEFT.
+PERIOD COSTUME: QING emperor: bright but muted MING-YELLOW DRAGON robe with readable simple dragon on upper chest, high neck; QING JIFU crown with compact red tassel low crown and small round finial, dark rolled hat rim. Restrained SHAVEN front forehead contour; no queue hanging over chest. NOT Ming Yishanguan.
+THIRD IMAGE is his OWN YOUNGER PORTRAIT: preserve this SAME recognisable person, face family, nose, eye spacing, mole and facing direction. Age naturally to58 with mature face and neck, subtle gray-black temples and age folds, 短八字髭与细尖颏须、黑灰鬓. Do not retain child cheeks or shoulders. Keep same crown design, robe and flat line/wash style; neither a different man nor an eighty-year-old.
+```
+
+### 本批初检后的统一构图加强句
+
+首几张原稿存在冠顶留白不足或眼位偏低，后续逐张生成在原提示词末尾追加如下句；不改长相卡与服饰。已出的不合格构图另用本人稿做生成式构图修订，保留原稿追溯。
+
+```text
+COMPOSITION PRIORITY: keep an uninterrupted EMPTY PAPER BAND at the TOP approximately one eighth of the image (12%). No crown, ornament or hair is allowed to enter that band. Eye centers must be in the UPPER 38% of the canvas. Compact the vertical height of the hat/crown and hairstyle instead of lowering the eyes. The portrait should be slightly smaller than an oversized close-up, with the upper shoulders visible, not the full torso.
+```
+
+### 本批构图及年龄可读性修订第1轮（先记后生成）
+
+#### han-lingdi/emperor-01
+
+第三参照为本人目标稿，保留原稿。
+
+```text
+Precise portrait edit. First TWO images are the complete approved Phase1 and dynasty style boards, STYLE references only. THIRD image is the EDIT TARGET. Produce ONE4:5 portrait. Reduce the SAME whole figure to about88% of its present scale, keeping face, crown, robe, direction and every identity feature. Crown top12%, eyes38-39%. Preserve the same person, ethnicity, costume and clean BAIMIAO ink/light flat muted wash style, same plain pale beige #E3D7BE paper background. Garment continues naturally to the lower edge and shoulders, no blank masking band. Adjust composition without changing identity or adding details. NO text, arrows, lines, labels, frames, seals or watermarks; do not draw guide lines. Do not create a sheet or copy people from the reference boards.
+```
+
+#### ming-yingzong/dowager-01
+
+第三参照为本人目标稿，保留原稿。
+
+```text
+Precise portrait edit. First TWO images are the complete approved Phase1 and dynasty style boards, STYLE references only. THIRD image is the EDIT TARGET. Produce ONE4:5 portrait. Reduce the SAME whole figure to about82% of its present scale. This is the SAME dignified50-year-old WOMAN with the same rounded mature face and female phoenix crown. Crown top12%, eyes38%. Preserve the same person, ethnicity, costume and clean BAIMIAO ink/light flat muted wash style, same plain pale beige #E3D7BE paper background. Garment continues naturally to the lower edge and shoulders, no blank masking band. Adjust composition without changing identity or adding details. NO text, arrows, lines, labels, frames, seals or watermarks; do not draw guide lines. Do not create a sheet or copy people from the reference boards.
+```
+
+#### song-qinzong/emperor-01
+
+第三参照为本人目标稿，保留原稿。
+
+```text
+Precise portrait edit. First TWO images are the complete approved Phase1 and dynasty style boards, STYLE references only. THIRD image is the EDIT TARGET. Produce ONE4:5 portrait. Reduce the SAME whole figure to about92% of its present scale. Preserve this SAME26-year-old man and same beardless face, yellow round-dragon robe and Song long-rod futou. Crown top12%, eyes38%. Preserve the same person, ethnicity, costume and clean BAIMIAO ink/light flat muted wash style, same plain pale beige #E3D7BE paper background. Garment continues naturally to the lower edge and shoulders, no blank masking band. Adjust composition without changing identity or adding details. NO text, arrows, lines, labels, frames, seals or watermarks; do not draw guide lines. Do not create a sheet or copy people from the reference boards.
+```
+
+#### song-huizong/emperor-01
+
+第三参照为本人目标稿，保留原稿。
+
+```text
+Precise portrait edit. First TWO images are the complete approved Phase1 and dynasty style boards, STYLE references only. THIRD image is the EDIT TARGET. Produce ONE4:5 portrait. Move the ENTIRE identical figure DOWN by approximately4% of the canvas height, WITHOUT changing scale or features. Hat top12%, eye centers39%. Preserve this SAME37-year-old man, moustache, chin wisps, Song long-rod futou and ochre-yellow dragon robe. Preserve the same person, ethnicity, costume and clean BAIMIAO ink/light flat muted wash style, same plain pale beige #E3D7BE paper background. Garment continues naturally to the lower edge and shoulders, no blank masking band. Adjust composition without changing identity or adding details. NO text, arrows, lines, labels, frames, seals or watermarks; do not draw guide lines. Do not create a sheet or copy people from the reference boards.
+```
+
+#### ming-xizong/consort-01
+
+第三参照为本人目标稿，保留原稿。
+
+```text
+Precise portrait edit. First TWO images are the complete approved Phase1 and dynasty style boards, STYLE references only. THIRD image is the EDIT TARGET. Produce ONE4:5 portrait. AGE READABILITY correction, same Zhang Yan as a FIFTEEN-YEAR-OLD GIRL. Make the face clearly adolescent: softer fuller youthful cheeks, shorter small rounded chin and jaw, slightly larger clear youthful eyes, fine short nose and small soft lips, narrower small GIRL shoulders and fine short young neck. No mature lines, no long adult midface. Keep the same facingLEFT, brow-tail mark, crown design and fully covered red Ming standing-collar ao. No adultized body. Crown top12-14%, eyes38-40%. Preserve the same person, ethnicity, costume and clean BAIMIAO ink/light flat muted wash style, same plain pale beige #E3D7BE paper background. Garment continues naturally to the lower edge and shoulders, no blank masking band. Adjust composition without changing identity or adding details. NO text, arrows, lines, labels, frames, seals or watermarks; do not draw guide lines. Do not create a sheet or copy people from the reference boards.
+```
+
+#### 杨玉环构图补充修订（第1轮）
+
+```text
+Precise framing-only edit. First TWO images are approved Phase1 and Tang four-image STYLE boards only. THIRD image is the EDIT TARGET, the SAME36-year-old Yang Yuhuan. Preserve her same full round feminine face, delicate eyes, lips, cheek dimple, age, warm complexion, expression, facingRIGHT, elaborate high Tang bun with phoenix buyao and forehead huadian, jade ruqun and rose scarf. Reduce this SAME entire figure to about88% of its present scale and position slightly higher. Strict complete bun/ornament top12% of canvas; BOTH eye centers38-39%. Preserve proportions, no identity change. Continue the garment to lower canvas edge, head and shoulders only, no frame or blank band. Same clean baimiao outlines, flat muted washes and pure pale beige paper. One4:5 portrait, no text, watermark, guide lines or added details.
+```
+
+### 本批构图修订第2轮（先记后生成）
+
+#### song-huizong/emperor-01
+
+```text
+Precise single portrait framing edit. First TWO images contain approved Phase1 and dynasty STYLE boards only. THIRD image is this SAME37-year-old man. Make the ENTIRE FIGURE clearly SMALLER:90% of this target image figure scale, while placing the COMPLETE HAT TOP at12% and BOTH EYES at38% of canvas. Leave a visibly larger EMPTY PLAIN PAPER margin above the hat. Same long Song straight rods, same thin moustache and chin whiskers, same narrow face, left-facing posture and round-dragon ochre robe. This is a geometry correction, not another character. Plain #E3D7BE paper background, clean baimiao ink outlines and light flat subdued color. Clothing continues to canvas bottom. ONE4:5 portrait only, no labels, text, guide lines, borders, seals, watermark or background props. Do not draw a comparison sheet.
+```
+
+#### tang-xuanzong/consort-01
+
+```text
+Precise single portrait framing edit. First TWO images contain approved Phase1 and dynasty STYLE boards only. Images3and4 are TWO PLACEMENTS of the SAME36-year-old Yang Yuhuan, identity reference. Image3 is too LOW; image4 is too HIGH. Preserve her face, age, fullness, bun, phoenix pin, dimple, huadian, pose and robe exactly. Place the figure BETWEEN the two references, at60% of IMAGE3 LOWER POSITION and40% of IMAGE4 HIGHER POSITION. Neither extreme. Keep same figure proportions and scale. Aim for the complete bun top11-13%, both eyes38-40%. Do not shift all the way up as image4, and do not repeat the low eye line of image3. Plain #E3D7BE paper background, clean baimiao ink outlines and light flat subdued color. Clothing continues to canvas bottom. ONE4:5 portrait only, no labels, text, guide lines, borders, seals, watermark or background props. Do not draw a comparison sheet.
+```
+
+#### 杨玉环构图第三次校正
+
+保留第二次稿本人，整体缩小至90%并下移，冠顶12%、眼线38%；不修脸、不补画PNG。实际提示词：
+
+```text
+Edit ONLY the framing of the woman in image3. Image1 and image2 are style boards, not subjects. Keep this exact 36-year-old Yang Yuhuan identity, full feminine cheeks, high bun, phoenix ornament and pearl buyao, huadian, robe, colors and pose. Current figure is too high and too large. Reduce the entire figure uniformly to 90% of its current size; then position it LOWER. On the final 4:5 canvas, reserve the top 12% as completely EMPTY paper. The highest hair/ornament point starts at 12% height. The center of BOTH EYES must be at 38% of canvas height. Make the crown-to-eye distance 26% of canvas height. Do not enlarge the bun or change head proportions. Extend the same robe naturally to the bottom, and keep shoulders visible. This is a slightly smaller, lower placement of the exact same woman, not a new face. Flat warm paper #E3D7BE, baimiao ink outlines with pale subdued colors. ONE portrait only. No text, labels, guide lines, frames, seals, watermark or decorative background.
+```
+
+#### 董太后估龄辨识补强
+
+终检中开局约50岁的女性读龄偏年轻，以本人原稿为身份参照，加入灰鬓、眼袋和法令纹，保留长方脸与威严神情。实际提示词：
+
+```text
+Edit the single HAN DOWAGER DONG in image3. First2images are approved baimiao STYLE boards, not subjects. Keep her recognizable long rectangular feminine face and prominent cheekbones, slightly downturned narrow eyes, straight thin lips, reserved stern expression, dark green broad Y-cross collar and muted red outer robe, high bun and gold branch pearl buyao. Her current face reads too young. Make her CLEARLY a dignified woman in her early FIFTIES, not a woman in her twenties/thirties: high receding mature hairline, visible gray streaks at both temples, fine forehead creases, crow's feet, slight lower-eye bags, subtle loose jaw skin and stronger nasolabial folds. Narrower mature cheeks, no rosy plump youthful cheeks. Do not masculinize or exaggerate aging. Preserve figure placement and compact crown silhouette exactly: complete ornament top12%, both eyes38%, head-shoulders4:5. No enlarged headdress and no extra torso. Pure flat #E3D7BE paper, thin clean ink contours, pale flat subdued washes. One portrait only, no words, seals, frames or watermark.
+```
