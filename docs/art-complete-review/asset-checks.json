@@ -1,0 +1,2718 @@
+[
+  {
+    "id": "han-lingdi/official-04",
+    "file": "assets/art/portraits/unique/han-lingdi/official-04.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "han-lingdi__official-04.png",
+    "eyeY": 556.92,
+    "headTop": 185,
+    "eyeRaw": 0.3972,
+    "topRaw": 0.132,
+    "status": "exported",
+    "crop": [
+      0,
+      0,
+      1122,
+      1402
+    ],
+    "eyeRatio": 0.39723,
+    "headTopRatio": 0.13195,
+    "bytes": 6060,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "han-lingdi/official-06",
+    "file": "assets/art/portraits/unique/han-lingdi/official-06.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "han-lingdi__official-06.png",
+    "eyeY": 547.61,
+    "headTop": 180,
+    "eyeRaw": 0.3906,
+    "topRaw": 0.1284,
+    "status": "exported",
+    "crop": [
+      0,
+      0,
+      1122,
+      1402
+    ],
+    "eyeRatio": 0.39059,
+    "headTopRatio": 0.12839,
+    "bytes": 7132,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "han-lingdi/official-01",
+    "file": "assets/art/portraits/unique/han-lingdi/official-01.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "han-lingdi__official-01.png",
+    "eyeY": 528.29,
+    "headTop": 165,
+    "eyeRaw": 0.3768,
+    "topRaw": 0.1177,
+    "status": "exported",
+    "crop": [
+      0,
+      0,
+      1122,
+      1402
+    ],
+    "eyeRatio": 0.37681,
+    "headTopRatio": 0.11769,
+    "bytes": 7046,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "han-lingdi/official-08",
+    "file": "assets/art/portraits/unique/han-lingdi/official-08.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "han-lingdi__official-08.png",
+    "eyeY": 564.36,
+    "headTop": 207,
+    "eyeRaw": 0.4025,
+    "topRaw": 0.1476,
+    "status": "exported",
+    "crop": [
+      5,
+      13,
+      1116,
+      1402
+    ],
+    "eyeRatio": 0.39695,
+    "headTopRatio": 0.13967,
+    "bytes": 6308,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "han-lingdi/official-02",
+    "file": "assets/art/portraits/unique/han-lingdi/official-02.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "han-lingdi__official-02.png",
+    "eyeY": 538.66,
+    "headTop": 176,
+    "eyeRaw": 0.3842,
+    "topRaw": 0.1255,
+    "status": "exported",
+    "crop": [
+      0,
+      0,
+      1122,
+      1402
+    ],
+    "eyeRatio": 0.38421,
+    "headTopRatio": 0.12553,
+    "bytes": 7004,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "han-lingdi/official-07",
+    "file": "assets/art/portraits/unique/han-lingdi/official-07.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "revision-r1__han-lingdi__official-07.png",
+    "eyeY": 562.3,
+    "headTop": 143,
+    "eyeRaw": 0.4011,
+    "topRaw": 0.102,
+    "status": "exported",
+    "crop": [
+      1,
+      3,
+      1120,
+      1402
+    ],
+    "eyeRatio": 0.39978,
+    "headTopRatio": 0.10007,
+    "bytes": 15486,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "han-lingdi/official-05",
+    "file": "assets/art/portraits/unique/han-lingdi/official-05.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "han-lingdi__official-05.png",
+    "eyeY": 553.19,
+    "headTop": 168,
+    "eyeRaw": 0.3946,
+    "topRaw": 0.1198,
+    "status": "exported",
+    "crop": [
+      0,
+      0,
+      1122,
+      1402
+    ],
+    "eyeRatio": 0.39457,
+    "headTopRatio": 0.11983,
+    "bytes": 6928,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "han-lingdi/child-01",
+    "file": "assets/art/portraits/unique/han-lingdi/child-01.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "revision-r1__han-lingdi__child-01.png",
+    "eyeY": 642.01,
+    "headTop": 299,
+    "eyeRaw": 0.4579,
+    "topRaw": 0.2133,
+    "status": "exported",
+    "crop": [
+      54,
+      136,
+      1067,
+      1402
+    ],
+    "eyeRatio": 0.39969,
+    "headTopRatio": 0.12875,
+    "bytes": 8360,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "han-lingdi/foreign-04",
+    "file": "assets/art/portraits/unique/han-lingdi/foreign-04.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "han-lingdi__foreign-04.png",
+    "eyeY": 579.19,
+    "headTop": 181,
+    "eyeRaw": 0.4131,
+    "topRaw": 0.1291,
+    "status": "exported",
+    "crop": [
+      12,
+      31,
+      1109,
+      1402
+    ],
+    "eyeRatio": 0.39985,
+    "headTopRatio": 0.10941,
+    "bytes": 8418,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "han-lingdi/foreign-05",
+    "file": "assets/art/portraits/unique/han-lingdi/foreign-05.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "han-lingdi__foreign-05.png",
+    "eyeY": 534.45,
+    "headTop": 192,
+    "eyeRaw": 0.3812,
+    "topRaw": 0.1369,
+    "status": "exported",
+    "crop": [
+      0,
+      0,
+      1122,
+      1402
+    ],
+    "eyeRatio": 0.38121,
+    "headTopRatio": 0.13695,
+    "bytes": 9212,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "han-lingdi/foreign-03",
+    "file": "assets/art/portraits/unique/han-lingdi/foreign-03.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "han-lingdi__foreign-03.png",
+    "eyeY": 490.25,
+    "headTop": 204,
+    "eyeRaw": 0.3497,
+    "topRaw": 0.1455,
+    "status": "exported",
+    "crop": [
+      41,
+      22,
+      1081,
+      1322
+    ],
+    "eyeRatio": 0.36019,
+    "headTopRatio": 0.14,
+    "bytes": 8696,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "song-huizong/official-02",
+    "file": "assets/art/portraits/unique/song-huizong/official-02.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "song-huizong__official-02.png",
+    "eyeY": 566.04,
+    "headTop": 184,
+    "eyeRaw": 0.4037,
+    "topRaw": 0.1312,
+    "status": "exported",
+    "crop": [
+      4,
+      9,
+      1118,
+      1402
+    ],
+    "eyeRatio": 0.39988,
+    "headTopRatio": 0.12563,
+    "bytes": 5416,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "han-lingdi/foreign-01",
+    "file": "assets/art/portraits/unique/han-lingdi/foreign-01.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "han-lingdi__foreign-01.png",
+    "eyeY": 549.77,
+    "headTop": 171,
+    "eyeRaw": 0.3921,
+    "topRaw": 0.122,
+    "status": "exported",
+    "crop": [
+      0,
+      0,
+      1122,
+      1402
+    ],
+    "eyeRatio": 0.39213,
+    "headTopRatio": 0.12197,
+    "bytes": 8566,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "song-huizong/official-04",
+    "file": "assets/art/portraits/unique/song-huizong/official-04.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "song-huizong__official-04.png",
+    "eyeY": 561.49,
+    "headTop": 201,
+    "eyeRaw": 0.4005,
+    "topRaw": 0.1434,
+    "status": "exported",
+    "crop": [
+      2,
+      6,
+      1119,
+      1402
+    ],
+    "eyeRatio": 0.39791,
+    "headTopRatio": 0.13968,
+    "bytes": 5624,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "han-lingdi/foreign-02",
+    "file": "assets/art/portraits/unique/han-lingdi/foreign-02.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "han-lingdi__foreign-02.png",
+    "eyeY": 490.24,
+    "headTop": 172,
+    "eyeRaw": 0.3497,
+    "topRaw": 0.1227,
+    "status": "exported",
+    "crop": [
+      16,
+      0,
+      1105,
+      1361
+    ],
+    "eyeRatio": 0.36021,
+    "headTopRatio": 0.12638,
+    "bytes": 8908,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "song-huizong/official-03",
+    "file": "assets/art/portraits/unique/song-huizong/official-03.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "song-huizong__official-03.png",
+    "eyeY": 572.46,
+    "headTop": 196,
+    "eyeRaw": 0.4083,
+    "topRaw": 0.1398,
+    "status": "exported",
+    "crop": [
+      8,
+      20,
+      1114,
+      1402
+    ],
+    "eyeRatio": 0.39976,
+    "headTopRatio": 0.12735,
+    "bytes": 6202,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "song-huizong/official-08",
+    "file": "assets/art/portraits/unique/song-huizong/official-08.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "revision-visual__song-huizong__official-08.png",
+    "eyeY": 562.7,
+    "headTop": 191,
+    "eyeRaw": 0.4014,
+    "topRaw": 0.1362,
+    "status": "exported",
+    "crop": [
+      2,
+      4,
+      1120,
+      1402
+    ],
+    "eyeRatio": 0.39964,
+    "headTopRatio": 0.13376,
+    "bytes": 7510,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "song-huizong/official-05",
+    "file": "assets/art/portraits/unique/song-huizong/official-05.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "song-huizong__official-05.png",
+    "eyeY": 556.93,
+    "headTop": 199,
+    "eyeRaw": 0.3972,
+    "topRaw": 0.1419,
+    "status": "exported",
+    "crop": [
+      2,
+      4,
+      1120,
+      1402
+    ],
+    "eyeRatio": 0.39552,
+    "headTopRatio": 0.13948,
+    "bytes": 6390,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "song-huizong/official-10",
+    "file": "assets/art/portraits/unique/song-huizong/official-10.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "song-huizong__official-10.png",
+    "eyeY": 596.84,
+    "headTop": 236,
+    "eyeRaw": 0.4257,
+    "topRaw": 0.1683,
+    "status": "exported",
+    "crop": [
+      24,
+      61,
+      1097,
+      1402
+    ],
+    "eyeRatio": 0.39958,
+    "headTopRatio": 0.1305,
+    "bytes": 6654,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "song-huizong/official-07",
+    "file": "assets/art/portraits/unique/song-huizong/official-07.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "song-huizong__official-07.png",
+    "eyeY": 569.72,
+    "headTop": 173,
+    "eyeRaw": 0.4064,
+    "topRaw": 0.1234,
+    "status": "exported",
+    "crop": [
+      6,
+      15,
+      1116,
+      1402
+    ],
+    "eyeRatio": 0.39994,
+    "headTopRatio": 0.11391,
+    "bytes": 13990,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "song-huizong/official-09",
+    "file": "assets/art/portraits/unique/song-huizong/official-09.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "song-huizong__official-09.png",
+    "eyeY": 547.01,
+    "headTop": 166,
+    "eyeRaw": 0.3902,
+    "topRaw": 0.1184,
+    "status": "exported",
+    "crop": [
+      0,
+      0,
+      1122,
+      1402
+    ],
+    "eyeRatio": 0.39017,
+    "headTopRatio": 0.1184,
+    "bytes": 5868,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "song-huizong/child-01",
+    "file": "assets/art/portraits/unique/song-huizong/child-01.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "song-huizong__child-01.png",
+    "eyeY": 514.25,
+    "headTop": 175,
+    "eyeRaw": 0.3668,
+    "topRaw": 0.1248,
+    "status": "exported",
+    "crop": [
+      0,
+      0,
+      1122,
+      1402
+    ],
+    "eyeRatio": 0.3668,
+    "headTopRatio": 0.12482,
+    "bytes": 6392,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "song-huizong/consort-02",
+    "file": "assets/art/portraits/unique/song-huizong/consort-02.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "revision-visual__song-huizong__consort-02.png",
+    "eyeY": 600.34,
+    "headTop": 200,
+    "eyeRaw": 0.4282,
+    "topRaw": 0.1427,
+    "status": "exported",
+    "crop": [
+      26,
+      66,
+      1095,
+      1402
+    ],
+    "eyeRatio": 0.39996,
+    "headTopRatio": 0.1003,
+    "bytes": 12606,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "song-huizong/foreign-01",
+    "file": "assets/art/portraits/unique/song-huizong/foreign-01.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "song-huizong__foreign-01.png",
+    "eyeY": 549.99,
+    "headTop": 186,
+    "eyeRaw": 0.3923,
+    "topRaw": 0.1327,
+    "status": "exported",
+    "crop": [
+      0,
+      0,
+      1122,
+      1402
+    ],
+    "eyeRatio": 0.39229,
+    "headTopRatio": 0.13267,
+    "bytes": 7134,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "song-huizong/child-02",
+    "file": "assets/art/portraits/unique/song-huizong/child-02.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "song-huizong__child-02.png",
+    "eyeY": 534.41,
+    "headTop": 214,
+    "eyeRaw": 0.3812,
+    "topRaw": 0.1526,
+    "status": "exported",
+    "crop": [
+      8,
+      21,
+      1113,
+      1402
+    ],
+    "eyeRatio": 0.37177,
+    "headTopRatio": 0.13975,
+    "bytes": 5830,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "song-huizong/foreign-03",
+    "file": "assets/art/portraits/unique/song-huizong/foreign-03.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "song-huizong__foreign-03.png",
+    "eyeY": 520.29,
+    "headTop": 198,
+    "eyeRaw": 0.3711,
+    "topRaw": 0.1412,
+    "status": "exported",
+    "crop": [
+      1,
+      2,
+      1121,
+      1402
+    ],
+    "eyeRatio": 0.37021,
+    "headTopRatio": 0.14,
+    "bytes": 8040,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "ming-xizong/official-01",
+    "file": "assets/art/portraits/unique/ming-xizong/official-01.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "ming-xizong__official-01.png",
+    "eyeY": 571.36,
+    "headTop": 211,
+    "eyeRaw": 0.4075,
+    "topRaw": 0.1505,
+    "status": "exported",
+    "crop": [
+      7,
+      18,
+      1114,
+      1402
+    ],
+    "eyeRatio": 0.39982,
+    "headTopRatio": 0.13945,
+    "bytes": 9266,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "song-huizong/foreign-02",
+    "file": "assets/art/portraits/unique/song-huizong/foreign-02.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "song-huizong__foreign-02.png",
+    "eyeY": 565.63,
+    "headTop": 196,
+    "eyeRaw": 0.4034,
+    "topRaw": 0.1398,
+    "status": "exported",
+    "crop": [
+      4,
+      9,
+      1118,
+      1402
+    ],
+    "eyeRatio": 0.39959,
+    "headTopRatio": 0.13424,
+    "bytes": 9912,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "song-huizong/foreign-04",
+    "file": "assets/art/portraits/unique/song-huizong/foreign-04.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "song-huizong__foreign-04.png",
+    "eyeY": 535.49,
+    "headTop": 212,
+    "eyeRaw": 0.3819,
+    "topRaw": 0.1512,
+    "status": "exported",
+    "crop": [
+      8,
+      19,
+      1114,
+      1402
+    ],
+    "eyeRatio": 0.37346,
+    "headTopRatio": 0.13955,
+    "bytes": 7824,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "ming-xizong/official-05",
+    "file": "assets/art/portraits/unique/ming-xizong/official-05.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "ming-xizong__official-05.png",
+    "eyeY": 540.33,
+    "headTop": 214,
+    "eyeRaw": 0.3854,
+    "topRaw": 0.1526,
+    "status": "exported",
+    "crop": [
+      8,
+      21,
+      1113,
+      1402
+    ],
+    "eyeRatio": 0.37606,
+    "headTopRatio": 0.13975,
+    "bytes": 8306,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "ming-xizong/official-04",
+    "file": "assets/art/portraits/unique/ming-xizong/official-04.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "ming-xizong__official-04.png",
+    "eyeY": 540.06,
+    "headTop": 202,
+    "eyeRaw": 0.3852,
+    "topRaw": 0.1441,
+    "status": "exported",
+    "crop": [
+      3,
+      7,
+      1119,
+      1402
+    ],
+    "eyeRatio": 0.38212,
+    "headTopRatio": 0.13978,
+    "bytes": 8780,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "ming-xizong/official-03",
+    "file": "assets/art/portraits/unique/ming-xizong/official-03.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "ming-xizong__official-03.png",
+    "eyeY": 522.13,
+    "headTop": 188,
+    "eyeRaw": 0.3724,
+    "topRaw": 0.1341,
+    "status": "exported",
+    "crop": [
+      0,
+      0,
+      1122,
+      1402
+    ],
+    "eyeRatio": 0.37242,
+    "headTopRatio": 0.13409,
+    "bytes": 8034,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "ming-xizong/official-08",
+    "file": "assets/art/portraits/unique/ming-xizong/official-08.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "revision-visual__ming-xizong__official-08.png",
+    "eyeY": 530.22,
+    "headTop": 170,
+    "eyeRaw": 0.3782,
+    "topRaw": 0.1213,
+    "status": "exported",
+    "crop": [
+      0,
+      0,
+      1122,
+      1402
+    ],
+    "eyeRatio": 0.37819,
+    "headTopRatio": 0.12126,
+    "bytes": 9632,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "ming-xizong/official-07",
+    "file": "assets/art/portraits/unique/ming-xizong/official-07.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "ming-xizong__official-07.png",
+    "eyeY": 518.94,
+    "headTop": 184,
+    "eyeRaw": 0.3701,
+    "topRaw": 0.1312,
+    "status": "exported",
+    "crop": [
+      0,
+      0,
+      1122,
+      1402
+    ],
+    "eyeRatio": 0.37014,
+    "headTopRatio": 0.13124,
+    "bytes": 9890,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "song-huizong/foreign-05",
+    "file": "assets/art/portraits/unique/song-huizong/foreign-05.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "song-huizong__foreign-05.png",
+    "eyeY": 561.56,
+    "headTop": 215,
+    "eyeRaw": 0.4005,
+    "topRaw": 0.1534,
+    "status": "exported",
+    "crop": [
+      9,
+      22,
+      1113,
+      1402
+    ],
+    "eyeRatio": 0.39099,
+    "headTopRatio": 0.13986,
+    "bytes": 7180,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "ming-xizong/official-09",
+    "file": "assets/art/portraits/unique/ming-xizong/official-09.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "revision-visual__ming-xizong__official-09.png",
+    "eyeY": 565.03,
+    "headTop": 179,
+    "eyeRaw": 0.403,
+    "topRaw": 0.1277,
+    "status": "exported",
+    "crop": [
+      3,
+      8,
+      1118,
+      1402
+    ],
+    "eyeRatio": 0.39959,
+    "headTopRatio": 0.12267,
+    "bytes": 9250,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "ming-xizong/official-10",
+    "file": "assets/art/portraits/unique/ming-xizong/official-10.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "ming-xizong__official-10.png",
+    "eyeY": 565.51,
+    "headTop": 208,
+    "eyeRaw": 0.4034,
+    "topRaw": 0.1484,
+    "status": "exported",
+    "crop": [
+      6,
+      14,
+      1116,
+      1402
+    ],
+    "eyeRatio": 0.39734,
+    "headTopRatio": 0.13977,
+    "bytes": 11260,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "ming-xizong/official-06",
+    "file": "assets/art/portraits/unique/ming-xizong/official-06.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "revision-distinct__ming-xizong__official-06.png",
+    "eyeY": 529.75,
+    "headTop": 166,
+    "eyeRaw": 0.3779,
+    "topRaw": 0.1184,
+    "status": "exported",
+    "crop": [
+      0,
+      0,
+      1122,
+      1402
+    ],
+    "eyeRatio": 0.37785,
+    "headTopRatio": 0.1184,
+    "bytes": 8782,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "ming-xizong/foreign-01",
+    "file": "assets/art/portraits/unique/ming-xizong/foreign-01.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "revision-r1__ming-xizong__foreign-01.png",
+    "eyeY": 555.61,
+    "headTop": 197,
+    "eyeRaw": 0.3963,
+    "topRaw": 0.1405,
+    "status": "exported",
+    "crop": [
+      0,
+      1,
+      1121,
+      1402
+    ],
+    "eyeRatio": 0.39587,
+    "headTopRatio": 0.1399,
+    "bytes": 7938,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "ming-xizong/foreign-03",
+    "file": "assets/art/portraits/unique/ming-xizong/foreign-03.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "ming-xizong__foreign-03.png",
+    "eyeY": 548.14,
+    "headTop": 175,
+    "eyeRaw": 0.391,
+    "topRaw": 0.1248,
+    "status": "exported",
+    "crop": [
+      0,
+      0,
+      1122,
+      1402
+    ],
+    "eyeRatio": 0.39097,
+    "headTopRatio": 0.12482,
+    "bytes": 13004,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "ming-xizong/foreign-04",
+    "file": "assets/art/portraits/unique/ming-xizong/foreign-04.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "revision-frame2__ming-xizong__foreign-04.png",
+    "eyeY": 612.57,
+    "headTop": 237,
+    "eyeRaw": 0.4369,
+    "topRaw": 0.169,
+    "status": "exported",
+    "crop": [
+      35,
+      87,
+      1087,
+      1402
+    ],
+    "eyeRatio": 0.39967,
+    "headTopRatio": 0.11407,
+    "bytes": 9266,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "ming-xizong/foreign-05",
+    "file": "assets/art/portraits/unique/ming-xizong/foreign-05.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "ming-xizong__foreign-05.png",
+    "eyeY": 592.2,
+    "headTop": 212,
+    "eyeRaw": 0.4224,
+    "topRaw": 0.1512,
+    "status": "exported",
+    "crop": [
+      21,
+      53,
+      1100,
+      1402
+    ],
+    "eyeRatio": 0.3997,
+    "headTopRatio": 0.11787,
+    "bytes": 7068,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "ming-yingzong/official-04",
+    "file": "assets/art/portraits/unique/ming-yingzong/official-04.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "ming-yingzong__official-04.png",
+    "eyeY": 553.51,
+    "headTop": 187,
+    "eyeRaw": 0.3948,
+    "topRaw": 0.1334,
+    "status": "exported",
+    "crop": [
+      0,
+      0,
+      1122,
+      1402
+    ],
+    "eyeRatio": 0.3948,
+    "headTopRatio": 0.13338,
+    "bytes": 9184,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "ming-yingzong/official-01",
+    "file": "assets/art/portraits/unique/ming-yingzong/official-01.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "revision-distinct__ming-yingzong__official-01.png",
+    "eyeY": 513.85,
+    "headTop": 181,
+    "eyeRaw": 0.3665,
+    "topRaw": 0.1291,
+    "status": "exported",
+    "crop": [
+      0,
+      0,
+      1122,
+      1402
+    ],
+    "eyeRatio": 0.36651,
+    "headTopRatio": 0.1291,
+    "bytes": 9302,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "ming-yingzong/official-02",
+    "file": "assets/art/portraits/unique/ming-yingzong/official-02.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "ming-yingzong__official-02.png",
+    "eyeY": 560.43,
+    "headTop": 201,
+    "eyeRaw": 0.3997,
+    "topRaw": 0.1434,
+    "status": "exported",
+    "crop": [
+      2,
+      6,
+      1119,
+      1402
+    ],
+    "eyeRatio": 0.39716,
+    "headTopRatio": 0.13968,
+    "bytes": 6688,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "ming-yingzong/official-05",
+    "file": "assets/art/portraits/unique/ming-yingzong/official-05.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "ming-yingzong__official-05.png",
+    "eyeY": 526.8,
+    "headTop": 187,
+    "eyeRaw": 0.3757,
+    "topRaw": 0.1334,
+    "status": "exported",
+    "crop": [
+      0,
+      0,
+      1122,
+      1402
+    ],
+    "eyeRatio": 0.37575,
+    "headTopRatio": 0.13338,
+    "bytes": 10312,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "ming-yingzong/official-07",
+    "file": "assets/art/portraits/unique/ming-yingzong/official-07.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "ming-yingzong__official-07.png",
+    "eyeY": 552.0,
+    "headTop": 193,
+    "eyeRaw": 0.3937,
+    "topRaw": 0.1377,
+    "status": "exported",
+    "crop": [
+      0,
+      0,
+      1122,
+      1402
+    ],
+    "eyeRatio": 0.39372,
+    "headTopRatio": 0.13766,
+    "bytes": 14972,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "ming-yingzong/child-01",
+    "file": "assets/art/portraits/unique/ming-yingzong/child-01.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "revision-frame2__ming-yingzong__child-01.png",
+    "eyeY": 545.95,
+    "headTop": 194,
+    "eyeRaw": 0.3894,
+    "topRaw": 0.1384,
+    "status": "exported",
+    "crop": [
+      0,
+      0,
+      1122,
+      1402
+    ],
+    "eyeRatio": 0.38941,
+    "headTopRatio": 0.13837,
+    "bytes": 8492,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "ming-yingzong/foreign-01",
+    "file": "assets/art/portraits/unique/ming-yingzong/foreign-01.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "ming-yingzong__foreign-01.png",
+    "eyeY": 576.66,
+    "headTop": 166,
+    "eyeRaw": 0.4113,
+    "topRaw": 0.1184,
+    "status": "exported",
+    "crop": [
+      11,
+      27,
+      1111,
+      1402
+    ],
+    "eyeRatio": 0.39975,
+    "headTopRatio": 0.10109,
+    "bytes": 10562,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "ming-yingzong/official-06",
+    "file": "assets/art/portraits/unique/ming-yingzong/official-06.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "ming-yingzong__official-06.png",
+    "eyeY": 524.76,
+    "headTop": 166,
+    "eyeRaw": 0.3743,
+    "topRaw": 0.1184,
+    "status": "exported",
+    "crop": [
+      0,
+      0,
+      1122,
+      1402
+    ],
+    "eyeRatio": 0.37429,
+    "headTopRatio": 0.1184,
+    "bytes": 8800,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "ming-yingzong/official-08",
+    "file": "assets/art/portraits/unique/ming-yingzong/official-08.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "ming-yingzong__official-08.png",
+    "eyeY": 569.06,
+    "headTop": 202,
+    "eyeRaw": 0.4059,
+    "topRaw": 0.1441,
+    "status": "exported",
+    "crop": [
+      6,
+      14,
+      1116,
+      1402
+    ],
+    "eyeRatio": 0.3999,
+    "headTopRatio": 0.13545,
+    "bytes": 12812,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "ming-yingzong/foreign-03",
+    "file": "assets/art/portraits/unique/ming-yingzong/foreign-03.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "ming-yingzong__foreign-03.png",
+    "eyeY": 530.39,
+    "headTop": 144,
+    "eyeRaw": 0.3783,
+    "topRaw": 0.1027,
+    "status": "exported",
+    "crop": [
+      0,
+      0,
+      1122,
+      1402
+    ],
+    "eyeRatio": 0.37831,
+    "headTopRatio": 0.10271,
+    "bytes": 11196,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "ming-yingzong/consort-02",
+    "file": "assets/art/portraits/unique/ming-yingzong/consort-02.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "revision-frame2__ming-yingzong__consort-02.png",
+    "eyeY": 555.81,
+    "headTop": 196,
+    "eyeRaw": 0.3964,
+    "topRaw": 0.1398,
+    "status": "exported",
+    "crop": [
+      0,
+      0,
+      1122,
+      1402
+    ],
+    "eyeRatio": 0.39644,
+    "headTopRatio": 0.1398,
+    "bytes": 9436,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "ming-yingzong/foreign-04",
+    "file": "assets/art/portraits/unique/ming-yingzong/foreign-04.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "revision-frame2__ming-yingzong__foreign-04.png",
+    "eyeY": 552.37,
+    "headTop": 180,
+    "eyeRaw": 0.394,
+    "topRaw": 0.1284,
+    "status": "exported",
+    "crop": [
+      0,
+      0,
+      1122,
+      1402
+    ],
+    "eyeRatio": 0.39399,
+    "headTopRatio": 0.12839,
+    "bytes": 7598,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "ming-yingzong/foreign-02",
+    "file": "assets/art/portraits/unique/ming-yingzong/foreign-02.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "ming-yingzong__foreign-02.png",
+    "eyeY": 517.72,
+    "headTop": 154,
+    "eyeRaw": 0.3693,
+    "topRaw": 0.1098,
+    "status": "exported",
+    "crop": [
+      0,
+      0,
+      1122,
+      1402
+    ],
+    "eyeRatio": 0.36927,
+    "headTopRatio": 0.10984,
+    "bytes": 10160,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "tang-xuanzong/official-02",
+    "file": "assets/art/portraits/unique/tang-xuanzong/official-02.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "tang-xuanzong__official-02.png",
+    "eyeY": 587.19,
+    "headTop": 216,
+    "eyeRaw": 0.4188,
+    "topRaw": 0.1541,
+    "status": "exported",
+    "crop": [
+      18,
+      44,
+      1104,
+      1402
+    ],
+    "eyeRatio": 0.39999,
+    "headTopRatio": 0.12666,
+    "bytes": 7356,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "tang-xuanzong/official-01",
+    "file": "assets/art/portraits/unique/tang-xuanzong/official-01.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "tang-xuanzong__official-01.png",
+    "eyeY": 564.47,
+    "headTop": 216,
+    "eyeRaw": 0.4026,
+    "topRaw": 0.1541,
+    "status": "exported",
+    "crop": [
+      9,
+      23,
+      1112,
+      1402
+    ],
+    "eyeRatio": 0.39265,
+    "headTopRatio": 0.13996,
+    "bytes": 6972,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "tang-xuanzong/official-03",
+    "file": "assets/art/portraits/unique/tang-xuanzong/official-03.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "tang-xuanzong__official-03.png",
+    "eyeY": 586.99,
+    "headTop": 227,
+    "eyeRaw": 0.4187,
+    "topRaw": 0.1619,
+    "status": "exported",
+    "crop": [
+      18,
+      44,
+      1104,
+      1402
+    ],
+    "eyeRatio": 0.39984,
+    "headTopRatio": 0.13476,
+    "bytes": 6770,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "tang-xuanzong/official-05",
+    "file": "assets/art/portraits/unique/tang-xuanzong/official-05.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "tang-xuanzong__official-05.png",
+    "eyeY": 538.01,
+    "headTop": 144,
+    "eyeRaw": 0.3837,
+    "topRaw": 0.1027,
+    "status": "exported",
+    "crop": [
+      0,
+      0,
+      1122,
+      1402
+    ],
+    "eyeRatio": 0.38375,
+    "headTopRatio": 0.10271,
+    "bytes": 16354,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "tang-xuanzong/official-08",
+    "file": "assets/art/portraits/unique/tang-xuanzong/official-08.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "tang-xuanzong__official-08.png",
+    "eyeY": 517.1,
+    "headTop": 163,
+    "eyeRaw": 0.3688,
+    "topRaw": 0.1163,
+    "status": "exported",
+    "crop": [
+      0,
+      0,
+      1122,
+      1402
+    ],
+    "eyeRatio": 0.36883,
+    "headTopRatio": 0.11626,
+    "bytes": 15776,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "tang-xuanzong/official-06",
+    "file": "assets/art/portraits/unique/tang-xuanzong/official-06.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "tang-xuanzong__official-06.png",
+    "eyeY": 520.09,
+    "headTop": 170,
+    "eyeRaw": 0.371,
+    "topRaw": 0.1213,
+    "status": "exported",
+    "crop": [
+      0,
+      0,
+      1122,
+      1402
+    ],
+    "eyeRatio": 0.37096,
+    "headTopRatio": 0.12126,
+    "bytes": 15114,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "song-qinzong/official-04",
+    "file": "assets/art/portraits/unique/song-qinzong/official-04.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "song-qinzong__official-04.png",
+    "eyeY": 568.68,
+    "headTop": 170,
+    "eyeRaw": 0.4056,
+    "topRaw": 0.1213,
+    "status": "exported",
+    "crop": [
+      6,
+      14,
+      1116,
+      1402
+    ],
+    "eyeRatio": 0.39963,
+    "headTopRatio": 0.11239,
+    "bytes": 14020,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "tang-xuanzong/consort-02",
+    "file": "assets/art/portraits/unique/tang-xuanzong/consort-02.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "revision-frame2__tang-xuanzong__consort-02.png",
+    "eyeY": 539.29,
+    "headTop": 173,
+    "eyeRaw": 0.3847,
+    "topRaw": 0.1234,
+    "status": "exported",
+    "crop": [
+      0,
+      0,
+      1122,
+      1402
+    ],
+    "eyeRatio": 0.38466,
+    "headTopRatio": 0.1234,
+    "bytes": 8232,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "song-qinzong/official-02",
+    "file": "assets/art/portraits/unique/song-qinzong/official-02.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "song-qinzong__official-02.png",
+    "eyeY": 547.33,
+    "headTop": 164,
+    "eyeRaw": 0.3904,
+    "topRaw": 0.117,
+    "status": "exported",
+    "crop": [
+      0,
+      0,
+      1122,
+      1402
+    ],
+    "eyeRatio": 0.39039,
+    "headTopRatio": 0.11698,
+    "bytes": 5806,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "tang-xuanzong/child-02",
+    "file": "assets/art/portraits/unique/tang-xuanzong/child-02.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "revision-distinct__tang-xuanzong__child-02.png",
+    "eyeY": 555.59,
+    "headTop": 191,
+    "eyeRaw": 0.3963,
+    "topRaw": 0.1362,
+    "status": "exported",
+    "crop": [
+      0,
+      0,
+      1122,
+      1402
+    ],
+    "eyeRatio": 0.39629,
+    "headTopRatio": 0.13623,
+    "bytes": 6390,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "tang-xuanzong/child-01",
+    "file": "assets/art/portraits/unique/tang-xuanzong/child-01.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "tang-xuanzong__child-01.png",
+    "eyeY": 561.07,
+    "headTop": 220,
+    "eyeRaw": 0.4002,
+    "topRaw": 0.1569,
+    "status": "exported",
+    "crop": [
+      11,
+      28,
+      1110,
+      1402
+    ],
+    "eyeRatio": 0.38797,
+    "headTopRatio": 0.13974,
+    "bytes": 6380,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "tang-xuanzong/foreign-01",
+    "file": "assets/art/portraits/unique/tang-xuanzong/foreign-01.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "tang-xuanzong__foreign-01.png",
+    "eyeY": 561.3,
+    "headTop": 226,
+    "eyeRaw": 0.4004,
+    "topRaw": 0.1612,
+    "status": "exported",
+    "crop": [
+      14,
+      35,
+      1108,
+      1402
+    ],
+    "eyeRatio": 0.385,
+    "headTopRatio": 0.13972,
+    "bytes": 9054,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "han-lingdi/child-01-adult",
+    "file": "assets/art/portraits/unique/han-lingdi/child-01-adult.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "revision-age__han-lingdi__child-01-adult.png",
+    "eyeY": 593.99,
+    "headTop": 243,
+    "eyeRaw": 0.4237,
+    "topRaw": 0.1733,
+    "status": "exported",
+    "crop": [
+      22,
+      56,
+      1099,
+      1402
+    ],
+    "eyeRatio": 0.3997,
+    "headTopRatio": 0.13893,
+    "bytes": 6618,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "tang-xuanzong/foreign-03",
+    "file": "assets/art/portraits/unique/tang-xuanzong/foreign-03.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "tang-xuanzong__foreign-03.png",
+    "eyeY": 561.91,
+    "headTop": 196,
+    "eyeRaw": 0.4008,
+    "topRaw": 0.1398,
+    "status": "exported",
+    "crop": [
+      1,
+      2,
+      1121,
+      1402
+    ],
+    "eyeRatio": 0.39993,
+    "headTopRatio": 0.13857,
+    "bytes": 8878,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "tang-xuanzong/official-07",
+    "file": "assets/art/portraits/unique/tang-xuanzong/official-07.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "tang-xuanzong__official-07.png",
+    "eyeY": 562.44,
+    "headTop": 180,
+    "eyeRaw": 0.4012,
+    "topRaw": 0.1284,
+    "status": "exported",
+    "crop": [
+      1,
+      3,
+      1120,
+      1402
+    ],
+    "eyeRatio": 0.39989,
+    "headTopRatio": 0.12652,
+    "bytes": 16194,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "tang-xuanzong/foreign-02",
+    "file": "assets/art/portraits/unique/tang-xuanzong/foreign-02.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "tang-xuanzong__foreign-02.png",
+    "eyeY": 551.1,
+    "headTop": 174,
+    "eyeRaw": 0.3931,
+    "topRaw": 0.1241,
+    "status": "exported",
+    "crop": [
+      0,
+      0,
+      1122,
+      1402
+    ],
+    "eyeRatio": 0.39308,
+    "headTopRatio": 0.12411,
+    "bytes": 10176,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "tang-xuanzong/foreign-04",
+    "file": "assets/art/portraits/unique/tang-xuanzong/foreign-04.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "tang-xuanzong__foreign-04.png",
+    "eyeY": 593.81,
+    "headTop": 201,
+    "eyeRaw": 0.4235,
+    "topRaw": 0.1434,
+    "status": "exported",
+    "crop": [
+      22,
+      56,
+      1099,
+      1402
+    ],
+    "eyeRatio": 0.39956,
+    "headTopRatio": 0.10773,
+    "bytes": 9294,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "song-qinzong/official-05",
+    "file": "assets/art/portraits/unique/song-qinzong/official-05.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "song-qinzong__official-05.png",
+    "eyeY": 576.25,
+    "headTop": 230,
+    "eyeRaw": 0.411,
+    "topRaw": 0.1641,
+    "status": "exported",
+    "crop": [
+      16,
+      40,
+      1106,
+      1402
+    ],
+    "eyeRatio": 0.39372,
+    "headTopRatio": 0.1395,
+    "bytes": 5794,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "song-qinzong/official-08",
+    "file": "assets/art/portraits/unique/song-qinzong/official-08.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "revision-youth__song-qinzong__official-08.png",
+    "eyeY": 536.58,
+    "headTop": 179,
+    "eyeRaw": 0.3827,
+    "topRaw": 0.1277,
+    "status": "exported",
+    "crop": [
+      0,
+      0,
+      1122,
+      1402
+    ],
+    "eyeRatio": 0.38272,
+    "headTopRatio": 0.12767,
+    "bytes": 5938,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "song-qinzong/child-01",
+    "file": "assets/art/portraits/unique/song-qinzong/child-01.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "song-qinzong__child-01.png",
+    "eyeY": 616.67,
+    "headTop": 273,
+    "eyeRaw": 0.4398,
+    "topRaw": 0.1947,
+    "status": "exported",
+    "crop": [
+      38,
+      94,
+      1084,
+      1402
+    ],
+    "eyeRatio": 0.39959,
+    "headTopRatio": 0.13685,
+    "bytes": 6670,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "song-qinzong/official-06",
+    "file": "assets/art/portraits/unique/song-qinzong/official-06.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "song-qinzong__official-06.png",
+    "eyeY": 581.37,
+    "headTop": 218,
+    "eyeRaw": 0.4147,
+    "topRaw": 0.1555,
+    "status": "exported",
+    "crop": [
+      14,
+      35,
+      1108,
+      1402
+    ],
+    "eyeRatio": 0.39968,
+    "headTopRatio": 0.13387,
+    "bytes": 6972,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "song-qinzong/official-01",
+    "file": "assets/art/portraits/unique/song-qinzong/official-01.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "revision-frame2__song-qinzong__official-01.png",
+    "eyeY": 533.2,
+    "headTop": 194,
+    "eyeRaw": 0.3803,
+    "topRaw": 0.1384,
+    "status": "exported",
+    "crop": [
+      0,
+      0,
+      1122,
+      1402
+    ],
+    "eyeRatio": 0.38031,
+    "headTopRatio": 0.13837,
+    "bytes": 6188,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "song-qinzong/official-07",
+    "file": "assets/art/portraits/unique/song-qinzong/official-07.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "song-qinzong__official-07.png",
+    "eyeY": 575.09,
+    "headTop": 228,
+    "eyeRaw": 0.4102,
+    "topRaw": 0.1626,
+    "status": "exported",
+    "crop": [
+      15,
+      37,
+      1107,
+      1402
+    ],
+    "eyeRatio": 0.39421,
+    "headTopRatio": 0.13993,
+    "bytes": 6086,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "song-qinzong/foreign-01",
+    "file": "assets/art/portraits/unique/song-qinzong/foreign-01.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "song-qinzong__foreign-01.png",
+    "eyeY": 552.71,
+    "headTop": 179,
+    "eyeRaw": 0.3942,
+    "topRaw": 0.1277,
+    "status": "exported",
+    "crop": [
+      0,
+      0,
+      1122,
+      1402
+    ],
+    "eyeRatio": 0.39423,
+    "headTopRatio": 0.12767,
+    "bytes": 7374,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "song-qinzong/foreign-03",
+    "file": "assets/art/portraits/unique/song-qinzong/foreign-03.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "song-qinzong__foreign-03.png",
+    "eyeY": 560.72,
+    "headTop": 225,
+    "eyeRaw": 0.3999,
+    "topRaw": 0.1605,
+    "status": "exported",
+    "crop": [
+      14,
+      34,
+      1108,
+      1402
+    ],
+    "eyeRatio": 0.38503,
+    "headTopRatio": 0.13962,
+    "bytes": 11638,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "qing-jiaqing/official-02",
+    "file": "assets/art/portraits/unique/qing-jiaqing/official-02.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "qing-jiaqing__official-02.png",
+    "eyeY": 541.3,
+    "headTop": 172,
+    "eyeRaw": 0.3861,
+    "topRaw": 0.1227,
+    "status": "exported",
+    "crop": [
+      0,
+      0,
+      1122,
+      1402
+    ],
+    "eyeRatio": 0.38609,
+    "headTopRatio": 0.12268,
+    "bytes": 11234,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "qing-jiaqing/official-04",
+    "file": "assets/art/portraits/unique/qing-jiaqing/official-04.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "qing-jiaqing__official-04.png",
+    "eyeY": 573.92,
+    "headTop": 205,
+    "eyeRaw": 0.4094,
+    "topRaw": 0.1462,
+    "status": "exported",
+    "crop": [
+      9,
+      22,
+      1113,
+      1402
+    ],
+    "eyeRatio": 0.39994,
+    "headTopRatio": 0.13261,
+    "bytes": 10822,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "qing-jiaqing/official-05",
+    "file": "assets/art/portraits/unique/qing-jiaqing/official-05.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "qing-jiaqing__official-05.png",
+    "eyeY": 568.87,
+    "headTop": 197,
+    "eyeRaw": 0.4058,
+    "topRaw": 0.1405,
+    "status": "exported",
+    "crop": [
+      6,
+      14,
+      1116,
+      1402
+    ],
+    "eyeRatio": 0.39976,
+    "headTopRatio": 0.13184,
+    "bytes": 9594,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "qing-jiaqing/official-03",
+    "file": "assets/art/portraits/unique/qing-jiaqing/official-03.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "qing-jiaqing__official-03.png",
+    "eyeY": 556.55,
+    "headTop": 197,
+    "eyeRaw": 0.397,
+    "topRaw": 0.1405,
+    "status": "exported",
+    "crop": [
+      0,
+      1,
+      1121,
+      1402
+    ],
+    "eyeRatio": 0.39654,
+    "headTopRatio": 0.1399,
+    "bytes": 10194,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "qing-jiaqing/official-07",
+    "file": "assets/art/portraits/unique/qing-jiaqing/official-07.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "qing-jiaqing__official-07.png",
+    "eyeY": 560.47,
+    "headTop": 177,
+    "eyeRaw": 0.3998,
+    "topRaw": 0.1262,
+    "status": "exported",
+    "crop": [
+      0,
+      0,
+      1122,
+      1402
+    ],
+    "eyeRatio": 0.39977,
+    "headTopRatio": 0.12625,
+    "bytes": 10780,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "qing-jiaqing/official-06",
+    "file": "assets/art/portraits/unique/qing-jiaqing/official-06.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "qing-jiaqing__official-06.png",
+    "eyeY": 520.59,
+    "headTop": 159,
+    "eyeRaw": 0.3713,
+    "topRaw": 0.1134,
+    "status": "exported",
+    "crop": [
+      0,
+      0,
+      1122,
+      1402
+    ],
+    "eyeRatio": 0.37132,
+    "headTopRatio": 0.11341,
+    "bytes": 11274,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "qing-jiaqing/official-08",
+    "file": "assets/art/portraits/unique/qing-jiaqing/official-08.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "qing-jiaqing__official-08.png",
+    "eyeY": 550.01,
+    "headTop": 202,
+    "eyeRaw": 0.3923,
+    "topRaw": 0.1441,
+    "status": "exported",
+    "crop": [
+      3,
+      7,
+      1119,
+      1402
+    ],
+    "eyeRatio": 0.38925,
+    "headTopRatio": 0.13978,
+    "bytes": 10890,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "qing-jiaqing/consort-02",
+    "file": "assets/art/portraits/unique/qing-jiaqing/consort-02.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "revision-frame2__qing-jiaqing__consort-02.png",
+    "eyeY": 479.82,
+    "headTop": 188,
+    "eyeRaw": 0.3422,
+    "topRaw": 0.1341,
+    "status": "exported",
+    "crop": [
+      31,
+      3,
+      1090,
+      1327
+    ],
+    "eyeRatio": 0.36013,
+    "headTopRatio": 0.13973,
+    "bytes": 8070,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "qing-jiaqing/child-02",
+    "file": "assets/art/portraits/unique/qing-jiaqing/child-02.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "revision-frame2__qing-jiaqing__child-02.png",
+    "eyeY": 588.63,
+    "headTop": 249,
+    "eyeRaw": 0.4198,
+    "topRaw": 0.1776,
+    "status": "exported",
+    "crop": [
+      25,
+      62,
+      1097,
+      1402
+    ],
+    "eyeRatio": 0.39301,
+    "headTopRatio": 0.13955,
+    "bytes": 7092,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "qing-jiaqing/foreign-01",
+    "file": "assets/art/portraits/unique/qing-jiaqing/foreign-01.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "qing-jiaqing__foreign-01.png",
+    "eyeY": 504.29,
+    "headTop": 216,
+    "eyeRaw": 0.3597,
+    "topRaw": 0.1541,
+    "status": "exported",
+    "crop": [
+      37,
+      33,
+      1084,
+      1342
+    ],
+    "eyeRatio": 0.36004,
+    "headTopRatio": 0.1398,
+    "bytes": 10434,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "qing-jiaqing/foreign-02",
+    "file": "assets/art/portraits/unique/qing-jiaqing/foreign-02.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "qing-jiaqing__foreign-02.png",
+    "eyeY": 570.19,
+    "headTop": 190,
+    "eyeRaw": 0.4067,
+    "topRaw": 0.1355,
+    "status": "exported",
+    "crop": [
+      6,
+      16,
+      1115,
+      1402
+    ],
+    "eyeRatio": 0.39985,
+    "headTopRatio": 0.12554,
+    "bytes": 10730,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "qing-jiaqing/foreign-03",
+    "file": "assets/art/portraits/unique/qing-jiaqing/foreign-03.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "qing-jiaqing__foreign-03.png",
+    "eyeY": 509.27,
+    "headTop": 205,
+    "eyeRaw": 0.3632,
+    "topRaw": 0.1462,
+    "status": "exported",
+    "crop": [
+      8,
+      12,
+      1113,
+      1393
+    ],
+    "eyeRatio": 0.36008,
+    "headTopRatio": 0.13975,
+    "bytes": 10318,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "qing-jiaqing/foreign-04",
+    "file": "assets/art/portraits/unique/qing-jiaqing/foreign-04.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "revision-frame2__qing-jiaqing__foreign-04.png",
+    "eyeY": 531.11,
+    "headTop": 187,
+    "eyeRaw": 0.3788,
+    "topRaw": 0.1334,
+    "status": "exported",
+    "crop": [
+      0,
+      0,
+      1122,
+      1402
+    ],
+    "eyeRatio": 0.37882,
+    "headTopRatio": 0.13338,
+    "bytes": 14222,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "qing-jiaqing/child-01",
+    "file": "assets/art/portraits/unique/qing-jiaqing/child-01.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "revision-youth__qing-jiaqing__child-01.png",
+    "eyeY": 544.98,
+    "headTop": 165,
+    "eyeRaw": 0.3887,
+    "topRaw": 0.1177,
+    "status": "exported",
+    "crop": [
+      0,
+      0,
+      1122,
+      1402
+    ],
+    "eyeRatio": 0.38871,
+    "headTopRatio": 0.11769,
+    "bytes": 7682,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "song-qinzong/child-01-adult",
+    "file": "assets/art/portraits/unique/song-qinzong/child-01-adult.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "song-qinzong__child-01-adult.png",
+    "eyeY": 603.94,
+    "headTop": 221,
+    "eyeRaw": 0.4308,
+    "topRaw": 0.1576,
+    "status": "exported",
+    "crop": [
+      29,
+      72,
+      1093,
+      1402
+    ],
+    "eyeRatio": 0.39996,
+    "headTopRatio": 0.11203,
+    "bytes": 6500,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "ming-yingzong/child-01-adult",
+    "file": "assets/art/portraits/unique/ming-yingzong/child-01-adult.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "revision-frame3__ming-yingzong__child-01-adult.png",
+    "eyeY": 596.9,
+    "headTop": 273,
+    "eyeRaw": 0.4257,
+    "topRaw": 0.1947,
+    "status": "exported",
+    "crop": [
+      36,
+      90,
+      1086,
+      1402
+    ],
+    "eyeRatio": 0.38636,
+    "headTopRatio": 0.13948,
+    "bytes": 8416,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  },
+  {
+    "id": "qing-jiaqing/child-02-adult",
+    "file": "assets/art/portraits/unique/qing-jiaqing/child-02-adult.webp",
+    "rawSize": [
+      1122,
+      1402
+    ],
+    "source": "revision-frame3__qing-jiaqing__child-02-adult.png",
+    "eyeY": 669.11,
+    "headTop": 350,
+    "eyeRaw": 0.4773,
+    "topRaw": 0.2496,
+    "status": "exported",
+    "crop": [
+      72,
+      181,
+      1049,
+      1402
+    ],
+    "eyeRatio": 0.39976,
+    "headTopRatio": 0.13841,
+    "bytes": 7604,
+    "dimensions": [
+      400,
+      500
+    ],
+    "quality": 75
+  }
+]

@@ -1,0 +1,8 @@
+{
+  "tests": 649,
+  "pass": 649,
+  "fail": 0,
+  "skipped": 0,
+  "build": "npm run build: 106 modules, 882011 script bytes",
+  "diffCheck": "passed"
+}

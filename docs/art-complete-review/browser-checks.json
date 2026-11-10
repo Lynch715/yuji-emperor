@@ -1,0 +1,150 @@
+{
+  "gameChild": {
+    "images": [
+      {
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/ming-yingzong/dowager-01.webp"
+      },
+      {
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/ming-yingzong/child-01.webp"
+      }
+    ],
+    "scroll": 390,
+    "width": 390
+  },
+  "gameConsort": {
+    "images": [
+      {
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/ming-yingzong/consort-02.webp"
+      }
+    ],
+    "scroll": 390,
+    "width": 390
+  },
+  "gameForeign": {
+    "images": [
+      {
+        "loaded": true,
+        "natural": [
+          400,
+          500
+        ],
+        "src": "assets/art/portraits/unique/ming-yingzong/foreign-04.webp"
+      }
+    ],
+    "scroll": 390,
+    "width": 390
+  },
+  "gameLogs": [],
+  "gallery": [
+    {
+      "appearances": 132,
+      "failed": 0,
+      "images": 396,
+      "loaded": 396,
+      "scroll": 1280,
+      "visible": 396,
+      "width": 1280
+    },
+    {
+      "appearances": 132,
+      "failed": 0,
+      "images": 396,
+      "loaded": 396,
+      "scroll": 768,
+      "visible": 396,
+      "width": 768
+    },
+    {
+      "appearances": 132,
+      "failed": 0,
+      "images": 396,
+      "loaded": 396,
+      "scroll": 390,
+      "visible": 396,
+      "width": 390
+    },
+    {
+      "appearances": 132,
+      "failed": 0,
+      "images": 396,
+      "loaded": 396,
+      "scroll": 360,
+      "visible": 396,
+      "width": 360
+    }
+  ],
+  "normalGalleryLogs": [],
+  "off": {
+    "badges": 396,
+    "hidden": 396,
+    "off": true,
+    "scroll": 360,
+    "width": 360
+  },
+  "missing": {
+    "badge": [
+      44,
+      44
+    ],
+    "failed": true,
+    "initial": "刘",
+    "loaded": false,
+    "scroll": 360,
+    "src": "/assets/art/intentional-missing-portrait.webp?attempt=1",
+    "width": 360
+  },
+  "unreachable": {
+    "badge": [
+      44,
+      44
+    ],
+    "failed": true,
+    "initial": "刘",
+    "loaded": false,
+    "scroll": 360,
+    "src": "/assets/art/intentional-missing-portrait.webp?attempt=2",
+    "width": 360
+  },
+  "failureLogs": [],
+  "restored": {
+    "appearances": 132,
+    "failed": 0,
+    "images": 396,
+    "loaded": 396,
+    "scroll": 360,
+    "visible": 396,
+    "width": 360
+  },
+  "contrast": [
+    {
+      "background": "rgb(239, 230, 211)",
+      "color": "rgb(42, 36, 32)",
+      "selector": "#modal .action-document"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "color": "rgb(42, 36, 32)",
+      "selector": "#modal .action-document h3"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "color": "rgb(42, 36, 32)",
+      "selector": "#modal .action-document p"
+    }
+  ]
+}

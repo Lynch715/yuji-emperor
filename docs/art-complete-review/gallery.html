@@ -1,0 +1,25 @@
+<!doctype html><html lang="zh-CN"><head><base href="/"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>七局专属像补全 · 取图验收</title><link rel="stylesheet" href="/src/ui/style.css"><style>body{padding:16px;overflow:auto}main{max-width:1120px;margin:auto}h1{font-size:24px}article{padding:16px;margin:12px 0;border:1px solid var(--desk-line,#514638);border-radius:8px;overflow:hidden}.portraits{display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap}.controls{display:flex;gap:12px;flex-wrap:wrap;margin:16px 0}button{min-height:44px}h2{font-size:18px}p{overflow-wrap:anywhere}.portrait.art-card{flex:none}.portrait.art-paper{flex:none}</style></head><body><main><h1>新增七剧本 · 全部专属像</h1><p>只读图册，使用游戏正式取图函数与CSS；不读取或写入游戏进度。</p><div class="controls"><button id="art-toggle">切换显示插图</button><button id="art-missing">模拟第一张图片缺失</button></div><div id="gallery"></div></main><script type="module">
+import {createState} from '/src/core/state.js';
+import {applyScenario,SCENARIOS} from '/src/core/scenarios.js';
+import {initialTurn} from '/src/core/turn.js';
+import {portraitHTML,initArt,setIllustrations,illustrationsEnabled} from '/src/ui/art.js';
+import {ART_UNIQUE} from '/src/ui/art-manifest.js';
+initArt();setIllustrations(true);
+const ids=['han-lingdi','song-huizong','ming-xizong','ming-yingzong','tang-xuanzong','song-qinzong','qing-jiaqing'];
+const gallery=document.querySelector('#gallery');
+for(const id of ids){
+ const sc=SCENARIOS.find(sc=>sc.id===id),s=initialTurn(applyScenario(createState({seed:'七局全专属只读验收'}),id));
+ const people=[s.emperor,...s.court.officials.slice(0,sc.officials.length),...s.harem.consorts,...s.harem.children,...s.foreign];
+ if(s.dowager)people.push({name:s.dowager,age:50});
+ for(const p of people){const name=p.ruler||p.name,role=name===s.dowager?'dowager':'',entry=ART_UNIQUE[id][name],age=p.age??(p.born!==undefined?Math.floor((s.turn-p.born)/36):'年代估龄');
+  const add=label=>{const node=document.createElement('article');node.id=id+'-'+name+'-'+label;node.innerHTML='<h2>'+name+' · '+id+' · '+label+'</h2><div class="portraits">'+['avatar','card','paper'].map(size=>portraitHTML(s,p,size,role).replaceAll('loading="lazy"','loading="eager"')).join('')+'</div>';gallery.append(node);};
+  add('开局'+age+(typeof age==='number'?'岁':''));
+  if(p===s.emperor&&entry.old!==entry.base){const before=p.age;p.age=58;add('本人老年');p.age=before;}
+  if(entry.adult){const before=p.born;p.born=s.turn-(name==='赵构'?19:16)*36;add('本人成年');p.born=before;}
+ }
+}
+document.querySelector('#art-toggle').onclick=()=>setIllustrations(!illustrationsEnabled());
+let missingAttempt=0;
+document.querySelector('#art-missing').onclick=()=>{const img=document.querySelector('.art-portrait img');img.src='/assets/art/intentional-missing-portrait.webp?attempt='+(++missingAttempt);};
+document.documentElement.dataset.ready='true';
+</script></body></html>

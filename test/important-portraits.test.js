@@ -33,8 +33,8 @@ test('六位皇帝40岁切换同一人的老年像，玄宗70岁开局用单张�
  assert.equal(ART_UNIQUE['ming-xizong']['魏忠贤'].base,ART_UNIQUE['ming-chongzhen']['魏忠贤'].base);
 });
 test('新局未配专属的人物仍取原朝代池，不借同姓他人的专属脸，董太后不再退回圆章',()=>{
- for(const [id,list]of Object.entries(names)){
-  const s=start(id);for(const p of [...s.court.officials,...s.harem.consorts,...s.harem.children,...s.foreign].filter(p=>!list.includes(p.name||p.ruler))){const pool=portraitPool(s,p),index=poolFaceIndex(s,p);assert.equal(portraitSource(s,p),ART_POOLS[pool]?.[index]||null);}
+ for(const id of Object.keys(names)){
+  const s=start(id);for(const p of [...s.court.officials,...s.harem.consorts,...s.harem.children,...s.foreign].filter(p=>!ART_UNIQUE[id][p.ruler||p.name])){const pool=portraitPool(s,p),index=poolFaceIndex(s,p);assert.equal(portraitSource(s,p),ART_POOLS[pool]?.[index]||null);}
  }
  const s=start('han-lingdi');assert.match(portraitSource(s,{name:'董太后'},'dowager'),/unique\/han-lingdi\/dowager-01/);
 });
