@@ -110,6 +110,43 @@ const CATALOG={
    r('heir','弘历在世并已立为储君',{type:'isHeir',name:'弘历'}),r('study','弘历教养至少70',child('弘历','education'),70),
    r('health','弘历健康至少80',child('弘历','health'),80),r('tutor','弘历已拜师',{type:'childTutored',name:'弘历'})]),
  ],
+ 'han-lingdi':[
+  macro('restore','重振汉室','让卖官败坏的朝纲与民心回转，不能只把钱留在宫中。',[
+   n('gov','吏治至少70','governance',70),n('people','民心至少65','morale',65),n('debt','国库积欠清零','arrears',0,'lte'),
+   n('rebels','各州均无民变','rebellions',0,'lte')],12),
+  macro('palace-power','不再事事问张让','近侍不再占据朝职，天子还须有能力亲自理政。',[
+   r('zhang','张让已无在任职位',{type:'inactiveOfficial',name:'张让'}),n('power','皇威至少70','prestige',70),n('rule','政略至少60','talent:政略',60)],9),
+  wish('cai-yong','听蔡邕说经论乐','留住通经知音律的人，也听得进他的话。',[
+   r('post','蔡邕在任，未下狱或致仕',serving('蔡邕')),r('favor','蔡邕好感至少80',official('蔡邕','favor'),80),
+   r('talks','近36旬与蔡邕完成3轮面谈',{type:'officialTalks',name:'蔡邕'},3),n('letters','文采至少75','talent:文采',75)]),
+  wish('liu-bian','为刘辩定储育才','幼子不能只仗母家，储位和教养都须落实。',[
+   r('heir','刘辩在世并已立为储君',{type:'isHeir',name:'刘辩'}),r('tutor','刘辩已拜师',{type:'childTutored',name:'刘辩'}),
+   r('study','刘辩教养至少60',child('刘辩','education'),60)]),
+ ],
+ 'song-huizong':[
+  macro('peace','宣和真正太平','园石之外，各路百姓都要过得下去。',[
+   n('people','每一州民心至少60','minMorale',60),n('disaster','每一州灾情不高于10','maxDisaster',10,'lte'),n('gov','吏治至少70','governance',70)],12),
+  macro('border','不以边军赌国运','无论议和还是用兵，都须给北边留下能战能守的军队。',[
+   r('liao','与辽通好、婚盟、朝贡或战胜后停战',country('辽','settledCountry')),r('threat','北境边患不高于35',border('北','threat'),35,'lte'),
+   r('ready','北境战备至少75',border('北','readiness'),75),r('war','北境没有未结束战役',{type:'borderWars',dir:'北'},0,'lte')],9),
+  wish('letters','宣和文墨传世','以书画之才编成一部大典，文事也须真正办完。',[
+   n('book','本朝完成1次编修大典','project:编修大典',1),n('letters','文采至少95','talent:文采',95),n('virtue','圣德至少60','virtue',60)]),
+  wish('empress','与郑后长相伴','顾惜旧日相伴之人，不只追逐眼前的新宠。',[
+   r('company','郑氏在世、在宫且未入冷宫',{type:'companion',name:'郑氏'}),r('favor','郑氏宠眷至少85',{type:'consort',name:'郑氏',field:'favor'},85),
+   r('health','郑氏健康至少60',{type:'consort',name:'郑氏',field:'health'},60),n('years','本朝在位满5年','reignYears',5)]),
+ ],
+ 'ming-xizong':[
+  macro('palace','内廷不代天子','收回魏忠贤的职位，也要让清理后的朝纲稳得住。',[
+   r('wei','魏忠贤已无在任职位',{type:'inactiveOfficial',name:'魏忠贤'}),n('gov','吏治至少70','governance',70),n('power','皇威至少70','prestige',70)],9),
+  macro('liaodong','守住辽东门户','稳住东境军队与辽东民情，不以一道捷报冒充安定。',[
+   r('threat','东境边患不高于35',border('东','threat'),35,'lte'),r('ready','东境战备至少75',border('东','readiness'),75),
+   r('people','辽东民心至少60',province('辽东','morale'),60),r('war','东境没有未结束战役',{type:'borderWars',dir:'东'},0,'lte'),n('grain','现粮可供3个月军粮与赈济','grainMonths',3)],12),
+  wish('workshop','木石之外有分寸','可寄情营造，也须把国用与百姓放在心上。',[
+   n('garden','本朝完成1次修园','project:修园',1),n('debt','国库积欠清零','arrears',0,'lte'),n('people','民心至少60','morale',60)]),
+  wish('sun','听懂孙承宗的辽事','让讲官留在朝中，亲自问清兵饷与守战。',[
+   r('post','孙承宗在任，未下狱或致仕',serving('孙承宗')),r('favor','孙承宗好感至少80',official('孙承宗','favor'),80),
+   r('talks','近36旬与孙承宗完成3轮面谈',{type:'officialTalks',name:'孙承宗'},3),n('rule','政略至少65','talent:政略',65)]),
+ ],
 };
 export const SCENARIO_GOALS=Object.fromEntries(Object.entries(CATALOG).map(([scenarioId,goals])=>[scenarioId,goals.map(({suffix,...g})=>({...g,id:scenarioId+'-'+suffix,scenarioId}))]));
 export function scenarioGoals(id) {return SCENARIO_GOALS[id] || [];}
@@ -174,7 +211,7 @@ export function validateScenarioAmbitions(s,owner) {
     if(!['official','serving','inactiveOfficial','officialTalks','province','border','borderWars','capital','consort','companion','child','isHeir','childTutored','countryWins','settledCountry'].includes(q.type)||
      pool&&(!q.id||!pool.some(x=>x.id===q.id))||['border','borderWars'].includes(q.type)&&!s.nation.army.frontiers.some(b=>b.dir===q.dir)||
      fields[q.type]&&!fields[q.type].includes(q.field)||q.posts&&(!Array.isArray(q.posts)||!q.posts.length||!q.posts.every(id=>s.court.posts.some(p=>p.id===id))))throw new Error('专属宏愿对象损坏');
-   }else if(!['governance','morale','treasury','virtue','prestige','reignYears','arrears','rebellions','minMorale','maxDisaster','grainMonths','personalRule','livingHeir','heirTutored','heirEducation','talent:文采','talent:政略','project:编修大典','project:整饬吏治','project:修河'].includes(o.key))throw new Error('专属宏愿条件无效');
+   }else if(!['governance','morale','treasury','virtue','prestige','reignYears','arrears','rebellions','minMorale','maxDisaster','grainMonths','personalRule','livingHeir','heirTutored','heirEducation','talent:文采','talent:政略','project:编修大典','project:整饬吏治','project:修河','project:修园'].includes(o.key))throw new Error('专属宏愿条件无效');
   }
  }
 }

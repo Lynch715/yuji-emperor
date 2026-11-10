@@ -17,7 +17,7 @@ import {talkAttempt} from '../src/core/court.js';
 import {callJSON} from '../src/llm/client.js';
 const fresh=()=>initialTurn(createState({seed:'国势全览',freedom:'free'}));
 const near=(a,b)=>assert.ok(Math.abs(a-b)<1e-6,`${a} != ${b}`);
-test('七位预设皇帝各有两宏愿两心事，崇祯使用专属中兴、辽东、周后与毕自严目标',async()=>{
+test('十位预设皇帝各有两宏愿两心事，崇祯使用专属中兴、辽东、周后与毕自严目标',async()=>{
  for(const sc of SCENARIOS){
   const goals=scenarioRecommendations(sc.id);assert.equal(goals.length,4);assert.equal(new Set(goals.map(g=>g.id)).size,4);
   assert.deepEqual(goals.map(g=>g.kind),['宏愿','宏愿','心事','心事']);assert.ok(goals.every(g=>g.reason));

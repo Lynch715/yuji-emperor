@@ -4311,7 +4311,7 @@ return [s?.emperor, ...(s?.court.officials || []), ...(s?.harem.consorts || []),
 function contains(list, p) { return list?.some(x => x === p || p.id && x.id === p.id); }
 function portraitPool(s, p, role = '') {
 if (!s || !p) return null;
-const dynasty = scenarioById(s.scenario)?.posts || 'ming';
+const sc = scenarioById(s.scenario), dynasty = sc?.posts || 'ming';
 if (role === 'scholar') return 'shared/scholar-' + (p.age < 30 ? 'young' : 'mature');
 if (role === 'dowager') return dynasty === 'ming' ? 'ming/dowager-all' : null;
 const retained = s.artFaces?.[artPersonKey(s,p)];
@@ -4321,7 +4321,7 @@ if (contains(s.court.officials, p)) {
 if (p.gender !== '男') return null;
 const index = s.court.posts.findIndex(post => post.holder === p.id || p.post && post.id === p.post);
 return dynasty + '/' + (index === 9 || index >= 25 && index <= 28 ? 'general-all' :
-(dynasty === 'han' ? index === 10 : index === 8 && dynasty !== 'qing') ? 'eunuch-all' : 'official-' + (p.age < 55 ? 'mature' : 'old'));
+(sc?.eunuchPosts ? sc.eunuchPosts.includes(index) : dynasty === 'han' ? index === 10 : index === 8 && dynasty !== 'qing') ? 'eunuch-all' : 'official-' + (p.age < 55 ? 'mature' : 'old'));
 }
 if (contains(s.harem.consorts, p) || contains(s.harem.candidates, p))
 return dynasty + '/consort-' + (['皇后', '皇贵妃', '贵妃'].includes(p.rank) ? 'high' : 'regular');
@@ -4723,7 +4723,7 @@ song: "同中书门下平章事 三司使 枢密使 吏部尚书 礼部尚书 �
 ming: "内阁首辅 户部尚书 兵部尚书 吏部尚书 礼部尚书 刑部尚书 工部尚书 左都御史 司礼监掌印 京营戎政 内阁次辅 内阁大学士 詹事府詹事 户部侍郎 兵部侍郎 吏部侍郎 礼部侍郎 刑部侍郎 总理河道 翰林学士 太子太傅 大理寺卿 太常寺卿 通政使 宗人令 宣大总兵 甘肃总兵 两广总兵 蓟辽总兵",
 qing: "首席大学士 户部尚书 兵部尚书 吏部尚书 礼部尚书 刑部尚书 工部尚书 左都御史 内务府总管 领侍卫内大臣 议政大臣 大学士 协办大学士 户部侍郎 兵部侍郎 吏部侍郎 礼部侍郎 刑部侍郎 工部侍郎 翰林院掌院学士 太子太傅 大理寺卿 钦天监监正 通政使 宗人府宗令 北路将军 西路将军 南路将军 东路将军",
 };
-// 官员：姓名｜职位下标｜派系下标｜年龄｜性格｜秘密｜能力（政军才德忠谋）｜野心
+// 官员：姓名｜职位下标｜派系下标｜年龄｜性格｜秘密｜能力（政军才德忠谋）｜野心｜贪墨（可选）
 // 后宫：姓名｜位分｜家世｜年龄｜派系下标｜宠眷｜秘密
 // 皇嗣：姓名｜性别｜年龄｜母（后宫下标，可空）｜资质
 // 外邦：国名｜君主｜关系｜态度｜边境｜诉求
@@ -4904,6 +4904,81 @@ children: ["弘时|男|18|3|50", "弘历|男|11|2|85", "福惠|男|1|1|60"],
 foreign: ["沙俄|彼得一世|冷淡|35|北|划界与通商", "准噶尔|策妄阿拉布坦|冷淡|20|西|西藏与哈密", "青海和硕特|罗卜藏丹津|通好|40|西|总管青海", "安南|黎维祹|朝贡|55|南|册封", "朝鲜|李昀|朝贡|60|东|册封"],
 facts: ["康熙|传位|遗诏传位四阿哥，朝野多有私议", "户部|亏空|各省钱粮亏空积年未清"],
 },
+{
+id: "han-lingdi", power: "-10 0 10 30 0 0", title: "汉灵帝 · 西邸卖官", difficulty: "艰危", dynasty: "汉", era: "光和", year: "178年",
+emperor: ["刘宏", 22, "28 68 32 58 62", "贪财"], posts: "han", governor: "刺史",
+postNames: { p0: "司徒", p1: "大司农", p3: "尚书仆射", p4: "太常", p8: "光禄勋", p11: "侍中", p19: "博士", p23: "议郎", p24: "宗正", p10: "中常侍", p25: "护羌校尉" },
+provinces: "司隶 豫州 扬州 荆州 青州 并州 凉州 益州 交州 徐州 冀州 幽州",
+factions: "清议党人:纳谏清议 边军将门:军功封赏 外戚:家族恩荫 中常侍:亲近信任 州郡豪强:钱粮自主 宗室:宗藩安稳",
+nation: { treasury: 190, privy: 260, morale: 38, governance: 28, prestige: 45, virtue: 28, grain: 180 }, threat: [65, 60, 30, 35],
+dowager: "董太后",
+blurb: "西邸开门卖官，入仕先论钱而后论才；党锢未解，张让等中常侍出入禁中。灾疫伤民，张角在河北传教聚众，宫中却仍忙着搜罗钱货。要保住汉室，须先让朝廷重新值得百姓相信。",
+officials: [
+"杨赐|0|0|54|经学传家，守正直言|屡以灾异劝戒天子，奏疏常被近侍搁置。|78 28 85 86 82 48|30|8",
+"刘宽|2|0|58|宽厚长者，不轻责人|处处包容属吏，有人借其宽厚掩饰过失。|72 50 72 84 80 42|25|10",
+"张让|10|3|43|善逢迎，揽权聚敛|亲族宾客求官遍及州郡，许多请托经过他的手。|65 20 55 12 28 94|95|95",
+"袁隗|3|4|36|世家门第，处事持重|袁氏故吏遍天下，清议与近侍两边都不愿得罪。|76 35 72 55 58 78|65|45",
+"蔡邕|23|0|46|博学能文，熟知音律|正搜集灾异与政失，想上封事又担心触怒中官。|62 20 96 82 78 40|25|5",
+"卢植|19|0|39|刚毅有大节，兼通经武|少与郑玄同学，不肯以私礼结交权门。|78 78 85 88 86 55|35|5",
+"段颎|25|1|66|善战严酷，久历边事|凭军功得位，又与中官往还，清议颇多指摘。|52 89 48 28 60 70|72|65",
+"张温|1|4|53|通晓钱谷，善处人情|知卖官所得未尽入国库，未敢深究账目。|80 52 68 48 62 72|60|40",
+],
+consorts: ["宋氏|皇后|扶风宋氏|22|2|35|性情谨慎，深忧宫中谗言。", "何氏|贵人|南阳何氏|23|2|78|出身微贱，已育皇子，盼以母贵稳住地位。"],
+children: ["刘辩|男|2|1|58"],
+foreign: ["鲜卑|檀石槐|冷淡|20|北|边地牧场与互市", "南匈奴|呼徵|通好|50|北|保部众与封赏", "乌桓|丘力居|冷淡|35|东|互市与部众安置", "高句丽|伯固|冷淡|35|东|边界与通贡", "疏勒|臣磐|通好|55|西|西域交通与商路"],
+facts: ["西邸|卖官|官爵以钱授受，百姓所纳未必入国库", "党锢|未解|许多清议士人仍被禁锢", "张角|传教|在河北以太平道聚众，尚未公开起兵"],
+},
+{
+id: "song-huizong", power: "-10 0 0 30 20 0", title: "宋徽宗 · 宣和花石", difficulty: "艰危", dynasty: "宋", era: "宣和", year: "1119年",
+emperor: ["赵佶", 37, "35 62 25 98 88", "好艺"], posts: "song", governor: "转运使",
+postNames: { p0: "太师", p10: "少宰", p8: "太傅", p11: "内侍押班", p6: "应奉局提举", p23: "太常少卿" }, eunuchPosts: [8, 11],
+provinces: "开封府 京西路 两浙路 荆湖路 京东路 河东路 陕西路 川峡路 福建路 广南路 江南路 河北路",
+factions: "台谏清议:纳谏清议 西军将门:军功封赏 外戚:家族恩荫 内侍近臣:亲近信任 绍述财计:钱粮自主 宗室:宗藩安稳",
+nation: { treasury: 520, morale: 42, governance: 35, prestige: 58, virtue: 35, grain: 260 }, threat: [70, 68, 25, 30],
+dowager: "",
+blurb: "宣和改元，天子精书画、好园石。朱勔以花石纲奉上，东南百姓苦于征取；蔡京、王黼与近侍竞相揣摩圣意。西军新遭败绩，金使又来议联兵攻辽，书画之外，天下等着一道清醒的决断。",
+officials: [
+"蔡京|0|4|72|善书有才，擅权营私|门生故吏遍布朝中，与王黼表面相容而各怀私计。|85 25 92 16 35 93|93|95",
+"王黼|10|4|40|善辩敏捷，巧于逢迎|靠揣摩上意骤贵，正在搜集足以排挤蔡氏的机会。|64 28 70 18 30 91|92|98",
+"童贯|8|3|65|久握兵权，喜报边功|西军刘法败亡，如何向天子解释已成心病。|58 62 42 25 40 87|88|80",
+"梁师成|11|3|60|通文墨，善隔绝内外|借传达御笔干预政事，士人中不少人出入其门。|62 18 72 18 32 90|90|95",
+"朱勔|6|4|44|好营造，专事供奉|花石纲所过，舟船夫役皆有额外征索。|62 20 65 15 42 80|82|95",
+"李纲|23|0|36|忧国敢言，明习政事|因灾异欲上疏言政失，知道这会得罪近臣。|86 70 85 90 90 60|35|5",
+"种师道|25|1|68|持重知兵，不轻冒进|久在西陲，最担心朝中拿边军去赌一场速胜。|64 92 62 82 85 62|30|8",
+"张叔夜|7|0|54|刚毅有谋，能治军民|在外任见过民间困苦，不愿用虚报太平换迁转。|82 78 73 85 85 58|38|5",
+"李邦彦|19|3|43|文辞俊丽，善诙谐|以才艺近幸，遇到军国重事却常想避责。|48 20 88 38 50 72|65|60",
+"郑居中|2|2|60|老于政务，持重善谋|与蔡京互不相下，对轻启北边战事颇多疑虑。|82 65 76 55 70 82|62|40",
+],
+consorts: ["郑氏|皇后|开封郑氏|40|2|65|恭谨有礼，曾在太后宫中侍奉多年。", "刘氏|贵妃|宫中旧人|31|3|82|宠眷日隆，亲近她的人常想借机求进。"],
+children: ["赵桓|男|19||62", "赵构|男|12||76"], heir: 0,
+foreign: ["辽|耶律延禧|冷淡|35|北|维持旧盟", "金|完颜阿骨打|通好|55|北|议联兵攻辽", "西夏|李乾顺|冷淡|25|西|边地与岁赐", "高丽|王俣|通好|55|东|通使与海贸", "交趾|李乾德|通好|55|南|册封与边界"],
+facts: ["花石纲|扰民|东南征取园石木材，沿路夫役困苦", "刘法|败亡|西军已在统安城战败，边防承压", "宋金|议兵|双方互使，是否联兵及如何用兵尚待裁断"],
+},
+{
+id: "ming-xizong", power: "0 0 0 30 0 0", title: "明熹宗 · 天启危局", difficulty: "艰危", dynasty: "明", era: "天启", year: "1621年",
+emperor: ["朱由校", 16, "30 48 28 42 65", "好营造"], posts: "ming", governor: "巡抚",
+postNames: { p8: "司礼监秉笔", p25: "辽东经略", p28: "辽东巡抚" },
+provinces: "北直隶 河南 南直隶 湖广 山东 山西 陕西 四川 福建 广东 云南 辽东",
+factions: "东林清流:纳谏清议 勋戚边将:军功封赏 张氏外戚:家族恩荫 魏客近侍:亲近信任 督抚:钱粮自主 宗藩:宗藩安稳",
+nation: { treasury: 210, morale: 43, governance: 37, prestige: 42, virtue: 43, grain: 170 }, threat: [45, 35, 65, 90],
+dowager: "",
+blurb: "少年天子喜好木作，魏忠贤与乳保客氏日益得宠。沈阳、辽阳已失，熊廷弼与王化贞对守辽方略意见相左；叶向高入阁，言官仍敢开口。内廷是否越过朝臣，辽饷能否真正抵边，都在你手里。",
+officials: [
+"叶向高|0|0|62|持重调和，老成知政|再度入阁，盼调停门户，却怕内廷日渐难制。|87 35 83 78 82 80|45|15",
+"魏忠贤|8|3|53|粗豪善伺意，重恩怨|与客氏相互倚重，正在拉拢愿替内廷办事的朝臣。|42 28 25 12 28 92|95|95",
+"刘一燝|10|0|54|忠厚能任事|移宫一事出力甚多，也因此得罪了近侍。|79 38 78 80 85 65|38|10",
+"韩爌|11|0|56|清正持重，不轻苟同|对辽事反复权衡，不愿替未经商议的密旨背书。|84 48 82 85 85 70|35|8",
+"杨涟|7|0|49|慷慨敢言，不避权贵|参与护立天子，自认内廷的事也须由言官问清。|77 35 78 95 92 52|30|5",
+"左光斗|23|0|46|刚直有为，留心人才|识拔后进，也忧心门户之争压过实务。|79 42 82 90 88 55|32|5",
+"孙承宗|19|0|58|沉毅知兵，能谋国事|在御前讲读，想让天子亲自听懂辽东的军情。|90 88 86 85 90 72|40|8",
+"熊廷弼|25|4|52|刚愎负气，善守边|复出经略辽东，与王化贞的指挥权和守战意见不合。|77 90 73 78 82 66|58|15",
+"王化贞|28|4|45|轻信乐观，好言恢复|相信联络蒙古便能牵制后金，与经略争执不休。|55 48 65 48 60 55|62|30",
+"王象乾|2|1|74|老于边务，熟悉诸镇|年老仍被倚任，担忧援辽军饷与营伍失序。|80 82 68 72 80 70|35|20",
+],
+consorts: ["张嫣|皇后|祥符张氏|15|2|68|新入中宫，持正自重，对乳保客氏的越礼颇有戒心。"],
+foreign: ["后金|努尔哈赤|冷淡|10|东|争夺辽东", "察哈尔|林丹汗|冷淡|30|北|抚赏与互市", "朝鲜|李珲|通好|50|东|两边周旋，保境安民", "日本|德川秀忠|冷淡|35|东|海贸与沿海秩序", "安南|黎维祺|朝贡|55|南|册封与边境安稳"],
+facts: ["辽东|失地|沈阳与辽阳已失，关外防线承压", "客氏|地位|受封奉圣夫人，与魏忠贤相互倚重", "熊王|不和|经略与巡抚对守战方略意见相左"],
+},
 ];
 function scenarioById(id) {
 return SCENARIOS.find((x) => x.id === id) || null;
@@ -4937,6 +5012,7 @@ s.era.name = s.reign.eraName = sc.era;
 // 官制与州郡
 const titles = POSTS[sc.posts].split(" ");
 s.postNames = Object.fromEntries(titles.map((t, i) => ["p" + i, t]));
+Object.assign(s.postNames, sc.postNames);
 s.governorTitle = sc.governor;
 sc.provinces.split(" ").forEach((name, i) => { if (s.nation.provinces[i]) s.nation.provinces[i].name = name; });
 const mods = nums(sc.power || "0 0 0 0 0 0");
@@ -4950,7 +5026,7 @@ s.emperor.lifespan = Math.max(s.emperor.lifespan, age + 25);
 s.emperor.talents = Object.fromEntries(Object.keys(s.emperor.talents).map((k, i) => [k, t[i]]));
 s.emperor.tags = [tag];
 for (const k of ["prestige", "virtue"]) if (sc.nation[k] !== undefined) s.emperor[k] = sc.nation[k];
-for (const k of ["treasury", "morale", "governance", "grain"]) if (sc.nation[k] !== undefined) s.nation[k] = sc.nation[k];
+for (const k of ["treasury", "privy", "morale", "governance", "grain"]) if (sc.nation[k] !== undefined) s.nation[k] = sc.nation[k];
 s.reign.initialTreasury = s.stats.initialTreasury = s.nation.treasury;
 for (const z of s.nation.provinces) z.morale = clamp(s.nation.morale + (z.morale - 62));
 s.nation.army.frontiers.forEach((f, i) => { f.threat = sc.threat[i]; });
@@ -4961,10 +5037,11 @@ for (const p of s.court.posts) if (!p.provinceId) p.holder = null;
 s.court.officials.forEach((o, i) => {
 const c = cast[i];
 if (c) {
-const [n, post, faction, oage, personality, secret, abil, ambition] = c, a = nums(abil);
+const [n, post, faction, oage, personality, secret, abil, ambition, greed] = c, a = nums(abil);
 Object.assign(o, { name: n, post: "p" + post, faction: "f" + faction, age: Number(oage), personality, secret, ambition: Number(ambition),
 abilities: { 政: a[0], 军: a[1], 才: a[2], 德: a[3], 忠: a[4], 权谋: a[5] } });
 o.life = [personality];
+if (greed !== undefined) o.greed = Number(greed);
 } else {
 // 补缺的无名官员不抢剧本人物的戏：野心与权谋压低。
 o.post = free.shift() || null;
@@ -6272,6 +6349,43 @@ wish('hongli','为弘历定储基','储位、教养与健康须一并准备，�
 r('heir','弘历在世并已立为储君',{type:'isHeir',name:'弘历'}),r('study','弘历教养至少70',child('弘历','education'),70),
 r('health','弘历健康至少80',child('弘历','health'),80),r('tutor','弘历已拜师',{type:'childTutored',name:'弘历'})]),
 ],
+'han-lingdi':[
+macro('restore','重振汉室','让卖官败坏的朝纲与民心回转，不能只把钱留在宫中。',[
+n('gov','吏治至少70','governance',70),n('people','民心至少65','morale',65),n('debt','国库积欠清零','arrears',0,'lte'),
+n('rebels','各州均无民变','rebellions',0,'lte')],12),
+macro('palace-power','不再事事问张让','近侍不再占据朝职，天子还须有能力亲自理政。',[
+r('zhang','张让已无在任职位',{type:'inactiveOfficial',name:'张让'}),n('power','皇威至少70','prestige',70),n('rule','政略至少60','talent:政略',60)],9),
+wish('cai-yong','听蔡邕说经论乐','留住通经知音律的人，也听得进他的话。',[
+r('post','蔡邕在任，未下狱或致仕',serving('蔡邕')),r('favor','蔡邕好感至少80',official('蔡邕','favor'),80),
+r('talks','近36旬与蔡邕完成3轮面谈',{type:'officialTalks',name:'蔡邕'},3),n('letters','文采至少75','talent:文采',75)]),
+wish('liu-bian','为刘辩定储育才','幼子不能只仗母家，储位和教养都须落实。',[
+r('heir','刘辩在世并已立为储君',{type:'isHeir',name:'刘辩'}),r('tutor','刘辩已拜师',{type:'childTutored',name:'刘辩'}),
+r('study','刘辩教养至少60',child('刘辩','education'),60)]),
+],
+'song-huizong':[
+macro('peace','宣和真正太平','园石之外，各路百姓都要过得下去。',[
+n('people','每一州民心至少60','minMorale',60),n('disaster','每一州灾情不高于10','maxDisaster',10,'lte'),n('gov','吏治至少70','governance',70)],12),
+macro('border','不以边军赌国运','无论议和还是用兵，都须给北边留下能战能守的军队。',[
+r('liao','与辽通好、婚盟、朝贡或战胜后停战',country('辽','settledCountry')),r('threat','北境边患不高于35',border('北','threat'),35,'lte'),
+r('ready','北境战备至少75',border('北','readiness'),75),r('war','北境没有未结束战役',{type:'borderWars',dir:'北'},0,'lte')],9),
+wish('letters','宣和文墨传世','以书画之才编成一部大典，文事也须真正办完。',[
+n('book','本朝完成1次编修大典','project:编修大典',1),n('letters','文采至少95','talent:文采',95),n('virtue','圣德至少60','virtue',60)]),
+wish('empress','与郑后长相伴','顾惜旧日相伴之人，不只追逐眼前的新宠。',[
+r('company','郑氏在世、在宫且未入冷宫',{type:'companion',name:'郑氏'}),r('favor','郑氏宠眷至少85',{type:'consort',name:'郑氏',field:'favor'},85),
+r('health','郑氏健康至少60',{type:'consort',name:'郑氏',field:'health'},60),n('years','本朝在位满5年','reignYears',5)]),
+],
+'ming-xizong':[
+macro('palace','内廷不代天子','收回魏忠贤的职位，也要让清理后的朝纲稳得住。',[
+r('wei','魏忠贤已无在任职位',{type:'inactiveOfficial',name:'魏忠贤'}),n('gov','吏治至少70','governance',70),n('power','皇威至少70','prestige',70)],9),
+macro('liaodong','守住辽东门户','稳住东境军队与辽东民情，不以一道捷报冒充安定。',[
+r('threat','东境边患不高于35',border('东','threat'),35,'lte'),r('ready','东境战备至少75',border('东','readiness'),75),
+r('people','辽东民心至少60',province('辽东','morale'),60),r('war','东境没有未结束战役',{type:'borderWars',dir:'东'},0,'lte'),n('grain','现粮可供3个月军粮与赈济','grainMonths',3)],12),
+wish('workshop','木石之外有分寸','可寄情营造，也须把国用与百姓放在心上。',[
+n('garden','本朝完成1次修园','project:修园',1),n('debt','国库积欠清零','arrears',0,'lte'),n('people','民心至少60','morale',60)]),
+wish('sun','听懂孙承宗的辽事','让讲官留在朝中，亲自问清兵饷与守战。',[
+r('post','孙承宗在任，未下狱或致仕',serving('孙承宗')),r('favor','孙承宗好感至少80',official('孙承宗','favor'),80),
+r('talks','近36旬与孙承宗完成3轮面谈',{type:'officialTalks',name:'孙承宗'},3),n('rule','政略至少65','talent:政略',65)]),
+],
 };
 const SCENARIO_GOALS=Object.fromEntries(Object.entries(CATALOG).map(([scenarioId,goals])=>[scenarioId,goals.map(({suffix,...g})=>({...g,id:scenarioId+'-'+suffix,scenarioId}))]));
 function scenarioGoals(id) {return SCENARIO_GOALS[id] || [];}
@@ -6336,7 +6450,7 @@ const fields={official:['favor'],province:['morale','disaster'],border:['threat'
 if(!['official','serving','inactiveOfficial','officialTalks','province','border','borderWars','capital','consort','companion','child','isHeir','childTutored','countryWins','settledCountry'].includes(q.type)||
 pool&&(!q.id||!pool.some(x=>x.id===q.id))||['border','borderWars'].includes(q.type)&&!s.nation.army.frontiers.some(b=>b.dir===q.dir)||
 fields[q.type]&&!fields[q.type].includes(q.field)||q.posts&&(!Array.isArray(q.posts)||!q.posts.length||!q.posts.every(id=>s.court.posts.some(p=>p.id===id))))throw new Error('专属宏愿对象损坏');
-}else if(!['governance','morale','treasury','virtue','prestige','reignYears','arrears','rebellions','minMorale','maxDisaster','grainMonths','personalRule','livingHeir','heirTutored','heirEducation','talent:文采','talent:政略','project:编修大典','project:整饬吏治','project:修河'].includes(o.key))throw new Error('专属宏愿条件无效');
+}else if(!['governance','morale','treasury','virtue','prestige','reignYears','arrears','rebellions','minMorale','maxDisaster','grainMonths','personalRule','livingHeir','heirTutored','heirEducation','talent:文采','talent:政略','project:编修大典','project:整饬吏治','project:修河','project:修园'].includes(o.key))throw new Error('专属宏愿条件无效');
 }
 }
 }
@@ -9730,7 +9844,7 @@ function worldRules(state) {
   const sc = scenarioById(state.scenario);
   const modern = style === STYLES.modern;
   const frame = sc
-    ? `你是「${state.dynasty}」朝的叙事引擎。本局以${sc.year}${sc.title.split(" · ")[0]}即位之初的史实开局，官职、地名用该朝称谓（见王朝设定）。史实只用于人物性格、关系与背景；本局自开局起已偏离史实，生死、成败、任免一律以引擎结算为准，不得按史书预言或补写结局，也不得写开局之后的史事。`
+    ? `你是「${state.dynasty}」朝的叙事引擎。本局以${sc.year}${sc.title.split(" · ")[0]}的史实局势开局，官职、地名用该朝称谓（见王朝设定）。史实只用于人物性格、关系与背景；本局自开局起已偏离史实，生死、成败、任免一律以引擎结算为准，不得按史书预言或补写结局，也不得写开局之后的史事。`
     : `你是架空王朝「${state.dynasty}」的叙事引擎，制度近似明清。`;
   return `${frame}只输出一个 JSON 对象。\n铁律：引擎记账，模型叙事。所有钱粮、人物、派系、健康、受孕、生育、死亡、升迁、战争胜负、执行度由结算表决定，你不得追加或改写硬结果，不得另给数字。名册姓名一字不改，大臣称陛下、自称臣，妃嫔自称臣妾。人物各有利益。文风「${style.label}」：${style.rules}${pov.rules}\n【文风范文（只学笔法，不照搬人物与事件）】${style.sample}\n白描，禁用嘴角勾起、眼中闪过一丝${modern ? "" : "、现代词"}；对话用「」。亲密场面点到为止，禁止描写性行为或身体细节。共同经历摘要是旁白所知，NPC只知道自己参与、目睹或后来获知的部分；私下往事不得让未在场者无故知晓。人物各有立场，不替玩家决定；自由度只影响口谕裁决，不改变叙事一致性要求。`;
 }
