@@ -1,0 +1,196 @@
+{
+  "previews": [
+    {
+      "goals": [
+        "ming-yingzong-capital",
+        "ming-yingzong-border",
+        "ming-yingzong-yu-qian",
+        "ming-yingzong-empress"
+      ],
+      "images": [
+        {
+          "loaded": true,
+          "src": "http://127.0.0.1:4232/assets/art/scenes/court-1440.webp"
+        },
+        {
+          "loaded": true,
+          "src": "http://127.0.0.1:4232/assets/art/portraits/ming/emperor-young-01.webp"
+        }
+      ],
+      "scenario": "ming-yingzong",
+      "scrollWidth": 1280,
+      "width": 1280
+    },
+    {
+      "goals": [
+        "tang-xuanzong-command",
+        "tang-xuanzong-peace",
+        "tang-xuanzong-yang",
+        "tang-xuanzong-heir"
+      ],
+      "images": [
+        {
+          "loaded": true,
+          "src": "http://127.0.0.1:4232/assets/art/scenes/court-1440.webp"
+        },
+        {
+          "loaded": true,
+          "src": "http://127.0.0.1:4232/assets/art/portraits/tang/emperor-old-01.webp"
+        }
+      ],
+      "scenario": "tang-xuanzong",
+      "scrollWidth": 1280,
+      "width": 1280
+    },
+    {
+      "goals": [
+        "song-qinzong-defence",
+        "song-qinzong-peace",
+        "song-qinzong-li-gang",
+        "song-qinzong-son"
+      ],
+      "images": [
+        {
+          "loaded": true,
+          "src": "http://127.0.0.1:4232/assets/art/scenes/court-1440.webp"
+        },
+        {
+          "loaded": true,
+          "src": "http://127.0.0.1:4232/assets/art/portraits/song/emperor-young-01.webp"
+        }
+      ],
+      "scenario": "song-qinzong",
+      "scrollWidth": 1280,
+      "width": 1280
+    },
+    {
+      "goals": [
+        "qing-jiaqing-heshen",
+        "qing-jiaqing-people",
+        "qing-jiaqing-teacher",
+        "qing-jiaqing-minning"
+      ],
+      "images": [
+        {
+          "loaded": true,
+          "src": "http://127.0.0.1:4232/assets/art/scenes/court-1440.webp"
+        },
+        {
+          "loaded": true,
+          "src": "http://127.0.0.1:4232/assets/art/portraits/qing/emperor-young-01.webp"
+        }
+      ],
+      "scenario": "qing-jiaqing",
+      "scrollWidth": 1280,
+      "width": 1280
+    },
+    {
+      "goals": [
+        "ming-yingzong-capital",
+        "ming-yingzong-border",
+        "ming-yingzong-yu-qian",
+        "ming-yingzong-empress"
+      ],
+      "images": [
+        {
+          "loaded": true,
+          "src": "http://127.0.0.1:4232/assets/art/scenes/court-1440.webp"
+        },
+        {
+          "loaded": true,
+          "src": "http://127.0.0.1:4232/assets/art/portraits/ming/emperor-young-01.webp"
+        }
+      ],
+      "scenario": "ming-yingzong",
+      "scrollWidth": 390,
+      "width": 390
+    },
+    {
+      "goals": [
+        "tang-xuanzong-command",
+        "tang-xuanzong-peace",
+        "tang-xuanzong-yang",
+        "tang-xuanzong-heir"
+      ],
+      "images": [
+        {
+          "loaded": true,
+          "src": "http://127.0.0.1:4232/assets/art/scenes/court-1440.webp"
+        },
+        {
+          "loaded": true,
+          "src": "http://127.0.0.1:4232/assets/art/portraits/tang/emperor-old-01.webp"
+        }
+      ],
+      "scenario": "tang-xuanzong",
+      "scrollWidth": 390,
+      "width": 390
+    },
+    {
+      "goals": [
+        "song-qinzong-defence",
+        "song-qinzong-peace",
+        "song-qinzong-li-gang",
+        "song-qinzong-son"
+      ],
+      "images": [
+        {
+          "loaded": true,
+          "src": "http://127.0.0.1:4232/assets/art/scenes/court-1440.webp"
+        },
+        {
+          "loaded": true,
+          "src": "http://127.0.0.1:4232/assets/art/portraits/song/emperor-young-01.webp"
+        }
+      ],
+      "scenario": "song-qinzong",
+      "scrollWidth": 390,
+      "width": 390
+    },
+    {
+      "goals": [
+        "qing-jiaqing-heshen",
+        "qing-jiaqing-people",
+        "qing-jiaqing-teacher",
+        "qing-jiaqing-minning"
+      ],
+      "images": [
+        {
+          "loaded": true,
+          "src": "http://127.0.0.1:4232/assets/art/scenes/court-1440.webp"
+        },
+        {
+          "loaded": true,
+          "src": "http://127.0.0.1:4232/assets/art/portraits/qing/emperor-young-01.webp"
+        }
+      ],
+      "scenario": "qing-jiaqing",
+      "scrollWidth": 390,
+      "width": 390
+    }
+  ],
+  "trial": {
+    "scenario": "ming-yingzong",
+    "year": "正统14年",
+    "turnAfterReload": 2,
+    "treasuryWanLiang": 10091,
+    "createdOfficial": "张三",
+    "age": 12,
+    "createdPost": "工业部长",
+    "loyalty": "开局全体官员100",
+    "policy": "每旬国库增加一百万两",
+    "policySurvivedReload": true,
+    "viewports": [
+      {
+        "width": 390,
+        "scrollWidth": 390
+      },
+      {
+        "width": 360,
+        "scrollWidth": 360
+      }
+    ],
+    "command": "国库设为一亿两；全体官员忠诚设为100；创建官员张三；任命张三为工业部长；张三年龄设为12；每旬国库增加一百万两"
+  },
+  "method": "Codex In-app Browser; localhost trial save; no production saves or real API credentials"
+}

@@ -18,14 +18,14 @@ test('第一步 随心所欲赐死为真实结果，A1放行，后续在世名�
  const c=commitTurn(s,f,n);assert.ok(!roster(c).includes('张三'));assert.deepEqual(s,before);
  assert.deepEqual(commitTurn(c,f,n),c);assert.equal(c.history.at(-1).intentResults[0].type,'kill');
 });
-test('第一步 千万两按余额截断，实际金额可叙述，原愿望金额不能冒充已拨',()=>{
- const s=start(),f=forecast(s,'拨银一千万两修河'),r=f.state.intentResults.find(r=>r.type==='allocate');
+test('写实档千万两仍按余额截断，实际金额可叙述，原愿望金额不能冒充已拨',()=>{
+ const s=start();s.settings.freedom='real';s.emperor.talents.权谋=100;const f=forecast(s,'拨银一千万两修河'),r=f.state.intentResults.find(r=>r.type==='allocate');
  assert.equal(r.status,'success');assert.equal(r.clamped,true);assert.ok(r.actual.amount>0&&r.actual.amount<=s.nation.treasury);
  assert.equal(r.actual.destination,'修河');assert.equal(f.state.nation.treasury,0);
  const n=validateTurn({chapter:{朝:'拨银'+r.actual.amount+'万两修河。',午:'',夜:''}},f);assert.equal(n.chapter.朝,'拨银'+r.actual.amount+'万两修河。');
  assert.equal(validateTurn({chapter:{朝:'拨银一千万两修河。',午:'',夜:''}},f).chapter.朝,'');
 });
-test('第一步 未知ID降other，模型不能开放孕产小产，也不能创造人物',()=>{
+test('第一步 未知ID降other，旧动作不能凭未知ID编造人物或孕产',()=>{
  const s=start(),inputs=[{id:'朝',slot:'朝',text:'将陌生人赐死'}],before=structuredClone(s);
  for(const type of ['kill','appoint','war','pregnancy']){
   const a=validateIntents({actions:[{inputId:'朝',type,targetId:'fake',countryId:'fake'}]},s,inputs);assert.equal(a[0].type,'other');

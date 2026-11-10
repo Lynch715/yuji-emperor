@@ -96,9 +96,9 @@ export function worldRules(state) {
   const sc = scenarioById(state.scenario);
   const modern = style === STYLES.modern;
   const frame = sc
-    ? `你是「${state.dynasty}」朝的叙事引擎。本局以${sc.year}${sc.title.split(" · ")[0]}即位之初的史实开局，官职、地名用该朝称谓（见王朝设定）。史实只用于人物性格、关系与背景；本局自开局起已偏离史实，生死、成败、任免一律以引擎结算为准，不得按史书预言或补写结局，也不得写开局之后的史事。`
+    ? `你是「${state.dynasty}」朝的叙事引擎。本局以${sc.year}${sc.title.split(" · ")[0]}的史实局势开局，官职、地名用该朝称谓（见王朝设定）。史实只用于人物性格、关系与背景；本局自开局起已偏离史实，生死、成败、任免一律以引擎结算为准，不得按史书预言或补写结局，也不得写开局之后的史事。`
     : `你是架空王朝「${state.dynasty}」的叙事引擎，制度近似明清。`;
-  return `${frame}只输出一个 JSON 对象。\n铁律：引擎记账，模型叙事。所有钱粮、人物、派系、健康、受孕、生育、死亡、升迁、战争胜负、执行度由结算表决定，你不得追加或改写硬结果，不得另给数字。名册姓名一字不改，大臣称陛下、自称臣，妃嫔自称臣妾。人物各有利益。文风「${style.label}」：${style.rules}${pov.rules}\n【文风范文（只学笔法，不照搬人物与事件）】${style.sample}\n白描，禁用嘴角勾起、眼中闪过一丝${modern ? "" : "、现代词"}；对话用「」。亲密场面点到为止，禁止描写性行为或身体细节。共同经历摘要是旁白所知，NPC只知道自己参与、目睹或后来获知的部分；私下往事不得让未在场者无故知晓。人物各有立场，不替玩家决定；自由度只影响口谕裁决，不改变叙事一致性要求。`;
+  return `${frame}${state.v>=26&&state.settings.freedom==='free'?'当前是言出法随：以引擎执行的玩家指令及御旨改定世界为事实，已成功的改写不得用年代、职权、资历或钱粮反悔；未要求的后果不可擅自增加。':''}只输出一个 JSON 对象。\n铁律：引擎记账，模型叙事。所有钱粮、人物、派系、健康、受孕、生育、死亡、升迁、战争胜负、执行度由结算表决定，你不得追加或改写硬结果，不得另给数字。名册姓名一字不改，大臣称陛下、自称臣，妃嫔自称臣妾。人物各有利益。文风「${style.label}」：${style.rules}${pov.rules}\n【文风范文（只学笔法，不照搬人物与事件）】${style.sample}\n白描，禁用嘴角勾起、眼中闪过一丝${modern ? "" : "、现代词"}；对话用「」。亲密场面点到为止，禁止描写性行为或身体细节。共同经历摘要是旁白所知，NPC只知道自己参与、目睹或后来获知的部分；私下往事不得让未在场者无故知晓。人物各有立场，不替玩家决定；自由度只影响口谕裁决，不改变叙事一致性要求。`;
 }
 function examFaction(o,value){return o.keju&&!o.keju.revealed.includes('faction')?'派系待察':value;}
 export function roster(state) {
@@ -139,7 +139,7 @@ export const FACT_WINDOW = 12;
 const stable = (value) => JSON.stringify(value);
 const r1 = (n) => (Number.isFinite(n) ? Math.round(n * 10) / 10 : n);
 export function systemPrompt(state, task = "turn") {
-  if(task === "talk")return worldRules(state) + "\n" + TALK_RULES;
+  if(task === "talk")return worldRules(state) + "\n" + (state.v>=26&&state.settings.freedom==='free'?TALK_RULES.replace('不得超过职权','言出法随已结算的指令须照实响应，不以职权、资历或钱粮反悔'):TALK_RULES);
   return worldRules(state) + "\n" + TASK_RULES.replace("{{LENGTH}}", (LENGTHS[state.settings.length] || LENGTHS.standard).words);
 }
 const TASK_RULES = `【叙事守则】死亡、怀孕、生产、小产、任免、战果、执行度只在结算表列出时才可写成本旬发生；其余只能作回忆或传闻，并用“曾”“昔”“当年”标明。不写结算表以外的金额、人数、年龄。人物反应最多3条，仅限官员，须在本章出场，每人好感-5到5，合计绝对值不超过10。宏愿证据须逐字引用本章原句并含该目标全部关键词。长期事实最多3条，只记本章写明、日后仍成立的事。
@@ -174,6 +174,7 @@ export function dynastyBible(state,context=null) {
     宗室女: (state.harem.royalWomen || []).map((w) => w.id + "｜" + w.name),
     外邦: state.foreign.map((f) => [f.id, f.name, f.ruler].join("｜")),
     州郡: state.nation.provinces.map((z) => z.name),
+    ...(state.fiat?.objects.length||state.fiat?.rules.length?{御旨改定的世界:state.fiat}:{}),
     // Full cards follow the stable compact roster to preserve prefix caching.
     出场人物: state.court.officials.filter(o=>o.alive&&full.has(o.id)).slice().sort(byId)
       .map(o=>[o.id,o.name,post(o.id),examFaction(o,faction(o.faction)),o.personality||''].join('｜'))
@@ -286,7 +287,7 @@ export function talkMessages(state, result, log = []) {
   const known = secretKnown || (result.kind === "试探" && result.success);
   const post = postTitle(state, state.court.posts.find((p) => p.holder === npc.id));
   const header = dynastyBible(state,{person:result.person,line:result.line,log}) + "\n【面谈对象】" + stable({ id: card.id, name: card.name, 职位: post || card.rank || card.status || "", personality: card.personality, family: card.family, faction: card.keju&&!card.keju.revealed.includes('faction')?'待察':card.faction, ruler: card.ruler, demand: card.demand }) +
-    "\n【此人能做到什么】妃嫔不能给钱兵；其他职权外请求必须回去议。\n";
+    (state.v>=26&&state.settings.freedom==='free'?"\n【言出法随】玩家已交引擎执行的要求照裁决响应，不以人物职权或余额拒绝已成功的指令。\n":"\n【此人能做到什么】妃嫔不能给钱兵；其他职权外请求必须回去议。\n");
   const recent = (Array.isArray(log) ? log : [])
     .filter((t) => t && t.person === result.person && t.turn === result.turn && t.id !== result.id && t.reply)
     .slice(-20);

@@ -1,0 +1,361 @@
+{
+  "browser": "Codex In-app Browser",
+  "url": "http://127.0.0.1:4231/",
+  "rows": [
+    {
+      "goals": [
+        "han-lingdi-restore",
+        "han-lingdi-palace-power",
+        "han-lingdi-cai-yong",
+        "han-lingdi-liu-bian"
+      ],
+      "portraits": [
+        {
+          "loaded": true,
+          "src": "assets/art/scenes/court-1440.webp",
+          "width": 1280
+        },
+        {
+          "loaded": true,
+          "src": "assets/art/portraits/han/emperor-young-01.webp",
+          "width": 400
+        }
+      ],
+      "scenario": "han-lingdi",
+      "scrollWidth": 1280,
+      "width": 1280
+    },
+    {
+      "goals": [
+        "song-huizong-peace",
+        "song-huizong-border",
+        "song-huizong-letters",
+        "song-huizong-empress"
+      ],
+      "portraits": [
+        {
+          "loaded": true,
+          "src": "assets/art/scenes/court-1440.webp",
+          "width": 1280
+        },
+        {
+          "loaded": true,
+          "src": "assets/art/portraits/song/emperor-young-01.webp",
+          "width": 400
+        }
+      ],
+      "scenario": "song-huizong",
+      "scrollWidth": 1280,
+      "width": 1280
+    },
+    {
+      "goals": [
+        "ming-xizong-palace",
+        "ming-xizong-liaodong",
+        "ming-xizong-workshop",
+        "ming-xizong-sun"
+      ],
+      "portraits": [
+        {
+          "loaded": true,
+          "src": "assets/art/scenes/court-1440.webp",
+          "width": 1280
+        },
+        {
+          "loaded": true,
+          "src": "assets/art/portraits/ming/emperor-young-01.webp",
+          "width": 400
+        }
+      ],
+      "scenario": "ming-xizong",
+      "scrollWidth": 1280,
+      "width": 1280
+    },
+    {
+      "dialogWidth": 372,
+      "goals": [
+        "han-lingdi-restore",
+        "han-lingdi-palace-power",
+        "han-lingdi-cai-yong",
+        "han-lingdi-liu-bian"
+      ],
+      "scenario": "han-lingdi",
+      "scrollWidth": 390,
+      "width": 390
+    },
+    {
+      "dialogWidth": 372,
+      "goals": [
+        "song-huizong-peace",
+        "song-huizong-border",
+        "song-huizong-letters",
+        "song-huizong-empress"
+      ],
+      "scenario": "song-huizong",
+      "scrollWidth": 390,
+      "width": 390
+    },
+    {
+      "dialogWidth": 372,
+      "goals": [
+        "ming-xizong-palace",
+        "ming-xizong-liaodong",
+        "ming-xizong-workshop",
+        "ming-xizong-sun"
+      ],
+      "scenario": "ming-xizong",
+      "scrollWidth": 390,
+      "width": 390
+    },
+    {
+      "scrollWidth": 390,
+      "stage": "ming-opening",
+      "title": "明 · 天启1年",
+      "width": 390
+    },
+    {
+      "images": [
+        {
+          "loaded": true,
+          "src": "assets/art/scenes/court-1440.webp"
+        },
+        {
+          "loaded": true,
+          "src": "assets/art/portraits/ming/official-old-01.webp"
+        },
+        {
+          "loaded": true,
+          "src": "assets/art/portraits/ming/eunuch-all-01.webp"
+        },
+        {
+          "loaded": true,
+          "src": "assets/art/portraits/ming/official-mature-01.webp"
+        },
+        {
+          "loaded": true,
+          "src": "assets/art/portraits/ming/official-old-02.webp"
+        },
+        {
+          "loaded": true,
+          "src": "assets/art/portraits/ming/official-mature-02.webp"
+        },
+        {
+          "loaded": true,
+          "src": "assets/art/portraits/ming/official-mature-03.webp"
+        },
+        {
+          "loaded": false,
+          "src": "assets/art/portraits/ming/official-old-03.webp"
+        },
+        {
+          "loaded": false,
+          "src": "assets/art/portraits/ming/general-all-01.webp"
+        },
+        {
+          "loaded": false,
+          "src": "assets/art/portraits/ming/general-all-02.webp"
+        },
+        {
+          "loaded": true,
+          "src": "assets/art/portraits/ming/official-old-04.webp"
+        },
+        {
+          "loaded": true,
+          "src": "assets/art/portraits/ming/official-mature-04.webp"
+        },
+        {
+          "loaded": false,
+          "src": "assets/art/portraits/ming/official-mature-05.webp"
+        },
+        {
+          "loaded": true,
+          "src": "assets/art/portraits/ming/official-mature-06.webp"
+        },
+        {
+          "loaded": false,
+          "src": "assets/art/portraits/ming/official-mature-07.webp"
+        },
+        {
+          "loaded": false,
+          "src": "assets/art/portraits/ming/official-mature-08.webp"
+        },
+        {
+          "loaded": false,
+          "src": "assets/art/portraits/ming/general-all-03.webp"
+        },
+        {
+          "loaded": false,
+          "src": "assets/art/portraits/ming/official-old-05.webp"
+        },
+        {
+          "loaded": false,
+          "src": "assets/art/portraits/ming/official-mature-09.webp"
+        },
+        {
+          "loaded": false,
+          "src": "assets/art/portraits/ming/official-mature-10.webp"
+        },
+        {
+          "loaded": false,
+          "src": "assets/art/portraits/ming/official-mature-11.webp"
+        },
+        {
+          "loaded": false,
+          "src": "assets/art/portraits/ming/official-mature-12.webp"
+        },
+        {
+          "loaded": false,
+          "src": "assets/art/portraits/ming/official-old-06.webp"
+        },
+        {
+          "loaded": false,
+          "src": "assets/art/portraits/ming/official-old-07.webp"
+        },
+        {
+          "loaded": false,
+          "src": "assets/art/portraits/ming/official-old-08.webp"
+        },
+        {
+          "loaded": false,
+          "src": "assets/art/portraits/ming/official-mature-13.webp"
+        }
+      ],
+      "scrollWidth": 1280,
+      "stage": "ming-court",
+      "width": 1280
+    },
+    {
+      "scrollWidth": 360,
+      "stage": "han-opening-360",
+      "title": "汉 · 光和1年",
+      "width": 360
+    },
+    {
+      "images": [
+        {
+          "loaded": true,
+          "src": "assets/art/scenes/court-1440.webp"
+        },
+        {
+          "loaded": true,
+          "src": "assets/art/portraits/song/official-old-01.webp"
+        },
+        {
+          "loaded": true,
+          "src": "assets/art/portraits/song/official-mature-01.webp"
+        },
+        {
+          "loaded": true,
+          "src": "assets/art/portraits/song/eunuch-all-01.webp"
+        },
+        {
+          "loaded": true,
+          "src": "assets/art/portraits/song/eunuch-all-01.webp"
+        },
+        {
+          "loaded": true,
+          "src": "assets/art/portraits/song/official-mature-02.webp"
+        },
+        {
+          "loaded": true,
+          "src": "assets/art/portraits/song/official-mature-03.webp"
+        },
+        {
+          "loaded": false,
+          "src": "assets/art/portraits/song/general-all-01.webp"
+        },
+        {
+          "loaded": false,
+          "src": "assets/art/portraits/song/official-mature-04.webp"
+        },
+        {
+          "loaded": false,
+          "src": "assets/art/portraits/song/official-mature-05.webp"
+        },
+        {
+          "loaded": true,
+          "src": "assets/art/portraits/song/official-old-02.webp"
+        },
+        {
+          "loaded": true,
+          "src": "assets/art/portraits/song/official-mature-06.webp"
+        },
+        {
+          "loaded": false,
+          "src": "assets/art/portraits/song/official-old-03.webp"
+        },
+        {
+          "loaded": false,
+          "src": "assets/art/portraits/song/official-mature-07.webp"
+        },
+        {
+          "loaded": false,
+          "src": "assets/art/portraits/song/official-mature-08.webp"
+        },
+        {
+          "loaded": false,
+          "src": "assets/art/portraits/song/general-all-02.webp"
+        },
+        {
+          "loaded": false,
+          "src": "assets/art/portraits/song/official-mature-09.webp"
+        },
+        {
+          "loaded": false,
+          "src": "assets/art/portraits/song/official-mature-10.webp"
+        },
+        {
+          "loaded": false,
+          "src": "assets/art/portraits/song/official-old-04.webp"
+        },
+        {
+          "loaded": false,
+          "src": "assets/art/portraits/song/official-mature-09.webp"
+        },
+        {
+          "loaded": false,
+          "src": "assets/art/portraits/song/official-mature-10.webp"
+        },
+        {
+          "loaded": false,
+          "src": "assets/art/portraits/song/official-mature-01.webp"
+        },
+        {
+          "loaded": false,
+          "src": "assets/art/portraits/song/official-mature-02.webp"
+        },
+        {
+          "loaded": false,
+          "src": "assets/art/portraits/song/official-mature-03.webp"
+        },
+        {
+          "loaded": false,
+          "src": "assets/art/portraits/song/official-mature-04.webp"
+        },
+        {
+          "loaded": false,
+          "src": "assets/art/portraits/song/official-mature-05.webp"
+        }
+      ],
+      "scrollWidth": 1280,
+      "stage": "song-court",
+      "width": 1280
+    },
+    {
+      "scrollWidth": 360,
+      "stage": "song-turn-360",
+      "width": 360
+    },
+    {
+      "stage": "song-persisted-reopen",
+      "hasEmperor": true,
+      "hasSecondTurn": true
+    }
+  ],
+  "logs": [],
+  "notes": [
+    "使用完整AX快照确认重新打开后赵佶、第2旬及原章均保留。",
+    "朝堂使用loading=lazy，未滚入视区的头像尚未加载；可见头像正常，全部取图路径另经Node验证存在。"
+  ],
+  "scope": "本机4231新建三卷；未访问或更改线上存档。"
+}

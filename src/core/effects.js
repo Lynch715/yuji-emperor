@@ -1,4 +1,5 @@
 import { clone } from "./state.js";
+import {WORLD_MAX} from './sandbox-schema.js';
 export function clamp(n, low = 0, high = 100) {
   return Math.min(high, Math.max(low, Number.isFinite(n) ? n : 0));
 }
@@ -10,7 +11,8 @@ export function diminishing(value,delta){return delta>0?delta*(value>=90?0.25:va
 export function applyEffects(state, effects = {}, source = "引擎结算") {
   const s = clone(state),
     entries = [];
-  const set = (obj, key, delta, path, max = 100, min = 0) => {
+  const fiat=s.v>=26&&s.settings?.freedom==='free',expanded=s.v>=26&&(fiat||s.fiat?.used),limit=expanded?WORLD_MAX:100;
+  const set = (obj, key, delta, path, max = limit, min = 0) => {
     if (typeof delta !== "number" || !Number.isFinite(delta)) return;
     const old = obj[key];
     obj[key] = clamp(old + delta, min, max);
@@ -26,10 +28,10 @@ export function applyEffects(state, effects = {}, source = "引擎结算") {
   for (const [f,debt] of [['treasury','arrears'],['privy','privyArrears'],['grain','grainArrears']]) {
     const delta=effects[f];
     if(Number.isFinite(delta)&&delta<0&&-delta>s.nation[f]){
-      s.nation[debt]??=0;
-      set(s.nation,debt,-delta-s.nation[f],'nation.'+debt,Number.MAX_SAFE_INTEGER);
+      if(fiat){const before=s.nation[f];s.nation[f]=-delta;s.fiat.used=true;entries.push({path:'nation.'+f,before,after:-delta,delta:-delta-before,source:'言出法随：补足所需'});}
+      else {s.nation[debt]??=0;set(s.nation,debt,-delta-s.nation[f],'nation.'+debt,Number.MAX_SAFE_INTEGER);}
     }
-    set(s.nation,f,delta,'nation.'+f,1000000);
+    set(s.nation,f,delta,'nation.'+f,expanded?WORLD_MAX:1000000);
   }
   for(const f of ['arrears','privyArrears','grainArrears'])if(Number.isFinite(effects[f])){s.nation[f]??=0;set(s.nation,f,effects[f],'nation.'+f,Number.MAX_SAFE_INTEGER);}
   if(Number.isFinite(effects.morale))for(const p of s.nation.provinces)

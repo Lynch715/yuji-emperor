@@ -1,4 +1,5 @@
 import { portraitHTML, sceneHTML, sceneKey } from './art.js';
+import {fiatEnabled} from '../core/fiat.js';
 import { examiners } from '../core/keju.js';
 import {researchFields,industryFields,developmentAction,updateDevelopmentPreview} from './technology.js';
 import {sceneActionFields,sceneActionLabel} from './scene-view.js';
@@ -14,7 +15,7 @@ import { selectionDescription } from "./view-model.js";
 import { WAR_GOALS, treatyProtected } from '../core/campaign-rules.js';
 export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
   if (kind === "上朝" || kind === "批折") return memorialDialog(s,kind,preferred,onSchedule,null,{newBatch:true});
-  if(s.regency&&!["批折","召见","自拟情节","私下行事","歇息"].includes(kind))throw new Error("摄政期间只能批折、召见、经筵或歇息");
+  if(s.regency&&!fiatEnabled(s)&&!["批折","召见","自拟情节","私下行事","歇息"].includes(kind))throw new Error("摄政期间只能批折、召见、经筵或歇息");
   const rule = ACTIONS[kind];
   if (!rule) throw new Error("未识别的行动");
   const opt = (items, value = "id", label = "name") =>
@@ -135,6 +136,7 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
       '<label for="regent">留守大臣</label><select id="regent">' +
       opt(s.court.officials.filter((o) => o.alive)) +
       '</select><p class="warning">先通过外交宣战。亲征持续至战役结束，期间无法在京安排其他行动。</p>';
+  if(kind==='下旨'&&fiatEnabled(s))fields='<p class="muted">言出法随：直接写想要的结果，可连写多条。钱粮不足会自动补足，新人物、势力和制度也可创建。</p>'+fields.replace('着有司依议施行。','例如：国库设为一亿两；全体官员忠诚设为100；创建官员张三；任命张三为工业部长。');
   openDialog(
     kind + " · 安排本旬",
     '<form id="action-form"><div class="segmented" role="group" aria-label="行动时辰">'+rule.slots.map(sl=>'<button type="button" data-form-slot="'+sl+'" aria-pressed="'+(sl===(rule.slots.includes(preferred)?preferred:rule.slots[0]))+'">'+sl+'</button>').join('')+'</div><select id="action-slot" class="hidden" aria-label="时辰">' +
@@ -156,6 +158,7 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
     "action-shell",
   );
   $('#modal .dialog-head').insertAdjacentHTML('beforebegin','<div id="action-art">' + sceneHTML(sceneKey({kind},preferred),'action',preferred==='夜') + '</div>');
+  if(kind==='下旨'&&fiatEnabled(s))$('#edict-type').value='禁令';
   if(kind==='自拟情节')$('#modal').classList.add('scene-dialog');
   document.querySelectorAll('[data-form-slot]').forEach(b=>b.onclick=()=>{
     $('#action-slot').value=b.dataset.formSlot;

@@ -33,7 +33,7 @@ test('真实行动只裁决一次：选中人物的代词能解析，成功处�
  const war=action('向他宣战',['w0']),orders=localIntents(s,intentInputs({午:war}));assert.equal(orders[0].type,'war');assert.equal(orders[0].countryId,'w0');
 });
 test('超额拨款按实际余额截断，故事只允许真实扣款数字',()=>{
- const s=fresh();s.nation.treasury=8;const a=action('拨银一千万两修河',['o1']),schedule={午:a},f=forecastTurn(s,schedule,localIntents(s,intentInputs(schedule)));
+ const s=fresh('real');s.emperor.talents.权谋=100;s.nation.treasury=8;const a=action('拨银一千万两修河',['o1']),schedule={午:a},f=forecastTurn(s,schedule,localIntents(s,intentInputs(schedule)));
  const r=f.scenes[0].results[0];assert.equal(r.actual.amount,f.entries.filter(e=>e.source==='口谕调拨'&&e.path==='nation.treasury').reduce((n,e)=>n-e.delta,0));assert.ok(r.actual.amount<=8);
  assert.equal(validateTurn({chapter:{朝:'',夜:'',午:'户部已拨一千万两。'}},f).chapter.午,'');
 });
@@ -78,7 +78,7 @@ test('孕产与未成年侍寝不由自拟情节放行，露骨句照常替换',
 });
 test('未知ID、重复人选、空梗概拒绝；摄政仍不能借此任免',()=>{
  const s=fresh();for(const a of [action('散步',['fake']),action('散步',['o0','o0']),action('')])assert.throws(()=>forecastTurn(s,{夜:a}));
- s.regency={regentId:'o0',until:30};const a=action('将他赐死',['o1']),f=forecastTurn(s,{朝:a},localIntents(s,intentInputs({朝:a})));
+ s.settings.freedom='real';s.regency={regentId:'o0',until:30};const a=action('将他赐死',['o1']),f=forecastTurn(s,{朝:a},localIntents(s,intentInputs({朝:a})));
  assert.equal(f.scenes[0].results[0].status,'failed');assert.equal(f.state.court.officials.find(o=>o.id==='o1').alive,true);
 });
 test('待续保存、压缩恢复及失败重试保留原骰和裁决，不写另一份进度',()=>{
@@ -119,12 +119,12 @@ test('已完成情节也保留在恢复副本中，主库缺失后仍可接着�
  const s=step(start()).next;await createSaveStore(io).save(1,s);p.clear();const loaded=await createSaveStore(io).load(1);assert.equal(loaded.readOnly,false);assert.equal(record(loaded.state).steps.length,1);assert.doesNotThrow(()=>step(loaded.state));
 });
 test('同一章接着写不重置A9好感额度，原场嘉奖与后续追加合计仍受限',()=>{
- const s=fresh(),a=action('嘉奖沈守正',['o0']),f=forecastTurn(s,{夜:a},localIntents(s,intentInputs({夜:a}))),n=commitTurn(s,f,mockNarrative(f));
+ const s=fresh('real');s.emperor.talents.权谋=100;const a=action('嘉奖沈守正',['o0']),f=forecastTurn(s,{夜:a},localIntents(s,intentInputs({夜:a}))),n=commitTurn(s,f,mockNarrative(f));
  const before=n.court.officials[0].favor,input=sceneInput(n,record(n),'追加嘉奖沈守正'),g=forecastScene(n,record(n).id,input.text,localIntents(n,[input]));
  assert.equal(g.results[0].actual.amount,0);assert.equal(g.state.court.officials[0].favor,before);
 });
 test('原场模型人物反应也计入续写好感额度，不借续写再次加满',()=>{
- const s=fresh(),f=forecastTurn(s,{夜:action('与沈守正谈心',['o0'])}),narrative=mockNarrative(f);narrative.reactions=[{id:'o0',favorDelta:5}];
+ const s=fresh('real');s.emperor.talents.权谋=100;const f=forecastTurn(s,{夜:action('与沈守正谈心',['o0'])}),narrative=mockNarrative(f);narrative.reactions=[{id:'o0',favorDelta:5}];
  const n=commitTurn(s,f,narrative),input=sceneInput(n,record(n),'嘉奖沈守正'),g=forecastScene(n,record(n).id,input.text,localIntents(n,[input]));assert.equal(g.results[0].actual.amount,0);
 });
 

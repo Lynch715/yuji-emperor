@@ -4311,7 +4311,7 @@ return [s?.emperor, ...(s?.court.officials || []), ...(s?.harem.consorts || []),
 function contains(list, p) { return list?.some(x => x === p || p.id && x.id === p.id); }
 function portraitPool(s, p, role = '') {
 if (!s || !p) return null;
-const dynasty = scenarioById(s.scenario)?.posts || 'ming';
+const sc = scenarioById(s.scenario), dynasty = sc?.posts || 'ming';
 if (role === 'scholar') return 'shared/scholar-' + (p.age < 30 ? 'young' : 'mature');
 if (role === 'dowager') return dynasty === 'ming' ? 'ming/dowager-all' : null;
 const retained = s.artFaces?.[artPersonKey(s,p)];
@@ -4321,7 +4321,7 @@ if (contains(s.court.officials, p)) {
 if (p.gender !== '男') return null;
 const index = s.court.posts.findIndex(post => post.holder === p.id || p.post && post.id === p.post);
 return dynasty + '/' + (index === 9 || index >= 25 && index <= 28 ? 'general-all' :
-(dynasty === 'han' ? index === 10 : index === 8 && dynasty !== 'qing') ? 'eunuch-all' : 'official-' + (p.age < 55 ? 'mature' : 'old'));
+(sc?.eunuchPosts ? sc.eunuchPosts.includes(index) : dynasty === 'han' ? index === 10 : index === 8 && dynasty !== 'qing') ? 'eunuch-all' : 'official-' + (p.age < 55 ? 'mature' : 'old'));
 }
 if (contains(s.harem.consorts, p) || contains(s.harem.candidates, p))
 return dynasty + '/consort-' + (['皇后', '皇贵妃', '贵妃'].includes(p.rank) ? 'high' : 'regular');
@@ -4714,6 +4714,7 @@ return {ART_FOCUS,ART_HALLS,ART_POOLS,ART_SCENES,ART_UNIQUE,HALL_SCENES};
 const { clone } = __load("src/core/state.js");
 const { clamp } = __load("src/core/effects.js");
 const { factionPowers } = __load("src/core/politics.js");
+const { EXTRA_SCENARIOS } = __load("src/core/extra-scenarios.js");
 // 官职显示名：引擎内部仍按原职名（内阁首辅、户部尚书……）匹配规则，只换给人看的名字。
 // 下标与 POST_NAMES 0–28 对应；省级职官另由 governor 拼接。
 const POSTS = {
@@ -4723,7 +4724,7 @@ song: "同中书门下平章事 三司使 枢密使 吏部尚书 礼部尚书 �
 ming: "内阁首辅 户部尚书 兵部尚书 吏部尚书 礼部尚书 刑部尚书 工部尚书 左都御史 司礼监掌印 京营戎政 内阁次辅 内阁大学士 詹事府詹事 户部侍郎 兵部侍郎 吏部侍郎 礼部侍郎 刑部侍郎 总理河道 翰林学士 太子太傅 大理寺卿 太常寺卿 通政使 宗人令 宣大总兵 甘肃总兵 两广总兵 蓟辽总兵",
 qing: "首席大学士 户部尚书 兵部尚书 吏部尚书 礼部尚书 刑部尚书 工部尚书 左都御史 内务府总管 领侍卫内大臣 议政大臣 大学士 协办大学士 户部侍郎 兵部侍郎 吏部侍郎 礼部侍郎 刑部侍郎 工部侍郎 翰林院掌院学士 太子太傅 大理寺卿 钦天监监正 通政使 宗人府宗令 北路将军 西路将军 南路将军 东路将军",
 };
-// 官员：姓名｜职位下标｜派系下标｜年龄｜性格｜秘密｜能力（政军才德忠谋）｜野心
+// 官员：姓名｜职位下标｜派系下标｜年龄｜性格｜秘密｜能力（政军才德忠谋）｜野心｜贪墨（可选）
 // 后宫：姓名｜位分｜家世｜年龄｜派系下标｜宠眷｜秘密
 // 皇嗣：姓名｜性别｜年龄｜母（后宫下标，可空）｜资质
 // 外邦：国名｜君主｜关系｜态度｜边境｜诉求
@@ -4904,6 +4905,82 @@ children: ["弘时|男|18|3|50", "弘历|男|11|2|85", "福惠|男|1|1|60"],
 foreign: ["沙俄|彼得一世|冷淡|35|北|划界与通商", "准噶尔|策妄阿拉布坦|冷淡|20|西|西藏与哈密", "青海和硕特|罗卜藏丹津|通好|40|西|总管青海", "安南|黎维祹|朝贡|55|南|册封", "朝鲜|李昀|朝贡|60|东|册封"],
 facts: ["康熙|传位|遗诏传位四阿哥，朝野多有私议", "户部|亏空|各省钱粮亏空积年未清"],
 },
+{
+id: "han-lingdi", power: "-10 0 10 30 0 0", title: "汉灵帝 · 西邸卖官", difficulty: "艰危", dynasty: "汉", era: "光和", year: "178年",
+emperor: ["刘宏", 22, "28 68 32 58 62", "贪财"], posts: "han", governor: "刺史",
+postNames: { p0: "司徒", p1: "大司农", p3: "尚书仆射", p4: "太常", p8: "光禄勋", p11: "侍中", p19: "博士", p23: "议郎", p24: "宗正", p10: "中常侍", p25: "护羌校尉" },
+provinces: "司隶 豫州 扬州 荆州 青州 并州 凉州 益州 交州 徐州 冀州 幽州",
+factions: "清议党人:纳谏清议 边军将门:军功封赏 外戚:家族恩荫 中常侍:亲近信任 州郡豪强:钱粮自主 宗室:宗藩安稳",
+nation: { treasury: 190, privy: 260, morale: 38, governance: 28, prestige: 45, virtue: 28, grain: 180 }, threat: [65, 60, 30, 35],
+dowager: "董太后",
+blurb: "西邸开门卖官，入仕先论钱而后论才；党锢未解，张让等中常侍出入禁中。灾疫伤民，张角在河北传教聚众，宫中却仍忙着搜罗钱货。要保住汉室，须先让朝廷重新值得百姓相信。",
+officials: [
+"杨赐|0|0|54|经学传家，守正直言|屡以灾异劝戒天子，奏疏常被近侍搁置。|78 28 85 86 82 48|30|8",
+"刘宽|2|0|58|宽厚长者，不轻责人|处处包容属吏，有人借其宽厚掩饰过失。|72 50 72 84 80 42|25|10",
+"张让|10|3|43|善逢迎，揽权聚敛|亲族宾客求官遍及州郡，许多请托经过他的手。|65 20 55 12 28 94|95|95",
+"袁隗|3|4|36|世家门第，处事持重|袁氏故吏遍天下，清议与近侍两边都不愿得罪。|76 35 72 55 58 78|65|45",
+"蔡邕|23|0|46|博学能文，熟知音律|正搜集灾异与政失，想上封事又担心触怒中官。|62 20 96 82 78 40|25|5",
+"卢植|19|0|39|刚毅有大节，兼通经武|少与郑玄同学，不肯以私礼结交权门。|78 78 85 88 86 55|35|5",
+"段颎|25|1|66|善战严酷，久历边事|凭军功得位，又与中官往还，清议颇多指摘。|52 89 48 28 60 70|72|65",
+"张温|1|4|53|通晓钱谷，善处人情|知卖官所得未尽入国库，未敢深究账目。|80 52 68 48 62 72|60|40",
+],
+consorts: ["宋氏|皇后|扶风宋氏|22|2|35|性情谨慎，深忧宫中谗言。", "何氏|贵人|南阳何氏|23|2|78|出身微贱，已育皇子，盼以母贵稳住地位。"],
+children: ["刘辩|男|2|1|58"],
+foreign: ["鲜卑|檀石槐|冷淡|20|北|边地牧场与互市", "南匈奴|呼徵|通好|50|北|保部众与封赏", "乌桓|丘力居|冷淡|35|东|互市与部众安置", "高句丽|伯固|冷淡|35|东|边界与通贡", "疏勒|臣磐|通好|55|西|西域交通与商路"],
+facts: ["西邸|卖官|官爵以钱授受，百姓所纳未必入国库", "党锢|未解|许多清议士人仍被禁锢", "张角|传教|在河北以太平道聚众，尚未公开起兵"],
+},
+{
+id: "song-huizong", power: "-10 0 0 30 20 0", title: "宋徽宗 · 宣和花石", difficulty: "艰危", dynasty: "宋", era: "宣和", year: "1119年",
+emperor: ["赵佶", 37, "35 62 25 98 88", "好艺"], posts: "song", governor: "转运使",
+postNames: { p0: "太师", p10: "少宰", p8: "太傅", p11: "内侍押班", p6: "应奉局提举", p23: "太常少卿" }, eunuchPosts: [8, 11],
+provinces: "开封府 京西路 两浙路 荆湖路 京东路 河东路 陕西路 川峡路 福建路 广南路 江南路 河北路",
+factions: "台谏清议:纳谏清议 西军将门:军功封赏 外戚:家族恩荫 内侍近臣:亲近信任 绍述财计:钱粮自主 宗室:宗藩安稳",
+nation: { treasury: 520, morale: 42, governance: 35, prestige: 58, virtue: 35, grain: 260 }, threat: [70, 68, 25, 30],
+dowager: "",
+blurb: "宣和改元，天子精书画、好园石。朱勔以花石纲奉上，东南百姓苦于征取；蔡京、王黼与近侍竞相揣摩圣意。西军新遭败绩，金使又来议联兵攻辽，书画之外，天下等着一道清醒的决断。",
+officials: [
+"蔡京|0|4|72|善书有才，擅权营私|门生故吏遍布朝中，与王黼表面相容而各怀私计。|85 25 92 16 35 93|93|95",
+"王黼|10|4|40|善辩敏捷，巧于逢迎|靠揣摩上意骤贵，正在搜集足以排挤蔡氏的机会。|64 28 70 18 30 91|92|98",
+"童贯|8|3|65|久握兵权，喜报边功|西军刘法败亡，如何向天子解释已成心病。|58 62 42 25 40 87|88|80",
+"梁师成|11|3|60|通文墨，善隔绝内外|借传达御笔干预政事，士人中不少人出入其门。|62 18 72 18 32 90|90|95",
+"朱勔|6|4|44|好营造，专事供奉|花石纲所过，舟船夫役皆有额外征索。|62 20 65 15 42 80|82|95",
+"李纲|23|0|36|忧国敢言，明习政事|因灾异欲上疏言政失，知道这会得罪近臣。|86 70 85 90 90 60|35|5",
+"种师道|25|1|68|持重知兵，不轻冒进|久在西陲，最担心朝中拿边军去赌一场速胜。|64 92 62 82 85 62|30|8",
+"张叔夜|7|0|54|刚毅有谋，能治军民|在外任见过民间困苦，不愿用虚报太平换迁转。|82 78 73 85 85 58|38|5",
+"李邦彦|19|3|43|文辞俊丽，善诙谐|以才艺近幸，遇到军国重事却常想避责。|48 20 88 38 50 72|65|60",
+"郑居中|2|2|60|老于政务，持重善谋|与蔡京互不相下，对轻启北边战事颇多疑虑。|82 65 76 55 70 82|62|40",
+],
+consorts: ["郑氏|皇后|开封郑氏|40|2|65|恭谨有礼，曾在太后宫中侍奉多年。", "刘氏|贵妃|宫中旧人|31|3|82|宠眷日隆，亲近她的人常想借机求进。"],
+children: ["赵桓|男|19||62", "赵构|男|12||76"], heir: 0,
+foreign: ["辽|耶律延禧|冷淡|35|北|维持旧盟", "金|完颜阿骨打|通好|55|北|议联兵攻辽", "西夏|李乾顺|冷淡|25|西|边地与岁赐", "高丽|王俣|通好|55|东|通使与海贸", "交趾|李乾德|通好|55|南|册封与边界"],
+facts: ["花石纲|扰民|东南征取园石木材，沿路夫役困苦", "刘法|败亡|西军已在统安城战败，边防承压", "宋金|议兵|双方互使，是否联兵及如何用兵尚待裁断"],
+},
+{
+id: "ming-xizong", power: "0 0 0 30 0 0", title: "明熹宗 · 天启危局", difficulty: "艰危", dynasty: "明", era: "天启", year: "1621年",
+emperor: ["朱由校", 16, "30 48 28 42 65", "好营造"], posts: "ming", governor: "巡抚",
+postNames: { p8: "司礼监秉笔", p25: "辽东经略", p28: "辽东巡抚" },
+provinces: "北直隶 河南 南直隶 湖广 山东 山西 陕西 四川 福建 广东 云南 辽东",
+factions: "东林清流:纳谏清议 勋戚边将:军功封赏 张氏外戚:家族恩荫 魏客近侍:亲近信任 督抚:钱粮自主 宗藩:宗藩安稳",
+nation: { treasury: 210, morale: 43, governance: 37, prestige: 42, virtue: 43, grain: 170 }, threat: [45, 35, 65, 90],
+dowager: "",
+blurb: "少年天子喜好木作，魏忠贤与乳保客氏日益得宠。沈阳、辽阳已失，熊廷弼与王化贞对守辽方略意见相左；叶向高入阁，言官仍敢开口。内廷是否越过朝臣，辽饷能否真正抵边，都在你手里。",
+officials: [
+"叶向高|0|0|62|持重调和，老成知政|再度入阁，盼调停门户，却怕内廷日渐难制。|87 35 83 78 82 80|45|15",
+"魏忠贤|8|3|53|粗豪善伺意，重恩怨|与客氏相互倚重，正在拉拢愿替内廷办事的朝臣。|42 28 25 12 28 92|95|95",
+"刘一燝|10|0|54|忠厚能任事|移宫一事出力甚多，也因此得罪了近侍。|79 38 78 80 85 65|38|10",
+"韩爌|11|0|56|清正持重，不轻苟同|对辽事反复权衡，不愿替未经商议的密旨背书。|84 48 82 85 85 70|35|8",
+"杨涟|7|0|49|慷慨敢言，不避权贵|参与护立天子，自认内廷的事也须由言官问清。|77 35 78 95 92 52|30|5",
+"左光斗|23|0|46|刚直有为，留心人才|识拔后进，也忧心门户之争压过实务。|79 42 82 90 88 55|32|5",
+"孙承宗|19|0|58|沉毅知兵，能谋国事|在御前讲读，想让天子亲自听懂辽东的军情。|90 88 86 85 90 72|40|8",
+"熊廷弼|25|4|52|刚愎负气，善守边|复出经略辽东，与王化贞的指挥权和守战意见不合。|77 90 73 78 82 66|58|15",
+"王化贞|28|4|45|轻信乐观，好言恢复|相信联络蒙古便能牵制后金，与经略争执不休。|55 48 65 48 60 55|62|30",
+"王象乾|2|1|74|老于边务，熟悉诸镇|年老仍被倚任，担忧援辽军饷与营伍失序。|80 82 68 72 80 70|35|20",
+],
+consorts: ["张嫣|皇后|祥符张氏|15|2|68|新入中宫，持正自重，对乳保客氏的越礼颇有戒心。"],
+foreign: ["后金|努尔哈赤|冷淡|10|东|争夺辽东", "察哈尔|林丹汗|冷淡|30|北|抚赏与互市", "朝鲜|李珲|通好|50|东|两边周旋，保境安民", "日本|德川秀忠|冷淡|35|东|海贸与沿海秩序", "安南|黎维祺|朝贡|55|南|册封与边境安稳"],
+facts: ["辽东|失地|沈阳与辽阳已失，关外防线承压", "客氏|地位|受封奉圣夫人，与魏忠贤相互倚重", "熊王|不和|经略与巡抚对守战方略意见相左"],
+},
+...EXTRA_SCENARIOS,
 ];
 function scenarioById(id) {
 return SCENARIOS.find((x) => x.id === id) || null;
@@ -4922,7 +4999,7 @@ if (post.provinceId && state.governorTitle)
 return (state.nation.provinces.find((z) => z.id === post.provinceId)?.name || "") + state.governorTitle;
 return state.postNames?.[post.id] || post.title;
 }
-const split = (x) => x.split("|");
+const split = (x) => Array.isArray(x) ? x : x.split("|");
 const nums = (x) => x.trim().split(/\s+/).map(Number);
 function applyScenario(state, id) {
 const sc = scenarioById(id);
@@ -4934,9 +5011,11 @@ s.imperialSurname = sc.surname || sc.emperor[0][0];
 s.childNaming = sc.childNaming || null;
 s.backstory = sc.blurb;
 s.era.name = s.reign.eraName = sc.era;
+s.era.baseYear = s.era.year = sc.eraYear || 1;
 // 官制与州郡
 const titles = POSTS[sc.posts].split(" ");
 s.postNames = Object.fromEntries(titles.map((t, i) => ["p" + i, t]));
+Object.assign(s.postNames, sc.postNames);
 s.governorTitle = sc.governor;
 sc.provinces.split(" ").forEach((name, i) => { if (s.nation.provinces[i]) s.nation.provinces[i].name = name; });
 const mods = nums(sc.power || "0 0 0 0 0 0");
@@ -4950,7 +5029,7 @@ s.emperor.lifespan = Math.max(s.emperor.lifespan, age + 25);
 s.emperor.talents = Object.fromEntries(Object.keys(s.emperor.talents).map((k, i) => [k, t[i]]));
 s.emperor.tags = [tag];
 for (const k of ["prestige", "virtue"]) if (sc.nation[k] !== undefined) s.emperor[k] = sc.nation[k];
-for (const k of ["treasury", "morale", "governance", "grain"]) if (sc.nation[k] !== undefined) s.nation[k] = sc.nation[k];
+for (const k of ["treasury", "privy", "morale", "governance", "grain"]) if (sc.nation[k] !== undefined) s.nation[k] = sc.nation[k];
 s.reign.initialTreasury = s.stats.initialTreasury = s.nation.treasury;
 for (const z of s.nation.provinces) z.morale = clamp(s.nation.morale + (z.morale - 62));
 s.nation.army.frontiers.forEach((f, i) => { f.threat = sc.threat[i]; });
@@ -4961,10 +5040,11 @@ for (const p of s.court.posts) if (!p.provinceId) p.holder = null;
 s.court.officials.forEach((o, i) => {
 const c = cast[i];
 if (c) {
-const [n, post, faction, oage, personality, secret, abil, ambition] = c, a = nums(abil);
+const [n, post, faction, oage, personality, secret, abil, ambition, greed] = c, a = nums(abil);
 Object.assign(o, { name: n, post: "p" + post, faction: "f" + faction, age: Number(oage), personality, secret, ambition: Number(ambition),
 abilities: { 政: a[0], 军: a[1], 才: a[2], 德: a[3], 忠: a[4], 权谋: a[5] } });
 o.life = [personality];
+if (greed !== undefined) o.greed = Number(greed);
 } else {
 // 补缺的无名官员不抢剧本人物的戏：野心与权谋压低。
 o.post = free.shift() || null;
@@ -5024,7 +5104,8 @@ const { seedNumber, random, DRAFT } = __load("src/core/rng.js");
 const { uniqueName } = __load("src/core/names.js");
 const { chooseRegent, legacyDowagerFaction } = __load("src/core/regency-info.js");
 const {factionPowers} = __load("src/core/politics.js");
-const VERSION = 25;
+const {defaultScenarioEvents,defaultFiat,validateSandbox,WORLD_MAX} = __load("src/core/sandbox-schema.js");
+const VERSION = 26;
 const TALENTS = ["政略", "权谋", "武略", "文采", "魅力"];
 const SLOTS = ["朝", "午", "夜"];
 const POST_NAMES = [
@@ -5307,6 +5388,7 @@ regency: null,
 dowagerFaction: null,
 edictCooldowns: {},
 era: {
+baseYear: 1,
 name: String(options.era || "永宁").slice(0, 8),
 year: 1,
 month: 1,
@@ -5401,6 +5483,8 @@ trade:null,
 })),
 ambitions: [],
 memorials: [],
+scenarioEvents: defaultScenarioEvents(),
+fiat: defaultFiat(),
 memorialVariety: [],
 briefings: [],
 threads: [],
@@ -5534,6 +5618,7 @@ if(input.v<22)s.keju=defaultKeju(s.turn);
 // v23 separates read-only departmental reports from petitions. Received
 // petitions and frozen forecasts retain their original text and choices.
 if(input.v<23)s.briefings=[];
+if(input.v<26){s.scenarioEvents??=defaultScenarioEvents(s.turn);s.fiat??=defaultFiat();s.era.baseYear??=1;}
 s.settings.freedom ??= "mid";
 s.v = VERSION;
 s.volumeIndex ??= [];
@@ -5627,6 +5712,7 @@ assertState(s);
 return assignFaces(s);
 }
 function assertState(s) {
+validateSandbox(s);
 validateKeju(s);
 validateDevelopment(s);
 if (
@@ -5641,12 +5727,13 @@ const range = (v, a, b) => {
 if (typeof v !== "number" || !Number.isFinite(v) || v < a || v > b)
 throw new Error("数值不在有效范围");
 };
+const expanded=s.v>=26&&(s.settings?.freedom==='free'||s.fiat?.used),metricMax=expanded?WORLD_MAX:100;
 for (const field of ["health", "mood", "prestige", "virtue"])
-range(s.emperor[field], 0, 100);
-for (const t of TALENTS) range(s.emperor.talents?.[t], 0, 100);
-for (const f of ["morale", "governance"]) range(s.nation[f], 0, 100);
+range(s.emperor[field], 0, metricMax);
+for (const t of TALENTS) range(s.emperor.talents?.[t], 0, metricMax);
+for (const f of ["morale", "governance"]) range(s.nation[f], 0, metricMax);
 for (const f of ["treasury", "privy", "grain"])
-range(s.nation[f], 0, 1000000);
+range(s.nation[f], 0, expanded?WORLD_MAX:1000000);
 for (const a of [
 s.court.factions,
 s.court.posts,
@@ -5659,19 +5746,19 @@ s.foreign,
 ])
 if (!Array.isArray(a)) throw new Error("名册结构无效");
 for (const x of s.court.factions)
-for (const f of ["power", "attitude"]) range(x[f], 0, 100);
+for (const f of ["power", "attitude"]) range(x[f], 0, metricMax);
 for (const x of s.nation.army.frontiers) {
-range(x.threat, 0, 100);
-range(x.troops, 0, 1000000);
-range(x.readiness, 0, 100);
+range(x.threat, 0, metricMax);
+range(x.troops, 0, expanded?WORLD_MAX:1000000);
+range(x.readiness, 0, metricMax);
 }
 for (const x of s.nation.provinces) {
-range(x.morale, 0, 100);
-range(x.disaster, 0, 100);
+range(x.morale, 0, metricMax);
+range(x.disaster, 0, metricMax);
 }
 for (const x of s.harem.consorts) {
-range(x.health, 0, 100);
-range(x.favor, 0, 100);
+range(x.health, 0, metricMax);
+range(x.favor, 0, metricMax);
 }
 if(s.v>=5){
 if(typeof s.imperialSurname!=='string'||!s.imperialSurname.trim())throw new Error('皇姓资料无效');
@@ -6272,7 +6359,68 @@ wish('hongli','为弘历定储基','储位、教养与健康须一并准备，�
 r('heir','弘历在世并已立为储君',{type:'isHeir',name:'弘历'}),r('study','弘历教养至少70',child('弘历','education'),70),
 r('health','弘历健康至少80',child('弘历','health'),80),r('tutor','弘历已拜师',{type:'childTutored',name:'弘历'})]),
 ],
+'han-lingdi':[
+macro('restore','重振汉室','让卖官败坏的朝纲与民心回转，不能只把钱留在宫中。',[
+n('gov','吏治至少70','governance',70),n('people','民心至少65','morale',65),n('debt','国库积欠清零','arrears',0,'lte'),
+n('rebels','各州均无民变','rebellions',0,'lte')],12),
+macro('palace-power','不再事事问张让','近侍不再占据朝职，天子还须有能力亲自理政。',[
+r('zhang','张让已无在任职位',{type:'inactiveOfficial',name:'张让'}),n('power','皇威至少70','prestige',70),n('rule','政略至少60','talent:政略',60)],9),
+wish('cai-yong','听蔡邕说经论乐','留住通经知音律的人，也听得进他的话。',[
+r('post','蔡邕在任，未下狱或致仕',serving('蔡邕')),r('favor','蔡邕好感至少80',official('蔡邕','favor'),80),
+r('talks','近36旬与蔡邕完成3轮面谈',{type:'officialTalks',name:'蔡邕'},3),n('letters','文采至少75','talent:文采',75)]),
+wish('liu-bian','为刘辩定储育才','幼子不能只仗母家，储位和教养都须落实。',[
+r('heir','刘辩在世并已立为储君',{type:'isHeir',name:'刘辩'}),r('tutor','刘辩已拜师',{type:'childTutored',name:'刘辩'}),
+r('study','刘辩教养至少60',child('刘辩','education'),60)]),
+],
+'song-huizong':[
+macro('peace','宣和真正太平','园石之外，各路百姓都要过得下去。',[
+n('people','每一州民心至少60','minMorale',60),n('disaster','每一州灾情不高于10','maxDisaster',10,'lte'),n('gov','吏治至少70','governance',70)],12),
+macro('border','不以边军赌国运','无论议和还是用兵，都须给北边留下能战能守的军队。',[
+r('liao','与辽通好、婚盟、朝贡或战胜后停战',country('辽','settledCountry')),r('threat','北境边患不高于35',border('北','threat'),35,'lte'),
+r('ready','北境战备至少75',border('北','readiness'),75),r('war','北境没有未结束战役',{type:'borderWars',dir:'北'},0,'lte')],9),
+wish('letters','宣和文墨传世','以书画之才编成一部大典，文事也须真正办完。',[
+n('book','本朝完成1次编修大典','project:编修大典',1),n('letters','文采至少95','talent:文采',95),n('virtue','圣德至少60','virtue',60)]),
+wish('empress','与郑后长相伴','顾惜旧日相伴之人，不只追逐眼前的新宠。',[
+r('company','郑氏在世、在宫且未入冷宫',{type:'companion',name:'郑氏'}),r('favor','郑氏宠眷至少85',{type:'consort',name:'郑氏',field:'favor'},85),
+r('health','郑氏健康至少60',{type:'consort',name:'郑氏',field:'health'},60),n('years','本朝在位满5年','reignYears',5)]),
+],
+'ming-xizong':[
+macro('palace','内廷不代天子','收回魏忠贤的职位，也要让清理后的朝纲稳得住。',[
+r('wei','魏忠贤已无在任职位',{type:'inactiveOfficial',name:'魏忠贤'}),n('gov','吏治至少70','governance',70),n('power','皇威至少70','prestige',70)],9),
+macro('liaodong','守住辽东门户','稳住东境军队与辽东民情，不以一道捷报冒充安定。',[
+r('threat','东境边患不高于35',border('东','threat'),35,'lte'),r('ready','东境战备至少75',border('东','readiness'),75),
+r('people','辽东民心至少60',province('辽东','morale'),60),r('war','东境没有未结束战役',{type:'borderWars',dir:'东'},0,'lte'),n('grain','现粮可供3个月军粮与赈济','grainMonths',3)],12),
+wish('workshop','木石之外有分寸','可寄情营造，也须把国用与百姓放在心上。',[
+n('garden','本朝完成1次修园','project:修园',1),n('debt','国库积欠清零','arrears',0,'lte'),n('people','民心至少60','morale',60)]),
+wish('sun','听懂孙承宗的辽事','让讲官留在朝中，亲自问清兵饷与守战。',[
+r('post','孙承宗在任，未下狱或致仕',serving('孙承宗')),r('favor','孙承宗好感至少80',official('孙承宗','favor'),80),
+r('talks','近36旬与孙承宗完成3轮面谈',{type:'officialTalks',name:'孙承宗'},3),n('rule','政略至少65','talent:政略',65)]),
+],
 };
+CATALOG['ming-yingzong']=[
+macro('capital','保住京师根本','边警再急，也须留下能守京师的兵粮。',[r('army','京营至少60000人',{type:'capital',field:'troops'},60000),r('ready','京营战备至少80',{type:'capital',field:'readiness'},80),n('grain','军粮可供6个月','grainMonths',6)],9),
+macro('border','不负边军','稳住北边，不以近侍的豪言代替军备。',[r('risk','北境边患不高于35',border('北','threat'),35,'lte'),r('ready','北境战备至少75',border('北','readiness'),75),n('gov','吏治至少65','governance',65)],12),
+wish('yu-qian','听于谦谈军民','让敢言知兵的人留在朝中。',[r('post','于谦在任',serving('于谦')),r('favor','于谦好感至少80',official('于谦','favor'),80),r('talks','近36旬与于谦面谈3轮',{type:'officialTalks',name:'于谦'},3)]),
+wish('empress','平安与钱后相守','国事之外，留住相伴之人。',[r('company','钱氏仍在宫中',{type:'companion',name:'钱氏'}),r('favor','钱氏宠眷至少85',{type:'consort',name:'钱氏',field:'favor'},85),n('years','在位满5年','reignYears',5)]),
+];
+CATALOG['tang-xuanzong']=[
+macro('command','边镇复归朝廷','安禄山离开朝职，北境军备也须重新稳住。',[r('an','安禄山已无在任职位',{type:'inactiveOfficial',name:'安禄山'}),r('risk','北境边患不高于35',border('北','threat'),35,'lte'),n('power','皇威至少75','prestige',75)],12),
+macro('peace','天宝再见太平','把盛景落在百姓生计上。',[n('people','每州民心至少65','minMorale',65),n('gov','吏治至少75','governance',75),n('rebels','各州无民变','rebellions',0,'lte')],12),
+wish('yang','长生殿外长相守','顾惜杨氏，也须顾及国用。',[r('company','杨玉环仍在宫中',{type:'companion',name:'杨玉环'}),r('favor','杨玉环宠眷至少95',{type:'consort',name:'杨玉环',field:'favor'},95),n('debt','积欠清零','arrears',0,'lte')]),
+wish('heir','父子之间少些猜疑','储位落实之外，还要真正教养。',[r('heir','李亨仍为在世储君',{type:'isHeir',name:'李亨'}),r('study','李亨教养至少80',child('李亨','education'),80),r('tutor','李亨有师傅',{type:'childTutored',name:'李亨'})]),
+];
+CATALOG['song-qinzong']=[
+macro('defence','守住靖康京城','守城不能只靠一句死战。',[r('army','京营至少60000人',{type:'capital',field:'troops'},60000),r('ready','京营战备至少80',{type:'capital',field:'readiness'},80),n('grain','军粮可供6个月','grainMonths',6)],12),
+macro('peace','解围之后能安民','解围之外，朝纲与民心都须回转。',[r('gold','金通好、朝贡、婚盟或战胜后停战',country('金','settledCountry')),n('people','民心至少65','morale',65),n('gov','吏治至少65','governance',65)],9),
+wish('li-gang','用得住李纲','任用守城之臣，不随谗言进退。',[r('post','李纲在任',serving('李纲')),r('favor','李纲好感至少85',official('李纲','favor'),85),r('talks','近36旬与李纲面谈3轮',{type:'officialTalks',name:'李纲'},3)]),
+wish('son','护住赵谌','储君的健康与教养不可偏废。',[r('heir','赵谌仍为在世储君',{type:'isHeir',name:'赵谌'}),r('health','赵谌健康至少85',child('赵谌','health'),85),r('study','赵谌教养至少70',child('赵谌','education'),70)]),
+];
+CATALOG['qing-jiaqing']=[
+macro('heshen','亲政先清积弊','处置权臣之后，更须让吏治真正转好。',[r('he','和珅已无在任职位',{type:'inactiveOfficial',name:'和珅'}),n('gov','吏治至少75','governance',75),n('debt','积欠清零','arrears',0,'lte')],12),
+macro('people','川楚军民得安','军务之后，还给百姓安稳。',[r('si','四川民心至少65',province('四川','morale'),65),r('hu','湖广民心至少65',province('湖广','morale'),65),n('rebels','各州无民变','rebellions',0,'lte'),n('grain','军粮可供6个月','grainMonths',6)],12),
+wish('teacher','不负帝师朱珪','亲理政务，也听得进旧师的规劝。',[r('post','朱珪在任',serving('朱珪')),r('favor','朱珪好感至少85',official('朱珪','favor'),85),r('talks','近36旬与朱珪面谈3轮',{type:'officialTalks',name:'朱珪'},3)]),
+wish('minning','为旻宁定储育才','以真实教养准备储位。',[r('heir','旻宁为在世储君',{type:'isHeir',name:'旻宁'}),r('study','旻宁教养至少80',child('旻宁','education'),80),r('tutor','旻宁有师傅',{type:'childTutored',name:'旻宁'})]),
+];
 const SCENARIO_GOALS=Object.fromEntries(Object.entries(CATALOG).map(([scenarioId,goals])=>[scenarioId,goals.map(({suffix,...g})=>({...g,id:scenarioId+'-'+suffix,scenarioId}))]));
 function scenarioGoals(id) {return SCENARIO_GOALS[id] || [];}
 const poolFor=(s,type)=>['official','serving','inactiveOfficial','officialTalks'].includes(type)?s.court.officials:
@@ -6332,11 +6480,11 @@ if(a.holdTurns!==undefined&&(!Number.isSafeInteger(a.holdTurns)||a.holdTurns<1||
 for(const o of a.objectives){
 if(typeof o.id!=='string'||typeof o.label!=='string'||!Number.isFinite(o.target)||o.target<0||!['gte','lte'].includes(o.op))throw new Error('专属宏愿条件损坏');
 if(o.rule){const q=o.rule,pool=poolFor(s,q.type);
-const fields={official:['favor'],province:['morale','disaster'],border:['threat','readiness','troops'],capital:['troops'],consort:['favor','health'],child:['health','education']};
+const fields={official:['favor'],province:['morale','disaster'],border:['threat','readiness','troops'],capital:['troops','readiness'],consort:['favor','health'],child:['health','education']};
 if(!['official','serving','inactiveOfficial','officialTalks','province','border','borderWars','capital','consort','companion','child','isHeir','childTutored','countryWins','settledCountry'].includes(q.type)||
 pool&&(!q.id||!pool.some(x=>x.id===q.id))||['border','borderWars'].includes(q.type)&&!s.nation.army.frontiers.some(b=>b.dir===q.dir)||
 fields[q.type]&&!fields[q.type].includes(q.field)||q.posts&&(!Array.isArray(q.posts)||!q.posts.length||!q.posts.every(id=>s.court.posts.some(p=>p.id===id))))throw new Error('专属宏愿对象损坏');
-}else if(!['governance','morale','treasury','virtue','prestige','reignYears','arrears','rebellions','minMorale','maxDisaster','grainMonths','personalRule','livingHeir','heirTutored','heirEducation','talent:文采','talent:政略','project:编修大典','project:整饬吏治','project:修河'].includes(o.key))throw new Error('专属宏愿条件无效');
+}else if(!['governance','morale','treasury','virtue','prestige','reignYears','arrears','rebellions','minMorale','maxDisaster','grainMonths','personalRule','livingHeir','heirTutored','heirEducation','talent:文采','talent:政略','project:编修大典','project:整饬吏治','project:修河','project:修园'].includes(o.key))throw new Error('专属宏愿条件无效');
 }
 }
 }
@@ -6543,8 +6691,28 @@ return {...f,power:Math.min(100,Math.max(0,offices/20+(f.powerModifier||0)))};
 
 return {factionPowers};
 },
+"src/core/sandbox-schema.js":function(__load){
+const WORLD_MAX=Number.MAX_SAFE_INTEGER;
+function defaultScenarioEvents(legacyFromTurn=-1){return {version:1,legacyFromTurn,seen:[],decisions:{}};}
+function defaultFiat(){return {used:false,objects:[],rules:[]};}
+function validateSandbox(s){
+if(s.v<26)return;
+const e=s.scenarioEvents,f=s.fiat;
+if(!e||e.version!==1||!Number.isSafeInteger(e.legacyFromTurn)||e.legacyFromTurn< -1||!Array.isArray(e.seen)||new Set(e.seen).size!==e.seen.length||e.seen.some(id=>typeof id!=='string')||!e.decisions||typeof e.decisions!=='object'||Array.isArray(e.decisions)||Object.entries(e.decisions).some(([id,v])=>!e.seen.includes(id)||typeof v!=='string'))throw new Error('剧本事件进度损坏');
+if(!Number.isSafeInteger(s.era.baseYear)||s.era.baseYear<1)throw new Error('开局纪年损坏');
+if(!f||typeof f.used!=='boolean'||!Array.isArray(f.objects)||!Array.isArray(f.rules))throw new Error('言出法随世界损坏');
+for(const list of [f.objects,f.rules]){
+if(new Set(list.map(x=>x?.id)).size!==list.length)throw new Error('自定义世界对象重复');
+for(const x of list)if(!x||typeof x.id!=='string'||typeof x.name!=='string'||typeof x.description!=='string'||!x.name.trim())throw new Error('自定义世界对象损坏');
+}
+for(const r of f.rules)if(!['once','eachTurn'].includes(r.period)||!Array.isArray(r.operations)||!Number.isSafeInteger(r.lastTurn)||r.lastTurn<0||r.lastTurn>s.turn||r.operations.some(o=>!o||typeof o.op!=='string'||o.op==='policy'))throw new Error('自定义制度损坏');
+}
+
+return {WORLD_MAX,defaultScenarioEvents,defaultFiat,validateSandbox};
+},
 "src/core/effects.js":function(__load){
 const { clone } = __load("src/core/state.js");
+const {WORLD_MAX} = __load("src/core/sandbox-schema.js");
 function clamp(n, low = 0, high = 100) {
 return Math.min(high, Math.max(low, Number.isFinite(n) ? n : 0));
 }
@@ -6556,7 +6724,8 @@ function diminishing(value,delta){return delta>0?delta*(value>=90?0.25:value>=80
 function applyEffects(state, effects = {}, source = "引擎结算") {
 const s = clone(state),
 entries = [];
-const set = (obj, key, delta, path, max = 100, min = 0) => {
+const fiat=s.v>=26&&s.settings?.freedom==='free',expanded=s.v>=26&&(fiat||s.fiat?.used),limit=expanded?WORLD_MAX:100;
+const set = (obj, key, delta, path, max = limit, min = 0) => {
 if (typeof delta !== "number" || !Number.isFinite(delta)) return;
 const old = obj[key];
 obj[key] = clamp(old + delta, min, max);
@@ -6572,10 +6741,10 @@ source,
 for (const [f,debt] of [['treasury','arrears'],['privy','privyArrears'],['grain','grainArrears']]) {
 const delta=effects[f];
 if(Number.isFinite(delta)&&delta<0&&-delta>s.nation[f]){
-s.nation[debt]??=0;
-set(s.nation,debt,-delta-s.nation[f],'nation.'+debt,Number.MAX_SAFE_INTEGER);
+if(fiat){const before=s.nation[f];s.nation[f]=-delta;s.fiat.used=true;entries.push({path:'nation.'+f,before,after:-delta,delta:-delta-before,source:'言出法随：补足所需'});}
+else {s.nation[debt]??=0;set(s.nation,debt,-delta-s.nation[f],'nation.'+debt,Number.MAX_SAFE_INTEGER);}
 }
-set(s.nation,f,delta,'nation.'+f,1000000);
+set(s.nation,f,delta,'nation.'+f,expanded?WORLD_MAX:1000000);
 }
 for(const f of ['arrears','privyArrears','grainArrears'])if(Number.isFinite(effects[f])){s.nation[f]??=0;set(s.nation,f,effects[f],'nation.'+f,Number.MAX_SAFE_INTEGER);}
 if(Number.isFinite(effects.morale))for(const p of s.nation.provinces)
@@ -6644,6 +6813,100 @@ return s;
 }
 
 return {clamp,populationMorale,diminishing,applyEffects,applyPackage,growTalent};
+},
+"src/core/extra-scenarios.js":function(__load){
+// 开局人物与局势；年龄按开局年份近似，具体属性是游戏设计。
+const EXTRA_SCENARIOS = [
+{
+id:'ming-yingzong',title:'明英宗 · 土木前夜',difficulty:'艰危',dynasty:'明',era:'正统',eraYear:14,year:'1449年',posts:'ming',governor:'巡抚',
+emperor:['朱祁镇',22,'40 45 42 55 65','轻信'],power:'0 0 0 30 0 0',
+provinces:'北直隶 河南 南直隶 湖广 山东 山西 陕西 四川 福建 广东 云南 辽东',
+factions:'清流文臣:纳谏清议 勋贵边将:军功封赏 外戚:家族恩荫 王振近侍:亲近信任 督抚:钱粮自主 宗藩:宗藩安稳',
+nation:{treasury:320,grain:200,morale:52,governance:43,prestige:50,virtue:48},threat:[95,45,25,45],dowager:'孙太后',
+blurb:'瓦剌边警骤急，王振劝天子亲征，文武各有忧惧。于谦主张先固京师、补足军储；张辅等老将仍在。土木的结局尚未发生，是仓促出塞还是先整兵饷，由你裁断。',
+officials:[
+'曹鼐|0|0|47|刚正有识，遇事敢言|担心近侍绕过阁议，正争取一次御前面陈。|83 40 87 85 85 62|35|8',
+'王振|8|3|56|善逢迎，好威福|想借亲征建立威望，对行军筹备的困难多有轻忽。|45 25 50 15 32 93|94|92',
+'于谦|14|0|51|刚毅廉直，熟知军民|长期督理河南山西，认为京师与粮运不可轻忽。|93 87 86 96 94 65|30|3',
+'邝埜|2|0|64|谨慎知兵，持重守法|反对仓促亲征，怕急切进言反遭近侍斥责。|83 76 73 88 88 55|28|8',
+'王直|3|0|70|老成持重，熟习典章|想联合群臣进谏，又怕朝议被斥为结党。|85 32 82 85 86 70|32|12',
+'陈循|10|4|64|善文圆融，计较进退|既不愿附和冒进，也不愿独担忤旨之名。|78 32 88 58 65 78|62|35',
+'张辅|9|1|74|久经战阵，勋望深厚|年老仍想为国任事，忧心亲征统属不明。|67 91 66 79 90 64|38|18',
+'杨洪|25|1|68|熟悉边情，善治军|守边多年，不信单凭天子威仪便能退敌。|63 88 55 73 84 58|40|22',
+],
+consorts:['钱氏|皇后|海州钱氏|23|2|70|不喜外家干政，惦念天子安危。','周氏|贵妃|宫中旧人|22|2|72|育有皇长子，凡事先顾孩子。'],
+children:['朱见深|男|2|1|72'],
+foreign:['瓦剌|也先|冷淡|10|北|边贸与抚赏','鞑靼|脱脱不花|冷淡|25|北|部众与互市','朝鲜|李裪|朝贡|70|东|册封与边界','安南|黎邦基|朝贡|60|南|通贡与边境'],
+facts:[['瓦剌','边警','边军告急，亲征尚在议论'],['京师','守备','于谦主张先固京师与军储']],
+},
+{
+id:'tang-xuanzong',title:'唐玄宗 · 天宝危弦',difficulty:'艰危',dynasty:'唐',era:'天宝',eraYear:14,year:'755年',posts:'tang',governor:'采访使',
+emperor:['李隆基',70,'62 75 55 92 87','好乐'],power:'-5 20 20 15 0 0',
+provinces:'京畿 河南道 江南道 山南道 河北道 河东道 关内道 剑南道 淮南道 岭南道 陇右道 幽州',
+factions:'台谏清议:纳谏清议 边镇将帅:军功封赏 杨氏外戚:家族恩荫 内侍近臣:亲近信任 财计使臣:钱粮自主 宗室诸王:宗藩安稳',
+nation:{treasury:700,grain:340,morale:53,governance:40,prestige:68,virtue:42},threat:[90,65,40,45],dowager:'',
+blurb:'天宝盛景之下，安禄山兼领重镇，与杨国忠互相攻讦；高力士近侍多年，太子李亨处处谨慎。梨园歌舞仍在，边镇的兵权与京师的戒备却不能再等。叛乱与西幸都不是注定的结局。',
+officials:[
+'杨国忠|0|2|56|善揽财计，躁急矜权|与安禄山积怨，想借朝命压倒对方。|74 30 68 18 40 88|93|90',
+'高力士|8|3|71|谨慎忠勤，熟知宫事|知道中外互疑已深，担忧报到御前的消息失真。|79 38 70 67 92 84|48|32',
+'韦见素|10|0|68|温厚持重，善于调停|不愿附和激烈用兵，却缺少独断的胆气。|77 35 80 72 80 65|30|18',
+'安禄山|25|1|52|善伺上意，拥兵自重|掌握数镇精兵，常以边务为由拒绝朝中查问。|58 86 48 15 20 92|98|88',
+'哥舒翰|26|1|55|勇而有谋，熟悉西陲|身有疾病，不愿再被朝中催逼冒进。|67 92 62 70 80 64|50|30',
+'封常清|28|1|65|勤勉善战，不饰仪容|从行伍中起家，忧心兵强将骄而朝廷失察。|72 90 65 78 85 58|40|15',
+'高仙芝|2|1|51|骁勇善谋，重用亲信|边地征战耗费日多，需要可信的补给。|62 91 64 55 76 70|63|45',
+'陈玄礼|9|0|64|忠厚谨慎，掌握禁军|只认御前亲谕，厌恶权臣借口传旨。|65 82 50 83 93 56|25|10',
+],
+consorts:['杨玉环|贵妃|弘农杨氏|36|2|92|家人因宠得势，自己也难隔绝内外议论。','武氏|嫔|宫中旧人|28|3|48|不愿卷入杨氏与储位之争。'],
+children:['李亨|男|44||74','李璘|男|43||65'],heir:0,
+foreign:['吐蕃|赤德祖赞|冷淡|25|西|陇右与边贸','回纥|磨延啜|通好|60|北|互市与盟好','南诏|阁罗凤|冷淡|25|南|边地与自主','渤海|大钦茂|通好|65|东|册封与通商'],
+facts:[['安禄山','兵权','兼领重镇，尚未公开反叛'],['杨安','积怨','两人互相攻讦，朝廷须核实消息']],
+},
+{
+id:'song-qinzong',title:'宋钦宗 · 靖康守城',difficulty:'艰危',dynasty:'宋',era:'靖康',year:'1126年',posts:'song',governor:'转运使',
+emperor:['赵桓',26,'48 42 32 72 55','多疑'],power:'0 0 0 5 15 0',
+provinces:'开封府 京西路 两浙路 荆湖路 京东路 河东路 陕西路 川峡路 福建路 广南路 江南路 河北路',
+factions:'守城清议:纳谏清议 西军将门:军功封赏 外戚:家族恩荫 内侍近臣:亲近信任 主和财计:钱粮自主 宗室:宗藩安稳',
+nation:{treasury:160,grain:130,morale:38,governance:38,prestige:40,virtue:55},threat:[98,55,25,45],dowager:'',
+blurb:'金军南下，太上皇已内禅，新天子面对的是一座惊惧的京城。李纲、种师道主守，李邦彦等主和；交割州郡、筹措金帛与调集勤王之师，每一步都可能改变城中人心。靖康的结局由你重写。',
+officials:[
+'白时中|0|4|67|依违畏事，不愿担责|主张先议和解围，害怕背上失城之罪。|55 22 67 42 48 65|48|38',
+'李邦彦|10|4|50|善辞令，习于取悦|想以割地赔款换取暂安，对反对者颇多排挤。|51 20 88 25 40 82|78|65',
+'李纲|2|0|43|刚正敢任，主张坚守|愿担守城重任，但担心朝中朝令夕改。|91 85 86 93 94 70|32|5',
+'种师道|25|1|75|宿将知兵，持重善谋|认为敌军深入不可久留，不愿仓促求和。|70 94 65 86 90 65|25|8',
+'张邦昌|11|4|45|谨慎善文，怯于大事|忧心被派往敌营，却又不敢公开违逆。|65 25 82 40 50 70|55|35',
+'耿南仲|19|4|70|讲学自任，力主议和|旧为东宫讲官，希望天子仍听自己的判断。|58 25 78 48 65 66|50|25',
+'吴敏|7|0|37|机敏能言，愿办实务|拥立新君有功，想在纷争中落实守备。|78 48 82 70 82 70|52|20',
+'赵构|24|5|19|沉静谨慎，遇险能忍|身为康王，可能被派往金营交涉。|67 60 70 60 70 76|62|18',
+],
+consorts:['朱氏|皇后|开封朱氏|24|2|75|国难中仍惦念太子与宫人安危。'],children:['赵谌|男|9|0|65'],heir:0,
+foreign:['金|完颜晟|冷淡|5|北|割地与金帛','西夏|李乾顺|冷淡|25|西|边地与岁赐','高丽|王楷|通好|55|东|通使与海贸','交趾|李乾德|通好|55|南|册封与边界'],
+facts:[['金军','南下','京师面临兵临城下的危险'],['朝议','守和','守城与议和两议并起，尚未定夺']],
+},
+{
+id:'qing-jiaqing',title:'清仁宗 · 嘉庆亲政',difficulty:'艰危',dynasty:'清',era:'嘉庆',eraYear:4,year:'1799年',posts:'qing',governor:'巡抚',surname:'爱新觉罗',childNaming:{男:'绵',女:'和'},
+emperor:['颙琰',39,'68 62 50 72 60','节俭'],power:'0 0 0 25 15 0',
+provinces:'直隶 河南 江南 湖广 山东 山西 陕西 四川 福建 广东 云南 奉天',
+factions:'清议汉臣:纳谏清议 旗营将门:军功封赏 外戚:家族恩荫 和珅旧部:亲近信任 督抚财计:钱粮自主 宗室王公:宗藩安稳',
+nation:{treasury:260,grain:230,morale:45,governance:32,prestige:47,virtue:62},threat:[30,65,75,40],dowager:'',
+blurb:'太上皇新丧，嘉庆终于亲掌政务。和珅及其旧部仍握有庞大关系网；川楚军务耗饷，地方虚报战果，积年钱粮亟待清查。办一个权臣之外，怎样让整个朝廷重新办事，才是真正的难题。',
+officials:[
+'和珅|0|3|49|机敏善辩，聚敛成性|家产与请托牵连众多官员，账册不止藏在一处。|83 35 79 8 28 97|98|99',
+'刘墉|10|0|80|持正老成，熟悉吏治|年事已高，愿助新君清理积弊但不愿株连无辜。|86 25 88 85 88 78|25|15',
+'朱珪|19|0|68|笃实端方，旧日帝师|想劝天子从用人和核账做起，而不止惩一人。|88 30 88 90 94 70|25|5',
+'王杰|11|0|74|刚直敢言，不畏权势|与和珅多有不合，担心清算变成新一轮倾轧。|85 35 84 88 90 72|30|8',
+'福长安|2|3|39|倚势自重，工于交结|与和珅往来密切，急于撇清旧日账目。|58 55 55 22 40 78|78|84',
+'董诰|1|0|59|谨慎勤勉，精于文案|看过许多虚浮钱粮报告，正在寻能落地的核查办法。|87 35 85 78 88 72|35|15',
+'勒保|25|4|60|久任边疆，敢于任事|军务钱粮庞杂，须向京中解释真实消耗。|78 80 65 65 80 70|48|35',
+'额勒登保|26|1|51|骁勇知兵，治军严整|认为剿抚须与安置百姓并办，不能只报斩获。|67 92 58 74 88 60|42|18',
+],
+consorts:['钮祜禄氏|皇后|承恩公恭阿拉之女|23|2|75|处事恭谨，希望宫中节用，不累国事。','侯佳氏|妃|内务府世家|25|3|60|多年侍奉，顾惜宫中旧人。'],
+children:['旻宁|男|17||77','绵恺|男|4|0|62'],
+foreign:['沙俄|保罗一世|通好|50|北|边界与贸易','廓尔喀|拉纳巴哈都尔|朝贡|45|西|山地边界与通贡','英吉利|乔治三世|冷淡|35|东|扩大通商','朝鲜|李祘|朝贡|70|东|册封与文书'],
+facts:[['太上皇','丧事','乾隆已崩，新君亲理庶政'],['川楚','军务','军饷久耗，地方战报亟待核实']],
+},
+];
+
+return {EXTRA_SCENARIOS};
 },
 "src/ui/common.js":function(__load){
 const { initMobileViewport } = __load("src/ui/mobile.js");
@@ -6937,7 +7200,7 @@ html+='<p class="muted">'+(s.regency?'摄政期间暂停迟榜扣分与催办；
 }
 if(['awaiting_examiner','topic'].includes(e.status))html+='<form id="examiner-form"><label for="examiner">任命主考官</label><select id="examiner"'+disabled+'><option value="">请选择在京在任大臣</option>'+examiners(s).map(o=>'<option value="'+esc(o.id)+'"'+(o.id===e.examiner?' selected':'')+'>'+esc(o.name)+' · '+esc(s.court.posts.find(p=>p.holder===o.id)?.title)+'</option>').join('')+'</select><button type="submit"'+disabled+'>任主考</button></form>';
 else html+='<p>主考：'+esc(s.court.officials.find(o=>o.id===e.examiner)?.name||'原主考')+'</p>';
-if(e.status==='topic')html+='<button type="button" data-exam-topics'+disabled+'>'+(e.topics.length?'重拟备选策问':'拟备选策问')+'</button>'+ (e.topics.length?'<form id="exam-topic-form"><label for="exam-topic">备选策问</label><select id="exam-topic"'+disabled+'>'+e.topics.map((t,i)=>'<option value="'+i+'">'+esc(t)+'</option>').join('')+'</select><button type="submit"'+disabled+'>采用此题</button></form>':'')+'<form id="exam-custom-form"><label for="exam-custom">皇帝自拟策问</label><textarea id="exam-custom" maxlength="2000" rows="3" placeholder="试陈治国之策……"'+disabled+'></textarea><p class="muted">沿用口谕自由度：成败看实力时礼部可劝改，多数能成时可通融，想做就成时原样采用。</p><button type="submit"'+disabled+'>颁下自拟题</button></form>';
+if(e.status==='topic')html+='<button type="button" data-exam-topics'+disabled+'>'+(e.topics.length?'重拟备选策问':'拟备选策问')+'</button>'+ (e.topics.length?'<form id="exam-topic-form"><label for="exam-topic">备选策问</label><select id="exam-topic"'+disabled+'>'+e.topics.map((t,i)=>'<option value="'+i+'">'+esc(t)+'</option>').join('')+'</select><button type="submit"'+disabled+'>采用此题</button></form>':'')+'<form id="exam-custom-form"><label for="exam-custom">皇帝自拟策问</label><textarea id="exam-custom" maxlength="2000" rows="3" placeholder="试陈治国之策……"'+disabled+'></textarea><p class="muted">沿用口谕自由度：成败看实力时礼部可劝改，多数能成时可通融，言出法随时原样采用。</p><button type="submit"'+disabled+'>颁下自拟题</button></form>';
 if(e.topic)html+='<p class="exam-topic">策问：'+esc(e.topic)+'</p><p class="muted">'+esc(e.topicNote||'')+'</p>';
 if(['topic','writing','grading'].includes(e.status))html+='<label class="check"><input id="exam-blind" type="checkbox"'+(e.blindGrading?' checked':'')+disabled+'>糊名阅卷</label><p class="muted">糊名后隐藏姓名、籍贯与出身；收卷前的设置也约束读卷官，揭名后可按主考同派偏私。已有评语与拟次保留。放榜时仍糊名，不判门生偏私。</p>';
 if(e.status==='writing')html+='<p>考生名册已定，等待九卷一并呈上。</p><button class="primary" data-exam-papers'+disabled+'>收取本届全部试卷</button>';
@@ -7246,7 +7509,7 @@ return {activeExam,examiners,configureExams,enkeBlock,openEnke,appointExaminer,s
 const { roll } = __load("src/core/rng.js");
 const { applyPackage } = __load("src/core/effects.js");
 const FREEDOM_RULES=Object.freeze({
-free:Object.freeze({label:'想做就成',note:'口谕必成，行动限制更少；钱粮仍以现有家底为限。',k:1,collapseImmune:true,courtLimit:Infinity,referrals:Infinity,talkRounds:Infinity,talkMultiplier:Infinity,appointmentAge:18,firstRankTalent:0,otherTalent:0,edictCooldown:0,selectionPeriod:0,rankCaps:false,tradeCooldown:0,energyPenalty:0.5}),
+free:Object.freeze({label:'言出法随',note:'按你的指令改写天下：钱粮不足自动补足，可创造人物、势力、制度与技术。',k:1,collapseImmune:true,courtLimit:Infinity,referrals:Infinity,talkRounds:Infinity,talkMultiplier:Infinity,appointmentAge:0,firstRankTalent:0,otherTalent:0,edictCooldown:0,selectionPeriod:0,rankCaps:false,tradeCooldown:0,energyPenalty:0}),
 mid:Object.freeze({label:'多数能成',note:'办事较容易，难事有时要多花钱、做让步或承担损失。',k:0.5,collapseImmune:false,partialCosts:Object.freeze({treasury:1,favor:3,morale:0.5}),courtLimit:Infinity,referrals:Infinity,talkRounds:Infinity,talkMultiplier:2,appointmentAge:20,firstRankTalent:30,otherTalent:15,edictCooldown:0,selectionPeriod:2,rankCaps:true,tradeCooldown:0,energyPenalty:1}),
 real:Object.freeze({label:'成败看实力',note:'按人物能力、朝局和天命判断，办事门槛也更严格。',k:0,collapseImmune:false,courtLimit:Infinity,referrals:Infinity,talkRounds:Infinity,talkMultiplier:1,appointmentAge:25,firstRankTalent:40,otherTalent:25,edictCooldown:0,selectionPeriod:3,rankCaps:true,tradeCooldown:0,energyPenalty:1}),
 });
@@ -7285,6 +7548,8 @@ const { roll } = __load("src/core/rng.js");
 const { applyPackage } = __load("src/core/effects.js");
 const { quarterIndex } = __load("src/core/finance.js");
 const {factionPowers} = __load("src/core/politics.js");
+const {applyScenarioOutcome} = __load("src/core/scenario-outcomes.js");
+const {ensureFiatFunds} = __load("src/core/fiat.js");
 const { campaignChoiceBlock } = __load("src/core/campaign-rules.js");
 const { applyCampaignDecision, expireCampaignPetition } = __load("src/core/campaigns.js");
 const { TEXT_LIMITS } = __load("src/core/text.js");
@@ -7427,6 +7692,7 @@ function resolveMemorial(
     m.options.find((o) => o.id === option) ||
     m.options.find((o) => o.id === (option === "reject" ? "opt1" : "opt0"));
   if (!chosen) throw new Error("无此处置选项");
+  state=ensureFiatFunds(state,Object.fromEntries(['treasury','privy','grain'].map(k=>[k,Math.max(0,-(chosen.effects[k]||0))])));
   const blocked=campaignChoiceBlock(state,m,chosen)||developmentChoiceBlock(state,chosen);if(blocked)throw new Error(blocked);
   for(const [key,label]of [['treasury','国库'],['privy','内帑'],['grain','粮储']])
     if(chosen.effects[key]<0&&state.nation[key]<-chosen.effects[key])throw new Error(label+'不足以办理此事');
@@ -7454,6 +7720,7 @@ function resolveMemorial(
       if (province) province.rebellion = false;
     }
   }
+  s=applyScenarioOutcome(s,m,chosen);
   return { state: applyMemorialRemark(s,m,remark,remarkKind), note: m.title + " · " + chosen.label + (chosen.consequence?'：'+chosen.consequence:'') + brushNote };
 }
 function applyMemorialRemark(state,memorial,remark,kind){
@@ -8335,6 +8602,241 @@ return {id:['approve','reject','alternative'][i],label,consequence,effects};
 }
 
 return {MEMORIAL_CHOICES,memorialChoices};
+},
+"src/core/scenario-outcomes.js":function(__load){
+const {clone} = __load("src/core/state.js");
+const {factionPowers} = __load("src/core/politics.js");
+const serving=(s,name)=>s.court.officials.find(o=>o.name===name&&o.alive&&o.health>0&&!o.jailed&&!o.retired&&s.court.posts.some(p=>p.holder===o.id&&p.id===o.post));
+function applyScenarioOutcome(state,memorial,chosen){
+if(!memorial.scenarioEvent||!state.scenarioEvents)return state;
+const s=clone(state),q=chosen.scenarioOutcome||{};
+s.scenarioEvents.decisions[memorial.scenarioEvent]=chosen.id;
+if(q.dismiss){const o=serving(s,q.dismiss);if(o){o.post=null;o.retired=true;for(const p of s.court.posts)if(p.holder===o.id)p.holder=null;for(const z of s.nation.provinces)if(z.governor===o.id)z.governor=null;}}
+if(q.favor){const o=s.court.officials.find(o=>o.name===q.favor.name);if(o)o.favor=Math.max(0,Math.min(100,o.favor+q.favor.amount));}
+if(q.country){const f=s.foreign.find(f=>f.name===q.country.name);if(f)f.attitude=Math.max(0,Math.min(100,f.attitude+q.country.attitude));}
+s.court.factions=factionPowers(s);
+s.facts.push({subject:memorial.title,key:'御前裁定',value:chosen.label,turn:s.turn});
+return s;
+}
+
+return {applyScenarioOutcome};
+},
+"src/core/fiat.js":function(__load){
+const {clone,assertState} = __load("src/core/state.js");
+const {assignFaces} = __load("src/core/faces.js");
+const {WORLD_MAX,defaultFiat} = __load("src/core/sandbox-schema.js");
+const {factionPowers} = __load("src/core/politics.js");
+const {TECHS,techById} = __load("src/core/tech-rules.js");
+const {applyPackage} = __load("src/core/effects.js");
+const {completeIndustry} = __load("src/core/industries.js");
+const {quarterIndex} = __load("src/core/finance.js");
+function fiatEnabled(s){return s.v>=26&&s.settings?.freedom==='free';}
+const banned=new Set(['__proto__','prototype','constructor']);
+const clean=(v,max=8000)=>typeof v==='string'?v.trim().slice(0,max):'';
+const FIAT_OPERATIONS=['set','add','create','appoint','dismiss','imprison','kill','revive','relation','policy','object','technology','complete','war','fact','cancel'];
+// No arbitrary JavaScript or paths: the model describes world operations; this
+// interpreter alone maintains IDs, offices, accounts and transaction metadata.
+function normalizeFiatOperations(operations){
+if(!Array.isArray(operations)||!operations.length)throw new Error('言出法随缺少可执行指令');
+return operations.map(raw=>{
+if(!raw||!FIAT_OPERATIONS.includes(raw.op))throw new Error('无法识别言出法随操作');
+const out={op:raw.op};
+for(const key of ['target','other','field','name','kind','post','description','outcome','gender','period'])if(raw[key]!==undefined)out[key]=clean(raw[key]);
+if(raw.value!==undefined){if(!['string','number','boolean'].includes(typeof raw.value)||typeof raw.value==='number'&&(!Number.isFinite(raw.value)||Math.abs(raw.value)>WORLD_MAX))throw new Error('指令数值不可表示');out.value=typeof raw.value==='string'?clean(raw.value):raw.value;}
+if(raw.age!==undefined){if(!Number.isSafeInteger(raw.age)||raw.age<0||raw.age>10000)throw new Error('年龄无效');out.age=raw.age;}
+if(raw.fields!==undefined){
+if(!raw.fields||typeof raw.fields!=='object'||Array.isArray(raw.fields))throw new Error('对象属性无效');out.fields={};
+for(const [k,v]of Object.entries(raw.fields)){if(banned.has(k)||!['string','number','boolean'].includes(typeof v)||typeof v==='number'&&(!Number.isFinite(v)||Math.abs(v)>WORLD_MAX))throw new Error('对象属性无效');out.fields[clean(k,120)]=typeof v==='string'?clean(v):v;}
+}
+if(raw.operations!==undefined){if(raw.op!=='policy'||raw.operations.some?.(o=>o?.op==='policy'))throw new Error('制度不能递归创建制度');out.operations=normalizeFiatOperations(raw.operations);}
+if(['set','add'].includes(out.op)&&(!out.target||!out.field||out.value===undefined||out.field.split('.').some(k=>banned.has(k))))throw new Error('请指明修改对象、属性和数值');
+return out;
+});
+}
+function ensureFiatFunds(state,costs={}){
+if(!fiatEnabled(state))return state;
+const s=clone(state);
+for(const [key,cost]of Object.entries(costs))if(['treasury','privy','grain'].includes(key)&&Number.isFinite(cost)&&cost>s.nation[key]){
+const before=s.nation[key],after=Math.min(WORLD_MAX,cost);s.nation[key]=after;s.fiat.used=true;
+s.ledger.push({turn:s.turn,path:'nation.'+key,before,after,delta:after-before,source:'言出法随：补足办理所需'+({treasury:'国库',privy:'内帑',grain:'粮储'})[key]});
+}
+return s;
+}
+function people(s){return [s.emperor,...s.court.officials,...s.harem.consorts,...s.harem.children,...s.harem.royalWomen,...s.foreign];}
+function targetList(s,target){
+const groups={emperor:[s.emperor],nation:[s.nation],capital:[s.nation.army.capital],tech:[s.tech],keju:[s.keju],officials:s.court.officials,consorts:s.harem.consorts,children:s.harem.children,provinces:s.nation.provinces,factions:s.court.factions,countries:s.foreign,armies:[s.nation.army.capital,...s.nation.army.frontiers]};
+const aliases={朕:'emperor',皇帝:'emperor',全国:'nation',国库:'nation',内帑:'nation',粮储:'nation',京营:'capital',全体官员:'officials',所有官员:'officials',全部百姓:'provinces',各州:'provinces',所有嫔妃:'consorts',所有外邦:'countries'};
+const key=aliases[target]||target;if(groups[key])return groups[key];
+const list=[...people(s),...s.nation.provinces,...s.court.factions,...s.court.posts,...s.nation.army.frontiers,...s.projects,...s.fiat.objects];
+const found=list.find(p=>p.id===target||p.name===target||p.ruler===target||p.dir===target);
+if(!found)throw new Error('请先创建或指明对象：'+target);return [found];
+}
+const fields={皇威:'prestige',圣德:'virtue',健康:'health',心情:'mood',年龄:'age',寿命:'lifespan',好感:'favor',宠眷:'favor',吏治:'governance',民心:'morale',国库:'treasury',内帑:'privy',粮储:'grain',兵力:'troops',战备:'readiness',边患:'threat',人口:'pop',税额:'tax',灾情:'disaster',繁荣:'prosperity',野心:'ambition',贪墨:'greed',忠诚:'abilities.忠',政略:'talents.政略',权谋:'talents.权谋',武略:'talents.武略',文采:'talents.文采',魅力:'talents.魅力',教养:'education',资质:'aptitude',姓名:'name',朝代:'dynasty',位分:'rank',关系:'attitude'};
+function writeField(s,target,key,value,add,changes){
+let field=fields[key]||key;
+if(target===s.nation&&field==='morale'){
+for(const z of s.nation.provinces)writeField(s,z,'morale',value,add,changes);
+}
+if(target===s.emperor&&['dynasty','imperialSurname'].includes(field)){writeField(s,s,field,value,add,changes);return;}
+const allowed=target===s?['dynasty','imperialSurname']:target===s.emperor?['name','age','lifespan','health','mood','prestige','virtue','location',...Object.keys(s.emperor.talents).map(k=>'talents.'+k)]:target===s.nation?['treasury','privy','grain','arrears','privyArrears','grainArrears','governance','morale']:target===s.tech?['funding']:target===s.keju?['scholarReputation','interval']:s.fiat.objects.includes(target)?Object.keys(target.values||{}).map(k=>'values.'+k):['name','ruler','age','health','favor','mood','ambition','greed','scheming','education','aptitude','rank','family','personality','secret','secretKnown','attitude','power','powerModifier','troops','readiness','threat','pop','tax','morale','disaster','prosperity','garrison',...['政','军','才','德','忠','权谋'].map(k=>'abilities.'+k)];
+if(s.fiat.objects.includes(target)&&!field.startsWith('values.'))field='values.'+field;
+if(!allowed.includes(field)&&!s.fiat.objects.includes(target))throw new Error('该属性由其他世界操作维护：'+key);
+const parts=field.split('.');if(parts.some(k=>banned.has(k)))throw new Error('属性无效');
+let obj=target;for(const k of parts.slice(0,-1)){if(!obj[k]||typeof obj[k]!=='object')throw new Error('此人物没有该项属性：'+key);obj=obj[k];}
+const leaf=parts.at(-1),before=obj[leaf]??(typeof value==='number'?0:'');
+let after=add?Number(before)+Number(value):value;
+if(typeof after==='number'){
+if(!Number.isFinite(after)||Math.abs(after)>WORLD_MAX)throw new Error('指令数值不可表示');
+if(['age','education','aptitude','troops','pop','garrison','interval'].includes(leaf))after=Math.floor(after);
+if(after<0&&target===s.nation&&['treasury','privy','grain'].includes(leaf)){
+const debt={treasury:'arrears',privy:'privyArrears',grain:'grainArrears'}[leaf];s.nation[debt]=Math.min(WORLD_MAX,-after);after=0;
+}else after=Math.max(leaf==='powerModifier'?-30:0,after);
+if(leaf==='powerModifier')after=Math.min(30,after);
+}
+if(['name','ruler','rank','family','personality','secret','location','dynasty','imperialSurname'].includes(leaf)&&typeof after!=='string')throw new Error('此属性需要文字');
+if(['age','health','favor','mood','prestige','virtue','troops','treasury','privy','grain','education','aptitude','morale','governance','readiness','threat'].includes(leaf)&&typeof after!=='number')throw new Error('此属性需要数值');
+if(leaf==='age'&&s.harem.children.includes(target)){target.born=s.turn-after*36;}
+else obj[leaf]=after;
+if(target===s.emperor&&leaf==='age'){s.emperor.lifespan=Math.max(s.emperor.lifespan,after+1);if(s.regency&&after>=16)s.regency=null;}
+if(target===s.emperor&&['health','mood'].includes(leaf)&&after>0){s.ending=null;s.emperor.depressedMonths=0;}
+changes.push({target:target.name||target.id||'国势',field,before,after});
+const path=target===s.nation?'nation':target===s.emperor?'emperor':s.court.officials.includes(target)?'official.'+target.id:s.harem.consorts.includes(target)?'consort.'+target.id:s.nation.provinces.includes(target)?'province.'+target.id:'fiat.'+(target.id||'world');
+if(typeof before==='number'&&typeof after==='number'&&before!==after)s.ledger.push({turn:s.turn,path:path+'.'+field,before,after,delta:after-before,source:'言出法随：'+key});
+}
+function removePost(s,p){for(const post of s.court.posts)if(post.holder===p.id)post.holder=null;for(const z of s.nation.provinces)if(z.governor===p.id)z.governor=null;p.post=null;}
+function addObject(s,o,id){
+const name=o.name||o.target;if(!name)throw new Error('请给新对象命名');
+const existing=s.fiat.objects.find(x=>x.name===name);if(existing){Object.assign(existing.values,o.fields||{});existing.description=o.description||existing.description;return existing;}
+const item={id,name,description:o.description||name,kind:o.kind||'自定义事物',values:{...(o.fields||{})}};s.fiat.objects.push(item);return item;
+}
+function createEntity(s,o,id){
+const name=o.name||o.target;if(!name)throw new Error('请给新对象命名');
+const kind=o.kind||'object',age=o.age??24;
+if(kind==='object')return addObject(s,o,id);
+if(kind==='post'){
+const post={id,title:name,rank:1,office:name,tags:['政务'],holder:null,provinceId:null};s.court.posts.push(post);s.postNames??={};s.postNames[id]=name;return post;
+}
+if(kind==='faction'){const f={id,name,demand:o.description||'亲近信任',power:50,attitude:80,powerModifier:0};s.court.factions.push(f);return f;}
+if(kind==='country'){
+const p={...clone(s.foreign[0]),id,name,ruler:o.description||name+'君主',frontier:'东',attitude:80,status:'通好',trade:null};delete p.treaty;s.foreign.push(p);return p;
+}
+if(kind==='province'){
+const p={...clone(s.nation.provinces[0]),id,name,pop:300,tax:10,morale:80,disaster:0,rebellion:false,governor:null,industries:[],taxRelief:null,taxSurge:null};s.nation.provinces.push(p);
+s.court.posts.push({id:id+'-governor',title:name+(s.governorTitle||'巡抚'),rank:3,office:'地方',tags:['政务'],holder:null,provinceId:id});return p;
+}
+if(kind==='official'){
+const p={...clone(s.court.officials[0]),id,name,age,gender:o.gender||'男',abilities:{政:80,军:80,才:80,德:80,忠:100,权谋:80},post:null,faction:s.court.factions[0].id,alive:true,health:100,retired:false,jailed:false,personality:o.description||'奉旨任事',secret:'',secretKnown:false,greed:0,ambition:20,relations:{},memory:[],life:['奉旨入朝'],favor:100};delete p.faceNo;s.court.officials.push(p);return p;
+}
+if(kind==='consort'){
+const base=s.harem.consorts[0]||{mood:80,ambition:20,scheming:20,health:100,preg:null,relations:{},confined:false,cold:false,retired:false,recoveryUntil:0};
+const p={...clone(base),id,name,age,faction:s.court.factions[0].id,family:'奉旨入宫',rank:'妃',favor:100,health:100,preg:null,retired:false,confined:false,cold:false,relations:{},memory:[],secret:'',reignId:s.runId};delete p.faceNo;s.harem.consorts.push(p);return p;
+}
+if(kind==='child'){
+const mother=s.harem.consorts.find(c=>c.id===o.other||c.name===o.other),p={id,name,sex:o.gender||'男',mother:mother?.id||null,fatherId:s.reign.emperorId||s.runId,legit:true,born:s.turn-age*36,aptitude:80,health:100,education:Math.min(100,age*4),tutor:null,faction:mother?.faction||s.court.factions[0].id,party:false};s.harem.children.push(p);return p;
+}
+throw new Error('新对象类型无法识别：'+kind);
+}
+function runOperation(s,o,id,changes,facts){
+if(o.op==='cancel'){
+const before=s.fiat.rules.length+s.fiat.objects.length;s.fiat.rules=s.fiat.rules.filter(r=>r.id!==o.target&&r.name!==o.target);s.fiat.objects=s.fiat.objects.filter(r=>r.id!==o.target&&r.name!==o.target);
+if(before===s.fiat.rules.length+s.fiat.objects.length)throw new Error('未找到可撤销的自定义对象或制度');changes.push({target:o.target,operation:'撤销'});return;
+}
+if(o.op==='set'||o.op==='add'){for(const p of targetList(s,o.target))writeField(s,p,o.field,o.value,o.op==='add',changes);return;}
+if(o.op==='create'||o.op==='object'){
+const p=o.op==='object'?addObject(s,o,id):createEntity(s,o,id);
+for(const [key,value]of Object.entries(o.fields||{}))if(!s.fiat.objects.includes(p))writeField(s,p,key,value,false,changes);
+changes.push({target:p.name||p.title,created:true,id:p.id});return;
+}
+if(o.op==='policy'){
+if(!o.name)throw new Error('请给制度命名');
+const old=s.fiat.rules.find(x=>x.name===o.name),rule={id:old?.id||id,name:o.name,description:o.description||o.name,period:o.period==='eachTurn'?'eachTurn':'once',operations:o.operations||[]};
+if(old)Object.assign(old,rule);else s.fiat.rules.push(rule);
+if(rule.period==='once')for(const [i,op]of rule.operations.entries())runOperation(s,op,id+'-rule-'+i,changes,facts);
+rule.lastTurn=s.turn;
+changes.push({target:rule.name,rule:true});return;
+}
+if(o.op==='fact'){
+const fact={subject:o.target||s.emperor.name,key:o.name||'御旨',value:o.description||String(o.value??''),turn:s.turn};if(!fact.value)throw new Error('请写明新事实');facts.push({kind:'fiat',...fact});return;
+}
+if(o.op==='technology'){
+const tech=techById(o.target)||TECHS.find(t=>t.name===o.name||t.name===o.target);
+if(tech){const finish=id=>{const t=techById(id);for(const dep of t?.prereq||[])if(!s.tech.done.includes(dep))finish(dep);if(!s.tech.done.includes(id))s.tech.done.push(id);};finish(tech.id);if(s.tech.current&&s.tech.done.includes(s.tech.current.id))s.tech.current=null;changes.push({target:tech.name,completed:true});}
+else{const p=addObject(s,{...o,name:o.name||o.target,kind:'技术',fields:{...(o.fields||{}),completed:true}},id);changes.push({target:p.name,completed:true});}return;
+}
+if(o.op==='complete'){
+const ids=s.projects.filter(p=>o.target==='all'||p.id===o.target||p.name===o.target||p.edictType===o.target).map(p=>p.id);if(!ids.length&&o.target!=='all')throw new Error('没有该在建项目');
+for(const projectId of ids){
+const p=s.projects.find(p=>p.id===projectId);if(p.done)continue;p.done=true;p.progress=100;
+// Preserve the original scheduled dates for old project validation. Instant
+// completion must install the real industry/tax/relief/recruitment result.
+if(p.edictType==='兴业')completeIndustry(s,p);
+else{
+const effects=p.province&&Number.isFinite(p.effects?.morale)?{...p.effects,morale:undefined,province:{id:p.province,morale:p.effects.morale}}:p.effects||{};
+Object.assign(s,applyPackage(s,effects,'言出法随：项目竣工'));
+for(const z of s.nation.provinces.filter(z=>!p.province||z.id===p.province)){
+if(p.edictType==='减赋')z.taxRelief={factor:0.8,untilQuarter:quarterIndex(s.turn)+4};
+if(p.edictType==='加税')z.taxSurge={factor:1.2,untilQuarter:quarterIndex(s.turn)+4};
+if(p.edictType==='赈灾'){z.disaster=Math.max(0,z.disaster-35*(p.execRate||1));z.morale=Math.min(WORLD_MAX,z.morale+8*(p.execRate||1));}
+}
+if(p.edictType==='征兵')for(const b of [s.nation.army.capital,...s.nation.army.frontiers])if(p.armyTarget==='all-frontiers'?b!==s.nation.army.capital:p.armyTarget==='capital'?b===s.nation.army.capital:b.dir===p.armyTarget){b.troops=Math.min(WORLD_MAX,b.troops+3000);b.readiness=Math.min(WORLD_MAX,b.readiness+5);}
+}
+changes.push({target:p.name||p.edictType,completed:true});
+}return;
+}
+if(o.op==='war'){
+const f=targetList(s,o.target)[0];if(!s.foreign.includes(f))throw new Error('请指定外邦');
+const result=o.outcome||'归附';f.status=result==='归附'?'朝贡':result==='宣战'?'交战':'通好';f.attitude=result==='宣战'?0:100;
+const active=s.campaigns.filter(w=>w.country===f.id&&!w.done);
+for(const w of active){w.done=true;w.result=result==='胜利'||result==='归附'?'胜利':result==='失败'?'失败':'议和';if(w.campaignVersion===1){w.settlement={status:'signed',turn:s.turn,kind:result==='归附'?'tribute':'peace',label:'奉旨'+result};w.goalAchieved=result==='胜利'||result==='归附';}s.memorials=s.memorials.filter(m=>m.campaignOrder?.warId!==w.id);}
+if(!active.length&&(result==='胜利'||result==='归附'))s.campaigns.push({id:id+'-war',country:f.id,dir:f.frontier,title:f.name+'奉旨'+result,started:s.turn,done:true,result:'胜利'});
+if(result==='胜利'||result==='归附')s.stats.warsWon++;
+for(const b of s.nation.army.frontiers)if(b.dir===f.frontier)b.threat=result==='宣战'?80:0;
+changes.push({target:f.name,outcome:result});facts.push({kind:'war',actors:[f.name],outcome:result});return;
+}
+if(o.op==='appoint'){
+let p=targetList(s,o.target)[0];if(!s.court.officials.includes(p))throw new Error('请先创建官员，再任官');
+let post=s.court.posts.find(x=>x.id===o.post||x.title===o.post||s.postNames?.[x.id]===o.post);if(!post)post=createEntity(s,{kind:'post',name:o.post},id+'-post');
+removePost(s,p);const prior=s.court.officials.find(x=>x.id===post.holder);if(prior)prior.post=null;
+p.alive=true;p.health=Math.max(1,p.health);p.retired=false;p.jailed=false;p.post=post.id;post.holder=p.id;
+const z=s.nation.provinces.find(z=>z.id===post.provinceId);if(z)z.governor=p.id;
+changes.push({target:p.name,post:post.title});facts.push({kind:'appointment',actors:[p.name],operation:'任命',post:post.title});return;
+}
+const targets=targetList(s,o.target);
+if(targets.length>1){for(const p of targets)runOperation(s,{...o,target:p.id||'emperor'},id+'-'+(p.id||'emperor'),changes,facts);return;}
+const p=targets[0];
+if(['dismiss','imprison','kill'].includes(o.op)){
+removePost(s,p);if(o.op==='imprison')p.jailed=true;
+if(o.op==='kill'){p.alive=false;p.health=0;if('preg'in p)p.preg=null;if(s.harem.heir===p.id)s.harem.heir=null;facts.push({kind:'death',actors:[p.name||p.ruler]});}
+changes.push({target:p.name,operation:o.op});return;
+}
+if(o.op==='revive'){
+p.alive=true;p.health=100;p.retired=false;p.jailed=false;if(p===s.emperor){s.ending=null;s.emperor.lifespan=Math.max(s.emperor.lifespan,s.emperor.age+50);}changes.push({target:p.name,revived:true});facts.push({kind:'fiat',subject:p.name,key:'复生',value:'奉旨恢复在世',turn:s.turn});return;
+}
+if(o.op==='relation'){
+const value=Number(o.value??100);if(!Number.isFinite(value)||value<0||value>WORLD_MAX)throw new Error('关系数值无效');
+if(o.other){const other=targetList(s,o.other)[0];p.relations??={};p.relations[other.id||'emperor:'+s.runId]=value;other.relations??={};other.relations[p.id||'emperor:'+s.runId]=value;}
+else if(s.foreign.includes(p))p.attitude=value;else p.favor=value;
+changes.push({target:p.name||p.ruler,relation:value});
+}
+}
+function applyFiatOperations(state,operations,key='fiat'){
+if(!fiatEnabled(state))throw new Error('此指令仅用于言出法随档');
+const ops=normalizeFiatOperations(operations),s=structuredClone(state),changes=[],facts=[];s.fiat??=defaultFiat();s.fiat.used=true;
+for(const [i,op]of ops.entries())runOperation(s,op,'fiat-'+s.runId+'-'+s.turn+'-'+key+'-'+i,changes,facts);
+s.nation.morale=s.nation.provinces.reduce((v,p)=>v+p.pop*p.morale,0)/s.nation.provinces.reduce((v,p)=>v+p.pop,0)||0;
+s.court.factions=factionPowers(s);
+for(const fact of facts.filter(f=>f.kind==='fiat'&&f.subject))s.facts.push({subject:fact.subject,key:fact.key,value:fact.value,turn:s.turn});
+assignFaces(s);assertState(s);
+const labels=Object.fromEntries(Object.entries(fields).map(([label,key])=>[key,label]));
+const summary=changes.slice(0,6).map(c=>c.created?'创建'+c.target:c.revived?c.target+'复生':c.post?c.target+'出任'+c.post:c.field?c.target+' '+(labels[c.field]||c.field.split('.').at(-1))+'＝'+c.after:c.completed?c.target+'已完成':c.outcome?c.target+' '+c.outcome:c.operation==='撤销'?'撤销'+c.target:c.target).join('；');
+return {state:s,changes,facts,summary:'御旨已行：'+summary+(changes.length>6?'等'+changes.length+'项':'')};
+}
+function applyFiatRules(state){
+if(!fiatEnabled(state)||!state.fiat?.rules.some(r=>r.period==='eachTurn'&&r.operations.length))return state;
+let s=state;for(const rule of state.fiat.rules.filter(r=>r.period==='eachTurn'&&r.operations.length&&r.lastTurn!==state.turn)){s=applyFiatOperations(s,rule.operations,'rule-'+rule.id).state;s.fiat.rules.find(r=>r.id===rule.id).lastTurn=s.turn;}return s;
+}
+
+return {fiatEnabled,FIAT_OPERATIONS,normalizeFiatOperations,ensureFiatFunds,applyFiatOperations,applyFiatRules};
 },
 "src/core/campaigns.js":function(__load){
 const { clone } = __load("src/core/state.js");
@@ -9730,9 +10232,9 @@ function worldRules(state) {
   const sc = scenarioById(state.scenario);
   const modern = style === STYLES.modern;
   const frame = sc
-    ? `你是「${state.dynasty}」朝的叙事引擎。本局以${sc.year}${sc.title.split(" · ")[0]}即位之初的史实开局，官职、地名用该朝称谓（见王朝设定）。史实只用于人物性格、关系与背景；本局自开局起已偏离史实，生死、成败、任免一律以引擎结算为准，不得按史书预言或补写结局，也不得写开局之后的史事。`
+    ? `你是「${state.dynasty}」朝的叙事引擎。本局以${sc.year}${sc.title.split(" · ")[0]}的史实局势开局，官职、地名用该朝称谓（见王朝设定）。史实只用于人物性格、关系与背景；本局自开局起已偏离史实，生死、成败、任免一律以引擎结算为准，不得按史书预言或补写结局，也不得写开局之后的史事。`
     : `你是架空王朝「${state.dynasty}」的叙事引擎，制度近似明清。`;
-  return `${frame}只输出一个 JSON 对象。\n铁律：引擎记账，模型叙事。所有钱粮、人物、派系、健康、受孕、生育、死亡、升迁、战争胜负、执行度由结算表决定，你不得追加或改写硬结果，不得另给数字。名册姓名一字不改，大臣称陛下、自称臣，妃嫔自称臣妾。人物各有利益。文风「${style.label}」：${style.rules}${pov.rules}\n【文风范文（只学笔法，不照搬人物与事件）】${style.sample}\n白描，禁用嘴角勾起、眼中闪过一丝${modern ? "" : "、现代词"}；对话用「」。亲密场面点到为止，禁止描写性行为或身体细节。共同经历摘要是旁白所知，NPC只知道自己参与、目睹或后来获知的部分；私下往事不得让未在场者无故知晓。人物各有立场，不替玩家决定；自由度只影响口谕裁决，不改变叙事一致性要求。`;
+  return `${frame}${state.v>=26&&state.settings.freedom==='free'?'当前是言出法随：以引擎执行的玩家指令及御旨改定世界为事实，已成功的改写不得用年代、职权、资历或钱粮反悔；未要求的后果不可擅自增加。':''}只输出一个 JSON 对象。\n铁律：引擎记账，模型叙事。所有钱粮、人物、派系、健康、受孕、生育、死亡、升迁、战争胜负、执行度由结算表决定，你不得追加或改写硬结果，不得另给数字。名册姓名一字不改，大臣称陛下、自称臣，妃嫔自称臣妾。人物各有利益。文风「${style.label}」：${style.rules}${pov.rules}\n【文风范文（只学笔法，不照搬人物与事件）】${style.sample}\n白描，禁用嘴角勾起、眼中闪过一丝${modern ? "" : "、现代词"}；对话用「」。亲密场面点到为止，禁止描写性行为或身体细节。共同经历摘要是旁白所知，NPC只知道自己参与、目睹或后来获知的部分；私下往事不得让未在场者无故知晓。人物各有立场，不替玩家决定；自由度只影响口谕裁决，不改变叙事一致性要求。`;
 }
 function examFaction(o,value){return o.keju&&!o.keju.revealed.includes('faction')?'派系待察':value;}
 function roster(state) {
@@ -9773,7 +10275,7 @@ const FACT_WINDOW = 12;
 const stable = (value) => JSON.stringify(value);
 const r1 = (n) => (Number.isFinite(n) ? Math.round(n * 10) / 10 : n);
 function systemPrompt(state, task = "turn") {
-  if(task === "talk")return worldRules(state) + "\n" + TALK_RULES;
+  if(task === "talk")return worldRules(state) + "\n" + (state.v>=26&&state.settings.freedom==='free'?TALK_RULES.replace('不得超过职权','言出法随已结算的指令须照实响应，不以职权、资历或钱粮反悔'):TALK_RULES);
   return worldRules(state) + "\n" + TASK_RULES.replace("{{LENGTH}}", (LENGTHS[state.settings.length] || LENGTHS.standard).words);
 }
 const TASK_RULES = `【叙事守则】死亡、怀孕、生产、小产、任免、战果、执行度只在结算表列出时才可写成本旬发生；其余只能作回忆或传闻，并用“曾”“昔”“当年”标明。不写结算表以外的金额、人数、年龄。人物反应最多3条，仅限官员，须在本章出场，每人好感-5到5，合计绝对值不超过10。宏愿证据须逐字引用本章原句并含该目标全部关键词。长期事实最多3条，只记本章写明、日后仍成立的事。
@@ -9808,6 +10310,7 @@ function dynastyBible(state,context=null) {
     宗室女: (state.harem.royalWomen || []).map((w) => w.id + "｜" + w.name),
     外邦: state.foreign.map((f) => [f.id, f.name, f.ruler].join("｜")),
     州郡: state.nation.provinces.map((z) => z.name),
+    ...(state.fiat?.objects.length||state.fiat?.rules.length?{御旨改定的世界:state.fiat}:{}),
     // Full cards follow the stable compact roster to preserve prefix caching.
     出场人物: state.court.officials.filter(o=>o.alive&&full.has(o.id)).slice().sort(byId)
       .map(o=>[o.id,o.name,post(o.id),examFaction(o,faction(o.faction)),o.personality||''].join('｜'))
@@ -9920,7 +10423,7 @@ function talkMessages(state, result, log = []) {
   const known = secretKnown || (result.kind === "试探" && result.success);
   const post = postTitle(state, state.court.posts.find((p) => p.holder === npc.id));
   const header = dynastyBible(state,{person:result.person,line:result.line,log}) + "\n【面谈对象】" + stable({ id: card.id, name: card.name, 职位: post || card.rank || card.status || "", personality: card.personality, family: card.family, faction: card.keju&&!card.keju.revealed.includes('faction')?'待察':card.faction, ruler: card.ruler, demand: card.demand }) +
-    "\n【此人能做到什么】妃嫔不能给钱兵；其他职权外请求必须回去议。\n";
+    (state.v>=26&&state.settings.freedom==='free'?"\n【言出法随】玩家已交引擎执行的要求照裁决响应，不以人物职权或余额拒绝已成功的指令。\n":"\n【此人能做到什么】妃嫔不能给钱兵；其他职权外请求必须回去议。\n");
   const recent = (Array.isArray(log) ? log : [])
     .filter((t) => t && t.person === result.person && t.turn === result.turn && t.id !== result.id && t.reply)
     .slice(-20);
@@ -10443,7 +10946,9 @@ const { diplomacy } = __load("src/core/foreign.js");
 const { issueEdict, EDICTS } = __load("src/core/edicts.js");
 const { auditChanges } = __load("src/core/audit.js");
 const { factionPowers } = __load("src/core/politics.js");
-const INTENT_TYPES=['kill','appoint','dismiss','promote','imprison','war','allocate','favor','decree','other'];
+const {fiatEnabled,normalizeFiatOperations,applyFiatOperations,ensureFiatFunds} = __load("src/core/fiat.js");
+const {WORLD_MAX} = __load("src/core/sandbox-schema.js");
+const INTENT_TYPES=['kill','appoint','dismiss','promote','imprison','war','allocate','favor','decree','other','fiat'];
 const persons=s=>[...s.court.officials,...s.harem.consorts,...s.harem.children];
 function normalizeIntents(state,actions,inputs){
 const byId=(list,value)=>list.find(x=>x.id===value||x.name===value);
@@ -10451,6 +10956,7 @@ return (Array.isArray(actions)?actions:[]).map((raw,i)=>{
 const input=inputs.find(x=>x.id===raw?.inputId),type=INTENT_TYPES.includes(raw?.type)?raw.type:'other';
 const a={id:(input?.id||'unknown')+':'+i,inputId:input?.id||'',slot:input?.slot||'朝',type,text:String(raw?.text||input?.text||'').slice(0,TEXT_LIMITS.decree)};
 if(!input)return {...a,type:'other',text:'未能对应原口谕'};
+if(type==='fiat')return fiatEnabled(state)?{...a,operations:normalizeFiatOperations(raw.operations)}:{...a,type:'other',reason:'此指令仅用于言出法随档'};
 const social=normalizeSocial(state,raw.interaction,input);if(social&&type==='other')a.interaction=social;
 const person=byId(persons(state),raw.targetId||raw.target),country=byId(state.foreign,raw.countryId||raw.country);
 const post=state.court.posts.find(p=>p.id===raw.postId||p.title===raw.postId||state.postNames?.[p.id]===raw.postId);
@@ -10478,7 +10984,7 @@ const lead=state.court.officials.find(o=>o.id===raw.lead||o.name===raw.lead);if(
 a.industry=identifyIndustry(String(raw.industry||input.text));
 a.province=state.nation.provinces.find(p=>p.id===raw.province||input.text.includes(p.name))?.id||null;
 }
-if(type==='favor'){a.requestedAmount=raw.amount;a.amount=Number.isFinite(raw.amount)?Math.max(-5,Math.min(5,raw.amount)):0;}
+if(type==='favor'){a.requestedAmount=raw.amount;a.amount=Number.isFinite(raw.amount)?fiatEnabled(state)?raw.amount:Math.max(-5,Math.min(5,raw.amount)):0;}
 if(type==='decree'){if(!EDICTS[raw.edictType])return {...a,type:'other',text:'拟议：'+a.text,reason:'普通叙事口谕'};a.edictType=raw.edictType;a.province=state.nation.provinces.find(p=>p.id===raw.province)?.id||a.province||null;}
 return a;
 });
@@ -10486,6 +10992,7 @@ return a;
 function intentActionKey(a){
 const keys=['type','targetId','postId','countryId','operation','resource','amount','source','destination','edictType','province'];
 if(a.destination==='tech'||['格物','兴业'].includes(a.edictType))keys.push('techId','funding','lead','industry','name','line');
+if(a.type==='fiat')return JSON.stringify(['fiat',a.operations]);
 return JSON.stringify(keys.map(k=>a[k]??null));
 }
 function killPerson(s,id){
@@ -10504,6 +11011,11 @@ const target=persons(s).find(o=>o.id===a.targetId),actor=target?.name;
 const factStart=facts.length;
 const r={id,turn:s.turn,slot:a.slot||slot,type:a.type,status:'failed',inputId:a.inputId,actual:{},clamped:false};
 let success=false;
+if(a.type==='fiat'){
+try{const done=applyFiatOperations(s,a.operations,a.id);s=done.state;r.status='success';r.actual={changes:done.changes};r.summary=done.summary;r.facts=done.facts;facts.push(...done.facts);}
+catch(error){r.status='failed';r.summary='指令尚未执行：'+error.message;r.facts=[];}
+results.push(r);s.intentResults.push(r);continue;
+}
 if(a.type==='other'){r.status='narrative';r.summary='拟议：'+a.text;}
 else{
 const die=roll(s);s=die.state;r.die=die.value;
@@ -10511,7 +11023,7 @@ const verdict=check(s.emperor.talents.权谋,die.value,'一般',target?.abilitie
 const judged=adjudicate(s,['appoint','dismiss','promote','imprison','war','decree'].includes(a.type)?{...verdict,success:true}:verdict,target?.id);s=judged.state;success=judged.verdict.success;r.baseSuccess=verdict.success;r.status=judged.verdict.partial?'partial':success?'success':'failed';if(judged.verdict.cost)r.cost=judged.verdict.cost;
 if(!success)r.summary='口谕未能落实';
 else try{
-if(s.regency)throw new Error('摄政期间不可下达此口谕');
+if(s.regency&&!fiatEnabled(s))throw new Error('摄政期间不可下达此口谕');
 if(a.type==='kill'){
 if(!target||target.alive===false||target.health<=0){r.clamped=true;r.summary='此人已不在在世名册';}
 else{killPerson(s,target.id);r.actual={targetId:target.id,name:actor};r.summary=actor+'被赐死';facts.push({kind:'death',actors:[actor]});}
@@ -10522,7 +11034,7 @@ const operation=a.type==='dismiss'?'remove':a.type==='imprison'?'jail':'appoint'
 if(!post&&operation==='jail'){s.court.officials.find(o=>o.id===target.id).jailed=true;r.actual={targetId:target.id};r.summary=actor+'被下狱';facts.push({kind:'appointment',actors:[actor],operation:'下狱'});r.facts=facts.slice(factStart);s.intentResults.push(r);results.push(r);continue;}
 if(!post&&operation==='remove'){r.clamped=true;r.actual={targetId:target.id};r.summary=actor+'当前并无官职';r.facts=[];s.intentResults.push(r);results.push(r);continue;}
 if(!post)throw new Error('未找到可任免官职');
-const result=appoint(s,{post:post.id,person:target.id,operation,pardon:false});s=result.state;r.summary=result.note;if(result.check?.partial||result.partial||result.execution?.partial){r.status='partial';r.cost=result.check?.cost||result.cost||result.execution?.cost;}
+const result=fiatEnabled(s)?(()=>{const done=applyFiatOperations(s,[{op:operation==='appoint'?'appoint':operation==='jail'?'imprison':'dismiss',target:target.id,post:post.id}],a.id);return {state:done.state,note:done.summary};})():appoint(s,{post:post.id,person:target.id,operation,pardon:false});s=result.state;r.summary=result.note;if(result.check?.partial||result.partial||result.execution?.partial){r.status='partial';r.cost=result.check?.cost||result.cost||result.execution?.cost;}
 const done=operation==='appoint'?s.court.posts.find(p=>p.id===post.id)?.holder===target.id:!s.court.posts.find(p=>p.holder===target.id);
 if(!done)r.status='failed';
 else{r.actual={targetId:target.id,postId:post.id};facts.push({kind:'appointment',actors:[actor],operation:operation==='jail'?'下狱':operation==='remove'?'罢免':'任命',post:post.title});}
@@ -10530,9 +11042,13 @@ else{r.actual={targetId:target.id,postId:post.id};facts.push({kind:'appointment'
 const result=configureResearch(s,{techId:a.techId,name:a.name,line:a.line,funding:a.funding??a.amount,lead:a.lead});s=result.state;
 r.actual={destination:'tech',techId:s.tech.current?.id,funding:s.tech.funding};r.summary=result.note;facts.push({kind:'research_plan',...r.actual});
 }else if(a.type==='allocate'){
-const room=['treasury','privy','grain'].includes(a.destination)&&a.destination!==a.source?Math.max(0,1000000-s.nation[a.destination]):1000000;
+if(fiatEnabled(s)&&a.source!==a.destination&&['treasury','privy','grain'].includes(a.source))s=ensureFiatFunds(s,{[a.source]:a.resource==='troops'?a.amount*EDICTS.征兵.cost/3000:a.amount});
+if(fiatEnabled(s))transferLeft=Infinity;
+const ceiling=fiatEnabled(s)?WORLD_MAX:1000000;
+const room=['treasury','privy','grain'].includes(a.destination)&&a.destination!==a.source?Math.max(0,ceiling-s.nation[a.destination]):ceiling;
 const origin=a.source==='capital'?s.nation.army.capital:s.nation.army.frontiers.find(b=>b.dir===a.source);
-const cap=a.source===a.destination?0:a.resource==='troops'?Math.min(Math.max(0,1000000-((a.destination==='capital'?s.nation.army.capital:s.nation.army.frontiers.find(b=>b.dir===a.destination))?.troops||0)),origin?origin.troops:Math.floor((s.nation[a.source]||0)*3000/EDICTS.征兵.cost),a.source==='treasury'?Math.floor(transferLeft*3000/EDICTS.征兵.cost):Infinity):Math.min(room,s.nation[a.source]||0);
+if(fiatEnabled(s)&&origin&&origin.troops<a.amount)origin.troops=a.amount;
+const cap=a.source===a.destination?0:a.resource==='troops'?Math.min(Math.max(0,ceiling-((a.destination==='capital'?s.nation.army.capital:s.nation.army.frontiers.find(b=>b.dir===a.destination))?.troops||0)),origin?origin.troops:Math.floor((s.nation[a.source]||0)*3000/EDICTS.征兵.cost),a.source==='treasury'?Math.floor(transferLeft*3000/EDICTS.征兵.cost):Infinity):Math.min(room,s.nation[a.source]||0);
 const limited=Math.min(Math.max(0,a.amount||0),cap,a.source==='treasury'&&a.resource!=='troops'?transferLeft:Infinity),amount=a.resource==='troops'?Math.floor(limited):limited;
 const treasurySpent=a.source==='treasury'?(a.resource==='troops'?amount*EDICTS.征兵.cost/3000:amount):0;transferLeft-=treasurySpent;r.clamped=amount!==a.amount;
 if(a.resource==='troops'){
@@ -10553,8 +11069,8 @@ const used=budget.reduce((n,r)=>n+Math.abs(r.actual.amount||0),0);
 const personal=budget.filter(r=>r.actual.targetId===target.id).reduce((n,r)=>n+Math.abs(r.actual.amount||0),0);
 const liveTarget=persons(s).find(o=>o.id===target.id);
 const beforeFavor=liveTarget.favor||0;
-const amount=Math.sign(a.amount)*Math.min(Math.abs(a.amount),Math.max(0,10-used),Math.max(0,5-personal));r.clamped=amount!==a.amount;
-if(target?.abilities)s=applyPackage(s,{official:{id:target.id,favor:amount}},'口谕赏罚');else if(liveTarget&&'favor' in liveTarget)liveTarget.favor=Math.max(0,Math.min(100,liveTarget.favor+amount));
+const amount=fiatEnabled(s)?a.amount:Math.sign(a.amount)*Math.min(Math.abs(a.amount),Math.max(0,10-used),Math.max(0,5-personal));r.clamped=amount!==a.amount;
+if(target?.abilities)s=applyPackage(s,{official:{id:target.id,favor:amount}},'口谕赏罚');else if(liveTarget&&'favor' in liveTarget)liveTarget.favor=Math.max(0,Math.min(fiatEnabled(s)?WORLD_MAX:100,liveTarget.favor+amount));
 r.actual={targetId:target.id,amount:(persons(s).find(o=>o.id===target.id)?.favor||0)-beforeFavor};r.clamped=r.actual.amount!==a.requestedAmount;r.summary=actor+(amount>=0?'受到嘉奖':'受到申饬');
 }else if(a.type==='war'){
 const country=s.foreign.find(f=>f.id===a.countryId);if(!country)throw new Error('外邦不在名册');
@@ -10785,7 +11301,7 @@ receipts.add(r.id);used+=r.actual.treasurySpent??r.actual.amount??0;
 }
 }
 const cap =
-s.settings.freedom==='free'?s.nation.treasury:isOfficial && post?.tags.includes("管钱")
+s.settings.freedom==='free'&&s.v>=26?Number.MAX_SAFE_INTEGER:s.settings.freedom==='free'?s.nation.treasury:isOfficial && post?.tags.includes("管钱")
 ? Math.min(Math.max(0,20*freedomRules(s).talkMultiplier-used),Math.floor(s.nation.treasury*0.03)*freedomRules(s).talkMultiplier,Math.floor((person.favor||0)/3)*freedomRules(s).talkMultiplier,s.nation.treasury):0;
 const kind=mode;
 const prior=!structured&&state.talks.find(t=>t.person===personId&&t.turn===state.turn&&t.kind===kind&&
@@ -11367,6 +11883,7 @@ return {foreignMonth,foreignYear,diplomacyBlock,diplomacy,borderInvasions,advanc
 },
 "src/core/edicts.js":function(__load){
 const { openEnke, enkeBlock } = __load("src/core/keju.js");
+const {fiatEnabled,ensureFiatFunds} = __load("src/core/fiat.js");
 const {configureResearch} = __load("src/core/tech.js");
 const {buildIndustry,completeIndustry} = __load("src/core/industries.js");
 const {techEffects} = __load("src/core/tech-rules.js");
@@ -11534,6 +12051,7 @@ function issueEdict(state, action, die) {
 const type = action.edictType || "禁令",
 rule = EDICTS[type]&&{...EDICTS[type],cost:edictCost(state,type)};
 if (!rule) throw new Error("无法识别此旨意，请选择模板");
+if(fiatEnabled(state))state=ensureFiatFunds(state,{[rule.private?'privy':'treasury']:rule.cost,grain:rule.grain||0});
 if(type==='加开恩科')return openEnke(state,action.examiner);
 if(type==='格物')return configureResearch(state,action);
 if(type==='兴业')return buildIndustry(state,action);
@@ -12171,7 +12689,7 @@ const nextStart=s.reign?.eraStartTurn;
 const changed=Number.isFinite(nextStart)&&s.turn>=nextStart&&s.era.startTurn!==nextStart;
 const start=changed?nextStart:(s.era.startTurn || 0);
 return {...s.era,name:changed?s.reign.eraName:s.era.name,startTurn:start,
-year:1+Math.floor((s.turn-start)/36),month:1+Math.floor((s.turn%36)/3),xun:s.turn%3};
+baseYear:changed?1:(s.era.baseYear||1),year:(changed?1:(s.era.baseYear||1))+Math.floor((s.turn-start)/36),month:1+Math.floor((s.turn%36)/3),xun:s.turn%3};
 }
 
 return {globalYear,calendarEra};
@@ -12215,8 +12733,11 @@ const {localSocial} = __load("src/core/social-rules.js");
 const { normalizeIntents } = __load("src/core/intents.js");
 const { parseNumber, NUMBER_SOURCE } = __load("src/llm/quantities.js");
 const { normalizeMemorialAction } = __load("src/core/memorial-decisions.js");
+const {fiatEnabled} = __load("src/core/fiat.js");
+const {fiatIntentMessages,localFiatOperations} = __load("src/llm/fiat-intents.js");
 function intentInputs(schedule){return ['朝','午','夜'].flatMap(slot=>{const a=normalizeMemorialAction(schedule[slot]),inputs=[];if(['下旨','自拟情节'].includes(a?.kind)&&a.text?.trim())inputs.push({id:slot,slot,text:a.text.trim(),...(a.kind==='自拟情节'?{people:a.people,place:a.place||'',scene:true}:{})});for(const [id,d]of Object.entries(a?.decisions||{}))if(d?.remark?.trim())inputs.push({id:slot+':remark:'+id,slot,text:d.remark.trim()});return inputs;});}
 function intentMessages(state,inputs){
+if(fiatEnabled(state))return fiatIntentMessages(state,inputs);
 const relevant=inputs.filter(i=>/研制|研究|研习|格物|发明|改良|研新|兴业|兴建|建造|开设|设立/.test(i.text));
 const techNames=[...new Map(relevant.filter(i=>/研|格物|发明|改良/.test(i.text)).map(i=>identifyTech(state,i.text)).filter(Boolean).map(t=>[t.id,{id:t.id,name:t.name,line:t.line}])).values()];
 const industryNames=[...new Set(relevant.map(i=>identifyIndustry(i.text)).filter(Boolean))].map(id=>({id,name:INDUSTRIES[id].name}));
@@ -12228,6 +12749,8 @@ function validateIntents(data,state,inputs){if(!Array.isArray(data?.actions))thr
 function localIntents(state,inputs){
 const actions=[];
 for(const input of inputs){
+const fiat=localFiatOperations(state,input);
+if(fiat){actions.push(fiat.error?{inputId:input.id,type:'other',text:fiat.error}:{inputId:input.id,type:'fiat',text:input.text,operations:fiat.operations});continue;}
 const research=/研制|研究|研习|格物|发明|改良|研新/.test(input.text),industrial=/兴建|兴业|建造|设立|开设/.test(input.text)&&identifyIndustry(input.text);
 if(research){
 const known=TECHS.find(t=>input.text.includes(t.name)||t.aliases.some(a=>input.text.includes(a))),tech=known||identifyTech(state,input.text);
@@ -12253,6 +12776,62 @@ return normalizeIntents(state,actions,inputs);
 }
 
 return {intentInputs,intentMessages,validateIntents,localIntents};
+},
+"src/llm/fiat-intents.js":function(__load){
+const {parseNumber,NUMBER_SOURCE} = __load("src/llm/quantities.js");
+const {TECHS} = __load("src/core/tech-rules.js");
+const {fiatEnabled} = __load("src/core/fiat.js");
+function fiatIntentMessages(state,inputs){
+ return [{role:'system',content:`你是帝王游戏言出法随档的指令解析员，只输出 JSON，不写剧情。玩家对游戏世界有最高决定权，不因钱粮、年龄资历、职位、历史年代、科技前置或既有动作模板拒绝要求。必须逐条落实玩家明确的目标和数量，尊重“不、不要、保留、仅”等限制，不擅自杀人、花钱、改变他人或增加愿望。普通闲聊无需改变状态。复合指令按顺序执行，可先创建新对象再按名字引用。未有专用模块的事物用object建立有数值属性的世界对象，或policy记录制度与每旬运行的具体操作；不能把实际请求降为other/拟议，也不能只写一句已完成。
+每条输入返回一个type:"fiat"动作，带inputId、text原文、operations数组。op只选：
+set/add {target,field,value}：指定值/增量。target可为emperor/nation/capital/tech/keju、人物或外邦/州/派系的ID或姓名、边境方向、officials/consorts/children/provinces/factions/countries/armies全组。钱粮单位万两/万石，兵力为人；明确两/石须除10000。中文亿万须准确换算。field可为国库、内帑、粮储、吏治、民心、健康、年龄、寿命、心情、皇威、圣德、教养、资质、好感、位分，五才talents.政略/权谋/武略/文采/魅力、官员abilities.政/军/才/德/忠/权谋，军队troops/readiness/threat，州pop/tax/disaster/prosperity，外邦attitude，姓名name等。数字不受旧100/百万游戏上限约束，但必须是有限可表示数。
+create {kind,name,age,gender,description,fields,other}：kind为official/consort/child/country/province/faction/post/object。fields只给玩家要求的属性；child.other可给母亲姓名。新任官者若不在名册，先创建；新官职可直接给名称。
+appoint {target,post}、dismiss/imprison/kill/revive {target}：任免、收监、死亡与复生。relation {target,other?,value}：与另一人双向关系，省other则对皇帝好感。
+technology {target或name}：立即掌握已知或自创新技术；complete {target:项目ID/名称/all}竣工；war {target:外邦ID或名,outcome:归附/胜利/失败/议和/宣战}；object {name,kind,description,fields}建立新事物，之后set/add用对象名和values.属性；policy {name,description,period:once/eachTurn,operations:[上述操作]}制定新制度，eachTurn只在每旬末运行一次，不递归建制度；fact {target,name,description}记录玩家明确改写的世界事实。以现有世界状态为基础补足必要对象，禁止执行代码或修改存档事务。无法把任意概念等同现有制度时，创建对应世界对象及规则，保持玩家本意。所有结果交引擎验证执行，不能自行宣称成功。
+输出 {"actions":[{"inputId":"朝","type":"fiat","text":"原文","operations":[{"op":"set","target":"nation","field":"treasury","value":10000}]}],"remarks":[]}。`},
+ {role:'user',content:JSON.stringify({emperor:state.emperor,nation:{treasury:state.nation.treasury,privy:state.nation.privy,grain:state.nation.grain},persons:[...state.court.officials,...state.harem.consorts,...state.harem.children,...state.harem.royalWomen].map(p=>({id:p.id,name:p.name,age:p.age,alive:p.alive,health:p.health})),posts:state.court.posts.map(p=>({id:p.id,name:state.postNames?.[p.id]||p.title})),countries:state.foreign.map(f=>({id:f.id,name:f.name,ruler:f.ruler})),provinces:state.nation.provinces.map(p=>({id:p.id,name:p.name})),technologies:TECHS.map(t=>({id:t.id,name:t.name})),world:state.fiat,inputs})}];
+}
+// Deterministic offline examples; an unparsed clause is reported, never silently
+// converted into an accomplished wish. Connected play uses the full interpreter.
+function localFiatOperations(state,input){
+ if(!fiatEnabled(state)||!/(?:设为|设置|增加|变为|变成|复活|创建|新建|全部|所有|全体|无限|永生|满级|掌握|立即完成|每旬|从此|不要|不许|不得|不必)/.test(input.text))return null;
+ const n=new RegExp('('+NUMBER_SOURCE+')(万两|万石|两|石|人|岁|点)?');
+ const created=[],ops=[];
+ const names=()=>[...state.court.officials,...state.harem.consorts,...state.harem.children,...state.foreign,...state.nation.provinces,...created];
+ const who=t=>names().find(p=>t.includes(p.name||p.ruler))?.name||(/朕|皇帝/.test(t)?'emperor':null);
+ const parse=text=>{
+  if(/^(不要|不许|不得|不必|无需|勿|毋)/.test(text))return [];
+  let m=text.match(/^(?:创建|新建)(官员|文臣|武将|妃嫔|皇子|公主|国家|势力|州郡|官职|事物)[：:\s]*(.+)$/);
+  if(m){const kind={官员:'official',文臣:'official',武将:'official',妃嫔:'consort',皇子:'child',公主:'child',国家:'country',势力:'faction',州郡:'province',官职:'post',事物:'object'}[m[1]],name=m[2].trim();created.push({name});return [{op:'create',kind,name,...(m[1]==='公主'?{gender:'女'}:{})}];}
+  if(/所有科技|全部科技/.test(text)&&/掌握|完成|解锁/.test(text))return TECHS.map(t=>({op:'technology',target:t.id}));
+  if(/^掌握|^立即发明|^发明/.test(text))return [{op:'technology',name:text.replace(/^(掌握|立即发明|发明)/,'').trim()}];
+  if(/立即完成.*(?:所有|全部).*项目/.test(text))return [{op:'complete',target:'all'}];
+  if(/(?:全部|所有).*外邦.*(?:归附|臣服)/.test(text))return state.foreign.map(f=>({op:'war',target:f.id,outcome:'归附'}));
+  const target=who(text);
+  if(/复活/.test(text)&&target)return [{op:'revive',target}];
+  if(/赐死|处死|斩首/.test(text)&&target)return [{op:'kill',target}];
+  if(/罢免|革职/.test(text)&&target)return [{op:'dismiss',target}];
+  if(/下狱|收监/.test(text)&&target)return [{op:'imprison',target}];
+  m=text.match(/(?:任命|任|让)(.+?)(?:出任|担任|为)(.+)$/);if(m)return [{op:'appoint',target:who(m[1])||m[1].trim(),post:m[2].trim()}];
+  if(/朕.*(?:全部|所有).*属性.*满级|朕.*无敌/.test(text))return ['政略','权谋','武略','文采','魅力','健康','心情','皇威','圣德'].map(field=>({op:'set',target:'emperor',field,value:100}));
+  if(/朕.*永生/.test(text))return [{op:'policy',name:'天子永生',description:text,period:'eachTurn',operations:[{op:'set',target:'emperor',field:'health',value:100},{op:'set',target:'emperor',field:'lifespan',value:1000000}]}];
+  const field=text.match(/国库|内帑|粮储|民心|吏治|健康|心情|皇威|圣德|年龄|好感|宠眷|忠诚|政略|权谋|武略|文采|魅力|兵力|战备|边患|教养|资质/)?.[0];
+  if(field){const valueText=text.slice(text.indexOf(field)+field.length),number=valueText.match(n);let value=number?parseNumber(number[1]):/满级|全满/.test(text)?100:/无限/.test(text)?1000000000000:null;if(value===null)return null;
+   if(['国库','内帑','粮储'].includes(field)){const unit=valueText.match(new RegExp('('+NUMBER_SOURCE+')\\s*(两|石)'));if(unit)value=parseNumber(unit[1])/10000;}
+   const all=/所有官员|全体官员/.test(text)?'officials':/所有嫔妃/.test(text)?'consorts':/各州|所有百姓/.test(text)?'provinces':null;
+   const receiver=all||(['国库','内帑','粮储','民心','吏治'].includes(field)?'nation':/京营/.test(text)?'capital':target||'emperor');
+   return [{op:/增加|提升|提高|加上/.test(text)?'add':'set',target:receiver,field:field==='忠诚'?'abilities.忠':field,value}];
+  }
+  return null;
+ };
+ for(const raw of input.text.split(/[；;。\n，,]/).map(s=>s.trim()).filter(Boolean)){
+  const match=raw.match(/^(每旬|从此每旬)(.+)$/);const result=parse(match?match[2]:raw);if(!result)return {error:'试读暂不能完整解析这条指令，请连接模型后重试：'+raw};
+  if(match)ops.push({op:'policy',name:raw,description:raw,period:'eachTurn',operations:result});else ops.push(...result);
+ }
+ return ops.length?{operations:ops}:null;
+}
+
+return {fiatIntentMessages,localFiatOperations};
 },
 "src/llm/remark-classifier.js":function(__load){
 const { normalizeMemorialAction, remarkCategory, REMARK_KINDS } = __load("src/core/memorial-decisions.js");
@@ -12666,6 +13245,8 @@ const {developmentNotes} = __load("src/core/tech.js");
 const {resolveScene,sceneBlock,sceneOutcomeText,rememberScene,SCENE_ENERGY} = __load("src/core/scenes.js");
 const { freedomRules, selectionYear, adjudicate } = __load("src/core/freedom.js");
 const { resolveIntents } = __load("src/core/intents.js");
+const {seedScenarioEvents} = __load("src/core/scenario-events.js");
+const {fiatEnabled,applyFiatRules} = __load("src/core/fiat.js");
 const { compactChapter } = __load("src/core/archive.js");
 const { memorialDecision } = __load("src/core/memorial-decisions.js");
 const { collectMemorialReviews } = __load("src/core/memorial-records.js");
@@ -12768,7 +13349,7 @@ for (const slot of SLOTS) {
 const a = schedule[slot];
 if (!a) continue;
 count++;
-if(state.regency && !["批折","召见","自拟情节","歇息"].includes(a.kind) && !(a.kind==="私下行事"&&a.operation==="经筵"))
+if(state.regency && !fiatEnabled(state) && !["批折","召见","自拟情节","歇息"].includes(a.kind) && !(a.kind==="私下行事"&&a.operation==="经筵"))
 throw new Error("摄政期间只能批折、召见、经筵或歇息");
 const rule = ACTIONS[a.kind];
 if (!rule || !rule.slots.includes(slot))
@@ -12790,7 +13371,7 @@ throw new Error("上朝最多" + freedomRules(state).courtLimit + "个议题");
 }
 if (full && count > 1) throw new Error("出巡或亲征占满一旬，请清空其他时辰");
 if (
-state.campaigns.some((w) => w.personal && !w.done) &&
+!fiatEnabled(state)&&state.campaigns.some((w) => w.personal && !w.done) &&
 count &&
 Object.values(schedule).some((a) => a && !["亲征", "歇息"].includes(a.kind) &&
 !(a.kind==='批折'&&a.memorials?.length&&a.memorials.every(id=>state.memorials.find(m=>m.id===id)?.campaignOrder)))
@@ -12799,7 +13380,7 @@ throw new Error("亲征期间不能在京中安排其他行动");
 return true;
 }
 function initialTurn(state) {
-let s = generateCandidates(seedMemorials(state));
+let s = generateCandidates(seedScenarioEvents(seedMemorials(state)));
 s.harem.royalWomen ??= [
 { id: "royal-1", name: "萧静宜", age: 22, married: null },
 ];
@@ -12813,9 +13394,10 @@ intents = [],
 return withDraft(() => forecastDraft(state, schedule, intents));
 }
 function forecastDraft(state, schedule, intents = []) {
-if (state.ending) throw new Error("此局已封卷");
+if (state.ending&&!fiatEnabled(state)) throw new Error("此局已封卷");
 validateSchedule(state, schedule);
 let s = clone(state);
+if(fiatEnabled(s)&&s.ending)s.ending=null;
 s.pending = null;
 s.intentResults = (s.intentResults || []).filter(r => r.turn === state.turn&&!r.sceneCommitted);
 s.ledger = [...(state.interimEntries || [])];
@@ -13048,7 +13630,7 @@ for (const o of s.court.officials.filter(
 ))
 notes.push(o.name + " 寿终，原职出缺");
 notes.push(...developmentNotes(state,s));
-s = seedDevelopmentMemorials(seedMemorials(s),state);
+s = seedScenarioEvents(seedDevelopmentMemorials(seedMemorials(s),state));
 // A month-end sender may leave office during the same year-end settlement.
 // Before exposing new memorials, bind them to the final eligible incumbent.
 for(const m of s.memorials.filter(m=>!state.memorials.some(old=>old.id===m.id))) {
@@ -13057,6 +13639,7 @@ if(!o||!o.alive||o.health<=0||o.jailed||o.retired||!s.court.posts.some(p=>p.hold
 Object.assign(m,pickMemorialist(s,m.type,m.provinceId));
 }
 s.emperor.energy = energyLimit(s);
+s=applyFiatRules(s);
 s = evaluateAmbitions(s);
 s = unlockAchievements(s);
 s = settleArrears(s);
@@ -13208,6 +13791,118 @@ return assignFaces(s);
 }
 
 return {ACTIONS,scheduleCost,validateSchedule,initialTurn,forecastTurn,commitTurn};
+},
+"src/core/scenario-events.js":function(__load){
+const {clone} = __load("src/core/state.js");
+const {addEvent} = __load("src/core/events.js");
+const {SCENARIO_EVENTS} = __load("src/core/scenario-event-catalog.js");
+const serving=(s,name)=>s.court.officials.find(o=>o.name===name&&o.alive&&o.health>0&&!o.jailed&&!o.retired&&s.court.posts.some(p=>p.holder===o.id&&p.id===o.post));
+function seedScenarioEvents(state){
+if(state.v<26||!state.scenario||state.reign?.number!==1)return state;
+let s=clone(state);
+for(const original of SCENARIO_EVENTS[s.scenario]||[]){
+const progress=s.scenarioEvents;
+if(s.turn<original.at||progress.seen.includes(original.id))continue;
+progress.seen.push(original.id);
+if(original.at<=progress.legacyFromTurn)continue;
+const guarded=(!original.requires||serving(s,original.requires))&&(!original.requiresChoice||progress.decisions[s.scenario+'-'+original.requiresChoice.event]==='opt'+original.requiresChoice.choice);
+const event=guarded?original:original.alternative;
+if(!event)continue;
+// 新局的专属御前折占用一本例奏额度，不挤成四本开局作业。
+if(s.turn===0&&s.memorials.length>=3){const replace=s.memorials.findLast(m=>m.agendaVersion===1&&!m.urgent);if(replace)s.memorials=s.memorials.filter(m=>m.id!==replace.id);}
+s=addEvent(s,'剧本','【剧本】'+event.title,event.cause,event.choices.map(c=>({...c,consequence:c.label,scenarioOutcome:Object.fromEntries(['dismiss','favor','country'].filter(k=>c[k]!==undefined).map(k=>[k,c[k]]))})));
+// addEvent克隆状态，后续进度仍须引用克隆后的同一份进度。
+const m=s.memorials.at(-1);m.scenarioEvent=original.id;m.text=event.cause+'\n此后走向由陛下的选择与当前局势决定。';m.textStatus='template';
+const t=s.threads.at(-1);t.scenarioEvent=original.id;
+}
+return s;
+}
+
+return {seedScenarioEvents};
+},
+"src/core/scenario-event-catalog.js":function(__load){
+// 固定的是主题和窗口；不存在史书式强制结局。触发时间为开局后旬数。
+const choice=(label,effects={},extra={})=>({label,effects,...extra});
+const care=(cost=12)=>choice('拨款核办，先解民困',{treasury:-cost,morale:3,governance:2});
+const save=()=>choice('暂缓支出，责成有司复核',{governance:1,prestige:-1});
+const event=(title,cause,choices,extra={})=>({title,cause,choices,...extra});
+const publicWork=(title,cause,cost=12)=>event(title,cause,[care(cost),save()]);
+const remonstrance=(name,title,cause)=>event(title,cause,[choice('召对听取实情',{governance:3,virtue:2},{favor:{name,amount:8}}),choice('仍依旧议，责其具报',{prestige:2,governance:-1})],{requires:name});
+const SCENARIO_EVENTS={
+'han-wudi':[
+event('儒术与黄老之争','新政触及东宫习惯，儒臣请求天子定夺。',[choice('先与东宫商议，保留用人',{governance:2,virtue:2}),choice('坚持新政，拨资兴学',{treasury:-18,governance:4,prestige:2})]),
+remonstrance('汲黯','汲黯犯颜言事','汲黯要求天子亲听州郡积弊，不许近臣粉饰。'),
+event('匈奴使者议和亲','北境使者索求财帛，朝臣争论应战还是守约。',[choice('给付财帛，稳住互市',{treasury:-20,army:{id:'北',threat:-12}},{country:{name:'匈奴',attitude:8}}),choice('拨饷备边，以兵待使',{treasury:-25,army:{id:'北',readiness:12},prestige:3})]),
+],
+'tang-taizong':[
+event('便桥来使','突厥兵临渭水，朝臣请求先定议和与备战方略。',[choice('交涉息兵，守备不撤',{treasury:-20,army:{id:'北',threat:-18}},{country:{name:'东突厥',attitude:12}}),choice('整军列阵，以战逼和',{treasury:-28,army:{id:'北',readiness:15},prestige:4})]),
+remonstrance('魏征','魏征直言新朝','魏征请求容纳旧东宫之臣，免以旧怨误国。'),
+publicWork('储君讲读之议','东宫请定经筵与教养用度，不能只择近幸陪侍。',15),
+],
+'song-renzong':[
+event('山陵移穴案','王曾请求查核丁谓与雷允恭移陵之议。',[choice('交有司公开核查',{governance:5,virtue:3},{dismiss:'丁谓'}),choice('先责成自陈，保留朝班',{governance:1,prestige:2})],{requires:'丁谓'}),
+remonstrance('鲁宗道','垂帘与外家','鲁宗道请求约束外家请托，向两宫同陈利害。'),
+publicWork('台谏与地方备览','地方赈济与台谏员额需有固定财用，朝中请求立例。'),
+],
+'ming-wanli':[
+event('考成法试行','张居正请求按期核查六部办事，阁臣与言官议论不一。',[choice('准予试行，明列考核',{treasury:-12,governance:5}),choice('先试两部，再议推广',{treasury:-5,governance:2,virtue:1})],{requires:'张居正'}),
+publicWork('清丈田亩的经费','清丈须给州县实费，否则册中数字未必可信。',20),
+event('司礼监转来请托','冯保门下有人为亲族求差，天子须定内外界限。',[choice('退回请托，循例选任',{governance:4,virtue:2},{favor:{name:'冯保',amount:-8}}),choice('准其一人，命有司登记',{prestige:2,governance:-2},{favor:{name:'冯保',amount:8}})],{requires:'冯保'}),
+],
+'ming-chongzhen':[
+event('魏珰去留','朝臣请议魏忠贤及其党羽，内廷仍有旧势。',[choice('收回职权，分案核查',{governance:5,prestige:4},{dismiss:'魏忠贤'}),choice('暂留其职，限期交账',{governance:1,prestige:-2})],{requires:'魏忠贤'}),
+publicWork('辽饷催解','军镇催饷，户部须在救急与积欠之间取舍。',28),
+event('陕西饥民的去处','灾后流民请安置，军镇担忧聚众成患。',[choice('开仓赈济，给资安置',{treasury:-15,grain:-12,morale:5}),choice('拨费编户，缓征旧赋',{treasury:-8,morale:3,governance:2})]),
+],
+'qing-kangxi':[
+event('四辅臣议事章程','辅臣请求明定奏事次序，内外担忧权力归于一人。',[choice('两宫留副本，辅臣合议',{governance:3,virtue:2}),choice('便于办事，授首辅总核',{governance:2,prestige:-2})]),
+event('圈地与旗民之争','鳌拜旧部与州县争田，清议请求核查界址。',[choice('核旧籍，退还侵地',{treasury:-10,morale:4,governance:3},{favor:{name:'鳌拜',amount:-10}}),choice('先给补偿，缓议旧案',{treasury:-18,morale:2})],{requires:'鳌拜'}),
+publicWork('南方藩镇的军饷','三藩与沿海需银，户部请分清常额与额外支给。',22),
+],
+'qing-yongzheng':[
+publicWork('清查各省亏空','新君欲清库银，督抚请求宽限与核销办法。',16),
+event('年羹尧军中请赏','边帅以军功求赏，朝臣担忧赏典成为私人恩威。',[choice('核功赏军，收回私授',{treasury:-18,governance:4},{favor:{name:'年羹尧',amount:-8}}),choice('加给军赏，先安军心',{treasury:-30,prestige:3},{favor:{name:'年羹尧',amount:10}})],{requires:'年羹尧'}),
+remonstrance('允祥','怡亲王议钱谷','允祥请求把钱粮核查与用人考成一并办理。'),
+],
+'han-lingdi':[
+event('西邸官价簿','卖官的价簿送到内廷，公卿请问官爵究竟从何而来。',[choice('封存价簿，循才授官',{governance:6,virtue:4,treasury:-10}),choice('仍收官价，先解库需',{treasury:35,governance:-4,morale:-2})]),
+event('党锢士人的归途','蔡邕等请宽禁锢，近侍称清议将乱朝政。',[choice('解其禁锢，择才起用',{treasury:-10,governance:4,virtue:4}),choice('逐人复核，先留清议',{governance:2,prestige:1})]),
+event('河北太平道聚众','地方报告太平道聚众，尚须分清治病结社与谋乱。',[choice('遣廉吏查访，同时赈济',{treasury:-18,morale:4,governance:3}),choice('约束州县，严核聚众',{treasury:-8,prestige:3,morale:-1})]),
+],
+'song-huizong':[
+event('花石纲扰民','两浙转运报告舟役疲敝，供奉之物仍源源入京。',[choice('停额外征取，拨费补偿',{treasury:-20,morale:5,governance:3}),choice('减半征取，留供奉常额',{treasury:-8,morale:2,governance:1})]),
+event('西军败报的核查','刘法败亡之后，朝中收到彼此不一的军报。',[choice('听宿将复核，补足军储',{treasury:-25,army:{id:'西',readiness:15}}),choice('先问责报功，整顿文移',{governance:4,prestige:2})]),
+event('金使议联兵','金使希望联兵攻辽，是否出兵仍待御断。',[choice('暂不出兵，先固边备',{treasury:-18,army:{id:'北',readiness:10},virtue:1}),choice('议定互使，先探实情',{treasury:-10,prestige:2},{country:{name:'金',attitude:10}})]),
+],
+'ming-xizong':[
+event('魏客干预内外','言官请求限制魏忠贤与客氏传达私意。',[choice('明定传旨章程，内外留底',{governance:5,prestige:3},{favor:{name:'魏忠贤',amount:-10}}),choice('先听内廷自陈，再议章程',{governance:1,prestige:-1})],{requires:'魏忠贤'}),
+event('熊王守战之争','经略与巡抚的军书互相矛盾，御前须定统属。',[choice('统一节制，拨饷固守',{treasury:-22,army:{id:'东',readiness:15},governance:2}),choice('命两人会勘，先查实数',{treasury:-10,governance:4})]),
+remonstrance('孙承宗','经筵讲到辽东','孙承宗把军图带进经筵，请天子亲看道路与兵粮。'),
+],
+'ming-yingzong':[
+event('王振请天子亲征','边警骤至，王振请求天子立刻出塞。',[choice('先整军储，留京决策',{treasury:-20,army:{id:'北',readiness:12}}),choice('采亲征之议，急筹行粮',{treasury:-30,prestige:4,army:{id:'北',readiness:-8}})],{requires:'王振'}),
+remonstrance('于谦','于谦请固京师','于谦请求留兵护京，不可尽抽精锐随驾。'),
+event('土木方向的军粮警报','亲征议已动，边将报告行粮与道路不继。',[choice('听将帅改线，及时收军',{treasury:-18,army:{id:'北',readiness:12},prestige:-2}),choice('严令集结，增给补给',{treasury:-35,grain:-15,army:{id:'北',readiness:8}})],{requires:'王振',requiresChoice:{event:0,choice:1},alternative:publicWork('边军整备复报','出塞急议已经改变，边军请求按新方略补足守备。',20)}),
+],
+'tang-xuanzong':[
+event('安禄山入朝之议','杨国忠请召安禄山入朝，边镇却以军务推托。',[choice('收回兼领，分镇核兵',{treasury:-20,governance:4,army:{id:'北',readiness:8}},{dismiss:'安禄山'}),choice('遣使犒军，要求具报',{treasury:-25,army:{id:'北',threat:-8}})],{requires:'安禄山'}),
+event('杨氏供奉的账目','有司请求查核杨氏所涉供奉与额外支出。',[choice('公开核账，停额外供奉',{governance:5,virtue:2},{favor:{name:'杨国忠',amount:-10}}),choice('先清地方，宫中另议',{treasury:-12,governance:2})],{requires:'杨国忠'}),
+event('河北军镇异动','边镇仍有重兵，朝臣请求辨明传闻、加强关防。',[choice('先固关防，核查兵籍',{treasury:-30,army:{id:'北',readiness:15},governance:3}),choice('使者往返，分散疑惧',{treasury:-18,army:{id:'北',threat:-12},virtue:2})]),
+],
+'song-qinzong':[
+event('李纲请守京城','迁避与守城两议并起，李纲愿领守备。',[choice('听李纲固守，拨饷整军',{treasury:-20,army:{id:'北',readiness:15},prestige:4},{favor:{name:'李纲',amount:10}}),choice('先遣使谈判，城防不撤',{treasury:-15,army:{id:'北',threat:-8}})],{requires:'李纲'}),
+publicWork('勤王兵马的粮饷','各路勤王军陆续请调，须统一供给与号令。',25),
+event('金营再索金帛','金使提出新的索求，朝中有人主张一概答允。',[choice('据约交涉，拒绝无穷加索',{treasury:-10,prestige:4,army:{id:'北',readiness:8}}),choice('给付一笔，争取整军时日',{treasury:-35,army:{id:'北',threat:-15}},{country:{name:'金',attitude:10}})]),
+],
+'qing-jiaqing':[
+event('和珅家产与旧案','太上皇新丧，朝臣请求查核和珅及其账册。',[choice('收回职权，按册查核',{treasury:45,governance:6,prestige:4},{dismiss:'和珅'}),choice('先封存账册，分案听审',{treasury:15,governance:3})],{requires:'和珅'}),
+publicWork('川楚军务的真账','督抚催饷，军功与支出却常对不上实数。',25),
+remonstrance('朱珪','帝师论新政用人','朱珪请求从用人与核账做起，不止惩办一人。'),
+],
+};
+for(const [id,events]of Object.entries(SCENARIO_EVENTS))events.forEach((e,i)=>Object.assign(e,{id:id+'-'+i,at:[0,6,18][i]}));
+
+return {SCENARIO_EVENTS};
 },
 "src/core/archive.js":function(__load){
 // Sealed ledgers retain net contribution for each source/path. Non-numeric
@@ -14787,7 +15482,7 @@ Object.keys(ACTIONS)
 .filter(
 (k) =>
 ACTIONS[k].slots.includes(slot) &&
-(!s.regency ||
+(!s.regency ||s.settings.freedom==='free'||
 ["批折", "召见", "自拟情节", "私下行事", "歇息"].includes(k)),
 )
 .map((k) => (s.regency && k === "私下行事" ? "经筵" : k))
@@ -14996,6 +15691,7 @@ const { globalYear } = __load("src/core/calendar.js");
 const { availableMemorials } = __load("src/ui/memorial-state.js");
 const { cabinetDraft } = __load("src/core/court.js");
 const { WAR_GOALS } = __load("src/core/campaign-rules.js");
+const {fiatEnabled} = __load("src/core/fiat.js");
 const ACTION_GROUPS = [
 ["朝政", ["上朝", "批折", "下旨", "任命"]],
 ["人事", ["自拟情节", "召见", "宴请", "外交", "私下行事"]],
@@ -15007,9 +15703,9 @@ const GLYPHS = {自拟情节:"叙",上朝:"朝",批折:"批",下旨:"旨",任命
 function selectionDescription(s){const period=freedomRules(s).selectionPeriod;return period?'每'+period+'年大选一次；平日可花内帑三万两举荐一人，已有候选人可随时留牌。':'可随时选秀，位分名额不限。';}
 function actionAvailability(s, kind) {
 if (!s) return "待登基";
-if(s.regency&&!["批折","召见","自拟情节","私下行事","歇息"].includes(kind))return "摄政期间不可安排";
+if(s.regency&&!fiatEnabled(s)&&!["批折","召见","自拟情节","私下行事","歇息"].includes(kind))return "摄政期间不可安排";
 if (s.pending) return "本旬待续写";
-if (s.ending) return "本朝已封卷";
+if (s.ending&&!(fiatEnabled(s)&&kind==='下旨')) return "本朝已封卷";
 if ((kind === "上朝" || kind === "批折") && !s.memorials.length) return "暂无奏报";
 if (kind === "上朝" || kind === "批折") {
 if (!availableMemorials(s).length) return "本旬均已拟批";
@@ -15017,7 +15713,7 @@ if (kind === "上朝" && s.schedule.朝) return "朝间已有安排";
 if (kind === "批折" && s.schedule.朝 && s.schedule.午) return "朝午已排定";
 }
 if (kind === "亲征" && !s.campaigns.some(w=>!w.done)) return "无战事";
-if (s.campaigns.some(w=>w.personal&&!w.done) && !["亲征","歇息"].includes(kind)&&kind!=='批折') return "御驾在外";
+if (!fiatEnabled(s)&&s.campaigns.some(w=>w.personal&&!w.done) && !["亲征","歇息"].includes(kind)&&kind!=='批折') return "御驾在外";
 return "";
 }
 function memorialEntryKind(s, slot) {
@@ -16075,6 +16771,7 @@ return {wrapMemorialText,memorialImageLayout,createMemorialImages};
 },
 "src/ui/actions.js":function(__load){
 const { portraitHTML, sceneHTML, sceneKey } = __load("src/ui/art.js");
+const {fiatEnabled} = __load("src/core/fiat.js");
 const { examiners } = __load("src/core/keju.js");
 const {researchFields,industryFields,developmentAction,updateDevelopmentPreview} = __load("src/ui/technology.js");
 const {sceneActionFields,sceneActionLabel} = __load("src/ui/scene-view.js");
@@ -16090,7 +16787,7 @@ const { selectionDescription } = __load("src/ui/view-model.js");
 const { WAR_GOALS, treatyProtected } = __load("src/core/campaign-rules.js");
 function actionDialog(s, kind, preferred, onSchedule, onTalk) {
 if (kind === "上朝" || kind === "批折") return memorialDialog(s,kind,preferred,onSchedule,null,{newBatch:true});
-if(s.regency&&!["批折","召见","自拟情节","私下行事","歇息"].includes(kind))throw new Error("摄政期间只能批折、召见、经筵或歇息");
+if(s.regency&&!fiatEnabled(s)&&!["批折","召见","自拟情节","私下行事","歇息"].includes(kind))throw new Error("摄政期间只能批折、召见、经筵或歇息");
 const rule = ACTIONS[kind];
 if (!rule) throw new Error("未识别的行动");
 const opt = (items, value = "id", label = "name") =>
@@ -16211,6 +16908,7 @@ fields =
 '<label for="regent">留守大臣</label><select id="regent">' +
 opt(s.court.officials.filter((o) => o.alive)) +
 '</select><p class="warning">先通过外交宣战。亲征持续至战役结束，期间无法在京安排其他行动。</p>';
+if(kind==='下旨'&&fiatEnabled(s))fields='<p class="muted">言出法随：直接写想要的结果，可连写多条。钱粮不足会自动补足，新人物、势力和制度也可创建。</p>'+fields.replace('着有司依议施行。','例如：国库设为一亿两；全体官员忠诚设为100；创建官员张三；任命张三为工业部长。');
 openDialog(
 kind + " · 安排本旬",
 '<form id="action-form"><div class="segmented" role="group" aria-label="行动时辰">'+rule.slots.map(sl=>'<button type="button" data-form-slot="'+sl+'" aria-pressed="'+(sl===(rule.slots.includes(preferred)?preferred:rule.slots[0]))+'">'+sl+'</button>').join('')+'</div><select id="action-slot" class="hidden" aria-label="时辰">' +
@@ -16232,6 +16930,7 @@ fields +
 "action-shell",
 );
 $('#modal .dialog-head').insertAdjacentHTML('beforebegin','<div id="action-art">' + sceneHTML(sceneKey({kind},preferred),'action',preferred==='夜') + '</div>');
+if(kind==='下旨'&&fiatEnabled(s))$('#edict-type').value='禁令';
 if(kind==='自拟情节')$('#modal').classList.add('scene-dialog');
 document.querySelectorAll('[data-form-slot]').forEach(b=>b.onclick=()=>{
 $('#action-slot').value=b.dataset.formSlot;
@@ -16412,6 +17111,7 @@ return {actionDialog};
 },
 "src/ui/panels.js":function(__load){
 const { portraitHTML, hallArtHTML } = __load("src/ui/art.js");
+const {fiatWorldHTML} = __load("src/ui/fiat-world.js");
 const { examOfficialView } = __load("src/core/keju.js");
 const {technologyHTML} = __load("src/ui/technology.js");
 const {INDUSTRIES} = __load("src/core/tech-rules.js");
@@ -16817,6 +17517,7 @@ esc(chapterTitle(h.summary)) +
 "</details>"
 : "");
 }
+if(name==='内库')html+=fiatWorldHTML(s);
 openDialog(
 name + "殿",
 html || '<p class="muted">本旬尚无记录。</p>',
@@ -16840,6 +17541,18 @@ cards.slice(6).join("") +
 }
 
 return {provinceCardHTML,palacePanel,fold};
+},
+"src/ui/fiat-world.js":function(__load){
+const {esc} = __load("src/ui/common.js");
+function fiatWorldHTML(s){
+const f=s?.fiat;if(!f||!f.objects.length&&!f.rules.length)return '';
+const text=v=>typeof v==='boolean'?(v?'是':'否'):String(v);
+const objects=f.objects.map(o=>'<article class="card"><h4>'+esc(o.name)+'</h4><p>'+esc(o.description)+'</p>'+Object.entries(o.values||{}).map(([k,v])=>'<p>'+esc(k)+'：'+esc(text(v))+'</p>').join('')+'</article>').join('');
+const rules=f.rules.map(r=>'<article class="card"><h4>'+esc(r.name)+'</h4><p>'+esc(r.description)+'</p><small>'+ (r.period==='eachTurn'?(s.settings.freedom==='free'?'每旬执行':'切回言出法随后继续每旬执行'):'已颁行')+'</small></article>').join('');
+return '<section class="section-spacer"><h3>御旨改定的天下</h3><p class="muted">你创造的事物与制度随本卷保存。可继续下旨修改或撤销。</p><div class="grid">'+objects+rules+'</div></section>';
+}
+
+return {fiatWorldHTML};
 },
 "src/ui/campaigns.js":function(__load){
 const { esc } = __load("src/ui/common.js");
@@ -17316,6 +18029,7 @@ return {storedLayout,recoveryState,envelopeIdentity,sameEnvelope};
 },
 "src/ui/nation-overview.js":function(__load){
 const { hallArtHTML } = __load("src/ui/art.js");
+const {fiatWorldHTML} = __load("src/ui/fiat-world.js");
 const {INDUSTRIES} = __load("src/core/tech-rules.js");
 const { esc, gameText, openDialog } = __load("src/ui/common.js");
 const { campaignsHTML, treatyHTML } = __load("src/ui/campaigns.js");
@@ -17391,7 +18105,7 @@ section('钱粮来去',flowHTML(s,span,expanded),'近'+span+'旬，含本旬已�
 section('各州民情',figures([['总人口',number(d.population),'万人'],['有灾州郡',d.disaster],['州郡总数',d.provinces.length]])+provinces,'所列为原定税额，实收随地方情势而变。')+
 section('京营与四境',armies)+section('朝堂各派',factions)+section('外邦往来',foreign)+section('在途政务',projects)+section('当前战事',wars)+
 section('战役与议约',campaignsHTML(s)+s.foreign.filter(f=>f.treaty).map(f=>'<h4>'+esc(f.name)+'</h4>'+treatyHTML(s,f)).join(''))+
-section('圣躬与储位',palace);
+section('圣躬与储位',palace)+fiatWorldHTML(s);
 }
 function openNationOverview(state) {
 let span=12,expanded=false;

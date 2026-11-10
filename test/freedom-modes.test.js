@@ -27,12 +27,12 @@ for(const mode of ['free','mid','real'])test('第二步 门槛矩阵 '+mode,()=>
  if(Number.isFinite(rules.referrals))assert.throws(()=>resolveMemorial(s,id,'discuss'));
  s=fresh(mode);for(let i=0;i<(Number.isFinite(rules.talkRounds)?rules.talkRounds:8);i++)s=talkAttempt(s,'o0','说说近况').state;
  if(Number.isFinite(rules.talkRounds))assert.throws(()=>talkAttempt(s,'o0','说说近况'));
- s=fresh(mode);const o=s.court.officials.find(o=>o.id===s.court.posts[1].holder);assert.equal(talkAttempt(s,o.id,'近况',true).result.cap,{free:480,mid:28,real:14}[mode]);
+ s=fresh(mode);const o=s.court.officials.find(o=>o.id===s.court.posts[1].holder);assert.equal(talkAttempt(s,o.id,'近况',true).result.cap,{free:Number.MAX_SAFE_INTEGER,mid:28,real:14}[mode]);
  s.edictCooldowns.修河=s.turn+rules.edictCooldown;assert.equal(!!edictBlock(s,'修河'),false);
  s=fresh(mode);s.turn=3*36;assert.equal(selectionYear(s),mode!=='mid');assert.equal(rankAvailable(s,'皇后'),mode==='free');
  assert.ok(selectionDescription(s).includes(mode==='free'?'可随时选秀':'每'+rules.selectionPeriod+'年大选一次'));
  const f=s.foreign[0];f.status='通好';f.trade={start:s.turn,until:s.turn+36,income:1};assert.equal(!!diplomacyBlock(s,{country:f.id,operation:'互市'}),false);
- const before=fresh(mode),cost=energyLimit(before)+2,after=settleEnergy(before,cost);assert.equal(before.emperor.health-after.emperor.health,mode==='free'?2:4);
+ const before=fresh(mode),cost=energyLimit(before)+2,after=settleEnergy(before,cost);assert.equal(before.emperor.health-after.emperor.health,mode==='free'?0:4);
 });
 test('第二步 一般档100次：完整成功接近60%，办成接近80%，部分成功保存真实代价',()=>{
  let s=fresh('mid'),full=0,partial=0,paid=false;
@@ -43,7 +43,7 @@ test('第二步 一般档100次：完整成功接近60%，办成接近80%，部�
 test('第二步 严格判定不新增掷骰，自由失败也成功；B1/B8/B10不放宽',()=>{
  const s=fresh('real'),v=check(1,1,'极难'),r=adjudicate(s,v);assert.equal(r.state,s);assert.deepEqual(r.verdict,v);
  assert.equal(adjudicate(fresh('free'),v).verdict.success,true);
- for(const mode of ['free','mid','real']){const s=fresh(mode);assert.throws(()=>validateSchedule(s,{夜:{kind:'上朝',memorials:[]}}));s.regency={regentId:'o0',until:100};assert.throws(()=>validateSchedule(s,{朝:{kind:'下旨',edictType:'修河'}}));s.regency=null;const c=s.harem.consorts[0];for(const age of [17,50]){c.age=age;assert.equal(canVisit(s,c),false);}c.age=25;c.preg={};assert.equal(canVisit(s,c),false);}
+ for(const mode of ['free','mid','real']){const s=fresh(mode);assert.throws(()=>validateSchedule(s,{夜:{kind:'上朝',memorials:[]}}));s.regency={regentId:'o0',until:100};if(mode==='free')assert.doesNotThrow(()=>validateSchedule(s,{朝:{kind:'下旨',edictType:'修河'}}));else assert.throws(()=>validateSchedule(s,{朝:{kind:'下旨',edictType:'修河'}}));s.regency=null;const c=s.harem.consorts[0];for(const age of [17,50]){c.age=age;assert.equal(canVisit(s,c),false);}c.age=25;c.preg={};assert.equal(canVisit(s,c),false);}
 });
 test('第二步 任命年龄才能门槛逐档生效',()=>{
  for(const mode of ['free','mid','real']){const s=fresh(mode);s.court.officials.forEach(o=>o.ambition=0);const o=s.court.officials[0],rules=FREEDOM_RULES[mode];o.age=rules.appointmentAge;o.abilities.政=rules.firstRankTalent;assert.doesNotThrow(()=>appoint(s,{person:o.id,post:'p1'}));o.age--;assert.throws(()=>appoint(s,{person:o.id,post:'p1'}));o.age++;if(rules.firstRankTalent){o.abilities.政--;assert.throws(()=>appoint(s,{person:o.id,post:'p1'}));}}
@@ -80,7 +80,7 @@ test('第二步 朱批自由输入同样裁决；真实征兵增量能通过对�
  const next=fresh('free'),a=localIntents(next,[{id:'朝',slot:'朝',text:'征兵三千人'}]),g=forecastTurn(next,{朝:{kind:'下旨',edictType:'征兵',text:'征兵三千人'}},a);
  assert.ok(g.state.nation.army.capital.troops>next.nation.army.capital.troops);const chapter='京营征兵三千人。';assert.equal(validateTurn({chapter:{朝:chapter,午:'',夜:''}},g).chapter.朝,chapter);
  const fractional=resolveIntents(next,[{...a[0],amount:3000.7}]);assert.equal(fractional.results[0].actual.amount,3000);assert.equal(fractional.results[0].clamped,true);
- const capped=resolveIntents(next,a,{transferCap:10});assert.ok(capped.results[0].actual.treasurySpent<=10);assert.equal(capped.state.nation.army.capital.troops-next.nation.army.capital.troops,capped.results[0].actual.amount);
+ const capped=resolveIntents(next,a,{transferCap:10});assert.ok(capped.results[0].actual.treasurySpent>10,'言出法随不再受代办额度截断');assert.equal(capped.state.nation.army.capital.troops-next.nation.army.capital.troops,capped.results[0].actual.amount);
  const same=resolveIntents(next,[{...a[0],resource:'treasury',source:'treasury',destination:'treasury'}]);assert.equal(same.results[0].actual.amount,0);assert.equal(same.state.nation.treasury,next.nation.treasury);
 });
 test('第二步 随心所欲八类动作都有真实结果；未知动作不制造孕产事实',()=>{

@@ -13,8 +13,8 @@ import {createOpening} from '../src/ui/new-game.js';
 const open=id=>initialTurn(applyScenario(createState({seed:'f5-'+id}),id));
 const rest={朝:{kind:'歇息'},午:{kind:'歇息'},夜:{kind:'歇息'}};
 
-test('F5 七个剧本：开局状态合法、核心人物在位、名字不重复',()=>{
-  assert.equal(SCENARIOS.length,7);
+test('F5 十四个剧本：开局状态合法、核心人物在位、名字不重复',()=>{
+  assert.equal(SCENARIOS.length,14);
   for(const sc of SCENARIOS){
     const s=open(sc.id);assertState(s);
     assert.equal(s.emperor.name,sc.emperor[0]);assert.equal(s.era.name,sc.era);assert.equal(s.dynasty,sc.dynasty);
@@ -33,7 +33,7 @@ test('F5 官职与地方长官按朝代显示，引擎内部职名不变',()=>{
   const plain=initialTurn(createState({seed:'f5-plain'}));assert.equal(postTitle(plain,plain.court.posts[0]),'内阁首辅');
 });
 test('F5 系统提示声明史实只作开局、以引擎为准；自拟王朝保持原措辞',()=>{
-  const sys=systemPrompt(open('ming-wanli'));assert.match(sys,/1572年明神宗即位之初/);assert.match(sys,/已偏离史实/);assert.doesNotMatch(sys,/架空/);
+  const sys=systemPrompt(open('ming-wanli'));assert.match(sys,/1572年明神宗的史实局势/);assert.match(sys,/已偏离史实/);assert.doesNotMatch(sys,/架空/);
   assert.match(systemPrompt(initialTurn(createState({seed:'f5-x'}))),/架空王朝/);
 });
 test('F5 幼帝剧本摄政至十六岁亲政，按预设人选大婚',()=>{

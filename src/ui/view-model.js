@@ -10,6 +10,7 @@ import { globalYear } from "../core/calendar.js";
 import { availableMemorials } from "./memorial-state.js";
 import { cabinetDraft } from "../core/court.js";
 import { WAR_GOALS } from '../core/campaign-rules.js';
+import {fiatEnabled} from '../core/fiat.js';
 export const ACTION_GROUPS = [
   ["朝政", ["上朝", "批折", "下旨", "任命"]],
   ["人事", ["自拟情节", "召见", "宴请", "外交", "私下行事"]],
@@ -21,9 +22,9 @@ export const GLYPHS = {自拟情节:"叙",上朝:"朝",批折:"批",下旨:"旨"
 export function selectionDescription(s){const period=freedomRules(s).selectionPeriod;return period?'每'+period+'年大选一次；平日可花内帑三万两举荐一人，已有候选人可随时留牌。':'可随时选秀，位分名额不限。';}
 export function actionAvailability(s, kind) {
   if (!s) return "待登基";
-  if(s.regency&&!["批折","召见","自拟情节","私下行事","歇息"].includes(kind))return "摄政期间不可安排";
+  if(s.regency&&!fiatEnabled(s)&&!["批折","召见","自拟情节","私下行事","歇息"].includes(kind))return "摄政期间不可安排";
   if (s.pending) return "本旬待续写";
-  if (s.ending) return "本朝已封卷";
+  if (s.ending&&!(fiatEnabled(s)&&kind==='下旨')) return "本朝已封卷";
   if ((kind === "上朝" || kind === "批折") && !s.memorials.length) return "暂无奏报";
   if (kind === "上朝" || kind === "批折") {
     if (!availableMemorials(s).length) return "本旬均已拟批";
@@ -32,7 +33,7 @@ export function actionAvailability(s, kind) {
   }
   if (kind === "亲征" && !s.campaigns.some(w=>!w.done)) return "无战事";
 
-  if (s.campaigns.some(w=>w.personal&&!w.done) && !["亲征","歇息"].includes(kind)&&kind!=='批折') return "御驾在外";
+  if (!fiatEnabled(s)&&s.campaigns.some(w=>w.personal&&!w.done) && !["亲征","歇息"].includes(kind)&&kind!=='批折') return "御驾在外";
   return "";
 }
 export function memorialEntryKind(s, slot) {

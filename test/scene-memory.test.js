@@ -62,7 +62,7 @@ test('失败重试保存裁决和相处变化，读档与重复提交不重复�
  assert.equal(JSON.stringify(loaded.pending.forecast),JSON.stringify(f));const n=commitScene(loaded,f,validateTurn(mockSceneNarrative(s,f),f));assert.equal(n.harem.consorts[0].favor,f.state.harem.consorts[0].favor);assert.deepEqual(commitScene(n,f,{}),n);assert.equal(npcMemories(n,'c0').length,2);
 });
 test('相处、赏罚与模型人物反应共用A9每人5总计10的额度',()=>{
- const s=fresh(),a=action('安慰他',['o0']),f=forecastTurn(s,{夜:a}),n=mockNarrative(f);n.chapter.夜=s.court.officials[0].name+'听完安慰，轻轻点头。';n.reactions=[{name:s.court.officials[0].name,favorDelta:5}];const v=validateTurn(n,f);assert.equal(v.reactions.length,0);
+ const s=fresh();s.settings.freedom='real';s.emperor.talents.魅力=100;s.emperor.talents.权谋=100;const a=action('安慰他',['o0']),f=forecastTurn(s,{夜:a}),n=mockNarrative(f);n.chapter.夜=s.court.officials[0].name+'听完安慰，轻轻点头。';n.reactions=[{name:s.court.officials[0].name,favorDelta:5}];const v=validateTurn(n,f);assert.equal(v.reactions.length,0);
  const committed=commitTurn(s,f,v),continuation=next(committed,'嘉奖他');assert.equal(continuation.f.results[0].actual.amount,3);assert.equal(favorRecords(continuation.s,[],true).reduce((n,r)=>n+Math.abs(r.actual.amount||0),0),5);
  let social=applySceneSocial(s,[plan('protect','o0'),plan('comfort','o0'),plan('accompany','o0'),plan('protect','o1'),plan('protect','o2')],{status:'success'},'caps');assert.equal(social.changes.reduce((n,c)=>n+Math.abs(c.delta),0),10);assert.equal(social.changes.filter(c=>c.personId==='o0').reduce((n,c)=>n+c.delta,0),5);
 });

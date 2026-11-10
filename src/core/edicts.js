@@ -1,4 +1,5 @@
 import { openEnke, enkeBlock } from './keju.js';
+import {fiatEnabled,ensureFiatFunds} from './fiat.js';
 import {configureResearch} from './tech.js';
 import {buildIndustry,completeIndustry} from './industries.js';
 import {techEffects} from './tech-rules.js';
@@ -166,6 +167,7 @@ export function issueEdict(state, action, die) {
   const type = action.edictType || "禁令",
     rule = EDICTS[type]&&{...EDICTS[type],cost:edictCost(state,type)};
   if (!rule) throw new Error("无法识别此旨意，请选择模板");
+  if(fiatEnabled(state))state=ensureFiatFunds(state,{[rule.private?'privy':'treasury']:rule.cost,grain:rule.grain||0});
   if(type==='加开恩科')return openEnke(state,action.examiner);
   if(type==='格物')return configureResearch(state,action);
   if(type==='兴业')return buildIndustry(state,action);

@@ -18,6 +18,8 @@ for(const [name,c] of Object.entries(CASES)){
  delete f.state.keju;
  // v24 dowager affiliation is neutral in these adult, non-regency paths.
  delete f.state.dowagerFaction;
+ // v26 only adds empty world/event metadata to these nonhistorical legacy paths.
+ delete f.state.scenarioEvents;delete f.state.fiat;delete f.state.era.baseYear;
  for(const p of f.state.nation.provinces){delete p.prosperity;delete p.industries;}
  // Keep the complete current forecast and retain historical hashes in summary.json.
  // v25 adds display identities to the published v24. Compare every pre-existing field unchanged.

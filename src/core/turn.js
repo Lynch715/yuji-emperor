@@ -3,6 +3,8 @@ import {developmentNotes} from './tech.js';
 import {resolveScene,sceneBlock,sceneOutcomeText,rememberScene,SCENE_ENERGY} from './scenes.js';
 import { freedomRules, selectionYear, adjudicate } from "./freedom.js";
 import { resolveIntents } from "./intents.js";
+import {seedScenarioEvents} from './scenario-events.js';
+import {fiatEnabled,applyFiatRules} from './fiat.js';
 import { compactChapter } from "./archive.js";
 import { memorialDecision } from "./memorial-decisions.js";
 import { collectMemorialReviews } from "./memorial-records.js";
@@ -105,7 +107,7 @@ export function validateSchedule(state, schedule) {
     const a = schedule[slot];
     if (!a) continue;
     count++;
-    if(state.regency && !["批折","召见","自拟情节","歇息"].includes(a.kind) && !(a.kind==="私下行事"&&a.operation==="经筵"))
+    if(state.regency && !fiatEnabled(state) && !["批折","召见","自拟情节","歇息"].includes(a.kind) && !(a.kind==="私下行事"&&a.operation==="经筵"))
       throw new Error("摄政期间只能批折、召见、经筵或歇息");
     const rule = ACTIONS[a.kind];
     if (!rule || !rule.slots.includes(slot))
@@ -127,7 +129,7 @@ export function validateSchedule(state, schedule) {
   }
   if (full && count > 1) throw new Error("出巡或亲征占满一旬，请清空其他时辰");
   if (
-    state.campaigns.some((w) => w.personal && !w.done) &&
+    !fiatEnabled(state)&&state.campaigns.some((w) => w.personal && !w.done) &&
     count &&
     Object.values(schedule).some((a) => a && !["亲征", "歇息"].includes(a.kind) &&
       !(a.kind==='批折'&&a.memorials?.length&&a.memorials.every(id=>state.memorials.find(m=>m.id===id)?.campaignOrder)))
@@ -136,7 +138,7 @@ export function validateSchedule(state, schedule) {
   return true;
 }
 export function initialTurn(state) {
-  let s = generateCandidates(seedMemorials(state));
+  let s = generateCandidates(seedScenarioEvents(seedMemorials(state)));
   s.harem.royalWomen ??= [
     { id: "royal-1", name: "萧静宜", age: 22, married: null },
   ];
@@ -150,9 +152,10 @@ export function forecastTurn(
   return withDraft(() => forecastDraft(state, schedule, intents));
 }
 function forecastDraft(state, schedule, intents = []) {
-  if (state.ending) throw new Error("此局已封卷");
+  if (state.ending&&!fiatEnabled(state)) throw new Error("此局已封卷");
   validateSchedule(state, schedule);
   let s = clone(state);
+  if(fiatEnabled(s)&&s.ending)s.ending=null;
   s.pending = null;
   s.intentResults = (s.intentResults || []).filter(r => r.turn === state.turn&&!r.sceneCommitted);
   s.ledger = [...(state.interimEntries || [])];
@@ -386,7 +389,7 @@ function forecastDraft(state, schedule, intents = []) {
   ))
     notes.push(o.name + " 寿终，原职出缺");
   notes.push(...developmentNotes(state,s));
-  s = seedDevelopmentMemorials(seedMemorials(s),state);
+  s = seedScenarioEvents(seedDevelopmentMemorials(seedMemorials(s),state));
   // A month-end sender may leave office during the same year-end settlement.
   // Before exposing new memorials, bind them to the final eligible incumbent.
   for(const m of s.memorials.filter(m=>!state.memorials.some(old=>old.id===m.id))) {
@@ -395,6 +398,7 @@ function forecastDraft(state, schedule, intents = []) {
       Object.assign(m,pickMemorialist(s,m.type,m.provinceId));
   }
   s.emperor.energy = energyLimit(s);
+  s=applyFiatRules(s);
   s = evaluateAmbitions(s);
   s = unlockAchievements(s);
   s = settleArrears(s);

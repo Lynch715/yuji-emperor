@@ -187,7 +187,7 @@ export function talkAttempt(state, personId, line, structured = false) {
     }
   }
   const cap =
-    s.settings.freedom==='free'?s.nation.treasury:isOfficial && post?.tags.includes("管钱")
+    s.settings.freedom==='free'&&s.v>=26?Number.MAX_SAFE_INTEGER:s.settings.freedom==='free'?s.nation.treasury:isOfficial && post?.tags.includes("管钱")
       ? Math.min(Math.max(0,20*freedomRules(s).talkMultiplier-used),Math.floor(s.nation.treasury*0.03)*freedomRules(s).talkMultiplier,Math.floor((person.favor||0)/3)*freedomRules(s).talkMultiplier,s.nation.treasury):0;
   const kind=mode;
   const prior=!structured&&state.talks.find(t=>t.person===personId&&t.turn===state.turn&&t.kind===kind&&

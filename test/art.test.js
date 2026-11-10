@@ -24,7 +24,7 @@ test('v23老档按数组顺序补号，不改数值和原预演，不在原存�
  old.harem.children.push({id:'art-child',name:'萧和',sex:'男',born:0,health:90,aptitude:60,education:0,mother:'c0',fatherId:old.runId});
  old.pending={forecast:forecastTurn(old)};
  const bytes=JSON.stringify(old),pending=JSON.stringify(old.pending),next=migrate(old);
- assert.equal(VERSION,25);assert.equal(next.v,25);assert.equal(JSON.stringify(old),bytes);assert.equal(JSON.stringify(next.pending),pending);
+ assert.equal(VERSION,26);assert.equal(next.v,26);assert.equal(JSON.stringify(old),bytes);assert.equal(JSON.stringify(next.pending),pending);
  assert.ok(people(next).every(p=>Number.isSafeInteger(p.faceNo)));
  assert.equal(next.rng,old.rng);assert.deepEqual(next.nation,old.nation);assert.deepEqual(next.emperor.talents,old.emperor.talents);
  assert.deepEqual(next.court.officials.map(p=>p.faceNo),Array.from({length:25},(_,i)=>i));
@@ -80,7 +80,8 @@ test('清单完整预留377张，专属像只按当前剧本与姓名查，未�
  assert.equal(Object.values(ART_POOLS).reduce((n,p)=>n+p.length,0),207);
  assert.equal(Object.values(ART_UNIQUE).flatMap(x=>Object.values(x)).reduce((n,p)=>n+Object.keys(p).length,0),154);
  assert.equal(Object.keys(ART_SCENES).length+Object.keys(ART_HALLS).length,16);
- for(const sc of SCENARIOS){const s=initialTurn(applyScenario(createState(),sc.id));
+ assert.equal(Object.keys(ART_UNIQUE).length,7,'原美术批次的七个专属剧本不减少');
+ for(const id of Object.keys(ART_UNIQUE)){const sc=SCENARIOS.find(sc=>sc.id===id),s=initialTurn(applyScenario(createState(),sc.id));
   for(const p of [s.emperor,...s.court.officials.slice(0,sc.officials.length),...s.harem.consorts,...s.harem.children,...s.foreign])assert.ok(ART_UNIQUE[sc.id][p.ruler||p.name]);
   if(s.dowager)assert.ok(ART_UNIQUE[sc.id][s.dowager]);
  }

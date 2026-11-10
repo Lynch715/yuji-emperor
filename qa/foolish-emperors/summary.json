@@ -1,0 +1,42 @@
+{
+  "baseline": "3235bb4f25c86cdd4c4a236b23dcae0796d4b8eb",
+  "tests": 621,
+  "passed": 621,
+  "failed": 0,
+  "originalSevenStateHashes": {
+    "han-wudi": "ac21f7c7a408cc4b7325bafb1303e97eb66af4a010556c9842e62e9625a0a1b0",
+    "tang-taizong": "8f00c3ec42370a3e44e474cf2a316ef447ac54795fe40c6bb7f874ad99d425ba",
+    "song-renzong": "6d877bbe4230ede4757b2ba7da6f996a64390884e1339435bc4d245be1926076",
+    "ming-wanli": "2cd9ac9821f00831d322797783c440fc3b94cb0f1b41f54132cea57f6c72feba",
+    "ming-chongzhen": "badce75c25ca5ed4beae46d9703fdb3327b49f4ee165608fe93f8a4f724f11ba",
+    "qing-kangxi": "f6dbc254747138eb257a801e8e19edca8c9f2c8effb1dc3093b538f13135f51e",
+    "qing-yongzheng": "14368b8b96b733d6ff24199dd0cc653fb970006bc230769d29b54175aee32128"
+  },
+  "originalSevenByteIdentical": true,
+  "unchangedWebPs": 390,
+  "htmlBytes": 867216,
+  "htmlSha256": "a20dfd8435a3cc5e40d05e0cfffd55024f6612114a348d0c88a69b64c4ed649a",
+  "simulation": {
+    "han-lingdi": {
+      "years": 200,
+      "turns": 7200,
+      "reigns": 10,
+      "collapseCount": 0,
+      "ending": null
+    },
+    "song-huizong": {
+      "years": 200,
+      "turns": 7200,
+      "reigns": 6,
+      "collapseCount": 0,
+      "ending": null
+    },
+    "ming-xizong": {
+      "years": 200,
+      "turns": 7200,
+      "reigns": 5,
+      "collapseCount": 0,
+      "ending": null
+    }
+  }
+}

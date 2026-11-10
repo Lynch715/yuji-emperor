@@ -47,7 +47,7 @@ export function artPerson(s, id) {
 function contains(list, p) { return list?.some(x => x === p || p.id && x.id === p.id); }
 export function portraitPool(s, p, role = '') {
   if (!s || !p) return null;
-  const dynasty = scenarioById(s.scenario)?.posts || 'ming';
+  const sc = scenarioById(s.scenario), dynasty = sc?.posts || 'ming';
   if (role === 'scholar') return 'shared/scholar-' + (p.age < 30 ? 'young' : 'mature');
   if (role === 'dowager') return dynasty === 'ming' ? 'ming/dowager-all' : null;
   const retained = s.artFaces?.[artPersonKey(s,p)];
@@ -57,7 +57,7 @@ export function portraitPool(s, p, role = '') {
     if (p.gender !== '男') return null;
     const index = s.court.posts.findIndex(post => post.holder === p.id || p.post && post.id === p.post);
     return dynasty + '/' + (index === 9 || index >= 25 && index <= 28 ? 'general-all' :
-      (dynasty === 'han' ? index === 10 : index === 8 && dynasty !== 'qing') ? 'eunuch-all' : 'official-' + (p.age < 55 ? 'mature' : 'old'));
+      (sc?.eunuchPosts ? sc.eunuchPosts.includes(index) : dynasty === 'han' ? index === 10 : index === 8 && dynasty !== 'qing') ? 'eunuch-all' : 'official-' + (p.age < 55 ? 'mature' : 'old'));
   }
   if (contains(s.harem.consorts, p) || contains(s.harem.candidates, p))
     return dynasty + '/consort-' + (['皇后', '皇贵妃', '贵妃'].includes(p.rank) ? 'high' : 'regular');
