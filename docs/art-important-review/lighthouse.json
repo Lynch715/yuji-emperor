@@ -1,0 +1,10 @@
+{
+  "tool": "Lighthouse",
+  "version": "13.6.0",
+  "url": "http://127.0.0.1:4240/",
+  "fetchTime": "2026-11-10T08:16:46.078Z",
+  "accessibilityScore": 100,
+  "runtimeError": null,
+  "failedAudits": [],
+  "scope": "独立的Lighthouse headless可访问性审计；功能交互与截图均使用Codex In-app Browser。"
+}

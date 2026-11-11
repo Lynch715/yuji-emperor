@@ -1,0 +1,294 @@
+{
+  "baseline": "d61ddd3",
+  "allUnchanged": true,
+  "files": [
+    {
+      "file": "src/core/ambitions.js",
+      "sha256": "c05e611cf52167a9d598057a9d32500ee25e991574eda56a46a12b34f396d3be"
+    },
+    {
+      "file": "src/core/archive.js",
+      "sha256": "e44886d5dd807c13e71470af16efdb410be76703ede9d1d6c8d053d98c9baeec"
+    },
+    {
+      "file": "src/core/audit.js",
+      "sha256": "dc446cb98152b29deea616e44437c621796aed4189bd8ae70b636b963c750f9b"
+    },
+    {
+      "file": "src/core/biography.js",
+      "sha256": "68845d341f89a86c7b65fb8583689bb0c499a88e47a185b7917de43b549460a3"
+    },
+    {
+      "file": "src/core/calendar.js",
+      "sha256": "45698539b2339d0e012fce753a4a8af788325397379f746f09695453766e3285"
+    },
+    {
+      "file": "src/core/campaign-rules.js",
+      "sha256": "992594034e1806255c700380b86bbaf442f298d6339f6a432686efceb51a59da"
+    },
+    {
+      "file": "src/core/campaigns.js",
+      "sha256": "2c46811593b33de61282290e417ea37cf3e0fbd2b0544c3f560ad86f7b1045c0"
+    },
+    {
+      "file": "src/core/chronicles.js",
+      "sha256": "7aaa664057725cf983d4245027075206e5c6d834d381ebeb18658d303b6da774"
+    },
+    {
+      "file": "src/core/court.js",
+      "sha256": "a17e17331d03b7d86e8ae2e02e56396e00a35747c7f367e4b1a2d5d50059dad5"
+    },
+    {
+      "file": "src/core/development-choices.js",
+      "sha256": "81cfcedd4cf7bba5a8d58d4e6617e4f7fc437c854c7e1f515629029d2dbf3672"
+    },
+    {
+      "file": "src/core/edicts.js",
+      "sha256": "8fdfe927248937d35697823825e31a80ca09f7b9a42ef15b0f5b491b69015ce7"
+    },
+    {
+      "file": "src/core/effects.js",
+      "sha256": "6cfa4d144de4f00d02fb24e11d547278e08e83c10659ca89acf6bd362ef9a405"
+    },
+    {
+      "file": "src/core/emperor.js",
+      "sha256": "47da2ededc4d58de6f88cf0dc5dd786d8896a4479a2f101901cce4a8df19b13a"
+    },
+    {
+      "file": "src/core/events.js",
+      "sha256": "bd21d88bcbb29ca6dcf4c62e0a96d95e8371e1fe32ab382734e668695500e2f5"
+    },
+    {
+      "file": "src/core/extra-scenarios.js",
+      "sha256": "50a1d3a4a2b75331ef099bb0a2ddd7a770b43714ddc3e0c3619576093ec2ae5b"
+    },
+    {
+      "file": "src/core/faces.js",
+      "sha256": "d67293039a1f22d7b48e77e00eb588e0cfc1af5cfad932d0141e509cef305178"
+    },
+    {
+      "file": "src/core/facts.js",
+      "sha256": "a7d117d93dd546b9b875bf598b2c8879d6e1962ee736d340dac1fb4c2da3f6dd"
+    },
+    {
+      "file": "src/core/fiat.js",
+      "sha256": "f0f7c94006398fb62fa25be4ae8d49c1b84a3e3068e46ce32dfc3c179cae4133"
+    },
+    {
+      "file": "src/core/finance.js",
+      "sha256": "32c9d2da09e9bbcbb6e7bec3a36a03b2b73fc60568b667312c48758ea7142bc7"
+    },
+    {
+      "file": "src/core/foreign.js",
+      "sha256": "25059afa88bf27269936c119195d2436b43d777537c6bdf73adfdd011f095234"
+    },
+    {
+      "file": "src/core/freedom.js",
+      "sha256": "88db6721dae42134d462f65e8e5ec0c02349d885dce43feecd169b33326f3f63"
+    },
+    {
+      "file": "src/core/harem.js",
+      "sha256": "966ab85ee1e4427ff79bb626c0205d3efd8de8a50b85b16e9fd73b9c7cbcb52a"
+    },
+    {
+      "file": "src/core/imperial-titles.js",
+      "sha256": "58f8fcab26bdce6549076a33537f0e71edcb5e872b99a02aca0e8fc1ab0d9031"
+    },
+    {
+      "file": "src/core/industries.js",
+      "sha256": "5cb5870909b9cb5593f2970cd9c953b614039fff01a9f322d7d3b06815014afe"
+    },
+    {
+      "file": "src/core/intents.js",
+      "sha256": "52141b40f69a615665707f70ed5e65b565d1b4d33760b254f78521949a46fb92"
+    },
+    {
+      "file": "src/core/keju-schema.js",
+      "sha256": "047b82522bca59d3100abf38979d67807cf857f6806c313559faf9bdcfa535df"
+    },
+    {
+      "file": "src/core/keju.js",
+      "sha256": "1cbfb9aa06cf156f04c38d4834af98c27d42268fb2210640322459a519555c4c"
+    },
+    {
+      "file": "src/core/memorial-agenda.js",
+      "sha256": "80c1f6211ca68ff252a6dbeaa8c0fbc69886ac7cd16cba1ce31325dd73f6791c"
+    },
+    {
+      "file": "src/core/memorial-choices.js",
+      "sha256": "f4867b6ea32f18e2a76f79c1c1bdccd9fd2c0308d17037304786442cc062b33f"
+    },
+    {
+      "file": "src/core/memorial-decisions.js",
+      "sha256": "31ee21baa4c499dfcf98dabdb4c5df148671f4416c654083dc6516990352f225"
+    },
+    {
+      "file": "src/core/memorial-records.js",
+      "sha256": "55a54eb199d287738756e61ef75ec109e459f597eb7c107b916164216a0ed266"
+    },
+    {
+      "file": "src/core/memorial-templates.js",
+      "sha256": "eba0a7882e865635f8cf817dc6ddd776d862225d1fc743d9ec247c1d8aa8825d"
+    },
+    {
+      "file": "src/core/memorial-texts.js",
+      "sha256": "4dbc4ea1c702033ca298d767e86dbfbacaccb0b3adc31a50298fce6d00497459"
+    },
+    {
+      "file": "src/core/memory.js",
+      "sha256": "58103798d882371c2f99fe8c94447d435c4b160e21e3e074f4019812643b850e"
+    },
+    {
+      "file": "src/core/names.js",
+      "sha256": "b0e666d32e5c2cdaf1b8c2ddac284a2785cd9ec97457fa2d1f929d13d9b5dae2"
+    },
+    {
+      "file": "src/core/nation.js",
+      "sha256": "919c6c1c10348218438b1a78492aff2ce567f4d498f7a9bd00725b4695de41a0"
+    },
+    {
+      "file": "src/core/politics.js",
+      "sha256": "2bdb978414ba28366aaa174543e51e946bee757f916655f9d7a45fa34b61cc76"
+    },
+    {
+      "file": "src/core/private.js",
+      "sha256": "2ae2d141853db428988f54142421705535364db247d6b43029b41e6179955e44"
+    },
+    {
+      "file": "src/core/regency-info.js",
+      "sha256": "f8025bb856197b25f9ba10cc2ed5d832cbd23dea0c31e0a9a5f92c3713e5258c"
+    },
+    {
+      "file": "src/core/rng.js",
+      "sha256": "a18d96fe853f4acb5e4a35623b666da3201e63467fa5f44894a07222bea98bb7"
+    },
+    {
+      "file": "src/core/sandbox-schema.js",
+      "sha256": "619787102a400e20b6a2738a205367c4fe43040a7c6bd4c2f6a382b453ebcd15"
+    },
+    {
+      "file": "src/core/scenario-event-catalog.js",
+      "sha256": "9ef6b7b1fd827d4dc0bd869949ae449349b3577f97f1989bde547014be03031e"
+    },
+    {
+      "file": "src/core/scenario-events.js",
+      "sha256": "9755499197bb096c8573518226a344e789c81be4b2b6a2657aae22af8b3c874f"
+    },
+    {
+      "file": "src/core/scenario-goals.js",
+      "sha256": "009682175c5391556d4cfd7241233919928ba4c03b90a62f921932ce0894a900"
+    },
+    {
+      "file": "src/core/scenario-outcomes.js",
+      "sha256": "282514b5ea5238f0acc450e342fcab2c46aad5c45ce233cb92b77cdb3e0d4fd6"
+    },
+    {
+      "file": "src/core/scenarios.js",
+      "sha256": "943fd7404065852626f73f4bea79cfef276617f3ab0b73845bfb1e89f07c950f"
+    },
+    {
+      "file": "src/core/scene-schema.js",
+      "sha256": "a7ce1fc014d6b8213dd8a165a4586e1a89f439a1482e65cc75c4fbbb91b01f4a"
+    },
+    {
+      "file": "src/core/scenes.js",
+      "sha256": "37fcf635bb519a9c2a2a92703c9942b17b07847183b8eb419733e1fa9c8e4db4"
+    },
+    {
+      "file": "src/core/social-rules.js",
+      "sha256": "f7519a6ffcadb3fdd2235e04fa28c2368bdf1369fac71b12774eeb7f3974430a"
+    },
+    {
+      "file": "src/core/social-schema.js",
+      "sha256": "8b71296c9f2b76af4a7b1a3970e3971325d17f1da7ce6ff52ddf41297cca7538"
+    },
+    {
+      "file": "src/core/social.js",
+      "sha256": "2ce68411e89d938f046d428d43d5769168e7e5120091c2f2c5587c762ff3c9bb"
+    },
+    {
+      "file": "src/core/state.js",
+      "sha256": "6c416ccbca2bbfc9390740ce61ea40bb82e731f8ed320b48f4ad588aa6e82a32"
+    },
+    {
+      "file": "src/core/succession.js",
+      "sha256": "b5c58f6e11b08cb7a5e3b6afd021243be53d5a8fcdf793f0cf65e51f1aa108c1"
+    },
+    {
+      "file": "src/core/tech-rules.js",
+      "sha256": "c0796f96ef27b62bb6fb0e836ee2dff685183a89183552c71606cd579f79d65f"
+    },
+    {
+      "file": "src/core/tech-schema.js",
+      "sha256": "28c6862d7e47b8278ede5155fa32326e5ef761085ce75ac18e8c1c9b5ad6a564"
+    },
+    {
+      "file": "src/core/tech.js",
+      "sha256": "d3bef41909871b335023b9d53773c39ad2efb45419ab8e664a90113080fde67b"
+    },
+    {
+      "file": "src/core/text.js",
+      "sha256": "00a9c298f3124f5cbe93ed265d3335ac0e4d73defbc972c210139213a8bdabd6"
+    },
+    {
+      "file": "src/core/turn.js",
+      "sha256": "2c7c724a84d5f628817c5176741180d85108eb690b59958e7de8c9c5a51204c2"
+    },
+    {
+      "file": "src/core/world.js",
+      "sha256": "210e193cd011f6789e6c68ae442ff763deea9254aca9383ec32eef31efaa0aa0"
+    },
+    {
+      "file": "src/llm/client.js",
+      "sha256": "a4b6e4cff4661c77d64eb4b19aaa96d776f83ada3ed2eb896f816ea17525e83a"
+    },
+    {
+      "file": "src/llm/fiat-intents.js",
+      "sha256": "a6b72210db578145b3960104f8510f5e272d1d252f0838fd19df63f698e01027"
+    },
+    {
+      "file": "src/llm/intents.js",
+      "sha256": "88d17750e7321bc587f7ed932b65712d44950b3a055da65a8b907d50ca805daa"
+    },
+    {
+      "file": "src/llm/keju.js",
+      "sha256": "4d33a8ec946d894655a7d8635e1cdf4b99d00b9e96f6ce4a76201f0aef96f3d7"
+    },
+    {
+      "file": "src/llm/mock-narrative.js",
+      "sha256": "c4a188454b5a6f92598f70011b332051c74306c495b196a0a84136c2f08ea029"
+    },
+    {
+      "file": "src/llm/prompts.js",
+      "sha256": "0306b7e22e6b27112ab91b1828be18f5e1620d0d8c7c13710ee3539641319941"
+    },
+    {
+      "file": "src/llm/quantities.js",
+      "sha256": "9f0a2e0be5218bc53f2d6db0bd1f8e71bdf3384edc275b9e4aebc7324f2c0c25"
+    },
+    {
+      "file": "src/llm/remark-classifier.js",
+      "sha256": "1747c5cd8d0c7ca751136d3a00e804f0a087890d7388e4fbc252d24d137e5bda"
+    },
+    {
+      "file": "src/llm/rewrite.js",
+      "sha256": "7000d337876c15ce5aca78a85414abd1ec0b921e70fcfa12db92d16e584f5312"
+    },
+    {
+      "file": "src/llm/scene-rules.js",
+      "sha256": "642c38102a270b00629c5520e43a0e01e8983aae03cc66cf2f547ef83ac4f9c3"
+    },
+    {
+      "file": "src/llm/scenes.js",
+      "sha256": "502f0f873f353d75545eabe4ed2fe410b6d423d24d4058f818dea899c2526e4d"
+    },
+    {
+      "file": "src/llm/validate.js",
+      "sha256": "9f75ba79b15b7042f29aba89d0b8430e96bf04eae5a85f807a9f915d94d6fa5e"
+    },
+    {
+      "file": "src/ui/style.css",
+      "sha256": "59a4755a582d1bb202dfc998052871a54d06ac05b5b06190b55659700bcbf35d"
+    }
+  ]
+}

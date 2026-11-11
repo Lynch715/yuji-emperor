@@ -1,0 +1,32 @@
+{
+  "allImagesLoaded": 90,
+  "images": [
+    {
+      "loaded": true,
+      "natural": [
+        400,
+        500
+      ],
+      "src": "assets/art/portraits/unique/han-lingdi/dowager-01.webp"
+    },
+    {
+      "loaded": true,
+      "natural": [
+        400,
+        500
+      ],
+      "src": "assets/art/portraits/unique/han-lingdi/dowager-01.webp"
+    },
+    {
+      "loaded": true,
+      "natural": [
+        400,
+        500
+      ],
+      "src": "assets/art/portraits/unique/han-lingdi/dowager-01.webp"
+    }
+  ],
+  "overflow": false,
+  "text": "董太后 · han-lingdi · 50岁",
+  "viewport": 390
+}

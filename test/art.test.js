@@ -76,12 +76,13 @@ test('满池新来者先复用全为已故占用者的脸，旧溢出者不因�
  s=withPortraitArt(s);s.court.officials.push({...s.court.officials[0],id:'overflow-18',faceNo:18});
  next=resolvePortraits(s);assert.equal(next['overflow-18'].index,18%16,'死者的脸已被活人复用，不能再按全已故复用');
 });
-test('清单完整预留377张，专属像只按当前剧本与姓名查，未出图不请求',()=>{
+test('原三期377张映射保持，新增七剧本可只为重要人物配专属像',()=>{
+ const original=['han-wudi','tang-taizong','song-renzong','ming-wanli','ming-chongzhen','qing-kangxi','qing-yongzheng'];
  assert.equal(Object.values(ART_POOLS).reduce((n,p)=>n+p.length,0),207);
- assert.equal(Object.values(ART_UNIQUE).flatMap(x=>Object.values(x)).reduce((n,p)=>n+Object.keys(p).length,0),154);
+ assert.equal(original.flatMap(id=>Object.values(ART_UNIQUE[id])).reduce((n,p)=>n+Object.keys(p).length,0),154);
  assert.equal(Object.keys(ART_SCENES).length+Object.keys(ART_HALLS).length,16);
- assert.equal(Object.keys(ART_UNIQUE).length,7,'原美术批次的七个专属剧本不减少');
- for(const id of Object.keys(ART_UNIQUE)){const sc=SCENARIOS.find(sc=>sc.id===id),s=initialTurn(applyScenario(createState(),sc.id));
+ assert.equal(Object.keys(ART_UNIQUE).length,14,'原七局完整专属与新七局重要人物专属并存');
+ for(const id of original){const sc=SCENARIOS.find(sc=>sc.id===id),s=initialTurn(applyScenario(createState(),sc.id));
   for(const p of [s.emperor,...s.court.officials.slice(0,sc.officials.length),...s.harem.consorts,...s.harem.children,...s.foreign])assert.ok(ART_UNIQUE[sc.id][p.ruler||p.name]);
   if(s.dowager)assert.ok(ART_UNIQUE[sc.id][s.dowager]);
  }
@@ -145,7 +146,7 @@ test('清单仅引用已导出的WebP，尺寸体积预算与文件一一对应'
   ...Object.values({...ART_SCENES,...ART_HALLS}).flatMap(s=>[s.src,s.small])].filter(Boolean);
  const actual=[];function walk(dir){for(const e of readdirSync(dir,{withFileTypes:true})){const path=dir+'/'+e.name;if(e.isDirectory())walk(path);else actual.push(path);}}
  walk('assets/art');assert.deepEqual([...new Set(paths)].sort(),actual.sort());
- assert.equal(actual.length,390,'377张原画及13个场景720派生档；汉制池33张、汉武帝专属20张全部完成');
+ assert.equal(actual.length,516,'原419个WebP加97张补全；本人复用与base/old别名不另建文件');
  assert.ok(actual.reduce((sum,path)=>sum+statSync(path).size,0)<=12000000);
  for(const path of actual){assert.match(path,/\.webp$/);assert.ok(statSync(path).size<=(path.includes('/portraits/')?30000:path.includes('/halls/')?100000:path.endsWith('-720.webp')?60000:150000));}
 });

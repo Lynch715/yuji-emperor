@@ -246,3 +246,396 @@ export const HALL_SCENES = {
 "内库":"hall-treasury",
 "史馆":"hall-archive"
 };
+
+// 玩家追加的七剧本重要人物；魏忠贤复用本人，唐玄宗开局已是老年。
+Object.assign(ART_UNIQUE, {
+  "han-lingdi": {
+    "刘宏": {
+      "base": "assets/art/portraits/unique/han-lingdi/emperor-01.webp",
+      "old": "assets/art/portraits/unique/han-lingdi/emperor-01-old.webp"
+    },
+    "董太后": {
+      "base": "assets/art/portraits/unique/han-lingdi/dowager-01.webp"
+    },
+    "宋氏": {
+      "base": "assets/art/portraits/unique/han-lingdi/consort-01.webp"
+    },
+    "何氏": {
+      "base": "assets/art/portraits/unique/han-lingdi/consort-02.webp"
+    },
+    "张让": {
+      "base": "assets/art/portraits/unique/han-lingdi/official-03.webp"
+    },
+    "杨赐": {
+      "base": "assets/art/portraits/unique/han-lingdi/official-01.webp"
+    },
+    "刘宽": {
+      "base": "assets/art/portraits/unique/han-lingdi/official-02.webp"
+    },
+    "袁隗": {
+      "base": "assets/art/portraits/unique/han-lingdi/official-04.webp"
+    },
+    "蔡邕": {
+      "base": "assets/art/portraits/unique/han-lingdi/official-05.webp"
+    },
+    "卢植": {
+      "base": "assets/art/portraits/unique/han-lingdi/official-06.webp"
+    },
+    "段颎": {
+      "base": "assets/art/portraits/unique/han-lingdi/official-07.webp"
+    },
+    "张温": {
+      "base": "assets/art/portraits/unique/han-lingdi/official-08.webp"
+    },
+    "刘辩": {
+      "base": "assets/art/portraits/unique/han-lingdi/child-01.webp",
+      "adult": "assets/art/portraits/unique/han-lingdi/child-01-adult.webp"
+    },
+    "檀石槐": {
+      "base": "assets/art/portraits/unique/han-lingdi/foreign-01.webp"
+    },
+    "呼徵": {
+      "base": "assets/art/portraits/unique/han-lingdi/foreign-02.webp"
+    },
+    "丘力居": {
+      "base": "assets/art/portraits/unique/han-lingdi/foreign-03.webp"
+    },
+    "伯固": {
+      "base": "assets/art/portraits/unique/han-lingdi/foreign-04.webp"
+    },
+    "臣磐": {
+      "base": "assets/art/portraits/unique/han-lingdi/foreign-05.webp"
+    }
+  },
+  "song-huizong": {
+    "赵佶": {
+      "base": "assets/art/portraits/unique/song-huizong/emperor-01.webp",
+      "old": "assets/art/portraits/unique/song-huizong/emperor-01-old.webp"
+    },
+    "郑氏": {
+      "base": "assets/art/portraits/unique/song-huizong/consort-01.webp"
+    },
+    "蔡京": {
+      "base": "assets/art/portraits/unique/song-huizong/official-01.webp"
+    },
+    "王黼": {
+      "base": "assets/art/portraits/unique/song-huizong/official-02.webp"
+    },
+    "童贯": {
+      "base": "assets/art/portraits/unique/song-huizong/official-03.webp"
+    },
+    "梁师成": {
+      "base": "assets/art/portraits/unique/song-huizong/official-04.webp"
+    },
+    "朱勔": {
+      "base": "assets/art/portraits/unique/song-huizong/official-05.webp"
+    },
+    "种师道": {
+      "base": "assets/art/portraits/unique/song-huizong/official-07.webp"
+    },
+    "张叔夜": {
+      "base": "assets/art/portraits/unique/song-huizong/official-08.webp"
+    },
+    "李邦彦": {
+      "base": "assets/art/portraits/unique/song-huizong/official-09.webp"
+    },
+    "郑居中": {
+      "base": "assets/art/portraits/unique/song-huizong/official-10.webp"
+    },
+    "刘氏": {
+      "base": "assets/art/portraits/unique/song-huizong/consort-02.webp"
+    },
+    "赵桓": {
+      "base": "assets/art/portraits/unique/song-huizong/child-01.webp"
+    },
+    "赵构": {
+      "base": "assets/art/portraits/unique/song-huizong/child-02.webp",
+      "adult": "assets/art/portraits/unique/song-qinzong/official-08.webp"
+    },
+    "耶律延禧": {
+      "base": "assets/art/portraits/unique/song-huizong/foreign-01.webp"
+    },
+    "完颜阿骨打": {
+      "base": "assets/art/portraits/unique/song-huizong/foreign-02.webp"
+    },
+    "李乾顺": {
+      "base": "assets/art/portraits/unique/song-huizong/foreign-03.webp"
+    },
+    "王俣": {
+      "base": "assets/art/portraits/unique/song-huizong/foreign-04.webp"
+    },
+    "李乾德": {
+      "base": "assets/art/portraits/unique/song-huizong/foreign-05.webp"
+    },
+    "李纲": {
+      "base": "assets/art/portraits/unique/song-qinzong/official-03.webp"
+    }
+  },
+  "ming-xizong": {
+    "朱由校": {
+      "base": "assets/art/portraits/unique/ming-xizong/emperor-01.webp",
+      "old": "assets/art/portraits/unique/ming-xizong/emperor-01-old.webp"
+    },
+    "张嫣": {
+      "base": "assets/art/portraits/unique/ming-xizong/consort-01.webp"
+    },
+    "魏忠贤": {
+      "base": "assets/art/portraits/unique/ming-chongzhen/official-01.webp"
+    },
+    "叶向高": {
+      "base": "assets/art/portraits/unique/ming-xizong/official-01.webp"
+    },
+    "刘一燝": {
+      "base": "assets/art/portraits/unique/ming-xizong/official-03.webp"
+    },
+    "韩爌": {
+      "base": "assets/art/portraits/unique/ming-xizong/official-04.webp"
+    },
+    "杨涟": {
+      "base": "assets/art/portraits/unique/ming-xizong/official-05.webp"
+    },
+    "左光斗": {
+      "base": "assets/art/portraits/unique/ming-xizong/official-06.webp"
+    },
+    "孙承宗": {
+      "base": "assets/art/portraits/unique/ming-xizong/official-07.webp"
+    },
+    "熊廷弼": {
+      "base": "assets/art/portraits/unique/ming-xizong/official-08.webp"
+    },
+    "王化贞": {
+      "base": "assets/art/portraits/unique/ming-xizong/official-09.webp"
+    },
+    "王象乾": {
+      "base": "assets/art/portraits/unique/ming-xizong/official-10.webp"
+    },
+    "努尔哈赤": {
+      "base": "assets/art/portraits/unique/ming-xizong/foreign-01.webp"
+    },
+    "李珲": {
+      "base": "assets/art/portraits/unique/ming-xizong/foreign-03.webp"
+    },
+    "德川秀忠": {
+      "base": "assets/art/portraits/unique/ming-xizong/foreign-04.webp"
+    },
+    "黎维祺": {
+      "base": "assets/art/portraits/unique/ming-xizong/foreign-05.webp"
+    },
+    "林丹汗": {
+      "base": "assets/art/portraits/unique/ming-chongzhen/foreign-01.webp"
+    }
+  },
+  "ming-yingzong": {
+    "朱祁镇": {
+      "base": "assets/art/portraits/unique/ming-yingzong/emperor-01.webp",
+      "old": "assets/art/portraits/unique/ming-yingzong/emperor-01-old.webp"
+    },
+    "孙太后": {
+      "base": "assets/art/portraits/unique/ming-yingzong/dowager-01.webp"
+    },
+    "钱氏": {
+      "base": "assets/art/portraits/unique/ming-yingzong/consort-01.webp"
+    },
+    "于谦": {
+      "base": "assets/art/portraits/unique/ming-yingzong/official-03.webp"
+    },
+    "曹鼐": {
+      "base": "assets/art/portraits/unique/ming-yingzong/official-01.webp"
+    },
+    "王振": {
+      "base": "assets/art/portraits/unique/ming-yingzong/official-02.webp"
+    },
+    "邝埜": {
+      "base": "assets/art/portraits/unique/ming-yingzong/official-04.webp"
+    },
+    "王直": {
+      "base": "assets/art/portraits/unique/ming-yingzong/official-05.webp"
+    },
+    "陈循": {
+      "base": "assets/art/portraits/unique/ming-yingzong/official-06.webp"
+    },
+    "张辅": {
+      "base": "assets/art/portraits/unique/ming-yingzong/official-07.webp"
+    },
+    "杨洪": {
+      "base": "assets/art/portraits/unique/ming-yingzong/official-08.webp"
+    },
+    "周氏": {
+      "base": "assets/art/portraits/unique/ming-yingzong/consort-02.webp"
+    },
+    "朱见深": {
+      "base": "assets/art/portraits/unique/ming-yingzong/child-01.webp",
+      "adult": "assets/art/portraits/unique/ming-yingzong/child-01-adult.webp"
+    },
+    "也先": {
+      "base": "assets/art/portraits/unique/ming-yingzong/foreign-01.webp"
+    },
+    "脱脱不花": {
+      "base": "assets/art/portraits/unique/ming-yingzong/foreign-02.webp"
+    },
+    "李裪": {
+      "base": "assets/art/portraits/unique/ming-yingzong/foreign-03.webp"
+    },
+    "黎邦基": {
+      "base": "assets/art/portraits/unique/ming-yingzong/foreign-04.webp"
+    }
+  },
+  "song-qinzong": {
+    "赵桓": {
+      "base": "assets/art/portraits/unique/song-qinzong/emperor-01.webp",
+      "old": "assets/art/portraits/unique/song-qinzong/emperor-01-old.webp"
+    },
+    "朱氏": {
+      "base": "assets/art/portraits/unique/song-qinzong/consort-01.webp"
+    },
+    "李纲": {
+      "base": "assets/art/portraits/unique/song-qinzong/official-03.webp"
+    },
+    "白时中": {
+      "base": "assets/art/portraits/unique/song-qinzong/official-01.webp"
+    },
+    "李邦彦": {
+      "base": "assets/art/portraits/unique/song-qinzong/official-02.webp"
+    },
+    "种师道": {
+      "base": "assets/art/portraits/unique/song-qinzong/official-04.webp"
+    },
+    "张邦昌": {
+      "base": "assets/art/portraits/unique/song-qinzong/official-05.webp"
+    },
+    "耿南仲": {
+      "base": "assets/art/portraits/unique/song-qinzong/official-06.webp"
+    },
+    "吴敏": {
+      "base": "assets/art/portraits/unique/song-qinzong/official-07.webp"
+    },
+    "赵构": {
+      "base": "assets/art/portraits/unique/song-qinzong/official-08.webp"
+    },
+    "赵谌": {
+      "base": "assets/art/portraits/unique/song-qinzong/child-01.webp",
+      "adult": "assets/art/portraits/unique/song-qinzong/child-01-adult.webp"
+    },
+    "完颜晟": {
+      "base": "assets/art/portraits/unique/song-qinzong/foreign-01.webp"
+    },
+    "王楷": {
+      "base": "assets/art/portraits/unique/song-qinzong/foreign-03.webp"
+    },
+    "李乾顺": {
+      "base": "assets/art/portraits/unique/song-huizong/foreign-03.webp"
+    },
+    "李乾德": {
+      "base": "assets/art/portraits/unique/song-huizong/foreign-05.webp"
+    }
+  },
+  "qing-jiaqing": {
+    "颙琰": {
+      "base": "assets/art/portraits/unique/qing-jiaqing/emperor-01.webp",
+      "old": "assets/art/portraits/unique/qing-jiaqing/emperor-01-old.webp"
+    },
+    "钮祜禄氏": {
+      "base": "assets/art/portraits/unique/qing-jiaqing/consort-01.webp"
+    },
+    "和珅": {
+      "base": "assets/art/portraits/unique/qing-jiaqing/official-01.webp"
+    },
+    "刘墉": {
+      "base": "assets/art/portraits/unique/qing-jiaqing/official-02.webp"
+    },
+    "朱珪": {
+      "base": "assets/art/portraits/unique/qing-jiaqing/official-03.webp"
+    },
+    "王杰": {
+      "base": "assets/art/portraits/unique/qing-jiaqing/official-04.webp"
+    },
+    "福长安": {
+      "base": "assets/art/portraits/unique/qing-jiaqing/official-05.webp"
+    },
+    "董诰": {
+      "base": "assets/art/portraits/unique/qing-jiaqing/official-06.webp"
+    },
+    "勒保": {
+      "base": "assets/art/portraits/unique/qing-jiaqing/official-07.webp"
+    },
+    "额勒登保": {
+      "base": "assets/art/portraits/unique/qing-jiaqing/official-08.webp"
+    },
+    "侯佳氏": {
+      "base": "assets/art/portraits/unique/qing-jiaqing/consort-02.webp"
+    },
+    "旻宁": {
+      "base": "assets/art/portraits/unique/qing-jiaqing/child-01.webp"
+    },
+    "绵恺": {
+      "base": "assets/art/portraits/unique/qing-jiaqing/child-02.webp",
+      "adult": "assets/art/portraits/unique/qing-jiaqing/child-02-adult.webp"
+    },
+    "保罗一世": {
+      "base": "assets/art/portraits/unique/qing-jiaqing/foreign-01.webp"
+    },
+    "拉纳巴哈都尔": {
+      "base": "assets/art/portraits/unique/qing-jiaqing/foreign-02.webp"
+    },
+    "乔治三世": {
+      "base": "assets/art/portraits/unique/qing-jiaqing/foreign-03.webp"
+    },
+    "李祘": {
+      "base": "assets/art/portraits/unique/qing-jiaqing/foreign-04.webp"
+    }
+  },
+  "tang-xuanzong": {
+    "李隆基": {
+      "base": "assets/art/portraits/unique/tang-xuanzong/emperor-01.webp",
+      "old": "assets/art/portraits/unique/tang-xuanzong/emperor-01.webp"
+    },
+    "杨玉环": {
+      "base": "assets/art/portraits/unique/tang-xuanzong/consort-01.webp"
+    },
+    "安禄山": {
+      "base": "assets/art/portraits/unique/tang-xuanzong/official-04.webp"
+    },
+    "杨国忠": {
+      "base": "assets/art/portraits/unique/tang-xuanzong/official-01.webp"
+    },
+    "高力士": {
+      "base": "assets/art/portraits/unique/tang-xuanzong/official-02.webp"
+    },
+    "韦见素": {
+      "base": "assets/art/portraits/unique/tang-xuanzong/official-03.webp"
+    },
+    "哥舒翰": {
+      "base": "assets/art/portraits/unique/tang-xuanzong/official-05.webp"
+    },
+    "封常清": {
+      "base": "assets/art/portraits/unique/tang-xuanzong/official-06.webp"
+    },
+    "高仙芝": {
+      "base": "assets/art/portraits/unique/tang-xuanzong/official-07.webp"
+    },
+    "陈玄礼": {
+      "base": "assets/art/portraits/unique/tang-xuanzong/official-08.webp"
+    },
+    "武氏": {
+      "base": "assets/art/portraits/unique/tang-xuanzong/consort-02.webp"
+    },
+    "李亨": {
+      "base": "assets/art/portraits/unique/tang-xuanzong/child-01.webp"
+    },
+    "李璘": {
+      "base": "assets/art/portraits/unique/tang-xuanzong/child-02.webp"
+    },
+    "赤德祖赞": {
+      "base": "assets/art/portraits/unique/tang-xuanzong/foreign-01.webp"
+    },
+    "磨延啜": {
+      "base": "assets/art/portraits/unique/tang-xuanzong/foreign-02.webp"
+    },
+    "阁罗凤": {
+      "base": "assets/art/portraits/unique/tang-xuanzong/foreign-03.webp"
+    },
+    "大钦茂": {
+      "base": "assets/art/portraits/unique/tang-xuanzong/foreign-04.webp"
+    }
+  }
+});

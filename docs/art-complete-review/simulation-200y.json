@@ -1,0 +1,11 @@
+{
+  "seed": "七局专属补全200年",
+  "years": 200,
+  "actualYears": 200,
+  "turns": 7200,
+  "reigns": 7,
+  "successionCount": 6,
+  "ending": null,
+  "firstCollapseTurn": null,
+  "finalTreasury": 1430
+}

@@ -1,0 +1,44 @@
+[
+  {
+    "scenario": "han-lingdi",
+    "people": 18,
+    "minDifferentCardDimensions": 7,
+    "method": "authored descriptions only; visual 44px review recorded separately"
+  },
+  {
+    "scenario": "song-huizong",
+    "people": 20,
+    "minDifferentCardDimensions": 7,
+    "method": "authored descriptions only; visual 44px review recorded separately"
+  },
+  {
+    "scenario": "ming-xizong",
+    "people": 17,
+    "minDifferentCardDimensions": 7,
+    "method": "authored descriptions only; visual 44px review recorded separately"
+  },
+  {
+    "scenario": "ming-yingzong",
+    "people": 17,
+    "minDifferentCardDimensions": 7,
+    "method": "authored descriptions only; visual 44px review recorded separately"
+  },
+  {
+    "scenario": "tang-xuanzong",
+    "people": 17,
+    "minDifferentCardDimensions": 7,
+    "method": "authored descriptions only; visual 44px review recorded separately"
+  },
+  {
+    "scenario": "song-qinzong",
+    "people": 15,
+    "minDifferentCardDimensions": 5,
+    "method": "authored descriptions only; visual 44px review recorded separately"
+  },
+  {
+    "scenario": "qing-jiaqing",
+    "people": 17,
+    "minDifferentCardDimensions": 6,
+    "method": "authored descriptions only; visual 44px review recorded separately"
+  }
+]
