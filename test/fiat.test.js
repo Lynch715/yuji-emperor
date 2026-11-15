@@ -18,9 +18,9 @@ test('中文亿万、银粮单位正确；显式数值突破旧100与百万上�
  assert.equal(r.results[0].status,'success');assert.equal(r.state.nation.treasury,10000);assert.equal(r.state.nation.privy,190);assert.equal(r.state.emperor.talents.政略,1000);assert.equal(JSON.stringify(s),before);
  const huge=applyFiatOperations(s,[{op:'set',target:'nation',field:'treasury',value:100000000}]).state;assertState(huge);assert.equal(huge.nation.treasury,100000000);
 });
-test('无银仍按指定数额拨款，补足单独记账；普通和写实档仍受余额限制',()=>{
+test('言出法随无银仍按指定数额拨转两库，补足单独记账；其他档受余额限制',()=>{
  for(const mode of ['free','mid','real']){const s=fresh(mode);s.nation.treasury=0;s.emperor.talents.权谋=100;
-  const r=run(s,'拨银一千万两修河'),result=r.results[0];if(mode==='free'){assert.equal(result.actual.amount,1000);assert.equal(result.clamped,false);assert.ok(r.state.ledger.some(e=>e.source.includes('补足')));}else assert.equal(result.actual?.amount||0,0);
+  const r=run(s,'拨银一千万两入内帑'),result=r.results[0];if(mode==='free'){assert.equal(result.actual.amount,1000);assert.equal(result.clamped,false);assert.ok(r.state.ledger.some(e=>e.source.includes('补足')));}else assert.equal(result.actual?.amount||0,0);
  }
 });
 test('复合指令顺序创建12岁官员及新官职、任命并改属性，复生不冒用别人',()=>{

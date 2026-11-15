@@ -18,10 +18,11 @@ test('第一步 随心所欲赐死为真实结果，A1放行，后续在世名�
  const c=commitTurn(s,f,n);assert.ok(!roster(c).includes('张三'));assert.deepEqual(s,before);
  assert.deepEqual(commitTurn(c,f,n),c);assert.equal(c.history.at(-1).intentResults[0].type,'kill');
 });
-test('写实档千万两仍按余额截断，实际金额可叙述，原愿望金额不能冒充已拨',()=>{
+test('写实档千万两按政令标准价截断，实际金额可叙述，原愿望金额不能冒充已拨',()=>{
  const s=start();s.settings.freedom='real';s.emperor.talents.权谋=100;const f=forecast(s,'拨银一千万两修河'),r=f.state.intentResults.find(r=>r.type==='allocate');
  assert.equal(r.status,'success');assert.equal(r.clamped,true);assert.ok(r.actual.amount>0&&r.actual.amount<=s.nation.treasury);
- assert.equal(r.actual.destination,'修河');assert.equal(f.state.nation.treasury,0);
+ assert.equal(r.actual.destination,'修河');assert.equal(r.actual.amount,60);
+ assert.deepEqual(f.entries.filter(e=>e.path==='nation.treasury'&&e.source.startsWith('修河：')).map(e=>e.delta),[-60]);
  const n=validateTurn({chapter:{朝:'拨银'+r.actual.amount+'万两修河。',午:'',夜:''}},f);assert.equal(n.chapter.朝,'拨银'+r.actual.amount+'万两修河。');
  assert.equal(validateTurn({chapter:{朝:'拨银一千万两修河。',午:'',夜:''}},f).chapter.朝,'');
 });

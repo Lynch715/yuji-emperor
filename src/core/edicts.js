@@ -166,16 +166,31 @@ function projectExecution(p){
  const label=p.execRate>=1.2?'雷厉风行':p.execRate>=1?'照办':p.execRate>=0.6?'敷衍':'阳奉阴违';
  return {label,rate:p.execRate,official:p.office};
 }
+const FUNDING_SHORTFALL = "钱粮不足，按比例办理";
+function projectFunding(state, rule, funding) {
+  const account = funding.account ?? (rule.private ? "privy" : "treasury");
+  const grainPrice = rule.grain || 0;
+  const sandbox = fiatEnabled(state);
+  const silver = Math.max(0,Math.min(funding.silver ?? rule.cost, rule.cost,
+    sandbox ? Infinity : state.nation[account],
+    !sandbox && account === "treasury" ? funding.treasuryCap ?? Infinity : Infinity));
+  const grain = Math.max(0,Math.min(funding.grain ?? grainPrice, grainPrice, sandbox ? Infinity : state.nation.grain));
+  const ratio = Math.min(rule.cost ? silver / rule.cost : 1, grainPrice ? grain / grainPrice : 1);
+  return { account, silver, grain, ratio };
+}
+function scaleEdictEffects(rule, rate, ratio) {
+  return Object.fromEntries(Object.entries(rule.effects).map(([key, value]) => [key, value * rate * ratio]));
+}
+function payEdictFunding(state, paid, source, effects = {}) {
+  const costs = { [paid.account]: paid.silver, grain: paid.grain };
+  return applyPackage(ensureFiatFunds(state, costs),
+    { ...effects, [paid.account]: -paid.silver, grain: -paid.grain }, source);
+}
 export function issueEdict(state, action, die, funding = {}) {
   const type = action.edictType || "禁令",
-    rule = EDICTS[type]&&{...EDICTS[type],cost:edictCost(state,type)};
+    rule = Object.hasOwn(EDICTS,type)&&{...EDICTS[type],cost:edictCost(state,type)};
   if (!rule) throw new Error("无法识别此旨意，请选择模板");
-  if (rule.months) {
-    rule.cost = funding.silver ?? rule.cost;
-    rule.grain = funding.grain ?? rule.grain;
-  }
-  if(fiatEnabled(state))state=ensureFiatFunds(state,{[rule.private?'privy':'treasury']:rule.cost,grain:rule.grain||0});
-  if(type==='加开恩科')return openEnke(state,action.examiner);
+  if(type==='加开恩科')return openEnke(ensureFiatFunds(state,{treasury:rule.cost}),action.examiner);
   if(type==='格物')return configureResearch(state,action);
   if(type==='兴业')return buildIndustry(state,action);
   const blocked=edictBlock(state,type,action.province);if(blocked)throw new Error(blocked);
@@ -212,26 +227,35 @@ export function issueEdict(state, action, die, funding = {}) {
       note: "拨转 " + amount + " 万两"+(amount<requested?'（按余银及收款余量办理）':''),
     };
   }
-  const account = rule.private ? "privy" : "treasury";
+  const explicitFunding = funding.silver !== undefined || funding.grain !== undefined;
   const ongoing=state.projects.find(p=>!p.done&&p.edictType===type&&(p.province||null)===(action.province||null)&&(type!=='征兵'||p.armyTarget===armyTarget));
   if(ongoing){
-    if(action.followup!=='督办')return {state:clone(state),note:type+' · 重申原旨，仍由原班人马办理，未另支钱粮 · '+projectExecution(ongoing).label,execution:projectExecution(ongoing)};
-    if(ongoing.end<=state.turn+1&&ongoing.execRate>=1)return {state:clone(state),note:type+' · 即将办结，未再追加钱粮 · '+projectExecution(ongoing).label,execution:projectExecution(ongoing)};
-    if(state.nation[account]<rule.cost||state.nation.grain<(rule.grain||0))throw new Error('钱粮不足，无法追加督办');
-    const s=applyPackage(state,{[account]:-rule.cost,grain:-(rule.grain||0)},type+'：追加督办');
-    const p=s.projects.find(p=>p.id===ongoing.id);p.end=Math.max(s.turn+1,p.end-3);p.execRate=p.execRate<0.6?0.6:p.execRate<1?1:1.2;p.cost+=rule.cost;
-    p.effects=Object.fromEntries(Object.entries(rule.effects).map(([k,v])=>[k,v*p.execRate]));
+    const execution=projectExecution(ongoing);
+    const funded=ongoing.fundingRatio??1;
+    if(action.followup!=='督办')return {state:clone(state),note:type+' · 重申原旨，仍由原班人马办理，未另支钱粮 · '+execution.label,execution};
+    if(ongoing.end<=state.turn+1&&ongoing.execRate>=1&&funded===1)return {state:clone(state),note:type+' · 即将办结，未再追加钱粮 · '+execution.label,execution};
+    const paid=projectFunding(state,rule,funding);
+    if(!paid.ratio||(!explicitFunding&&paid.ratio<1))throw new Error('钱粮不足，无法追加督办');
+    const shortfall=paid.ratio<1?' · '+FUNDING_SHORTFALL:'';
+    const s=payEdictFunding(state,paid,type+'：追加督办'+shortfall);
+    const p=s.projects.find(p=>p.id===ongoing.id);
+    const nextRate=p.execRate<0.6?0.6:p.execRate<1?1:1.2;
+    const shortened=Math.floor(3*paid.ratio),improved=nextRate>p.execRate;
+    p.end=Math.max(s.turn+1,p.end-shortened);
+    p.execRate=paid.ratio===1?nextRate:p.execRate+(nextRate-p.execRate)*paid.ratio;
+    p.cost+=paid.silver;
+    p.fundingRatio=Math.min(1,funded+paid.ratio);
+    p.effects=scaleEdictEffects(rule,p.execRate,p.fundingRatio);
     s.stats.edicts++;
-    return {state:s,note:type+' · 追加督办，期限缩短、执行改善；仍只办结一次 · '+projectExecution(p).label,execution:projectExecution(p)};
+    const note=type+' · 追加督办'+(shortened?'，期限缩短':'')+(improved?'，执行改善':'')+'；仍只办结一次 · '+projectExecution(p).label+shortfall;
+    return {state:s,note,execution:projectExecution(p),paid};
   }
-  if (
-    !action.intent && (state.nation[account] < rule.cost ||
-    state.nation.grain < (rule.grain || 0))
-  )
+  if (!action.intent && !explicitFunding && projectFunding(state,rule,funding).ratio<1)
     throw new Error("钱粮不足，无法下发此旨");
-  let current = state,
-    exec = action.intent && freedomRules(state).k===1 ? {...execution(state,type,die),tier:1,label:"照办",rate:1,delay:1} : execution(state, type, die),
-    forced = false;
+  let current = state, exec = execution(state, type, die), forced = false;
+  // A direct allocation has already passed the intent's action check.
+  if(action.allocation||(action.intent&&freedomRules(state).k===1))
+    exec={...exec,tier:1,label:"照办",rate:1,delay:1};
   if(freedomRules(state).k&&exec.tier===4){const judged=adjudicate(current,{success:false});current=judged.state;if(judged.verdict.success)exec={...exec,tier:1,label:'照办',rate:1,delay:1,...(judged.verdict.partial?{partial:true,cost:judged.verdict.cost}:{})};}
   if (exec.tier === 4 && action.force) {
     const r = roll(current);
@@ -250,15 +274,12 @@ export function issueEdict(state, action, die, funding = {}) {
         ],
       );
   }
-  let s = applyPackage(
-    current,
-    {
-      [account]: exec.tier===4?0:-Math.min(rule.cost,current.nation[account]),
-      grain: exec.tier===4?0:-Math.min(rule.grain||0,current.nation.grain),
-      prestige: exec.tier === 0 ? 2 : exec.tier === 4 ? -3 : 0,
-    },
-    type + (exec.tier===4?"：内阁封还，钱粮未付 / ":"：发付钱粮 / ") + exec.label,
-  );
+  const paid = projectFunding(current,rule,funding);
+  if(exec.rate>0&&!paid.ratio)return {state:current,note:type+" · 钱粮不足，未能办理",execution:exec,unfunded:true};
+  const shortfall=exec.rate>0&&paid.ratio<1?" · "+FUNDING_SHORTFALL:"";
+  const s = exec.tier===4
+    ? applyPackage(current,{prestige:-3},type+"：内阁封还，钱粮未付 / "+exec.label)
+    : payEdictFunding(current,paid,type+"：发付钱粮 / "+exec.label+shortfall,{prestige:exec.tier===0?2*paid.ratio:0});
   if (exec.rate > 0)
     s.projects.push({
       id: "pr-" + s.turn + "-" + s.projects.length,
@@ -267,22 +288,21 @@ export function issueEdict(state, action, die, funding = {}) {
       end: s.turn + Math.max(3, Math.ceil(rule.months * exec.delay) * 3),
       progress: 0,
       execRate: exec.rate,
-      cost: Math.min(rule.cost,current.nation[account]),
+      fundingRatio: paid.ratio,
+      cost: paid.silver,
       office: rule.office,
-      effects: Object.fromEntries(
-        Object.entries(rule.effects).map(([k, v]) => [k, v * exec.rate]),
-      ),
+      effects: scaleEdictEffects(rule,exec.rate,paid.ratio),
       province: action.province || null,
       ...(type==='征兵'?{armyTarget}:{}),
       done: false,
     });
-  if(exec.tier===3)s.facts.push({subject:exec.official,key:"截留侵吞",value:type+"截留侵吞 "+(rule.cost*0.7).toFixed(1)+" 万两（已含于发付钱粮，不重复扣款）",turn:s.turn});
+  if(exec.tier===3)s.facts.push({subject:exec.official,key:"截留侵吞",value:type+"截留侵吞 "+(paid.silver*0.7).toFixed(1)+" 万两（已含于发付钱粮，不重复扣款）",turn:s.turn});
   s.stats.edicts++;
   return {
     state: s,
     note:
       type +
-      (exec.tier===4?"（内阁封还，钱粮退回）":exec.tier===3?"（截留侵吞 "+(rule.cost*0.7).toFixed(1)+" 万两）":"") +
+      (exec.tier===4?"（内阁封还，钱粮退回）":exec.tier===3?"（截留侵吞 "+(paid.silver*0.7).toFixed(1)+" 万两）":"") +
       (forced ? "（强推复核）" : "") +
       " · " +
       exec.label +
@@ -290,8 +310,9 @@ export function issueEdict(state, action, die, funding = {}) {
       exec.score +
       "）：" +
       exec.official +
-      " 主办",
+      " 主办" + shortfall,
     execution: exec,
+    ...(exec.rate>0?{paid}:{}),
   };
 }
 export function advanceProjects(state) {
@@ -305,10 +326,11 @@ export function advanceProjects(state) {
       project.done = true;
       if(project.edictType==='兴业'){s=completeIndustry(s,project);project.progress=100;continue;}
       finishInstant(s,project.edictType,project.province);
+      const ratio=project.fundingRatio??1;
       if(["减赋","加税"].includes(project.edictType)) {
         for(const p of s.nation.provinces.filter(p=>!project.province||project.province===p.id)) {
-          p.taxRelief=project.edictType==="减赋"?{factor:0.8,untilQuarter:quarterIndex(s.turn)+4}:null;
-          p.taxSurge=project.edictType==="加税"?{factor:1.2,untilQuarter:quarterIndex(s.turn)+4}:null;
+          p.taxRelief=project.edictType==="减赋"?{factor:1-0.2*ratio,untilQuarter:quarterIndex(s.turn)+4}:null;
+          p.taxSurge=project.edictType==="加税"?{factor:1+0.2*ratio,untilQuarter:quarterIndex(s.turn)+4}:null;
         }
       }
       project.progress = 100;
@@ -320,18 +342,19 @@ export function advanceProjects(state) {
           {
             province: {
               id: project.province,
-              disaster: -35 * project.execRate,
-              morale: 8 * project.execRate,
+              disaster: -35 * project.execRate * ratio,
+              morale: 8 * project.execRate * ratio,
             },
           },
           "地方赈济到位",
         );
       if (project.edictType === "征兵"){
-        if(project.armyTarget==='capital')s.nation.army.capital.troops=Math.min(45000,s.nation.army.capital.troops+3000);
+        const troops=Math.floor(3000*ratio);
+        if(project.armyTarget==='capital')s.nation.army.capital.troops=Math.min(45000,s.nation.army.capital.troops+troops);
         s.nation.army.frontiers = s.nation.army.frontiers.map((f) => project.armyTarget==='all-frontiers'||project.armyTarget===f.dir?({
           ...f,
-          troops: Math.min(1000000, f.troops + 3000),
-          readiness: clamp(f.readiness + 5),
+          troops: Math.min(1000000, f.troops + troops),
+          readiness: clamp(f.readiness + 5*ratio),
         }):f);
       }
     }

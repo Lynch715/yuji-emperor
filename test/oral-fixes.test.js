@@ -2,11 +2,15 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, migrate, VERSION } from '../src/core/state.js';
 import { commitTurn, forecastTurn, initialTurn } from '../src/core/turn.js';
+import { advanceProjects, EDICTS, issueEdict } from '../src/core/edicts.js';
+import { applyFiatOperations } from '../src/core/fiat.js';
+import { resolveIntents } from '../src/core/intents.js';
 import { intentInputs, intentMessages, localIntents, validateIntents } from '../src/llm/intents.js';
 import { turnMessages } from '../src/llm/prompts.js';
 import { mockNarrative } from '../src/llm/validate.js';
 import { oralScheduleEntry } from '../src/ui/oral.js';
 import { requestScheduleIntents, requestTalkIntents } from '../src/ui/intent-request.js';
+import { ledgerHTML } from '../src/ui/render.js';
 
 const fresh = (freedom, demo = true) => initialTurn(createState({seed:'oral-audit-2026-11-15',freedom,demo}));
 const config = {key:'fixture',base:'https://fixture.test',model:'fixture',provider:'custom'};
@@ -55,13 +59,42 @@ for (const freedom of ['real','mid','free']) {
     assert.deepEqual(withText.state,plain.state);
   });
 
-  test(`${freedom} 拨银十万两只记一次，赈灾落在口谕指定的州`, () => {
+  test(`${freedom} 两条口谕路径都按实付和标准价结算项目效果`, () => {
     const s = fresh(freedom);
-    const schedule = scheduleOrder(s,'拨银十万两赈济直隶');
-    const f = forecastOrder(s,schedule);
-    assert.deepEqual(f.state.projects.map(p => [p.edictType,p.province,p.cost]),[['赈灾','z0',10]]);
-    assert.deepEqual(f.entries.filter(e => e.path==='nation.treasury').map(e => e.delta),[-10]);
-    assert.equal(f.state.nation.grain,s.nation.grain-20);
+    s.emperor.talents.权谋 = 100;
+    s.nation.provinces[0].disaster = 80;
+    const cases = [
+      {text:'拨银一两修河',type:'修河',silver:0.0001,grain:0,province:null},
+      {text:'拨银十万两赈济直隶',type:'赈灾',silver:10,grain:20,province:'z0'},
+      {text:'赈济直隶',type:'赈灾',silver:30,grain:20,province:'z0'},
+    ];
+    for (const direct of [false,true]) {
+      for (const {text,type,silver,grain,province} of cases) {
+        const schedule = scheduleOrder(s,text);
+        if (direct) schedule.朝={...schedule.朝,edictType:'禁令',placeholder:true};
+        const f = forecastOrder(s,schedule);
+        const [project] = f.state.projects;
+        const ratio = silver/EDICTS[type].cost;
+        assert.deepEqual(f.state.projects.map(p => [p.edictType,p.province,p.cost]),[[type,province,silver]],text);
+        assert.equal(f.state.nation.treasury,s.nation.treasury-silver,text);
+        assert.equal(f.state.nation.grain,s.nation.grain-grain,text);
+        assert.equal(project.fundingRatio,ratio,text);
+        assert.deepEqual(project.effects,Object.fromEntries(
+          Object.entries(EDICTS[type].effects).map(([key,base])=>[key,base*project.execRate*ratio]),
+        ),text);
+        const payments = f.entries.filter(e => e.path==='nation.treasury');
+        assert.deepEqual(payments.map(e=>e.delta),[-silver],text);
+        assert.equal(payments[0].source.includes('钱粮不足，按比例办理'),ratio<1,text);
+        assert.equal(f.slotResults.朝.join(' ').includes('钱粮不足，按比例办理'),ratio<1,text);
+        if (type==='赈灾') {
+          const disaster = f.state.nation.provinces[0].disaster;
+          const finished = advanceProjects({...f.state,turn:project.end});
+          assert.equal(finished.nation.provinces[0].disaster,disaster-35*project.execRate*ratio,text);
+        } else {
+          assert.match(ledgerHTML(payments),/-0\.0001/,text);
+        }
+      }
+    }
   });
 
   test(`${freedom} 口谕的赐死按档位裁决，未识别事项只进入叙事`, () => {
@@ -84,6 +117,56 @@ for (const freedom of ['real','mid','free']) {
     assert.equal(migrate(commitTurn(s,unsupported,mockNarrative(unsupported))).history.at(-1).intentResults[0].status,r.status);
   });
 }
+
+test('银与粮分别封顶，短缺按较低出资比例，零额度既不开项也不扣粮', () => {
+  const s = fresh('real');
+  s.emperor.talents.权谋=100;
+  const relief={edictType:'赈灾',province:'z0',allocation:true};
+  const capped=issueEdict(s,relief,11,{silver:999,grain:5});
+  assert.equal(capped.state.nation.treasury,s.nation.treasury-30);
+  assert.equal(capped.state.nation.grain,s.nation.grain-5);
+  assert.equal(capped.state.projects[0].fundingRatio,0.25);
+  const ample={...fresh('free'),nation:{...s.nation,treasury:0,grain:0}};
+  const surplus=issueEdict(ample,relief,11,{silver:999,grain:999});
+  assert.equal(surplus.state.projects[0].fundingRatio,1);
+  assert.equal(surplus.state.ledger.find(e=>e.path==='nation.treasury').after,30);
+  assert.equal(surplus.state.ledger.find(e=>e.path==='nation.grain').after,20);
+  const inputs=[{id:'朝',slot:'朝',text:'拨银十万两赈济直隶'}];
+  const actions=localIntents(s,inputs);
+  const limited=resolveIntents(s,actions,{transferCap:5});
+  assert.equal(limited.results[0].actual.treasurySpent,5);
+  assert.equal(limited.state.projects[0].fundingRatio,5/30);
+  const blocked=resolveIntents(s,actions,{transferCap:0});
+  assert.equal(blocked.results[0].status,'failed');
+  assert.equal(blocked.state.projects.length,0);
+  assert.equal(blocked.state.nation.grain,s.nation.grain);
+});
+
+test('督办和言出法随竣工继续按累计出资比例兑现', () => {
+  const s = fresh('free');
+  const action = {edictType:'赈灾',province:'z0'};
+  s.nation.provinces[0].disaster = 80;
+  const issued = issueEdict(s,action,11,{silver:10});
+  const supervised = issueEdict(issued.state,{...action,followup:'督办'},11,{silver:5});
+  const project = supervised.state.projects[0];
+  assert.equal(project.fundingRatio,0.5);
+  assert.equal(project.effects.virtue,3*project.execRate*0.5);
+  const finished = applyFiatOperations(supervised.state,[{op:'complete',target:'赈灾'}],'funding').state;
+  assert.equal(finished.nation.provinces[0].disaster,80-35*project.execRate*0.5);
+});
+
+test('v27 在途项目保持旧效果，旧待续预演原样迁移', () => {
+  const old = forecastOrder(fresh('free'),{朝:{kind:'下旨',edictType:'修河'}}).state;
+  old.v = 27;
+  delete old.projects[0].fundingRatio;
+  const pending = forecastTurn(old);
+  old.pending={forecast:pending};
+  const migrated=migrate(old);
+  assert.equal(migrated.v,28);
+  assert.equal(migrated.projects[0].fundingRatio,1);
+  assert.deepEqual(migrated.projects[0].effects,old.projects[0].effects);
+  assert.deepEqual(migrated.pending.forecast,pending);
+});
 
 test('模型返回重复的建项和拨款时只结算一次，独立的任免与拨转照常执行', () => {
   const s = fresh('free');

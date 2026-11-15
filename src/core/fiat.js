@@ -148,14 +148,15 @@ function runOperation(s,o,id,changes,facts){
    // completion must install the real industry/tax/relief/recruitment result.
    if(p.edictType==='兴业')completeIndustry(s,p);
    else{
+    const ratio=p.fundingRatio??1;
     const effects=p.province&&Number.isFinite(p.effects?.morale)?{...p.effects,morale:undefined,province:{id:p.province,morale:p.effects.morale}}:p.effects||{};
     Object.assign(s,applyPackage(s,effects,'言出法随：项目竣工'));
     for(const z of s.nation.provinces.filter(z=>!p.province||z.id===p.province)){
-     if(p.edictType==='减赋')z.taxRelief={factor:0.8,untilQuarter:quarterIndex(s.turn)+4};
-     if(p.edictType==='加税')z.taxSurge={factor:1.2,untilQuarter:quarterIndex(s.turn)+4};
-     if(p.edictType==='赈灾'){z.disaster=Math.max(0,z.disaster-35*(p.execRate||1));z.morale=Math.min(WORLD_MAX,z.morale+8*(p.execRate||1));}
+     if(p.edictType==='减赋')z.taxRelief={factor:1-0.2*ratio,untilQuarter:quarterIndex(s.turn)+4};
+     if(p.edictType==='加税')z.taxSurge={factor:1+0.2*ratio,untilQuarter:quarterIndex(s.turn)+4};
+     if(p.edictType==='赈灾'){z.disaster=Math.max(0,z.disaster-35*(p.execRate||1)*ratio);z.morale=Math.min(WORLD_MAX,z.morale+8*(p.execRate||1)*ratio);}
     }
-    if(p.edictType==='征兵')for(const b of [s.nation.army.capital,...s.nation.army.frontiers])if(p.armyTarget==='all-frontiers'?b!==s.nation.army.capital:p.armyTarget==='capital'?b===s.nation.army.capital:b.dir===p.armyTarget){b.troops=Math.min(WORLD_MAX,b.troops+3000);b.readiness=Math.min(WORLD_MAX,b.readiness+5);}
+    if(p.edictType==='征兵')for(const b of [s.nation.army.capital,...s.nation.army.frontiers])if(p.armyTarget==='all-frontiers'?b!==s.nation.army.capital:p.armyTarget==='capital'?b===s.nation.army.capital:b.dir===p.armyTarget){b.troops=Math.min(WORLD_MAX,b.troops+Math.floor(3000*ratio));b.readiness=Math.min(WORLD_MAX,b.readiness+5*ratio);}
    }
    changes.push({target:p.name||p.edictType,completed:true});
   }return;

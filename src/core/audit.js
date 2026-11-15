@@ -32,6 +32,7 @@ export function numericSnapshot(s) {
         if (
           [
             "id",
+            "fundingRatio",
             "aptitude",
             "greed",
             "secret",
@@ -89,6 +90,7 @@ export function auditChanges(
     "due",
     "conceived",
     "id",
+    "fundingRatio",
   ]);
   const visit = (old, current, path) => {
     if (old === current) return;

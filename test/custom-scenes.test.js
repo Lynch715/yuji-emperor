@@ -34,7 +34,8 @@ test('真实行动只裁决一次：选中人物的代词能解析，成功处�
 });
 test('超额拨款按实际余额截断，故事只允许真实扣款数字',()=>{
  const s=fresh('real');s.emperor.talents.权谋=100;s.nation.treasury=8;const a=action('拨银一千万两修河',['o1']),schedule={午:a},f=forecastTurn(s,schedule,localIntents(s,intentInputs(schedule)));
- const r=f.scenes[0].results[0];assert.equal(r.actual.amount,f.entries.filter(e=>e.source==='口谕调拨'&&e.path==='nation.treasury').reduce((n,e)=>n-e.delta,0));assert.ok(r.actual.amount<=8);
+ const r=f.scenes[0].results[0];assert.equal(r.actual.amount,f.entries.filter(e=>e.source.startsWith('修河：发付钱粮')&&e.path==='nation.treasury').reduce((n,e)=>n-e.delta,0));assert.ok(r.actual.amount<=8);
+ assert.equal(f.state.projects[0].fundingRatio,r.actual.amount/60);
  assert.equal(validateTurn({chapter:{朝:'',夜:'',午:'户部已拨一千万两。'}},f).chapter.午,'');
 });
 test('三档叙事目标沿用概率公式及一般档第二次部分成功判定',()=>{

@@ -83,9 +83,9 @@ export function resolveEdictCard(state, action, intents, slot, die) {
   for(const key of ['province','techId','lead','industry','name','line'])
    planned[key]||=a[key];
   if(type==='格物')planned.funding??=a.funding;
-  if(a.type!=='allocate'||!rule.months||!(a.amount>0))continue;
-  const account=a.resource==='grain'?'grain':rule.private?'privy':'treasury';
-  funding[account==='grain'?'grain':'silver']??=Math.min(a.amount,fiatEnabled(state)?WORLD_MAX:state.nation[account]);
+  if(a.type!=='allocate'||!rule.months)continue;
+  if(a.resource==='grain')funding.grain??=a.amount;
+  else funding.silver??=a.amount;
  }
  const issued=issueEdict(state,planned,die,funding);
  const independent=intents.filter(a=>!merged.includes(a));
@@ -143,6 +143,23 @@ export function resolveIntents(state,actions,{slot='朝',source='decree',transfe
     }else if(a.type==='allocate'&&a.destination==='tech'){
      const result=configureResearch(s,{techId:a.techId,name:a.name,line:a.line,funding:a.funding??a.amount,lead:a.lead});s=result.state;
      r.actual={destination:'tech',techId:s.tech.current?.id,funding:s.tech.funding};r.summary=result.note;facts.push({kind:'research_plan',...r.actual});
+    }else if(a.type==='allocate'&&a.resource!=='troops'&&EDICTS[a.destination]?.months){
+     const funding=a.resource==='grain'?{grain:a.amount}:{silver:a.amount,account:a.source};
+     const result=issueEdict(s,{edictType:a.destination,province:a.province,allocation:true},die.value,{...funding,treasuryCap:transferLeft});
+     s=result.state;
+     const {silver=0,grain=0,account}=result.paid||{};
+     const amount=a.resource==='grain'?grain:silver;
+     const treasurySpent=account==='treasury'?silver:0;
+     transferLeft-=treasurySpent;
+     r.clamped=amount!==a.amount;
+     if(result.unfunded)r.status='failed';
+     r.actual={resource:a.resource,source:a.source,destination:a.destination,amount,treasurySpent};
+     r.summary=result.note;
+     if(result.paid){
+      const payment=a.resource==='grain'?'调粮 '+amount+' 万石':'拨银 '+amount+' 万两';
+      r.summary+=' · '+payment+(r.clamped?'（按政令标准与可用钱粮办理）':'');
+      facts.push({kind:'allocation',...r.actual});
+     }
     }else if(a.type==='allocate'){
      if(fiatEnabled(s)&&a.source!==a.destination&&['treasury','privy','grain'].includes(a.source))s=ensureFiatFunds(s,{[a.source]:a.resource==='troops'?a.amount*EDICTS.征兵.cost/3000:a.amount});
      if(fiatEnabled(s))transferLeft=Infinity;
@@ -160,7 +177,6 @@ export function resolveIntents(state,actions,{slot='朝',source='decree',transfe
      }else{
       const effects={[a.source]:-amount};if(['treasury','privy','grain'].includes(a.destination)&&a.destination!==a.source)effects[a.destination]=amount;
       s=applyPackage(s,effects,'口谕调拨');
-      if(amount>0&&EDICTS[a.destination]?.months)s.projects.push({id:'intent-project-'+id,edictType:a.destination,start:s.turn,end:s.turn+EDICTS[a.destination].months*3,progress:0,execRate:1,cost:amount,office:EDICTS[a.destination].office,effects:{...EDICTS[a.destination].effects},province:a.province||null,done:false});
      }
      r.actual={resource:a.resource,source:a.source,destination:a.destination,amount,treasurySpent};
      r.summary=(a.resource==='troops'?(a.destination==='capital'?'京营':a.destination+'境')+'征兵 '+Math.floor(amount)+' 人':(a.source==='grain'?'调粮 '+amount+' 万石':'拨银 '+amount+' 万两'))+(r.clamped?'（已按可用数量截断）':'');
@@ -181,7 +197,7 @@ export function resolveIntents(state,actions,{slot='朝',source='decree',transfe
      r.actual={countryId:country.id,operation:a.operation};
     }else if(a.type==='decree'){
      const result=issueEdict(s,{edictType:a.edictType,province:a.province,techId:a.techId,funding:a.funding,lead:a.lead,industry:a.industry,name:a.name,line:a.line,intent:true},die.value);s=result.state;r.summary=result.note;if(result.check?.partial||result.partial||result.execution?.partial){r.status='partial';r.cost=result.check?.cost||result.cost||result.execution?.cost;}r.actual={edictType:a.edictType};
-     const label=result.note.match(/雷厉风行|照办|敷衍|阳奉阴违|封驳/)?.[0];if(label)facts.push({kind:'execution',slot:r.slot,topic:a.edictType,label});if(label==='封驳')r.status='failed';
+     const label=result.note.match(/雷厉风行|照办|敷衍|阳奉阴违|封驳/)?.[0];if(label)facts.push({kind:'execution',slot:r.slot,topic:a.edictType,label});if(label==='封驳'||result.unfunded)r.status='failed';
     }
    }catch(error){r.status='failed';r.summary='口谕未能落实：'+error.message;}
   }

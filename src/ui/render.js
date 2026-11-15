@@ -214,7 +214,8 @@ export function ledgerHTML(entries) {
             : "negative") +
           '">' +
           (e.delta > 0 ? "+" : "") +
-          num(e.delta) +
+          (/^nation\.(treasury|privy|grain)$/.test(e.path) && Math.abs(e.delta)<0.1
+            ? e.delta.toLocaleString("zh-CN",{maximumFractionDigits:4}) : num(e.delta)) +
           "</span></li>",
       )
       .join("") +

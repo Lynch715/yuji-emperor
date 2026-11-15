@@ -12,7 +12,7 @@ import { uniqueName } from "./names.js";
 import { chooseRegent, legacyDowagerFaction } from "./regency-info.js";
 import {factionPowers} from './politics.js';
 import {defaultScenarioEvents,defaultFiat,validateSandbox,WORLD_MAX} from './sandbox-schema.js';
-export const VERSION = 27;
+export const VERSION = 28;
 export const TALENTS = ["政略", "权谋", "武略", "文采", "魅力"];
 export const SLOTS = ["朝", "午", "夜"];
 export const POST_NAMES = [
@@ -544,7 +544,11 @@ export function migrate(input) {
   for(const f of s.foreign)f.trade ??= null;
   for(const f of s.court.factions)f.powerModifier ??= 0;
   for(const o of s.court.officials)o.banquetTurn ??= -1000000;
-  for(const p of s.projects)if(p.edictType==='征兵')p.armyTarget ??= 'all-frontiers';
+  for(const p of s.projects){
+    if(p.edictType==='征兵')p.armyTarget ??= 'all-frontiers';
+    // Funding used to be implicit. Keep the effects of already issued projects.
+    if(input.v<28)p.fundingRatio??=1;
+  }
   for (const p of s.nation.provinces) {
     p.rebellion ??= false;
     p.rebellionQuarter ??= -1;
@@ -693,6 +697,7 @@ export function assertState(s) {
     for(const f of s.foreign)if(f.trade!==null&&(!f.trade||!Number.isSafeInteger(f.trade.start)||!Number.isSafeInteger(f.trade.until)||f.trade.start<0||f.trade.until!==f.trade.start+36||!Number.isFinite(f.trade.income)||f.trade.income<0||f.trade.income>6))throw new Error('互市条款无效');
     for(const p of s.projects)if(p.edictType==='征兵'&&!['capital','all-frontiers',...s.nation.army.frontiers.map(b=>b.dir)].includes(p.armyTarget))throw new Error('征兵目标无效');
   }
+  if(s.v>=28)for(const p of s.projects)if(p.fundingRatio!==undefined)range(p.fundingRatio,0,1);
   if(s.v>=8){
     if(!Array.isArray(s.volumeIndex))throw new Error('分卷目录损坏');
     for(const ref of s.volumeIndex)if(!ref||typeof ref.key!=='string'||!Number.isSafeInteger(ref.from)||!Number.isSafeInteger(ref.to)||ref.from<0||ref.to<ref.from||typeof ref.checksum!=='string'||!/^[0-9a-f]{8}$/.test(ref.checksum))throw new Error('分卷目录损坏');

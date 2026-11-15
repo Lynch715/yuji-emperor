@@ -16,14 +16,17 @@ export function applyEffects(state, effects = {}, source = "引擎结算") {
     if (typeof delta !== "number" || !Number.isFinite(delta)) return;
     const old = obj[key];
     obj[key] = clamp(old + delta, min, max);
-    if (obj[key] !== old)
+    if (obj[key] !== old) {
+      const change = obj[key] - old;
+      const precision = Math.abs(change)<0.01&&obj===s.nation&&['treasury','privy','grain'].includes(key)?10000:100;
       entries.push({
         path,
         before: old,
         after: obj[key],
-        delta: Math.round((obj[key] - old) * 100) / 100 || 0,
+        delta: Math.round(change * precision) / precision || 0,
         source,
       });
+    }
   };
   for (const [f,debt] of [['treasury','arrears'],['privy','privyArrears'],['grain','grainArrears']]) {
     const delta=effects[f];

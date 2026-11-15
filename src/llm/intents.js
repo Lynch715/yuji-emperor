@@ -99,8 +99,8 @@ export function localIntents(state,inputs){
 
    const number=line.match(new RegExp('('+NUMBER_SOURCE+')\\s*(两|石|人)'));
    const amount=number?parseNumber(number[1])/(number[2]==='人'?1:10000):0;
-   const allocation=amount>0&&/拨|调|征兵|募兵/.test(line);
    const project=type&&EDICTS[type].months&&(!EDICTS[type].private||/内帑/.test(line))?type:null;
+   const allocation=number&&Number.isFinite(amount)&&(amount>0||project)&&/拨|调|征兵|募兵/.test(line);
    if(allocation){
     const resource=number[2]==='石'?'grain':number[2]==='人'?'troops':'treasury';
     const destination=resource==='troops'?'capital':project||(/内帑/.test(line)?'privy':post?.id||'政务');
