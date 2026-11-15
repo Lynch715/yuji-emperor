@@ -70,7 +70,8 @@ test('D1 新御前议题覆盖国势与制度，50年标题至少二十五种且
 import {mockNarrative} from '../src/llm/validate.js';
 import {forecastTurn} from '../src/core/turn.js';
 test('D2 试读随回合季节场景与结算组句，固定回合可重试且不编数字硬结果',()=>{
- const f=forecastTurn(start());const before=JSON.stringify(f),seen=new Set();
+ const s=start();s.settings.prose='court';
+ const f=forecastTurn(s);const before=JSON.stringify(f),seen=new Set();
  for(let i=0;i<80;i++){
   const fixture={...f,turnId:'mock:'+i,schedule:{朝:{kind:'上朝'},午:{kind:'外交'},夜:{kind:'后宫'}}};
   const n=mockNarrative(fixture);assert.deepEqual(mockNarrative(fixture),n);seen.add(JSON.stringify(n.chapter));

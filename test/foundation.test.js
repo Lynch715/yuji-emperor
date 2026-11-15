@@ -16,8 +16,8 @@ function adapters() {
   return {
     p,
     b,
-    primary: { get: async (k) => p.get(k), put: async (k, v) => p.set(k, v) },
-    backup: { getItem: (k) => b.get(k), setItem: (k, v) => b.set(k, v) },
+    primary: { get: async (k) => p.get(k), put: async (k, v) => p.set(k, v), remove: async k => p.delete(k) },
+    backup: { getItem: (k) => b.get(k), setItem: (k, v) => b.set(k, v), removeItem: k => b.delete(k) },
   };
 }
 const config = {
@@ -184,6 +184,33 @@ test("three slots, refresh, checksums and export/import", async () => {
   assert.equal((await s.load(3)).state.turn, 10);
   await assert.rejects(() => s.importJSON(1, raw), /空白/);
   assert.throws(() => unpack(raw.replace("fixture", "ficture")));
+});
+test("occupied slots can be explicitly overwritten by import and deleted from both copies", async () => {
+  const a = adapters(), store = createSaveStore(a);
+  await store.save(2, state);
+  const replacement = { ...state, runId: "replacement", turn: 2 };
+  await assert.rejects(() => store.importJSON(2, "broken", { overwrite: true }));
+  assert.equal((await store.load(2)).state.runId, state.runId);
+  await store.importJSON(2, store.exportJSON(replacement), { overwrite: true });
+  assert.deepEqual((await createSaveStore(a).load(2)).state, replacement);
+  await store.remove(2);
+  assert.equal(a.p.has(2), false);
+  assert.equal(a.b.has("yuji:slot:2"), false);
+  assert.equal((await createSaveStore(a).load(2)).state, null);
+  await store.save(2, state);
+  assert.deepEqual((await store.load(2)).state, state);
+});
+test("failed or stale deletion preserves the copies of the existing slot", async () => {
+  const a = adapters(), current = createSaveStore(a), stale = createSaveStore(a);
+  await current.save(1, state);
+  await stale.load(1);
+  await current.save(1, { ...state, turn: 1 });
+  await assert.rejects(() => stale.remove(1), /其他页面/);
+  const backup = a.b.get("yuji:slot:1");
+  a.primary.remove = async () => { throw new Error("primary unavailable"); };
+  await assert.rejects(() => current.remove(1), /unavailable/);
+  assert.equal(a.b.get("yuji:slot:1"), backup);
+  assert.equal((await current.load(1)).state.turn, 1);
 });
 test("corrupt primary preserves both original copies and locks writes", async () => {
   const a = adapters(),

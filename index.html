@@ -1247,6 +1247,10 @@ align-items:baseline;
 text-align:right;
 font-variant-numeric:tabular-nums;
 }
+#save-slots{
+display:grid;
+gap:var(--s4);
+}
 .card > button{
 margin:var(--s1) var(--s1) var(--s0) var(--s0);
 }
@@ -2182,13 +2186,14 @@ color:var(--text-muted);
 .review-footer{
 width:var(--review-width);
 align-self:flex-end;
-display:grid;
-grid-template-columns:1fr 2fr;
+display:flex;
+flex-wrap:wrap;
 gap:var(--s4);
 flex:none;
 }
 .review-footer button{
-height:var(--primary-height);
+flex:1 1 auto;
+min-height:var(--primary-height);
 }
 .review-help{
 font-size:var(--font-note);
@@ -2973,17 +2978,6 @@ margin:var(--s2) var(--s0);
 font-size:var(--font-note);
 color:var(--text-muted);
 }
-.review-footer:has([data-review-drafts]){
-grid-template-columns:1fr 1fr 2fr;
-}
-@media (max-width: 420px){
-.review-footer:has([data-review-drafts]){
-grid-template-columns:1fr 1fr;
-}
-.review-footer:has([data-review-drafts]) #review-next{
-grid-column:1 / -1;
-}
-}
 .repeat-trigger{
 background:var(--clear);
 padding:var(--s2);
@@ -3125,7 +3119,7 @@ const { memorialEntryKind, actionAvailability, repeatSchedule, delegateSchedule,
 const { actionDialog } = __load("src/ui/actions.js");
 const { palacePanel } = __load("src/ui/panels.js");
 const { createSaveStore, createIDB } = __load("src/store/save.js");
-const { migrate, clone, reignId } = __load("src/core/state.js");
+const { DEFAULT_PROSE, migrate, clone, reignId } = __load("src/core/state.js");
 const {
 forecastTurn,
 commitTurn,
@@ -3162,6 +3156,7 @@ primary: createIDB(globalThis.indexedDB),
 backup: {
 getItem: (k) => localStorage.getItem(k),
 setItem: (k, v) => localStorage.setItem(k, v),
+removeItem: (k) => localStorage.removeItem(k),
 },
 validate: migrate,
 });
@@ -3210,6 +3205,7 @@ if (state.ending) throw new Error("本局已经封卷");
 }
 async function persist() {
 scheduleSave.cancel();
+if (!state || readOnly) return false;
 const snapshot = clone(state);
 const currentSlot = slot;
 const work = saveQueue
@@ -3222,7 +3218,7 @@ saveStatus = r.warnings.length
 ? r.warnings.join("；") + "，请导出备份"
 : "已存入第 " +
 currentSlot +
-" 卷 · " +
+" 档 · " +
 new Date().toLocaleTimeString("zh-CN");
 if (r.warnings.length) toast(saveStatus);
 try {
@@ -3263,107 +3259,62 @@ try {
 localStorage.setItem("yuji:metrics", JSON.stringify(metrics));
 } catch {}
 }
-async function showSaves() {
+const SAVE_SLOTS = [1, 2, 3];
+function activateSave(target, loaded) {
+state = loaded.state;
+slot = target;
+readOnly = !!loaded.readOnly;
+saveStatus = (loaded.problems || []).join("；");
+lastSchedule = null;
+try { localStorage.setItem("yuji:active-slot", String(slot)); } catch {}
+}
+async function saveOperation(work) {
+if (busy) throw new Error("请等当前操作结束");
+busy = true;
+try {
 await scheduleSave.flush();
-const slots = [];
-for (let i = 1; i <= 3; i++) slots.push({ id: i, ...(await store.load(i)) });
-const archives = await store.listArchives();
-openDialog(
-"存档阁",
-'<p class="muted">三卷分别保存。导入旧档时，请选空卷。</p><div class="grid">' +
-slots
-.map(
-(v) =>
-'<div class="card"><h3>第 ' +
-v.id +
-" 卷" +
-(v.readOnly ? " · 保护" : "") +
-"</h3><p>" +
-esc(
-v.state
-? v.state.emperor.name +
-" · " +
-v.state.era.name +
-" " +
-v.state.era.year +
-"年 / " +
-v.state.turn +
-"旬"
-: "空卷",
-) +
-"</p>" +
-v.problems
-.map((p) => '<p class="negative">' + esc(gameText(p)) + "</p>")
-.join("") +
+await saveQueue.catch(() => {});
+return await work();
+} finally {
+busy = false;
+render();
+}
+}
+async function showSaves() {
+const slots = await saveOperation(() =>
+Promise.all(SAVE_SLOTS.map(async id => ({ id, ...await store.load(id) }))));
+const button = (name, id, label, extra = "") =>
+'<button data-' + name + '="' + id + '"' + extra + '>' + label + '</button>';
+openDialog("存档",
+'<div id="save-slots">' +
+slots.map(v => {
+const exists = v.state || v.raw.some(raw => raw != null);
+const detail = v.state
+? v.state.emperor.name + " · " + v.state.era.name + " " + v.state.era.year + "年 · 第 " + (v.state.turn + 1) + " 旬"
+: exists ? "存档无法读取" : "空档";
+return '<section class="card save-card" aria-label="第 ' + v.id + ' 档">' +
+'<h3>第 ' + v.id + ' 档' + (state && v.id === slot ? " · 当前" : "") + '</h3>' +
+'<p>' + esc(detail) + '</p>' +
+v.problems.map(problem => '<p class="negative">' + esc(gameText(problem)) + '</p>').join("") +
 '<div class="row">' +
-(v.state
-? '<button data-load="' +
-v.id +
-'">读此卷</button><button data-export-slot="' +
-v.id +
-'">导出存档</button>'
-: !v.readOnly
-? '<button data-import-slot="' +
-v.id +
-'">导入存档</button>' +
-(state
-? '<button data-copy-slot="' +
-v.id +
-'">将当前进度另存于此</button>'
-: "")
-: "") +
-(v.raw.some(Boolean)
-? '<button data-raw="' + v.id + '">导出原始副本</button>'
-: "") +
-"</div></div>",
-)
-.join("") +
-'</div><div class="dialog-actions">' +
-(state
-? '<button data-command="export-json">导出当前存档</button>'
-: "") +
-'<button data-command="new">另启新朝（优先空卷）</button></div>' +
-(archives.length
-? "<details><summary>封存旧卷 · " +
-archives.length +
-" 卷</summary>" +
-archives
-.map(
-(a) =>
-'<div class="card"><p>' +
-esc(a.name) +
-" · " +
-a.turn +
-" 旬 · 原第 " +
-a.slot +
-' 卷</p><button data-archive-export="' +
-esc(a.id) +
-'">导出旧卷</button><button data-archive-remove="'+esc(a.id)+'">移出已备份封存</button></div>',
-)
-.join("") +
-"</details>"
-: ""),
-);
+(v.state ? button("load", v.id, "读档") : "") +
+(exists ? button("export-slot", v.id, "导出") : "") +
+(!v.readOnly ? button("import-slot", v.id, "导入", exists ? ' data-occupied' : "") : "") +
+(state && !readOnly && !v.readOnly && slot !== v.id
+? button("copy-slot", v.id, exists ? "覆盖" : "保存", exists ? ' data-occupied' : "") : "") +
+(exists ? button("delete-slot", v.id, "删除") : "") +
+'</div></section>';
+}).join("") +
+'</div><div class="dialog-actions"><button data-command="new">新开一局</button></div>');
 }
 async function newGame() {
-await scheduleSave.flush();
-if (busy) return;
-const available = [],
-occupied = new Map(),
-reusable = [];
-for (let i = 1; i <= 3; i++) {
-const l = await store.load(i);
-if (!l.readOnly) {
-if (!l.state) available.push(i);
-else {
-occupied.set(i, l.state);
-reusable.push(i);
-}
-}
-}
-available.push(...reusable);
+const slots = await saveOperation(() =>
+Promise.all(SAVE_SLOTS.map(async id => ({ id, ...await store.load(id) }))));
+const writable = slots.filter(v => !v.readOnly);
+const occupied = new Set(writable.filter(v => v.state).map(v => v.id));
+const available = [...writable.filter(v => !v.state).map(v => v.id), ...occupied];
 if (!available.length) {
-toast("三卷暂时都无法保存，请先到存档阁导出备份。");
+toast("三个档位暂时都无法保存，请打开存档导出备份。");
 return;
 }
 openDialog(
@@ -3376,9 +3327,9 @@ SCENARIOS.map((sc) => '<option value="' + sc.id + '">' + esc(sc.title) + " · " 
 ['normal','easy','hard'].map(id=>'<option value="'+id+'">'+DIFFICULTIES[id].label+'</option>').join('')+
 '</select><p class="muted mode-hint" id="difficulty-hint">'+DIFFICULTIES.normal.note+'</p></div><div><label for="prose-style">文笔</label><select id="prose-style">' +
 Object.entries(STYLES)
-.map(([k, v]) => '<option value="' + k + '">' + v.label + "</option>")
+.map(([k, v]) => '<option value="' + k + '"' + (k === DEFAULT_PROSE ? ' selected' : '') + '>' + v.label + "</option>")
 .join("") +
-'</select></div>' + narrativeFields() + '<div><label for="new-slot">启用存档位</label><select id="new-slot">' +
+'</select></div>' + narrativeFields() + '<div><label for="new-slot">存档位</label><select id="new-slot">' +
 available
 .map(
 (n) =>
@@ -3386,14 +3337,14 @@ available
 n +
 '">第 ' +
 n +
-" 卷" +
-(occupied.has(n) ? "（先封存旧卷）" : "（空卷）") +
+" 档" +
+(occupied.has(n) ? "（覆盖原档）" : "（空档）") +
 "</option>",
 )
 .join("") +
 '</select></div></div><label class="check"><input id="demo-mode" type="checkbox" ' +
 (!config.key ? "checked" : "") +
-'>先试读一局（无需密钥）</label><p class="muted">试读无需密钥。已有卷位会先封存旧卷。</p><p id="new-result" class="result hidden" role="status" aria-live="polite" tabindex="-1"></p><div class="dialog-actions"><button type="button" data-command="settings">故事设置</button><button type="submit" class="primary">承天践祚</button></div></form>',
+'>先试读一局（无需密钥）</label><p class="muted">试读无需密钥。</p><p id="new-result" class="result hidden" role="status" aria-live="polite" tabindex="-1"></p><div class="dialog-actions"><button type="button" data-command="settings">故事设置</button><button type="submit" class="primary">承天践祚</button></div></form>',
 );
 const goalsHTML = ["宏愿", "宏愿", "心事", "心事"]
 .map(
@@ -3478,6 +3429,7 @@ demo: form.querySelector("#demo-mode").checked,
 seed: createGameSeed(),
 };
 const selected = Number(value("new-slot"));
+if (occupied.has(selected) && !confirm("用新局覆盖第 " + selected + " 档？")) return;
 const goals = [...form.querySelectorAll("[data-goal-select]")].map(el => el.value);
 request = scope.begin();
 busy = true;
@@ -3492,16 +3444,12 @@ onStage: (text) => { if (scope.current(request)) showResult(text); },
 if (!scope.current(request)) return;
 saving = true;
 close.disabled = true;
-showResult("正在保存新卷……");
-const work = saveQueue.catch(() => {}).then(() => occupied.has(selected)
-? store.archiveAndSave(selected, draft) : store.save(selected, draft));
+showResult("正在保存新局……");
+const work = saveQueue.catch(() => {}).then(() => store.save(selected, draft));
 saveQueue = work;
 const saved = await work;
-state = draft;
-slot = selected;
-readOnly = false;
-saveStatus = saved.warnings.length ? saved.warnings.join("；") + "，请导出备份" : "已存入第 " + selected + " 卷";
-try { localStorage.setItem("yuji:active-slot", String(selected)); } catch {}
+activateSave(selected, { state: draft, problems: saved.warnings });
+saveStatus = saved.warnings.length ? saveStatus + "，请导出备份" : "已存入第 " + selected + " 档";
 closeDialog();
 if (saved.warnings.length) toast(saveStatus);
 } catch (err) {
@@ -3538,18 +3486,34 @@ return select("prose-length", "篇幅", LENGTHS, current.length || "standard") +
 function lastScheduleFor(s) {
 return lastSchedule && s && lastSchedule.runId === s.runId && lastSchedule.turn === s.turn ? lastSchedule.schedule : null;
 }
-function arrange(which, action) {
+function setScheduleAction(which, action) {
 guard();
 const next = { ...state.schedule, [which]: action };
 validateSchedule(state, next);
 state = { ...state, schedule: next };
+}
+function arrange(which, action) {
+setScheduleAction(which, action);
 scheduleSave.schedule();
 render();
 toast("已安排" + which + "间" + action.kind);
 }
+async function arrangeReview(which, action) {
+setScheduleAction(which, action);
+preferred = which;
+busy = true;
+try {
+if (!(await persist())) throw new Error("御批尚未保存，请重试。");
+toast("已保存" + which + "间" + action.memorials.length + "份拟批");
+} finally {
+busy = false;
+render();
+}
+}
 function chooseAction(kind) {
 guard();
-actionDialog(state, kind, preferred, (sl, a) => arrange(sl, a), startTalk);
+const onSchedule = ["上朝", "批折"].includes(kind) ? arrangeReview : arrange;
+actionDialog(state, kind, preferred, onSchedule, startTalk);
 }
 async function advance(local = false) {
 if (!state || readOnly || busy || state.ending) return;
@@ -3965,7 +3929,7 @@ render();
 palacePanel(state, "史馆");
 return;
 }
-if (name === "export-json" && state){await scheduleSave.flush();return download("御极-第" + slot + "卷.json", store.exportJSON(state));}
+if (name === "export-json" && state){await scheduleSave.flush();return download("御极-第" + slot + "档.json", store.exportJSON(state));}
 if (name === "export-md") return exportMarkdown();
 if (name === "menu") return openDialog('御前菜单','<div class="grid"><button data-command="saves">存档</button><button data-command="settings">设置</button><button data-command="self">天子心事</button><button data-command="oral">拟口谕</button></div>','drawer');
 if (name === "stats") return openNationOverview(state);
@@ -4028,7 +3992,7 @@ else if (b.dataset.slot) {
 guard();
 preferred = b.dataset.slot;
 if (['上朝','批折'].includes(state.schedule[preferred]?.kind)) {
-memorialDialog(state,state.schedule[preferred].kind,preferred,(which,a)=>arrange(which,a));return;
+memorialDialog(state,state.schedule[preferred].kind,preferred,arrangeReview);return;
 }
 if(state.schedule[preferred]?.kind==='自拟情节'){chooseAction('自拟情节');return;}
 openDialog(
@@ -4058,14 +4022,18 @@ guard();
 if(memorialAssignments(state).has(b.dataset.memorial)) {
 scheduledMemorialDialog(state,b.dataset.memorial);return;
 }
-const sl=['朝','午'].find(k=>!state.schedule[k]);
+const reviewSlots = ["朝", "午"];
+const hasReview = k => ["上朝", "批折"].includes(state.schedule[k]?.kind);
+const sl = (reviewSlots.includes(preferred) && hasReview(preferred) && preferred) ||
+reviewSlots.find(k => !state.schedule[k]) || reviewSlots.find(hasReview);
 if(!sl)throw new Error('朝、午已有安排，请先撤下行动');
-memorialDialog(state,memorialEntryKind(state,sl),sl,(which,a)=>arrange(which,a),b.dataset.memorial);
+const kind = hasReview(sl) ? state.schedule[sl].kind : memorialEntryKind(state,sl);
+memorialDialog(state,kind,sl,arrangeReview,b.dataset.memorial);
 } else if (b.dataset.editReviewSlot) {
 guard();
 const sl=b.dataset.editReviewSlot,a=state.schedule[sl];
 if(!a||!['上朝','批折'].includes(a.kind))throw new Error('原拟批已撤下，请重新选择奏报。');
-memorialDialog(state,a.kind,sl,(which,next)=>arrange(which,next));
+memorialDialog(state,a.kind,sl,arrangeReview);
 } else if(b.dataset.personMemory)openNPCMemory(state,b.dataset.personMemory);
 else if(b.dataset.memoryScene){const h=[...state.volumes.flatMap(v=>v.chapters),...state.history].find(h=>h.scenes?.some(r=>r.id===b.dataset.memoryScene));if(h)openDialog('过往一幕','<article class="paper">'+chapterHTML(h,state.ambitions)+'</article>');else toast('这段经历的原文暂未载入，可以先看往事摘要。');}
 else if (b.dataset.scene) openScene(b.dataset.scene);
@@ -4103,66 +4071,64 @@ toast(err.message);
 }
 };
 } else if (b.dataset.load) {
-if (busy) throw new Error("请待本旬续写结束再读档");
-await scheduleSave.flush();
-await saveQueue.catch(() => {});
-const l = await store.load(Number(b.dataset.load));
-if (!l.state) throw new Error("此卷没有可读进度");
-state = l.state;
-slot = Number(b.dataset.load);
-try {
-localStorage.setItem("yuji:active-slot", String(slot));
-} catch {}
-readOnly = l.readOnly;
-saveStatus = l.problems.join("；");
+const target = Number(b.dataset.load);
+await saveOperation(async () => {
+const loaded = await store.load(target);
+if (!loaded.state) throw new Error("此档没有可读进度");
+activateSave(target, loaded);
 closeDialog();
-render();
+});
 } else if (b.dataset.exportSlot) {
-const l = await store.load(Number(b.dataset.exportSlot));
-if (l.state)
-download(
-"御极-第" + b.dataset.exportSlot + "卷.json",
-store.exportJSON(l.state),
-);
-} else if (b.dataset.archiveRemove) {
-if(!confirm('请确认已导出此封存。移出后请保管好备份文件。'))return;
-await store.removeArchive(b.dataset.archiveRemove);await showSaves();
-} else if (b.dataset.archiveExport) {
-const a = (await store.listArchives()).find(
-(a) => a.id === b.dataset.archiveExport,
-);
-if (a) download("御极-封存旧卷-" + a.turn + "旬.json", a.data);
-} else if (b.dataset.raw) {
-const l = await store.load(Number(b.dataset.raw));
-download(
-"御极-原始副本-" + b.dataset.raw + ".json",
-JSON.stringify(l.raw, null, 2),
-);
-} else if (b.dataset.copySlot) {
-if (!state) throw new Error("尚无进度");
-const target = Number(b.dataset.copySlot),
-l = await store.load(target);
-if (l.state || l.readOnly) throw new Error("此卷已非空白");
-await store.save(target, state);
-slot = target;
-readOnly = false;
-toast("已另存于第 " + slot + " 卷");
+const target = Number(b.dataset.exportSlot);
+await saveOperation(async () => {
+if (target === slot && state && !readOnly) {
+download("御极-第" + target + "档.json", store.exportJSON(state));
+return;
+}
+const loaded = await store.load(target);
+if (loaded.state && !loaded.state.volumeIndex?.length)
+download("御极-第" + target + "档.json", store.exportJSON(loaded.state));
+else if (loaded.raw.some(raw => raw != null))
+download("御极-第" + target + "档-原始备份.json", JSON.stringify(loaded.raw, null, 2));
+else throw new Error("此档没有可导出的内容");
+});
+} else if (b.dataset.deleteSlot) {
+const target = Number(b.dataset.deleteSlot);
+if (busy || !confirm("删除第 " + target + " 档？")) return;
+await saveOperation(async () => {
+await store.remove(target);
+if (target === slot) activateSave(target, { state: null });
+});
 await showSaves();
+toast("已删除第 " + target + " 档");
+} else if (b.dataset.copySlot) {
+const target = Number(b.dataset.copySlot);
+if (!state || readOnly) throw new Error("当前没有可写入的进度");
+if (b.hasAttribute("data-occupied") && !confirm("用当前进度覆盖第 " + target + " 档？")) return;
+await saveOperation(async () => {
+const saved = await store.save(target, state);
+activateSave(target, { state, problems: saved.warnings });
+});
+await showSaves();
+toast("已保存至第 " + target + " 档");
 } else if (b.dataset.importSlot) {
+const target = Number(b.dataset.importSlot);
+const overwrite = b.hasAttribute("data-occupied");
 const input = document.createElement("input");
 input.type = "file";
 input.accept = ".json,application/json";
 input.onchange = async () => {
 try {
 const file = input.files[0];
-if (!file) return;
-if (file.size > 30000000) throw new Error("文件超过 30 MB");
-await store.importJSON(
-Number(b.dataset.importSlot),
-await file.text(),
-);
-toast("导入完成，可读此卷");
+if (!file || !b.isConnected || !$("#modal").open) return;
+if (file.size > 150000000) throw new Error("文件超过 150 MB");
+if (overwrite && !confirm("用导入的存档覆盖第 " + target + " 档？")) return;
+await saveOperation(async () => {
+const imported = await store.importJSON(target, await file.text(), { overwrite });
+activateSave(target, { state: imported });
+});
 await showSaves();
+toast("已导入并读入第 " + target + " 档");
 } catch (err) {
 toast(err.message);
 }
@@ -4216,7 +4182,7 @@ let remembered = 1;
 try {
 remembered = Number(localStorage.getItem("yuji:active-slot")) || 1;
 } catch {}
-slot = [1, 2, 3].includes(remembered) ? remembered : 1;
+slot = SAVE_SLOTS.includes(remembered) ? remembered : 1;
 const first = await store.load(slot);
 if (first.state) {
 state = first.state;
@@ -5473,6 +5439,7 @@ const { chooseRegent, legacyDowagerFaction } = __load("src/core/regency-info.js"
 const {factionPowers} = __load("src/core/politics.js");
 const {defaultScenarioEvents,defaultFiat,validateSandbox,WORLD_MAX} = __load("src/core/sandbox-schema.js");
 const VERSION = 28;
+const DEFAULT_PROSE = "modern";
 const TALENTS = ["政略", "权谋", "武略", "文采", "魅力"];
 const SLOTS = ["朝", "午", "夜"];
 const POST_NAMES = [
@@ -5768,7 +5735,7 @@ intentResults: [],
 settings: {
 freedom: options.freedom || "mid",
 difficulty: options.difficulty || "normal",
-prose: options.prose || "court",
+prose: options.prose || DEFAULT_PROSE,
 length: options.length || "standard",
 pov: options.pov || "third",
 demo: options.demo !== false,
@@ -6196,7 +6163,7 @@ return (s.reign?.number || 1) === 1
 : s.runId + ":reign:" + s.reign.number;
 }
 
-return {VERSION,TALENTS,SLOTS,POST_NAMES,withDraft,clone,createState,migrate,assertState,reignId};
+return {VERSION,DEFAULT_PROSE,TALENTS,SLOTS,POST_NAMES,withDraft,clone,createState,migrate,assertState,reignId};
 },
 "src/core/faces.js":function(__load){
 // Presentation identities only: no dice, art pool sizes, or changes to gameplay.
@@ -16067,8 +16034,9 @@ esc(s.era.name) +
 esc(s.dynasty) +
 '</span></div><div class="prose"><p>' +
 esc(
-s.backstory ||
-"先帝遗命传入宫门，百官在丹墀下依班肃立。新帝承统，宫中循着旧例运转，天下却已将目光投向御案上的第一封奏报。",
+s.backstory || (s.settings.prose === "modern"
+? "先帝的遗诏传到宫中，百官在殿前等候。你登基那天，宫里的一切还照旧例运转。御案上的第一份奏报已经送到。"
+: "先帝遗命传入宫门，百官在丹墀下依班肃立。新帝承统，宫中循着旧例运转，天下却已将目光投向御案上的第一封奏报。"),
 ) +
 '</p><p>奏报已送到御前。此后的每一旬，朝、午、夜三时都由你安排。</p></div><div class="chapter-tabs"><button data-action="' +
 (s.regency ? "批折" : "上朝") +
@@ -16368,7 +16336,8 @@ if ((kind === "上朝" || kind === "批折") && !s.memorials.length) return "暂
 if (kind === "上朝" || kind === "批折") {
 if (!availableMemorials(s).length) return "本旬均已拟批";
 if (kind === "上朝" && s.schedule.朝) return "朝间已有安排";
-if (kind === "批折" && s.schedule.朝 && s.schedule.午) return "朝午已排定";
+if (kind === "批折" && s.schedule.朝 && s.schedule.午 &&
+![s.schedule.朝,s.schedule.午].some(a=>a.kind==="批折")) return "朝午已排定";
 }
 if (kind === "亲征" && !s.campaigns.some(w=>!w.done)) return "无战事";
 if (!fiatEnabled(s)&&s.campaigns.some(w=>w.personal&&!w.done) && !["亲征","歇息"].includes(kind)&&kind!=='批折') return "御驾在外";
@@ -16528,7 +16497,9 @@ if (options.newBatch) {
 const slots = kind === "上朝" ? ["朝"] : ["朝", "午"];
 slot =
 slots.find((sl) => sl === slot && !s.schedule[sl]) ||
-slots.find((sl) => !s.schedule[sl]);
+slots.find((sl) => !s.schedule[sl]) ||
+(kind==="批折" && availableMemorials(s).length &&
+([slot,...slots].find(sl => s.schedule[sl]?.kind === kind)));
 if (!slot)
 throw new Error(
 kind === "上朝"
@@ -16538,28 +16509,30 @@ kind === "上朝"
 }
 const old = s.schedule[slot]?.kind === kind ? s.schedule[slot] : null;
 const available = availableMemorials(s, old ? slot : null);
-let ids =
+const ids =
 old?.memorials?.filter((id) => available.some((m) => m.id === id)) ||
-available.slice(0, kind === "上朝" ? freedomRules(s).courtLimit : 6).map((m) => m.id);
+(startId ? [] : available.slice(0, kind === "上朝" ? freedomRules(s).courtLimit : 6).map((m) => m.id));
 if (startId) {
 if (!available.some((m) => m.id === startId))
 throw new Error("此折已拟批，请从原日程改批。");
-ids = [startId];
+if (!ids.includes(startId)) ids.push(startId);
 }
 if (!ids.length) throw new Error("奏报已批好，可以起驾了。");
 const choices = {},
 remarks = {};
 for (const id of ids) {
-const d = memorialDecision(old, id);
-remarks[id] = old ? d.remark : "";
-if (old && !startId) choices[id] = d.option;
+if (old?.memorials.includes(id)) {
+const decision = memorialDecision(old, id);
+remarks[id] = decision.remark;
+choices[id] = decision.option;
+} else remarks[id] = "";
 }
 return {
 kind,
 slot,
 originalSlot: old ? slot : null,
 ids,
-index: 0,
+index: startId ? ids.indexOf(startId) : 0,
 choices,
 remarks,
 stance: old?.stance || "依旨施行",
@@ -16616,6 +16589,16 @@ label: session.ids.length + " 本奏报",
 };
 validateSchedule(s, { ...s.schedule, [session.slot]: action });
 return action;
+}
+function reviewedMemorialAction(s, session) {
+return memorialAction(s, { ...session, ids: session.ids.filter(id => session.choices[id]) });
+}
+function nextMemorialId(s, session) {
+const queued = session.ids[session.index + 1] ||
+session.ids.find(id => id !== session.ids[session.index] && !session.choices[id]);
+if (queued) return queued;
+if (session.kind === "上朝" && session.ids.length >= freedomRules(s).courtLimit) return null;
+return availableMemorials(s, session.originalSlot).find(m => !session.ids.includes(m.id))?.id || null;
 }
 function scheduledMemorialDialog(s, id) {
 const m = s.memorials.find((m) => m.id === id),
@@ -16755,6 +16738,7 @@ function memorialHTML(s, session) {
 const m = s.memorials.find((m) => m.id === session.ids[session.index]);
 if (!m)
 return '<p class="review-error">奏报已不在当前队列，请关闭后重选。</p>';
+const canContinue = !!nextMemorialId(s, session);
 const person = s.court.officials.find((o) => o.id === m.fromId),
 faction = s.court.factions.find((f) => f.id === person?.faction),
 post = s.court.posts.find((p) => p.holder === person?.id);
@@ -17011,11 +16995,10 @@ esc(factionDemandReason(s, o, m)) +
 (session.ids.some((id) => !session.choices[id] && !s.memorials.find((x) => x.id === id)?.urgent)
 ? '<button type="button" data-review-drafts>未批者依票拟</button>'
 : "") +
+(canContinue ? '<button type="button" data-review-finish>完成批阅</button>' : "") +
 ('<button type="button" id="review-next" class="primary" data-revi' +
 "ew-next>") +
-(session.index === session.ids.length - 1
-? "拟批完毕，入日程"
-: "记下，下一本 ›") +
+(canContinue ? "保存并批下一折 ›" : "完成批阅") +
 "</button></footer>"
 );
 }
@@ -17081,33 +17064,47 @@ const showError = (err) => {
 const el = $("#review-error");
 if (el) el.textContent = err.message || String(err);
 };
-let submitted = false;
-const next = () => {
-if (submitted) return;
+let submitted = false, saving = false;
+const close = $("#close-modal");
+const preventLeave = event => { if (saving) event.preventDefault(); };
+d.addEventListener("cancel", preventLeave);
+const next = async (keepReading = true) => {
+if (submitted || saving) return;
+const controls = [];
 try {
-if (!session.choices[session.ids[session.index]])
+if (keepReading && !session.choices[session.ids[session.index]])
 throw new Error("请先选择本折御批");
-if (session.index < session.ids.length - 1) {
-session.index++;
+const following = keepReading ? nextMemorialId(s, session) : null;
+const action = reviewedMemorialAction(s, session);
+saving = true;
+close.disabled = true;
+controls.push(...[...root.querySelectorAll("button, textarea")].filter(el => !el.disabled));
+for (const control of controls) control.disabled = true;
+await onSchedule(session.slot, action);
+if (following) {
+s = { ...s, schedule: { ...s.schedule, [session.slot]: action } };
+session.originalSlot = session.slot;
+if (!session.ids.includes(following)) {
+session.ids.push(following);
+session.remarks[following] ??= "";
+}
+session.index = session.ids.indexOf(following);
 paint("#memorial-title");
 return;
 }
-const missing = session.ids.findIndex((id) => !session.choices[id]);
-if (missing >= 0) {
-session.index = missing;
-paint("#memorial-title");
-throw new Error("尚有奏折未选择御批");
-}
-onSchedule(session.slot, memorialAction(s, session));
 submitted = true;
 closeDialog();
 } catch (error) {
 showError(error);
+} finally {
+saving = false;
+close.disabled = false;
+for (const control of controls) control.disabled = false;
 }
 };
 const handleClick = (e) => {
 const b = e.target.closest("button");
-if (!b || b.disabled) return;
+if (!b || b.disabled || saving) return;
 if(b.dataset.retryMemorialText)return;
 e.stopPropagation();
 if (b.dataset.reviewOption) {
@@ -17175,6 +17172,7 @@ showError(filled ? "已依票拟填入 " + filled + " 本" + (missing >= 0 ? "�
 session.choices[session.ids[session.index]] = "hold";
 next();
 } else if (b.hasAttribute("data-review-next")) next();
+else if (b.hasAttribute("data-review-finish")) next(false);
 };
 root.onclick = handleClick;
 root.addEventListener('memorial-text-updated',event=>{
@@ -17189,6 +17187,7 @@ requestAnimationFrame(revealCurrent);
 mobile.addEventListener("change", resize);
 window.addEventListener("resize", resize);
 onDialogExit(d, root, () => {
+d.removeEventListener("cancel", preventLeave);
 mobile.removeEventListener("change", resize);
 window.removeEventListener("resize", resize);
 });
@@ -17231,7 +17230,7 @@ next();
 paint("#memorial-title");
 }
 
-return {createMemorialSession,applyCabinetDrafts,memorialAction,scheduledMemorialDialog,effectItems,effectLabel,factionDemandReason,memorialOptions,memorialHTML,memorialDialog};
+return {createMemorialSession,applyCabinetDrafts,memorialAction,reviewedMemorialAction,nextMemorialId,scheduledMemorialDialog,effectItems,effectLabel,factionDemandReason,memorialOptions,memorialHTML,memorialDialog};
 },
 "src/ui/memorial-document.js":function(__load){
 const { textParagraphs } = __load("src/core/text.js");
@@ -18364,21 +18363,7 @@ finish(e);
 }
 });
 }
-return {
-archive: (id, record) =>
-transaction("readwrite", (st) => st.put(record, id), "archives"),
-archives: () => transaction("readonly", (st) => st.getAll(), "archives"),
-removeArchive: id=>transaction("readwrite",st=>st.delete(id),"archives"),
-getVolume: key=>transaction("readonly",st=>st.get(key),"volumes"),
-appendVolume: async(key,volume)=>{
-const existing=await transaction("readonly",st=>st.get(key),"volumes");
-if(existing){if(JSON.stringify(existing)!==JSON.stringify(volume)){const error=new Error('分卷内容冲突，原卷已保留');error.code='VOLUME_CONFLICT';throw error;}return;}
-return transaction("readwrite",st=>st.add(volume,key),"volumes");
-},
-get: (slot) => transaction("readonly", (st) => st.get(slot)),
-put: (slot, record) =>
-transaction("readwrite", (st) => st.put(record, slot)),
-comparePut: async (slot, record, expected) => {
+async function compareWrite(slot, expected, write) {
 const db = await open();
 return new Promise((resolve, reject) => {
 let ended = false,
@@ -18407,7 +18392,7 @@ conflict = true;
 tx.abort();
 return;
 }
-st.put(record, slot);
+write(st);
 };
 tx.oncomplete = () => finish();
 tx.onerror = tx.onabort = () => {
@@ -18418,7 +18403,23 @@ if (conflict) e.code = "CONFLICT";
 finish(e);
 };
 });
+}
+return {
+archive: (id, record) =>
+transaction("readwrite", (st) => st.put(record, id), "archives"),
+archives: () => transaction("readonly", (st) => st.getAll(), "archives"),
+removeArchive: id=>transaction("readwrite",st=>st.delete(id),"archives"),
+getVolume: key=>transaction("readonly",st=>st.get(key),"volumes"),
+appendVolume: async(key,volume)=>{
+const existing=await transaction("readonly",st=>st.get(key),"volumes");
+if(existing){if(JSON.stringify(existing)!==JSON.stringify(volume)){const error=new Error('分卷内容冲突，原卷已保留');error.code='VOLUME_CONFLICT';throw error;}return;}
+return transaction("readwrite",st=>st.add(volume,key),"volumes");
 },
+get: (slot) => transaction("readonly", (st) => st.get(slot)),
+put: (slot, record) =>
+transaction("readwrite", (st) => st.put(record, slot)),
+comparePut: (slot, record, expected) => compareWrite(slot, expected, st => st.put(record, slot)),
+compareDelete: (slot, expected) => compareWrite(slot, expected, st => st.delete(slot)),
 };
 }
 function createSaveStore({ primary, backup, validate = (x) => x }) {
@@ -18560,15 +18561,39 @@ throw new Error("存档未能写入，请立即导出 JSON；原进度仍在内�
 known.set(slot, { token: token(await copies(slot)), envelope });
 return { warnings, revision: envelope.revision };
 }
-async function importJSON(slot, raw) {
+async function importJSON(slot, raw, { overwrite = false } = {}) {
 if (raw.length > 150000000) throw new Error("导入文件超过 150 MB");
 const state = validate(restoreRecovery(unpack(raw).state));
 if(state.volumeIndex?.length)throw new Error('此为分卷主档，请先载入各卷后导出完整 JSON');
-const current = await load(slot);
-if (current.readOnly || current.state)
-throw new Error("导入仅允许写入空白且未受保护的存档位");
+if (!known.has(slot)) await load(slot);
+if (locked.has(slot) || (!overwrite && known.get(slot).envelope))
+throw new Error(overwrite ? "存档受保护，无法覆盖" : "请选择空白且未受保护的存档位");
 await save(slot, state);
 return state;
+}
+async function remove(slot) {
+const backupKey = key(slot);
+if (!known.has(slot)) await load(slot);
+const cs = await copies(slot);
+if (cs.some(c => c.error)) throw new Error("暂时无法读取存档，删除未执行");
+if (token(cs) !== known.get(slot).token)
+throw new Error("存档已被其他页面修改，请刷新后再删除");
+const savedBackup = cs[1].raw;
+if (!sameEnvelope(backup.getItem(backupKey), savedBackup))
+throw new Error("存档已被其他页面修改，请刷新后再删除");
+// Remove the recovery copy first. If the primary operation fails, restore
+// the backup unless another page has already saved a newer copy.
+if (savedBackup != null) backup.removeItem(backupKey);
+try {
+if (primary.compareDelete) await primary.compareDelete(slot, cs[0].raw);
+else if (cs[0].raw != null) await primary.remove(slot);
+} catch (error) {
+if (savedBackup != null && backup.getItem(backupKey) == null)
+backup.setItem(backupKey, savedBackup);
+throw error;
+}
+locked.delete(slot);
+known.set(slot, { token: token([{ raw: null }, { raw: null }]), envelope: null });
 }
 async function listArchives() {
 let rows = [];
@@ -18609,6 +18634,7 @@ return {
 load,
 save,
 importJSON,
+remove,
 listArchives,
 archiveAndSave,
 removeArchive:async id=>{if(!primary.removeArchive)throw new Error('无法移出封存');await primary.removeArchive(id);},
@@ -18663,7 +18689,11 @@ return {hashText};
 const { previewDelta } = __load("src/store/preview-delta.js");
 const { hashText } = __load("src/store/checksum.js");
 const refs=new WeakMap();
-function volumeRef(state,v){if(!refs.has(v))refs.set(v,hashText(JSON.stringify(v)));return {key:state.runId+':'+v.from,value:v,checksum:refs.get(v)};}
+function volumeRef(state,v){
+if(!refs.has(v))refs.set(v,hashText(JSON.stringify(v)));
+const checksum=refs.get(v);
+return {key:state.runId+':'+v.from+':'+checksum,value:v,checksum};
+}
 function storedLayout(state){
 if(!Array.isArray(state.history)||!Array.isArray(state.volumes))return {main:state,volumes:[]};
 const volumes=state.volumes.map(v=>volumeRef(state,v));

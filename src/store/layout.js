@@ -1,7 +1,11 @@
 import { previewDelta } from "./preview-delta.js";
 import { hashText } from "./checksum.js";
 const refs=new WeakMap();
-function volumeRef(state,v){if(!refs.has(v))refs.set(v,hashText(JSON.stringify(v)));return {key:state.runId+':'+v.from,value:v,checksum:refs.get(v)};}
+function volumeRef(state,v){
+ if(!refs.has(v))refs.set(v,hashText(JSON.stringify(v)));
+ const checksum=refs.get(v);
+ return {key:state.runId+':'+v.from+':'+checksum,value:v,checksum};
+}
 export function storedLayout(state){
  if(!Array.isArray(state.history)||!Array.isArray(state.volumes))return {main:state,volumes:[]};
  const volumes=state.volumes.map(v=>volumeRef(state,v));

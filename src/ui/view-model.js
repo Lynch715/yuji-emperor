@@ -29,7 +29,8 @@ export function actionAvailability(s, kind) {
   if (kind === "上朝" || kind === "批折") {
     if (!availableMemorials(s).length) return "本旬均已拟批";
     if (kind === "上朝" && s.schedule.朝) return "朝间已有安排";
-    if (kind === "批折" && s.schedule.朝 && s.schedule.午) return "朝午已排定";
+    if (kind === "批折" && s.schedule.朝 && s.schedule.午 &&
+      ![s.schedule.朝,s.schedule.午].some(a=>a.kind==="批折")) return "朝午已排定";
   }
   if (kind === "亲征" && !s.campaigns.some(w=>!w.done)) return "无战事";
 

@@ -6,7 +6,7 @@ import {talkAttempt} from '../src/core/court.js';
 import {mockNarrative} from '../src/llm/validate.js';
 export const SEED='御极·夜御案验收';
 export function stage9Fixture(visual=false){
- const original=createState({seed:SEED,demo:true,freedom:"real"});
+ const original=createState({seed:SEED,demo:true,freedom:"real",prose:"court"});
  // Freeze the v22 generator for the historical v17 serialization proof. New
  // agenda behavior is verified separately; these hashes must not be rebased.
  original.v=22;delete original.briefings;

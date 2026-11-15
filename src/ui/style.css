@@ -1234,6 +1234,10 @@ dialog::backdrop {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
+#save-slots {
+  display: grid;
+  gap: var(--s4);
+}
 .card > button {
   margin: var(--s1) var(--s1) var(--s0) var(--s0);
 }
@@ -2170,13 +2174,14 @@ textarea.brush-input::placeholder {
 .review-footer {
   width: var(--review-width);
   align-self: flex-end;
-  display: grid;
-  grid-template-columns: 1fr 2fr;
+  display: flex;
+  flex-wrap: wrap;
   gap: var(--s4);
   flex: none;
 }
 .review-footer button {
-  height: var(--primary-height);
+  flex: 1 1 auto;
+  min-height: var(--primary-height);
 }
 .review-help {
   font-size: var(--font-note);
@@ -2971,17 +2976,6 @@ button.primary:not(:disabled):active {
   margin: var(--s2) var(--s0);
   font-size: var(--font-note);
   color: var(--text-muted);
-}
-.review-footer:has([data-review-drafts]) {
-  grid-template-columns: 1fr 1fr 2fr;
-}
-@media (max-width: 420px) {
-  .review-footer:has([data-review-drafts]) {
-    grid-template-columns: 1fr 1fr;
-  }
-  .review-footer:has([data-review-drafts]) #review-next {
-    grid-column: 1 / -1;
-  }
 }
 .repeat-trigger {
   background: var(--clear);

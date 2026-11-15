@@ -22,6 +22,21 @@ test('E1 分卷只追加IDB、主档仅目录，恢复副本无正文，待续�
  assert.deepEqual((await store.load(1)).state,s);
  for(const version of [4,5,6,7]){const old=JSON.parse(readFileSync(`test/fixtures/v${version}-pending.json`));const raw=JSON.stringify(old.pending.forecast),next=migrate(old),f=next.pending.forecast;assert.equal(JSON.stringify(f),raw);const n=commitTurn(next,f,{});assert.equal(n.lastTurn.die,f.die);assert.equal(n.rng,f.state.rng);}
 });
+test('另存后两档可写入同一旬段各自的历史，旧分卷目录仍可读',async()=>{
+ const io=storage(),store=createSaveStore(io),s=start();
+ const volume={from:1,to:18,chapters:[],summary:'原档'};
+ const original={...s,turn:18,volumes:[volume]};
+ await store.save(1,original);
+ const envelope=io.p.get(1),main=unpack(envelope).state,ref=main.volumeIndex[0];
+ const legacyKey=s.runId+':'+volume.from;
+ io.v.set(legacyKey,volume);ref.key=legacyKey;
+ const {pack}=await import('../src/store/save.js');
+ io.p.set(1,pack(main));io.b.delete('yuji:slot:1');
+ assert.equal((await store.load(1)).state.volumes[0].summary,'原档');
+ await store.save(2,{...original,volumes:[{...volume,summary:'另一档'}]});
+ assert.equal((await store.load(1)).state.volumes[0].summary,'原档');
+ assert.equal((await store.load(2)).state.volumes[0].summary,'另一档');
+});
 test('E1 排程去抖800ms且关键保存可立即冲刷',async()=>{
  const {createDebouncedSave}=await import('../src/store/debounce.js');let calls=0,fn=null,delay=0;
  const save=createDebouncedSave(async()=>++calls,{schedule:(f,ms)=>{fn=f;delay=ms;return 1;},cancel:()=>{fn=null;}});

@@ -27,7 +27,7 @@ const hash=x=>createHash('sha256').update(JSON.stringify(x)).digest('hex');
 // Execute the actual UI controller functions with controlled IO, clock and storage.
 function controller(state,extra={}){
   const source=readFileSync('src/ui/app.js','utf8');
-  const snippets=[['function guard()', 'async function persist()'],['function arrange(', 'function exportMarkdown()']].map(([a,b])=>source.slice(source.indexOf(a),source.indexOf(b))).join('\n');
+  const snippets=[['function guard()', 'async function persist()'],['function setScheduleAction(', 'function exportMarkdown()']].map(([a,b])=>source.slice(source.indexOf(a),source.indexOf(b))).join('\n');
   const oldBudget=source.includes('function budget()')?source.slice(source.indexOf('function budget()'),source.indexOf('function loadMetrics()')):'';
   const elements=Object.fromEntries(['#talk-form','#talk-form button','#talk-line','#talk-log','#action-document'].map(id=>[id,{value:'说说近况',disabled:false,insertAdjacentHTML(){}}]));
   const errors=[],saves=[];
@@ -56,6 +56,22 @@ test('A1 面谈后超过240秒仍可请求正文，三轮面谈与口谕投递�
   assert.equal(calls,2);assert.equal(c.state.turn,1,errors.join(';'));
   const pending=saves.find(s=>s.pending);
   assert.deepEqual(Object.keys(pending.turnBudget),['used']);assert.equal(pending.turnBudget.used,0);assert.equal(pending.v,VERSION);assert.equal(pending.pending.forecast.state.turnBudget,null,'新预演不得夹带旧预算时钟');
+});
+test('继续批折在完成存档前保持操作锁，保存失败可重试',async()=>{
+  let finish;
+  const {context:c}=controller(initial(),{preferred:'朝',persist:()=>new Promise(resolve=>{finish=resolve;})});
+  const id=c.state.memorials[0].id,action={kind:'批折',memorials:[id],decisions:{[id]:{option:'hold',remark:'详查旧册'}}};
+  const first=c.arrangeReview('午',action);
+  assert.equal(c.busy,true);
+  finish(false);
+  await assert.rejects(first,/御批尚未保存/);
+  assert.equal(c.busy,false);
+  const retry=c.arrangeReview('午',action);
+  finish(true);
+  await retry;
+  assert.equal(c.preferred,'午');
+  assert.equal(c.state.schedule.午.decisions[id].remark,'详查旧册');
+  assert.equal(c.busy,false);
 });
 test('A1 待续重载只保留已用次数，重新计时且重试不重掷',async()=>{
   let s=initial();const f=forecastTurn(s),before=hash(f);

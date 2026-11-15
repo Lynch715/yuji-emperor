@@ -32,6 +32,13 @@ test('试读即使已有接口配置也完全离线；与原核心开局逐字�
   assert.equal(loaded.readOnly,false);assert.deepEqual(loaded.state,migrate(actual));
   const f=forecastTurn(loaded.state),next=commitTurn(loaded.state,f,{});assert.equal(next.turn,1);await store.save(1,next);assert.equal((await store.load(1)).state.turn,1);
 });
+test('新局默认现代文，已选和旧档中的文风随卷保留',async()=>{
+  const draft=await createOpening({...options,prose:undefined,seed:'现代文默认'},[],{});
+  assert.equal(draft.settings.prose,'modern');
+  const custom=await createOpening({...options,seed:'原文风'},[],{});
+  assert.equal(custom.settings.prose,'court');
+  assert.equal(migrate(unpack(pack(custom)).state).settings.prose,'court');
+});
 test('空白姓名或年号、缺少接口密钥在请求之前报告',async()=>{
   const noRequest={fetcher:()=>assert.fail('不应发送无效开局')};
   await assert.rejects(()=>createOpening({...options,name:'  '},[],config,noRequest),/皇帝名/);

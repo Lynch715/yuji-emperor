@@ -35,7 +35,9 @@ export function createMemorialSession(
     const slots = kind === "上朝" ? ["朝"] : ["朝", "午"];
     slot =
       slots.find((sl) => sl === slot && !s.schedule[sl]) ||
-      slots.find((sl) => !s.schedule[sl]);
+      slots.find((sl) => !s.schedule[sl]) ||
+      (kind==="批折" && availableMemorials(s).length &&
+        ([slot,...slots].find(sl => s.schedule[sl]?.kind === kind)));
     if (!slot)
       throw new Error(
         kind === "上朝"
@@ -45,28 +47,30 @@ export function createMemorialSession(
   }
   const old = s.schedule[slot]?.kind === kind ? s.schedule[slot] : null;
   const available = availableMemorials(s, old ? slot : null);
-  let ids =
+  const ids =
     old?.memorials?.filter((id) => available.some((m) => m.id === id)) ||
-    available.slice(0, kind === "上朝" ? freedomRules(s).courtLimit : 6).map((m) => m.id);
+    (startId ? [] : available.slice(0, kind === "上朝" ? freedomRules(s).courtLimit : 6).map((m) => m.id));
   if (startId) {
     if (!available.some((m) => m.id === startId))
       throw new Error("此折已拟批，请从原日程改批。");
-    ids = [startId];
+    if (!ids.includes(startId)) ids.push(startId);
   }
   if (!ids.length) throw new Error("奏报已批好，可以起驾了。");
   const choices = {},
     remarks = {};
   for (const id of ids) {
-    const d = memorialDecision(old, id);
-    remarks[id] = old ? d.remark : "";
-    if (old && !startId) choices[id] = d.option;
+    if (old?.memorials.includes(id)) {
+      const decision = memorialDecision(old, id);
+      remarks[id] = decision.remark;
+      choices[id] = decision.option;
+    } else remarks[id] = "";
   }
   return {
     kind,
     slot,
     originalSlot: old ? slot : null,
     ids,
-    index: 0,
+    index: startId ? ids.indexOf(startId) : 0,
     choices,
     remarks,
     stance: old?.stance || "依旨施行",
@@ -123,6 +127,16 @@ export function memorialAction(s, session) {
   };
   validateSchedule(s, { ...s.schedule, [session.slot]: action });
   return action;
+}
+export function reviewedMemorialAction(s, session) {
+  return memorialAction(s, { ...session, ids: session.ids.filter(id => session.choices[id]) });
+}
+export function nextMemorialId(s, session) {
+  const queued = session.ids[session.index + 1] ||
+    session.ids.find(id => id !== session.ids[session.index] && !session.choices[id]);
+  if (queued) return queued;
+  if (session.kind === "上朝" && session.ids.length >= freedomRules(s).courtLimit) return null;
+  return availableMemorials(s, session.originalSlot).find(m => !session.ids.includes(m.id))?.id || null;
 }
 export function scheduledMemorialDialog(s, id) {
   const m = s.memorials.find((m) => m.id === id),
@@ -262,6 +276,7 @@ export function memorialHTML(s, session) {
   const m = s.memorials.find((m) => m.id === session.ids[session.index]);
   if (!m)
     return '<p class="review-error">奏报已不在当前队列，请关闭后重选。</p>';
+  const canContinue = !!nextMemorialId(s, session);
   const person = s.court.officials.find((o) => o.id === m.fromId),
     faction = s.court.factions.find((f) => f.id === person?.faction),
     post = s.court.posts.find((p) => p.holder === person?.id);
@@ -518,11 +533,10 @@ export function memorialHTML(s, session) {
     (session.ids.some((id) => !session.choices[id] && !s.memorials.find((x) => x.id === id)?.urgent)
       ? '<button type="button" data-review-drafts>未批者依票拟</button>'
       : "") +
+    (canContinue ? '<button type="button" data-review-finish>完成批阅</button>' : "") +
     ('<button type="button" id="review-next" class="primary" data-revi' +
       "ew-next>") +
-    (session.index === session.ids.length - 1
-      ? "拟批完毕，入日程"
-      : "记下，下一本 ›") +
+    (canContinue ? "保存并批下一折 ›" : "完成批阅") +
     "</button></footer>"
   );
 }
@@ -588,33 +602,47 @@ export function memorialDialog(
     const el = $("#review-error");
     if (el) el.textContent = err.message || String(err);
   };
-  let submitted = false;
-  const next = () => {
-    if (submitted) return;
+  let submitted = false, saving = false;
+  const close = $("#close-modal");
+  const preventLeave = event => { if (saving) event.preventDefault(); };
+  d.addEventListener("cancel", preventLeave);
+  const next = async (keepReading = true) => {
+    if (submitted || saving) return;
+    const controls = [];
     try {
-      if (!session.choices[session.ids[session.index]])
+      if (keepReading && !session.choices[session.ids[session.index]])
         throw new Error("请先选择本折御批");
-      if (session.index < session.ids.length - 1) {
-        session.index++;
+      const following = keepReading ? nextMemorialId(s, session) : null;
+      const action = reviewedMemorialAction(s, session);
+      saving = true;
+      close.disabled = true;
+      controls.push(...[...root.querySelectorAll("button, textarea")].filter(el => !el.disabled));
+      for (const control of controls) control.disabled = true;
+      await onSchedule(session.slot, action);
+      if (following) {
+        s = { ...s, schedule: { ...s.schedule, [session.slot]: action } };
+        session.originalSlot = session.slot;
+        if (!session.ids.includes(following)) {
+          session.ids.push(following);
+          session.remarks[following] ??= "";
+        }
+        session.index = session.ids.indexOf(following);
         paint("#memorial-title");
         return;
       }
-      const missing = session.ids.findIndex((id) => !session.choices[id]);
-      if (missing >= 0) {
-        session.index = missing;
-        paint("#memorial-title");
-        throw new Error("尚有奏折未选择御批");
-      }
-      onSchedule(session.slot, memorialAction(s, session));
       submitted = true;
       closeDialog();
     } catch (error) {
       showError(error);
+    } finally {
+      saving = false;
+      close.disabled = false;
+      for (const control of controls) control.disabled = false;
     }
   };
   const handleClick = (e) => {
     const b = e.target.closest("button");
-    if (!b || b.disabled) return;
+    if (!b || b.disabled || saving) return;
     if(b.dataset.retryMemorialText)return;
     e.stopPropagation();
     if (b.dataset.reviewOption) {
@@ -682,6 +710,7 @@ export function memorialDialog(
       session.choices[session.ids[session.index]] = "hold";
       next();
     } else if (b.hasAttribute("data-review-next")) next();
+    else if (b.hasAttribute("data-review-finish")) next(false);
   };
   root.onclick = handleClick;
   root.addEventListener('memorial-text-updated',event=>{
@@ -696,6 +725,7 @@ export function memorialDialog(
   mobile.addEventListener("change", resize);
   window.addEventListener("resize", resize);
   onDialogExit(d, root, () => {
+    d.removeEventListener("cancel", preventLeave);
     mobile.removeEventListener("change", resize);
     window.removeEventListener("resize", resize);
   });

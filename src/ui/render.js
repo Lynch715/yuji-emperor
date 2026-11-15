@@ -460,8 +460,9 @@ export function renderApp(
       esc(s.dynasty) +
       '</span></div><div class="prose"><p>' +
       esc(
-        s.backstory ||
-          "先帝遗命传入宫门，百官在丹墀下依班肃立。新帝承统，宫中循着旧例运转，天下却已将目光投向御案上的第一封奏报。",
+        s.backstory || (s.settings.prose === "modern"
+          ? "先帝的遗诏传到宫中，百官在殿前等候。你登基那天，宫里的一切还照旧例运转。御案上的第一份奏报已经送到。"
+          : "先帝遗命传入宫门，百官在丹墀下依班肃立。新帝承统，宫中循着旧例运转，天下却已将目光投向御案上的第一封奏报。"),
       ) +
       '</p><p>奏报已送到御前。此后的每一旬，朝、午、夜三时都由你安排。</p></div><div class="chapter-tabs"><button data-action="' +
       (s.regency ? "批折" : "上朝") +

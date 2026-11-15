@@ -13,6 +13,7 @@ import { chooseRegent, legacyDowagerFaction } from "./regency-info.js";
 import {factionPowers} from './politics.js';
 import {defaultScenarioEvents,defaultFiat,validateSandbox,WORLD_MAX} from './sandbox-schema.js';
 export const VERSION = 28;
+export const DEFAULT_PROSE = "modern";
 export const TALENTS = ["政略", "权谋", "武略", "文采", "魅力"];
 export const SLOTS = ["朝", "午", "夜"];
 export const POST_NAMES = [
@@ -308,7 +309,7 @@ export function createState(options = {}) {
     settings: {
       freedom: options.freedom || "mid",
       difficulty: options.difficulty || "normal",
-      prose: options.prose || "court",
+      prose: options.prose || DEFAULT_PROSE,
       length: options.length || "standard",
       pov: options.pov || "third",
       demo: options.demo !== false,

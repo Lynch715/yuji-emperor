@@ -51,7 +51,7 @@ import { memorialEntryKind, actionAvailability, repeatSchedule, delegateSchedule
 import { actionDialog } from "./actions.js";
 import { palacePanel } from "./panels.js";
 import { createSaveStore, createIDB } from "../store/save.js";
-import { migrate, clone, reignId } from "../core/state.js";
+import { DEFAULT_PROSE, migrate, clone, reignId } from "../core/state.js";
 import {
   forecastTurn,
   commitTurn,
@@ -88,6 +88,7 @@ const store = createSaveStore({
   backup: {
     getItem: (k) => localStorage.getItem(k),
     setItem: (k, v) => localStorage.setItem(k, v),
+    removeItem: (k) => localStorage.removeItem(k),
   },
   validate: migrate,
 });
@@ -136,6 +137,7 @@ function guard() {
 }
 async function persist() {
   scheduleSave.cancel();
+  if (!state || readOnly) return false;
   const snapshot = clone(state);
   const currentSlot = slot;
   const work = saveQueue
@@ -148,7 +150,7 @@ async function persist() {
       ? r.warnings.join("；") + "，请导出备份"
       : "已存入第 " +
         currentSlot +
-        " 卷 · " +
+        " 档 · " +
         new Date().toLocaleTimeString("zh-CN");
     if (r.warnings.length) toast(saveStatus);
     try {
@@ -189,107 +191,62 @@ function markMetric(m) {
     localStorage.setItem("yuji:metrics", JSON.stringify(metrics));
   } catch {}
 }
+const SAVE_SLOTS = [1, 2, 3];
+function activateSave(target, loaded) {
+  state = loaded.state;
+  slot = target;
+  readOnly = !!loaded.readOnly;
+  saveStatus = (loaded.problems || []).join("；");
+  lastSchedule = null;
+  try { localStorage.setItem("yuji:active-slot", String(slot)); } catch {}
+}
+async function saveOperation(work) {
+  if (busy) throw new Error("请等当前操作结束");
+  busy = true;
+  try {
+    await scheduleSave.flush();
+    await saveQueue.catch(() => {});
+    return await work();
+  } finally {
+    busy = false;
+    render();
+  }
+}
 async function showSaves() {
-  await scheduleSave.flush();
-  const slots = [];
-  for (let i = 1; i <= 3; i++) slots.push({ id: i, ...(await store.load(i)) });
-  const archives = await store.listArchives();
-  openDialog(
-    "存档阁",
-    '<p class="muted">三卷分别保存。导入旧档时，请选空卷。</p><div class="grid">' +
-      slots
-        .map(
-          (v) =>
-            '<div class="card"><h3>第 ' +
-            v.id +
-            " 卷" +
-            (v.readOnly ? " · 保护" : "") +
-            "</h3><p>" +
-            esc(
-              v.state
-                ? v.state.emperor.name +
-                    " · " +
-                    v.state.era.name +
-                    " " +
-                    v.state.era.year +
-                    "年 / " +
-                    v.state.turn +
-                    "旬"
-                : "空卷",
-            ) +
-            "</p>" +
-            v.problems
-              .map((p) => '<p class="negative">' + esc(gameText(p)) + "</p>")
-              .join("") +
-            '<div class="row">' +
-            (v.state
-              ? '<button data-load="' +
-                v.id +
-                '">读此卷</button><button data-export-slot="' +
-                v.id +
-                '">导出存档</button>'
-              : !v.readOnly
-                ? '<button data-import-slot="' +
-                  v.id +
-                  '">导入存档</button>' +
-                  (state
-                    ? '<button data-copy-slot="' +
-                      v.id +
-                      '">将当前进度另存于此</button>'
-                    : "")
-                : "") +
-            (v.raw.some(Boolean)
-              ? '<button data-raw="' + v.id + '">导出原始副本</button>'
-              : "") +
-            "</div></div>",
-        )
-        .join("") +
-      '</div><div class="dialog-actions">' +
-      (state
-        ? '<button data-command="export-json">导出当前存档</button>'
-        : "") +
-      '<button data-command="new">另启新朝（优先空卷）</button></div>' +
-      (archives.length
-        ? "<details><summary>封存旧卷 · " +
-          archives.length +
-          " 卷</summary>" +
-          archives
-            .map(
-              (a) =>
-                '<div class="card"><p>' +
-                esc(a.name) +
-                " · " +
-                a.turn +
-                " 旬 · 原第 " +
-                a.slot +
-                ' 卷</p><button data-archive-export="' +
-                esc(a.id) +
-                '">导出旧卷</button><button data-archive-remove="'+esc(a.id)+'">移出已备份封存</button></div>',
-            )
-            .join("") +
-          "</details>"
-        : ""),
-  );
+  const slots = await saveOperation(() =>
+    Promise.all(SAVE_SLOTS.map(async id => ({ id, ...await store.load(id) }))));
+  const button = (name, id, label, extra = "") =>
+    '<button data-' + name + '="' + id + '"' + extra + '>' + label + '</button>';
+  openDialog("存档",
+    '<div id="save-slots">' +
+    slots.map(v => {
+      const exists = v.state || v.raw.some(raw => raw != null);
+      const detail = v.state
+        ? v.state.emperor.name + " · " + v.state.era.name + " " + v.state.era.year + "年 · 第 " + (v.state.turn + 1) + " 旬"
+        : exists ? "存档无法读取" : "空档";
+      return '<section class="card save-card" aria-label="第 ' + v.id + ' 档">' +
+        '<h3>第 ' + v.id + ' 档' + (state && v.id === slot ? " · 当前" : "") + '</h3>' +
+        '<p>' + esc(detail) + '</p>' +
+        v.problems.map(problem => '<p class="negative">' + esc(gameText(problem)) + '</p>').join("") +
+        '<div class="row">' +
+        (v.state ? button("load", v.id, "读档") : "") +
+        (exists ? button("export-slot", v.id, "导出") : "") +
+        (!v.readOnly ? button("import-slot", v.id, "导入", exists ? ' data-occupied' : "") : "") +
+        (state && !readOnly && !v.readOnly && slot !== v.id
+          ? button("copy-slot", v.id, exists ? "覆盖" : "保存", exists ? ' data-occupied' : "") : "") +
+        (exists ? button("delete-slot", v.id, "删除") : "") +
+        '</div></section>';
+    }).join("") +
+    '</div><div class="dialog-actions"><button data-command="new">新开一局</button></div>');
 }
 async function newGame() {
-  await scheduleSave.flush();
-  if (busy) return;
-  const available = [],
-    occupied = new Map(),
-    reusable = [];
-  for (let i = 1; i <= 3; i++) {
-    const l = await store.load(i);
-    if (!l.readOnly) {
-      if (!l.state) available.push(i);
-      else {
-        occupied.set(i, l.state);
-        reusable.push(i);
-      }
-    }
-  }
-  available.push(...reusable);
+  const slots = await saveOperation(() =>
+    Promise.all(SAVE_SLOTS.map(async id => ({ id, ...await store.load(id) }))));
+  const writable = slots.filter(v => !v.readOnly);
+  const occupied = new Set(writable.filter(v => v.state).map(v => v.id));
+  const available = [...writable.filter(v => !v.state).map(v => v.id), ...occupied];
   if (!available.length) {
-    toast("三卷暂时都无法保存，请先到存档阁导出备份。");
+    toast("三个档位暂时都无法保存，请打开存档导出备份。");
     return;
   }
   openDialog(
@@ -302,9 +259,9 @@ async function newGame() {
       ['normal','easy','hard'].map(id=>'<option value="'+id+'">'+DIFFICULTIES[id].label+'</option>').join('')+
       '</select><p class="muted mode-hint" id="difficulty-hint">'+DIFFICULTIES.normal.note+'</p></div><div><label for="prose-style">文笔</label><select id="prose-style">' +
       Object.entries(STYLES)
-        .map(([k, v]) => '<option value="' + k + '">' + v.label + "</option>")
+        .map(([k, v]) => '<option value="' + k + '"' + (k === DEFAULT_PROSE ? ' selected' : '') + '>' + v.label + "</option>")
         .join("") +
-      '</select></div>' + narrativeFields() + '<div><label for="new-slot">启用存档位</label><select id="new-slot">' +
+      '</select></div>' + narrativeFields() + '<div><label for="new-slot">存档位</label><select id="new-slot">' +
       available
         .map(
           (n) =>
@@ -312,14 +269,14 @@ async function newGame() {
             n +
             '">第 ' +
             n +
-            " 卷" +
-            (occupied.has(n) ? "（先封存旧卷）" : "（空卷）") +
+            " 档" +
+            (occupied.has(n) ? "（覆盖原档）" : "（空档）") +
             "</option>",
         )
         .join("") +
       '</select></div></div><label class="check"><input id="demo-mode" type="checkbox" ' +
       (!config.key ? "checked" : "") +
-      '>先试读一局（无需密钥）</label><p class="muted">试读无需密钥。已有卷位会先封存旧卷。</p><p id="new-result" class="result hidden" role="status" aria-live="polite" tabindex="-1"></p><div class="dialog-actions"><button type="button" data-command="settings">故事设置</button><button type="submit" class="primary">承天践祚</button></div></form>',
+      '>先试读一局（无需密钥）</label><p class="muted">试读无需密钥。</p><p id="new-result" class="result hidden" role="status" aria-live="polite" tabindex="-1"></p><div class="dialog-actions"><button type="button" data-command="settings">故事设置</button><button type="submit" class="primary">承天践祚</button></div></form>',
   );
   const goalsHTML = ["宏愿", "宏愿", "心事", "心事"]
     .map(
@@ -404,6 +361,7 @@ async function newGame() {
         seed: createGameSeed(),
       };
       const selected = Number(value("new-slot"));
+      if (occupied.has(selected) && !confirm("用新局覆盖第 " + selected + " 档？")) return;
       const goals = [...form.querySelectorAll("[data-goal-select]")].map(el => el.value);
       request = scope.begin();
       busy = true;
@@ -418,16 +376,12 @@ async function newGame() {
       if (!scope.current(request)) return;
       saving = true;
       close.disabled = true;
-      showResult("正在保存新卷……");
-      const work = saveQueue.catch(() => {}).then(() => occupied.has(selected)
-        ? store.archiveAndSave(selected, draft) : store.save(selected, draft));
+      showResult("正在保存新局……");
+      const work = saveQueue.catch(() => {}).then(() => store.save(selected, draft));
       saveQueue = work;
       const saved = await work;
-      state = draft;
-      slot = selected;
-      readOnly = false;
-      saveStatus = saved.warnings.length ? saved.warnings.join("；") + "，请导出备份" : "已存入第 " + selected + " 卷";
-      try { localStorage.setItem("yuji:active-slot", String(selected)); } catch {}
+      activateSave(selected, { state: draft, problems: saved.warnings });
+      saveStatus = saved.warnings.length ? saveStatus + "，请导出备份" : "已存入第 " + selected + " 档";
       closeDialog();
       if (saved.warnings.length) toast(saveStatus);
     } catch (err) {
@@ -464,18 +418,34 @@ function narrativeFields(current = {}) {
 function lastScheduleFor(s) {
   return lastSchedule && s && lastSchedule.runId === s.runId && lastSchedule.turn === s.turn ? lastSchedule.schedule : null;
 }
-function arrange(which, action) {
+function setScheduleAction(which, action) {
   guard();
   const next = { ...state.schedule, [which]: action };
   validateSchedule(state, next);
   state = { ...state, schedule: next };
+}
+function arrange(which, action) {
+  setScheduleAction(which, action);
   scheduleSave.schedule();
   render();
   toast("已安排" + which + "间" + action.kind);
 }
+async function arrangeReview(which, action) {
+  setScheduleAction(which, action);
+  preferred = which;
+  busy = true;
+  try {
+    if (!(await persist())) throw new Error("御批尚未保存，请重试。");
+    toast("已保存" + which + "间" + action.memorials.length + "份拟批");
+  } finally {
+    busy = false;
+    render();
+  }
+}
 function chooseAction(kind) {
   guard();
-  actionDialog(state, kind, preferred, (sl, a) => arrange(sl, a), startTalk);
+  const onSchedule = ["上朝", "批折"].includes(kind) ? arrangeReview : arrange;
+  actionDialog(state, kind, preferred, onSchedule, startTalk);
 }
 async function advance(local = false) {
   if (!state || readOnly || busy || state.ending) return;
@@ -891,7 +861,7 @@ async function command(name) {
     palacePanel(state, "史馆");
     return;
   }
-  if (name === "export-json" && state){await scheduleSave.flush();return download("御极-第" + slot + "卷.json", store.exportJSON(state));}
+  if (name === "export-json" && state){await scheduleSave.flush();return download("御极-第" + slot + "档.json", store.exportJSON(state));}
   if (name === "export-md") return exportMarkdown();
   if (name === "menu") return openDialog('御前菜单','<div class="grid"><button data-command="saves">存档</button><button data-command="settings">设置</button><button data-command="self">天子心事</button><button data-command="oral">拟口谕</button></div>','drawer');
   if (name === "stats") return openNationOverview(state);
@@ -954,7 +924,7 @@ document.addEventListener("click", async (e) => {
       guard();
       preferred = b.dataset.slot;
       if (['上朝','批折'].includes(state.schedule[preferred]?.kind)) {
-        memorialDialog(state,state.schedule[preferred].kind,preferred,(which,a)=>arrange(which,a));return;
+        memorialDialog(state,state.schedule[preferred].kind,preferred,arrangeReview);return;
       }
       if(state.schedule[preferred]?.kind==='自拟情节'){chooseAction('自拟情节');return;}
       openDialog(
@@ -984,14 +954,18 @@ document.addEventListener("click", async (e) => {
       if(memorialAssignments(state).has(b.dataset.memorial)) {
         scheduledMemorialDialog(state,b.dataset.memorial);return;
       }
-      const sl=['朝','午'].find(k=>!state.schedule[k]);
+      const reviewSlots = ["朝", "午"];
+      const hasReview = k => ["上朝", "批折"].includes(state.schedule[k]?.kind);
+      const sl = (reviewSlots.includes(preferred) && hasReview(preferred) && preferred) ||
+        reviewSlots.find(k => !state.schedule[k]) || reviewSlots.find(hasReview);
       if(!sl)throw new Error('朝、午已有安排，请先撤下行动');
-      memorialDialog(state,memorialEntryKind(state,sl),sl,(which,a)=>arrange(which,a),b.dataset.memorial);
+      const kind = hasReview(sl) ? state.schedule[sl].kind : memorialEntryKind(state,sl);
+      memorialDialog(state,kind,sl,arrangeReview,b.dataset.memorial);
     } else if (b.dataset.editReviewSlot) {
       guard();
       const sl=b.dataset.editReviewSlot,a=state.schedule[sl];
       if(!a||!['上朝','批折'].includes(a.kind))throw new Error('原拟批已撤下，请重新选择奏报。');
-      memorialDialog(state,a.kind,sl,(which,next)=>arrange(which,next));
+      memorialDialog(state,a.kind,sl,arrangeReview);
     } else if(b.dataset.personMemory)openNPCMemory(state,b.dataset.personMemory);
     else if(b.dataset.memoryScene){const h=[...state.volumes.flatMap(v=>v.chapters),...state.history].find(h=>h.scenes?.some(r=>r.id===b.dataset.memoryScene));if(h)openDialog('过往一幕','<article class="paper">'+chapterHTML(h,state.ambitions)+'</article>');else toast('这段经历的原文暂未载入，可以先看往事摘要。');}
     else if (b.dataset.scene) openScene(b.dataset.scene);
@@ -1029,66 +1003,64 @@ document.addEventListener("click", async (e) => {
         }
       };
     } else if (b.dataset.load) {
-      if (busy) throw new Error("请待本旬续写结束再读档");
-      await scheduleSave.flush();
-      await saveQueue.catch(() => {});
-      const l = await store.load(Number(b.dataset.load));
-      if (!l.state) throw new Error("此卷没有可读进度");
-      state = l.state;
-      slot = Number(b.dataset.load);
-      try {
-        localStorage.setItem("yuji:active-slot", String(slot));
-      } catch {}
-      readOnly = l.readOnly;
-      saveStatus = l.problems.join("；");
-      closeDialog();
-      render();
+      const target = Number(b.dataset.load);
+      await saveOperation(async () => {
+        const loaded = await store.load(target);
+        if (!loaded.state) throw new Error("此档没有可读进度");
+        activateSave(target, loaded);
+        closeDialog();
+      });
     } else if (b.dataset.exportSlot) {
-      const l = await store.load(Number(b.dataset.exportSlot));
-      if (l.state)
-        download(
-          "御极-第" + b.dataset.exportSlot + "卷.json",
-          store.exportJSON(l.state),
-        );
-    } else if (b.dataset.archiveRemove) {
-      if(!confirm('请确认已导出此封存。移出后请保管好备份文件。'))return;
-      await store.removeArchive(b.dataset.archiveRemove);await showSaves();
-    } else if (b.dataset.archiveExport) {
-      const a = (await store.listArchives()).find(
-        (a) => a.id === b.dataset.archiveExport,
-      );
-      if (a) download("御极-封存旧卷-" + a.turn + "旬.json", a.data);
-    } else if (b.dataset.raw) {
-      const l = await store.load(Number(b.dataset.raw));
-      download(
-        "御极-原始副本-" + b.dataset.raw + ".json",
-        JSON.stringify(l.raw, null, 2),
-      );
-    } else if (b.dataset.copySlot) {
-      if (!state) throw new Error("尚无进度");
-      const target = Number(b.dataset.copySlot),
-        l = await store.load(target);
-      if (l.state || l.readOnly) throw new Error("此卷已非空白");
-      await store.save(target, state);
-      slot = target;
-      readOnly = false;
-      toast("已另存于第 " + slot + " 卷");
+      const target = Number(b.dataset.exportSlot);
+      await saveOperation(async () => {
+        if (target === slot && state && !readOnly) {
+          download("御极-第" + target + "档.json", store.exportJSON(state));
+          return;
+        }
+        const loaded = await store.load(target);
+        if (loaded.state && !loaded.state.volumeIndex?.length)
+          download("御极-第" + target + "档.json", store.exportJSON(loaded.state));
+        else if (loaded.raw.some(raw => raw != null))
+          download("御极-第" + target + "档-原始备份.json", JSON.stringify(loaded.raw, null, 2));
+        else throw new Error("此档没有可导出的内容");
+      });
+    } else if (b.dataset.deleteSlot) {
+      const target = Number(b.dataset.deleteSlot);
+      if (busy || !confirm("删除第 " + target + " 档？")) return;
+      await saveOperation(async () => {
+        await store.remove(target);
+        if (target === slot) activateSave(target, { state: null });
+      });
       await showSaves();
+      toast("已删除第 " + target + " 档");
+    } else if (b.dataset.copySlot) {
+      const target = Number(b.dataset.copySlot);
+      if (!state || readOnly) throw new Error("当前没有可写入的进度");
+      if (b.hasAttribute("data-occupied") && !confirm("用当前进度覆盖第 " + target + " 档？")) return;
+      await saveOperation(async () => {
+        const saved = await store.save(target, state);
+        activateSave(target, { state, problems: saved.warnings });
+      });
+      await showSaves();
+      toast("已保存至第 " + target + " 档");
     } else if (b.dataset.importSlot) {
+      const target = Number(b.dataset.importSlot);
+      const overwrite = b.hasAttribute("data-occupied");
       const input = document.createElement("input");
       input.type = "file";
       input.accept = ".json,application/json";
       input.onchange = async () => {
         try {
           const file = input.files[0];
-          if (!file) return;
-          if (file.size > 30000000) throw new Error("文件超过 30 MB");
-          await store.importJSON(
-            Number(b.dataset.importSlot),
-            await file.text(),
-          );
-          toast("导入完成，可读此卷");
+          if (!file || !b.isConnected || !$("#modal").open) return;
+          if (file.size > 150000000) throw new Error("文件超过 150 MB");
+          if (overwrite && !confirm("用导入的存档覆盖第 " + target + " 档？")) return;
+          await saveOperation(async () => {
+            const imported = await store.importJSON(target, await file.text(), { overwrite });
+            activateSave(target, { state: imported });
+          });
           await showSaves();
+          toast("已导入并读入第 " + target + " 档");
         } catch (err) {
           toast(err.message);
         }
@@ -1143,7 +1115,7 @@ async function boot() {
   try {
     remembered = Number(localStorage.getItem("yuji:active-slot")) || 1;
   } catch {}
-  slot = [1, 2, 3].includes(remembered) ? remembered : 1;
+  slot = SAVE_SLOTS.includes(remembered) ? remembered : 1;
   const first = await store.load(slot);
   if (first.state) {
     state = first.state;

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {stage9Fixture} from '../qa/stage9-fixture.js';
-import {createMemorialSession,memorialAction,memorialHTML} from '../src/ui/memorials.js';
+import {createMemorialSession,memorialAction,reviewedMemorialAction,nextMemorialId,memorialHTML} from '../src/ui/memorials.js';
 import {memorialAssignments,availableMemorials,memorialCounts,memorialDecisionLabel,memorialReceivedLabel} from '../src/ui/memorial-state.js';
 import {memorialListHTML,mobileNavHTML} from '../src/ui/render.js';
 import {actionAvailability} from '../src/ui/view-model.js';
@@ -37,6 +37,25 @@ test('明确编辑原日程保留已有准驳、朱批和时辰，不新增第�
   const updated={...s,schedule:{...s.schedule,朝:memorialAction(s,session)}};
   assert.deepEqual(memorialCounts(updated),{pending:4,queued:2,total:6});
   assert.equal(memorialAssignments(updated).get(ids[0]).decision,'reject');
+});
+test('从一份奏折开始，可在同一时辰保存后继续，也可由奏报匣添到原批折',()=>{
+ const s=stage9Fixture(),[first,second,third]=s.memorials;
+ s.schedule.朝={kind:'歇息'};
+ const session=createMemorialSession(s,'批折','午',first.id);
+ session.choices[first.id]='hold';session.remarks[first.id]='先看赈济明细';
+ assert.equal(nextMemorialId(s,session),second.id);
+ assert.match(memorialHTML(s,session),/保存并批下一折/);
+ s.schedule.午=reviewedMemorialAction(s,session);
+ const next=createMemorialSession(s,'批折','午',second.id);
+ assert.deepEqual(next.ids,[first.id,second.id]);assert.equal(next.index,1);
+ assert.equal(next.choices[first.id],'hold');assert.equal(next.remarks[first.id],'先看赈济明细');
+ assert.equal(next.choices[second.id],undefined);
+ assert.equal(actionAvailability(s,'批折'),'');
+ assert.equal(createMemorialSession(s,'批折','朝',null,{newBatch:true}).slot,'午');
+ next.ids.push(third.id);next.choices[second.id]='hold';
+ const recorded=reviewedMemorialAction(s,next);
+ assert.deepEqual(recorded.memorials,[first.id,second.id]);
+ assert.equal(recorded.decisions[first.id].remark,'先看赈济明细');
 });
 test('两时辰都拟批后禁止新批折，撤下原安排才释放奏折',()=>{
   const {s}=queued(),session=createMemorialSession(s,'批折','午',null,{newBatch:true});session.ids.forEach(id=>session.choices[id]='approve');s.schedule.午=memorialAction(s,session);

@@ -108,6 +108,47 @@ export function createIDB(indexedDB, timeout = 4000) {
       }
     });
   }
+  async function compareWrite(slot, expected, write) {
+    const db = await open();
+    return new Promise((resolve, reject) => {
+      let ended = false,
+        conflict = false;
+      const tx = db.transaction("slots", "readwrite"),
+        st = tx.objectStore("slots"),
+        rq = st.get(slot),
+        timer = setTimeout(() => {
+          try {
+            tx.abort();
+          } catch {}
+          finish(new Error("存档写入超时"));
+        }, timeout);
+      const finish = (error) => {
+        if (ended) return;
+        ended = true;
+        clearTimeout(timer);
+        db.close();
+        error ? reject(error) : resolve();
+      };
+      rq.onsuccess = () => {
+        if (
+          !sameEnvelope(rq.result,expected)
+        ) {
+          conflict = true;
+          tx.abort();
+          return;
+        }
+        write(st);
+      };
+      tx.oncomplete = () => finish();
+      tx.onerror = tx.onabort = () => {
+        const e = new Error(
+          conflict ? "存档已被其他页面修改" : "主档写入失败",
+        );
+        if (conflict) e.code = "CONFLICT";
+        finish(e);
+      };
+    });
+  }
   return {
     archive: (id, record) =>
       transaction("readwrite", (st) => st.put(record, id), "archives"),
@@ -122,47 +163,8 @@ export function createIDB(indexedDB, timeout = 4000) {
     get: (slot) => transaction("readonly", (st) => st.get(slot)),
     put: (slot, record) =>
       transaction("readwrite", (st) => st.put(record, slot)),
-    comparePut: async (slot, record, expected) => {
-      const db = await open();
-      return new Promise((resolve, reject) => {
-        let ended = false,
-          conflict = false;
-        const tx = db.transaction("slots", "readwrite"),
-          st = tx.objectStore("slots"),
-          rq = st.get(slot),
-          timer = setTimeout(() => {
-            try {
-              tx.abort();
-            } catch {}
-            finish(new Error("存档写入超时"));
-          }, timeout);
-        const finish = (error) => {
-          if (ended) return;
-          ended = true;
-          clearTimeout(timer);
-          db.close();
-          error ? reject(error) : resolve();
-        };
-        rq.onsuccess = () => {
-          if (
-            !sameEnvelope(rq.result,expected)
-          ) {
-            conflict = true;
-            tx.abort();
-            return;
-          }
-          st.put(record, slot);
-        };
-        tx.oncomplete = () => finish();
-        tx.onerror = tx.onabort = () => {
-          const e = new Error(
-            conflict ? "存档已被其他页面修改" : "主档写入失败",
-          );
-          if (conflict) e.code = "CONFLICT";
-          finish(e);
-        };
-      });
-    },
+    comparePut: (slot, record, expected) => compareWrite(slot, expected, st => st.put(record, slot)),
+    compareDelete: (slot, expected) => compareWrite(slot, expected, st => st.delete(slot)),
   };
 }
 export function createSaveStore({ primary, backup, validate = (x) => x }) {
@@ -304,15 +306,39 @@ export function createSaveStore({ primary, backup, validate = (x) => x }) {
     known.set(slot, { token: token(await copies(slot)), envelope });
     return { warnings, revision: envelope.revision };
   }
-  async function importJSON(slot, raw) {
+  async function importJSON(slot, raw, { overwrite = false } = {}) {
     if (raw.length > 150000000) throw new Error("导入文件超过 150 MB");
     const state = validate(restoreRecovery(unpack(raw).state));
     if(state.volumeIndex?.length)throw new Error('此为分卷主档，请先载入各卷后导出完整 JSON');
-    const current = await load(slot);
-    if (current.readOnly || current.state)
-      throw new Error("导入仅允许写入空白且未受保护的存档位");
+    if (!known.has(slot)) await load(slot);
+    if (locked.has(slot) || (!overwrite && known.get(slot).envelope))
+      throw new Error(overwrite ? "存档受保护，无法覆盖" : "请选择空白且未受保护的存档位");
     await save(slot, state);
     return state;
+  }
+  async function remove(slot) {
+    const backupKey = key(slot);
+    if (!known.has(slot)) await load(slot);
+    const cs = await copies(slot);
+    if (cs.some(c => c.error)) throw new Error("暂时无法读取存档，删除未执行");
+    if (token(cs) !== known.get(slot).token)
+      throw new Error("存档已被其他页面修改，请刷新后再删除");
+    const savedBackup = cs[1].raw;
+    if (!sameEnvelope(backup.getItem(backupKey), savedBackup))
+      throw new Error("存档已被其他页面修改，请刷新后再删除");
+    // Remove the recovery copy first. If the primary operation fails, restore
+    // the backup unless another page has already saved a newer copy.
+    if (savedBackup != null) backup.removeItem(backupKey);
+    try {
+      if (primary.compareDelete) await primary.compareDelete(slot, cs[0].raw);
+      else if (cs[0].raw != null) await primary.remove(slot);
+    } catch (error) {
+      if (savedBackup != null && backup.getItem(backupKey) == null)
+        backup.setItem(backupKey, savedBackup);
+      throw error;
+    }
+    locked.delete(slot);
+    known.set(slot, { token: token([{ raw: null }, { raw: null }]), envelope: null });
   }
   async function listArchives() {
     let rows = [];
@@ -353,6 +379,7 @@ export function createSaveStore({ primary, backup, validate = (x) => x }) {
     load,
     save,
     importJSON,
+    remove,
     listArchives,
     archiveAndSave,
     removeArchive:async id=>{if(!primary.removeArchive)throw new Error('无法移出封存');await primary.removeArchive(id);},
