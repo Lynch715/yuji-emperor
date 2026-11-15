@@ -38,17 +38,20 @@ test('含糊朱批与口谕合并成一次，模型分类限已有输入与枚�
   calls++;const body=JSON.parse(o.body),input=JSON.parse(body.messages[1].content);assert.equal(input.inputs.length,ids.length+1);assert.match(body.messages[0].content,/remarkKind/);
   return json({actions:[],remarks:[{inputId:'朝:remark:'+ids[0],remarkKind:'嘉奖',effects:{treasury:99999}},{inputId:'朝:remark:'+ids[1],remarkKind:'越权'},{inputId:'假朱批',remarkKind:'申饬'}]});
  }});
- assert.equal(calls,1);assert.equal(r.schedule.朝.decisions[ids[0]].remarkKind,'嘉奖');assert.equal(r.schedule.朝.decisions[ids[1]].remarkKind,undefined);assert.deepEqual(r.intents,[]);assert.equal(s.nation.treasury,480);
+ assert.equal(calls,1);assert.equal(r.schedule.朝.decisions[ids[0]].remarkKind,'嘉奖');assert.equal(r.schedule.朝.decisions[ids[1]].remarkKind,undefined);assert.deepEqual(r.intents.map(a=>[a.inputId,a.type]),[['午','other']]);assert.equal(s.nation.treasury,480);
 });
 test('朱批中实质命令继续解析，离线也不漏掉拨款',async()=>{
  const s=fresh(),id=s.memorials[0].id,text='嘉奖，拨银五万两入内帑';assert.equal(localRemarkKind(text),null);
  const r=await requestScheduleIntents(config,s,{朝:{kind:'批折',memorials:[id],decisions:{[id]:{option:'hold',remark:text}}}},{local:true});
  assert.ok(r.intents.some(a=>a.type==='allocate'&&a.amount===5&&a.destination==='privy'));
 });
-test('意图接口异常最多请求一次，不预演或修改输入',async()=>{
- const s=fresh(),before=structuredClone(s);let calls=0;
- await assert.rejects(()=>requestScheduleIntents(config,s,{午:{kind:'下旨',text:'另议一事'}},{fetcher:async()=>{calls++;return new Response('',{status:503});}}));
- assert.equal(calls,1);assert.deepEqual(s,before);
+test('意图接口异常最多请求一次，退回本地且不修改输入',async()=>{
+ const s=fresh(),before=structuredClone(s);let calls=0,fallbacks=0;
+ const result=await requestScheduleIntents(config,s,{午:{kind:'下旨',edictType:'赈灾',text:'拨银十万两赈济直隶'}},{
+  onFallback:()=>fallbacks++,fetcher:async()=>{calls++;return new Response('',{status:503});},
+ });
+ assert.equal(calls,1);assert.equal(fallbacks,1);assert.deepEqual(s,before);
+ assert.deepEqual(result.intents.map(a=>[a.type,a.destination,a.amount]),[['allocate','赈灾',10]]);
 });
 test('主叙事与奏折真正并行，奏折流不进入正文章节，主叙事旧字段被忽略',async()=>{
  const s=fresh(),f=forecastTurn(s),before=structuredClone(f),started=[];let releaseMain,releaseMemorial;

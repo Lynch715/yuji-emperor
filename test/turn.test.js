@@ -117,8 +117,8 @@ test("standalone build parses without external scripts; optional Google Fonts on
   assert.doesNotThrow(() => new Script(js));
   assert.ok(!/<script[^>]+src=/.test(html));
   const links=[...html.matchAll(/<link[^>]+href="([^"]+)"/g)].map(m=>m[1]);
-  assert.ok(links.length>=1);
-  assert.ok(links.every(url=>['fonts.googleapis.com','fonts.gstatic.com'].includes(new URL(url).hostname)));
+  assert.deepEqual(links,[]);
+  assert.match(js,/network-fonts-stylesheet/);
 });
 test("partial streaming renders chapter prose without JSON metadata or reaction fields", async () => {
   const { extractPartialChapter } = await import("../src/llm/validate.js");

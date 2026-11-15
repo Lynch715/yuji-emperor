@@ -2,7 +2,7 @@ import { advanceExams, examiners } from './keju.js';
 import {developmentNotes} from './tech.js';
 import {resolveScene,sceneBlock,sceneOutcomeText,rememberScene,SCENE_ENERGY} from './scenes.js';
 import { freedomRules, selectionYear, adjudicate } from "./freedom.js";
-import { resolveIntents } from "./intents.js";
+import { resolveEdictCard, resolveIntents } from "./intents.js";
 import {seedScenarioEvents} from './scenario-events.js';
 import {fiatEnabled,applyFiatRules} from './fiat.js';
 import { compactChapter } from "./archive.js";
@@ -57,7 +57,7 @@ import {
   advanceCampaigns,
   checkCollapse,
 } from "./foreign.js";
-import { issueEdict, advanceProjects, edictBlock } from "./edicts.js";
+import { advanceProjects, edictBlock } from "./edicts.js";
 import { talkPeople } from './text.js';
 import {
   seedMemorials,
@@ -114,8 +114,8 @@ export function validateSchedule(state, schedule) {
       throw new Error(a.kind + " 不能安排在" + slot + "槽");
     if(a.kind==='自拟情节'){const blocked=sceneBlock(state,a);if(blocked)throw new Error(blocked);}
     if(a.kind==='外交'){const blocked=diplomacyBlock(state,a);if(blocked)throw new Error(blocked);}
-    if(a.kind==='下旨'){const blocked=edictBlock(state,a.edictType,a.province);if(blocked)throw new Error(blocked);}
-    if(a.kind==='下旨'&&a.edictType==='加开恩科'&&!examiners(state).some(o=>o.id===a.examiner))throw new Error('加开恩科须先任命在京主考官');
+    if(a.kind==='下旨'&&!a.placeholder){const blocked=edictBlock(state,a.edictType,a.province);if(blocked)throw new Error(blocked);}
+    if(a.kind==='下旨'&&!a.placeholder&&a.edictType==='加开恩科'&&!examiners(state).some(o=>o.id===a.examiner))throw new Error('加开恩科须先任命在京主考官');
     if(a.kind==='召见'&&(talkPeople(a).length===0||talkPeople(a).some(id=>![...state.court.officials,...state.harem.consorts,...state.foreign].some(o=>o.id===id))))throw new Error('请选择名册中的召见人物');
     if (rule.full) full = true;
     for (const id of a.memorials || []) {
@@ -249,15 +249,9 @@ function forecastDraft(state, schedule, intents = []) {
       }
       s = growTalent(s, "政略", 0.2);
     } else if (action.kind === "下旨") {
-      const playerActions=intents.filter(a=>a.slot===slot);
-      if(playerActions.length){
-        const resolved=resolveIntents(s,playerActions,{slot});s=resolved.state;
-        slotResults[slot].push(...resolved.results.map(r=>r.summary));
-        continue;
-      }
-      result = issueEdict(s, action, die);
+      result = resolveEdictCard(s, action, intents.filter(a=>a.slot===slot), slot, die);
       s = result.state;
-      slotResults[slot].push(result.note);
+      slotResults[slot].push(...result.notes);
     } else if (action.kind === "任命") {
       result = appoint(s, action);
       s = result.state;

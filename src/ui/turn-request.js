@@ -42,7 +42,10 @@ export async function requestTurnContent(config,state,forecast,options={}){
   const parallel={...options,deadline,signal:ac.signal};
   try{
     const [narrative,memorialTexts]=await Promise.all([
-      requestTurnNarrative(config,state,forecast,parallel),
+      requestTurnNarrative(config,state,forecast,parallel).then(narrative=>{
+        options.onNarrativeReady?.();
+        return narrative;
+      }),
       requestMemorialTexts(config,forecast.state,forecast.newMemorials,parallel),
     ]);
     return {...narrative,memorialTexts};

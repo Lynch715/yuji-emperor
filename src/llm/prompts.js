@@ -228,6 +228,7 @@ export function turnMessages(state, forecast) {
   const nationSummary = (s) => Object.fromEntries(
     ["treasury", "privy", "grain", "morale", "governance"].map((k) => [k, r1(s.nation[k])]));
   const oldRoster = roster(before).split("\n"), newRoster = roster(state).split("\n");
+  const narrativeOrders=(state.intentResults||[]).some(r=>r.status==="narrative-done");
   const dynamic = {
     格物:{在研:state.tech?.current?(state.tech.current.name||techById(state.tech.current.id)?.name):'无',进度百分比:state.tech?.current?Math.floor(state.tech.current.progress/techById(state.tech.current.id).cost*100):0,本旬突破:(state.tech?.done||[]).filter(id=>!before.tech?.done.includes(id)).map(id=>techById(id).name)},
     国势: nationSummary(state),
@@ -257,6 +258,7 @@ export function turnMessages(state, forecast) {
     {
       role: "user",
       content: (forecast.scenes?.length?SCENE_RULES+'\n【参与者记得的事】'+stable(memoryContext(before,forecast.scenes.flatMap(r=>r.people.map(p=>p.id))))+"\n【本旬自拟情节】"+stable(forecast.scenes)+"\n":"") + dynastyBible(state,{schedule:forecast.schedule,scenes:forecast.scenes,results:forecast.slotResults,notes:forecast.notes,facts:forecast.facts,debate:forecast.debate,memorials:forecast.newMemorials,talks:(before.talks||[]).filter(t=>t.turn===before.turn)}) + "\n" + historyBlock(state) + "\n" + situationBlock(state) +
+        (narrativeOrders ? "\n【言出法随口谕】状态为 narrative-done 的口谕已照旨办成，可写成既成事实。只写玩家所求的叙事结果，不为此增减钱粮、改写人物或附加数值效果。硬结果仍以结算表为准。" : "") +
         `\n【本旬状态】${stable(dynamic)}\n【玩家排程】${stable(forecast.schedule)}\n【本旬结算表（不可更改）】${stable({ die: forecast.die, fate: forecast.fate, slots: forecast.slotResults, 账目: settlementDigest(state, forecast.entries), notes: forecast.notes, facts: forecast.facts || [] })}\n【廷议名单】${stable(forecast.debate || [])}\n【新奏报摘要】${stable(forecast.newMemorials.map(m=>m.title))}\n按【正文任务】写本旬，输出正文 JSON。`,
     },
   ];

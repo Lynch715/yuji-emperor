@@ -10,7 +10,8 @@ import {sceneMessages,mockSceneNarrative} from '../llm/scenes.js';
 import { talkPeople } from '../core/text.js';
 import { FREEDOM_RULES, selectionYear } from "../core/freedom.js";
 import { globalYear } from "../core/calendar.js";
-import { requestScheduleIntents, requestPlayerIntents } from "./intent-request.js";
+import { requestScheduleIntents, requestPlayerIntents, requestTalkIntents } from "./intent-request.js";
+import { oralScheduleEntry } from "./oral.js";
 import { resolveTalkIntents } from "../core/intents.js";
 import { postTitle, SCENARIOS, scenarioPreview } from "../core/scenarios.js";
 import { createDebouncedSave } from "../store/debounce.js";
@@ -32,7 +33,7 @@ import {
   setLeaveGuard,
   download,
 } from "./common.js";
-import { loadSettings, openSettings } from "./settings.js";
+import { applyNetworkFonts, loadSettings, networkFontsEnabled, openSettings } from "./settings.js";
 import { requestTurnContent, requestTurnNarrative, validateTurnNarrative } from "./turn-request.js";
 import { createGameSeed, createOpening, openingErrorMessage } from "./new-game.js";
 import { createDialogRequestScope } from "./request-scope.js";
@@ -65,7 +66,6 @@ import { talkAttempt } from "../core/court.js";
 import { callJSON, createBudget } from "../llm/client.js";
 import {
   talkMessages,
-  classifyMessages,
   biographyMessages,
   STYLES,
   LENGTHS,
@@ -80,6 +80,7 @@ import { DIFFICULTIES, scenarioDifficulty, scenarioRecommendations } from "./ope
 import { openNationOverview } from "./nation-overview.js";
 initCommon();
 initArt();
+applyNetworkFonts(networkFontsEnabled());
 setLeaveGuard(() => busy);
 initAppIcon();
 const store = createSaveStore({
@@ -94,6 +95,7 @@ let state = null,
   slot = 1,
   readOnly = false,
   busy = false,
+  turnStage = "",
   saveStatus = "",
   config = loadSettings(),
   metrics = loadMetrics(),
@@ -107,7 +109,7 @@ function render() {
   if(state)state = withPortraitArt(assignFaces(state));
   const y = window.scrollY, kept = captureView($("#app"));
   const canRepeat = !!state && Object.values(repeatSchedule(state, lastScheduleFor(state))).some(Boolean);
-  $("#app").innerHTML = renderApp(state, { readOnly, busy, saveStatus, canRepeat, scheduleCollapsed });
+  $("#app").innerHTML = renderApp(state, { readOnly, busy, turnStage, saveStatus, canRepeat, scheduleCollapsed });
   document.querySelectorAll("[data-action]").forEach((b) => {
     const reason=readOnly?'存档暂时无法保存':busy?'故事正在继续':actionAvailability(state,b.dataset.action);
     b.disabled=!!reason;b.draggable=!reason;
@@ -479,11 +481,22 @@ async function advance(local = false) {
   if (!state || readOnly || busy || state.ending) return;
   if(state.pending?.kind==='scene')return openScene(state.pending.forecast.sceneId,local,local);
   busy = true;
+  turnStage = state.pending ? "正在撰写本旬…" : "正在解析旨意…";
+  render();
+  const showStage = (text) => {
+    if (turnStage === text) return;
+    turnStage = text;
+    const status = $("#turn-progress");
+    if (status) status.textContent = text;
+  };
   let ac = new AbortController();
   const deadline=Date.now()+90000;
   try {
     if (!state.pending) {
-      const {schedule,intents}=await requestScheduleIntents(config,state,state.schedule,{local,signal:ac.signal,onMetric:markMetric,deadline});
+      const {schedule,intents}=await requestScheduleIntents(config,state,state.schedule,{
+        local,signal:ac.signal,onMetric:markMetric,deadline,
+        onFallback:()=>toast("旨意按字面办理"),
+      });
       const forecast = forecastTurn({ ...state, turnBudget: null }, schedule, intents);
       state = {
         ...state,
@@ -497,6 +510,7 @@ async function advance(local = false) {
     // v4 saves may contain an absolute planning-time deadline. Only the
     // attempt count belongs to a pending turn; the request owns its clock.
     state.turnBudget = { used: (state.turnBudget?.used||0)>=2?0:(state.turnBudget?.used||0), ...(state.turnBudget?.rewriteAttempted?{rewriteAttempted:true}:{}) };
+    turnStage = "正在撰写本旬…";
     render();
     let narrative;
     if (state.settings.demo || local) {narrative = mockNarrative(f);if(f.scenes?.length)narrative=validateTurnNarrative(narrative,f);}
@@ -507,8 +521,10 @@ async function advance(local = false) {
         signal: ac.signal,
         onMetric: markMetric,
         onPartial: streamDraft,
+        onNarrativeReady: () => showStage("正在誊录奏文…"),
       });
     }
+    showStage("正在誊录奏文…");
     state = commitTurn(state, f, narrative);
     state = withChapterArt(state, f);
     lastSchedule = { runId: state.runId, turn: state.turn, schedule: f.schedule };
@@ -536,6 +552,7 @@ async function advance(local = false) {
     if (state) await persist();
   } finally {
     busy = false;
+    turnStage = "";
     render();
   }
 }
@@ -644,7 +661,7 @@ function startTalk(person) {
     button.disabled = true;
     busy = true;
     try {
-      const intents=await requestPlayerIntents(config,state,[{id:'talk-'+state.turn+'-'+state.talks.length,slot:'午',text:line}],{onMetric:markMetric});
+      const intents=await requestTalkIntents(config,state,line,{onMetric:markMetric});
       let attempt = talkAttempt(state, person, line, intents.some(a=>a.type!=='other'));
       if(intents.length)attempt=resolveTalkIntents(attempt.state,attempt.result,intents);
       state = attempt.state;
@@ -702,60 +719,11 @@ function startTalk(person) {
     }
   };
 }
-async function oral(text) {
+function oral(text) {
   guard();
-  let kind =
-      Object.keys(ACTIONS).find((k) => text.startsWith(k)) ||
-      (/试探|离间|暗查|收买|闲谈/.test(text) ? "私下行事" : "下旨"),
-    type = Object.keys({
-      格物:1,
-      兴业:1,
-      赈灾: 1,
-      减赋: 1,
-      加税: 1,
-      修河: 1,
-      整饬吏治: 1,
-      征兵: 1,
-      大赦: 1,
-      修园: 1,
-      编修大典: 1,
-      开海: 1,
-      立储: 1,
-      禅位: 1,
-    }).find((t) => text.includes(t));
-  if (/赈济|救灾/.test(text)) type = "赈灾";
-  if(/研制|研究|研习|格物|发明|改良|研新/.test(text))type='格物';
-  else if(/兴业|兴建|建造|开设|设立/.test(text))type='兴业';
-  if (!type && !state.settings.demo) {
-    busy = true;
-    render();
-    try {
-      const r = await callJSON(config, classifyMessages(text), {
-        budget: createBudget(),
-        onMetric: markMetric,
-      });
-      kind = r.kind === "闲谈" ? "私下行事" : r.kind;
-      type = r.edictType;
-    } finally {
-      busy = false;
-      render();
-      await persist();
-    }
-  }
-  if (type) {
-    const sl = ["朝", "午", "夜"].find((k) => !state.schedule[k]);
-    if (!sl) throw new Error("日程已满，请先撤下一张行动卡");
-    const z = state.nation.provinces.find((z) => text.includes(z.name));
-    arrange(sl, {
-      kind: "下旨",
-      edictType: type,
-      province: z?.id,
-      label: type,
-      text,
-    });
-    if ($('#oral-form')) closeDialog();
-  } else if (ACTIONS[kind]) chooseAction(kind);
-  else toast("请在「下旨」中选定此事。");
+  const entry = oralScheduleEntry(state, text);
+  arrange(entry.slot, entry.action);
+  if ($("#oral-form")) closeDialog();
 }
 function exportMarkdown() {
   if (!state) return;
@@ -1145,7 +1113,11 @@ document.addEventListener("submit", (e) => {
 
   if (e.target.id === "oral-form") {
     e.preventDefault();
-    oral($("#oral").value.trim()).catch((err) => toast(err.message));
+    const submit = e.target.querySelector('button[type="submit"]');
+    if (submit.disabled) return;
+    submit.disabled = true;
+    try { oral(e.target.querySelector("textarea").value); }
+    catch (error) { submit.disabled = false; toast(error.message); }
   }
 });
 document.addEventListener("dragstart", (e) => {

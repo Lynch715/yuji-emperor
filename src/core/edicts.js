@@ -116,6 +116,9 @@ export const EDICTS = {
   兴业:{cost:0,months:0,difficulty:0,office:'工部尚书',effects:{}},
 };
 export function edictCost(state,type){return EDICTS[type]?.cost*(type==='修河'?1-(techEffects(state).riverDiscount||0):1);}
+export function provinceMentioned(state, text) {
+  return state.nation.provinces.find(p => text.includes(p.name))?.id || null;
+}
 export function execution(state, type, die) {
   const edict = EDICTS[type];
   if (!edict) throw new Error("未知旨意类型");
@@ -163,10 +166,14 @@ function projectExecution(p){
  const label=p.execRate>=1.2?'雷厉风行':p.execRate>=1?'照办':p.execRate>=0.6?'敷衍':'阳奉阴违';
  return {label,rate:p.execRate,official:p.office};
 }
-export function issueEdict(state, action, die) {
+export function issueEdict(state, action, die, funding = {}) {
   const type = action.edictType || "禁令",
     rule = EDICTS[type]&&{...EDICTS[type],cost:edictCost(state,type)};
   if (!rule) throw new Error("无法识别此旨意，请选择模板");
+  if (rule.months) {
+    rule.cost = funding.silver ?? rule.cost;
+    rule.grain = funding.grain ?? rule.grain;
+  }
   if(fiatEnabled(state))state=ensureFiatFunds(state,{[rule.private?'privy':'treasury']:rule.cost,grain:rule.grain||0});
   if(type==='加开恩科')return openEnke(state,action.examiner);
   if(type==='格物')return configureResearch(state,action);

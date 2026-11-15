@@ -2,10 +2,8 @@
 export function turnFacts(before, after, schedule, slotResults) {
   const facts = [];
   for (const [slot, action] of Object.entries(schedule)) {
-    if (action?.kind === "下旨") {
-      const label = slotResults[slot]
-        .join(" ")
-        .match(/雷厉风行|照办|敷衍|阳奉阴违|封驳/)?.[0];
+    if (action?.kind === "下旨" && !action.placeholder) {
+      const label = slotResults[slot][0]?.match(/雷厉风行|照办|敷衍|阳奉阴违|封驳/)?.[0];
       if (label)
         facts.push({ kind: "execution", slot, topic: action.edictType, label });
     }

@@ -3,11 +3,12 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createViewportUpdater,applyFontScale,storedFontScale} from '../src/ui/mobile.js';
 
-test('F1-U1 不拦截滚动与用户缩放，视口保留安全区域',()=>{
+test('F1-U1 保留安全区域，窄屏防止聚焦时缩放',()=>{
   const src=readFileSync('src/ui/mobile.js','utf8');
   assert.doesNotMatch(src,/['"](?:touch(?:start|move)|gesture(?:start|change))['"]/);
   assert.match(readFileSync('src/ui/style.css','utf8'),/html,\nbody \{\n  touch-action: manipulation;/);
-  const shell=readFileSync('src/ui/shell.html','utf8');assert.doesNotMatch(shell,/user-scalable=no|maximum-scale=1/);assert.match(shell,/viewport-fit=cover/);
+  const shell=readFileSync('src/ui/shell.html','utf8');assert.doesNotMatch(shell,/user-scalable=no/);assert.match(shell,/maximum-scale=1,viewport-fit=cover/);
+  assert.match(readFileSync('src/ui/style.css','utf8'),/input, select, textarea \{\s+font-size: max\(16px, 1em\);/);
 });
 test('F1-U2 悬停样式只在可悬停设备生效，按钮有按压反馈',()=>{
   const css=readFileSync('src/ui/style.css','utf8');

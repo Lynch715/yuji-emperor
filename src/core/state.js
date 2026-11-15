@@ -12,7 +12,7 @@ import { uniqueName } from "./names.js";
 import { chooseRegent, legacyDowagerFaction } from "./regency-info.js";
 import {factionPowers} from './politics.js';
 import {defaultScenarioEvents,defaultFiat,validateSandbox,WORLD_MAX} from './sandbox-schema.js';
-export const VERSION = 26;
+export const VERSION = 27;
 export const TALENTS = ["政略", "权谋", "武略", "文采", "魅力"];
 export const SLOTS = ["朝", "午", "夜"];
 export const POST_NAMES = [
@@ -459,6 +459,8 @@ export function migrate(input) {
   if(s.schedule)for(const slot of ["朝","午","夜"]){
     const action=s.schedule[slot];
     if(s.v<8&&action&&["上朝","批折"].includes(action.kind)&&action.memorials===undefined)action.memorials=(s.memorials||[]).slice(0,3).map(m=>m.id);
+    // The old free-form panel used 禁令 for typed orders without a selected policy.
+    if(input.v<27&&action?.kind==='下旨'&&action.edictType==='禁令'&&action.text?.trim())action.placeholder=true;
     s.schedule[slot]=normalizeMemorialAction(action);
   }
   for (const key of [
@@ -697,7 +699,7 @@ export function assertState(s) {
   }
   if(s.v>=11){
     if(!Array.isArray(s.intentResults))throw new Error('口谕裁决记录损坏');
-    for(const r of s.intentResults)if(!r||typeof r.id!=='string'||!Number.isSafeInteger(r.turn)||!['success','partial','failed','narrative'].includes(r.status)||!r.actual||typeof r.actual!=='object')throw new Error('口谕裁决记录损坏');
+    for(const r of s.intentResults)if(!r||typeof r.id!=='string'||!Number.isSafeInteger(r.turn)||!['success','partial','failed','narrative','narrative-done'].includes(r.status)||!r.actual||typeof r.actual!=='object')throw new Error('口谕裁决记录损坏');
   }
   if(s.v>=12&&(!Array.isArray(s.memorialVariety)||s.memorialVariety.length>72||s.memorialVariety.some(r=>!r||typeof r.id!=='string'||typeof r.type!=='string'||!Number.isSafeInteger(r.turn)||r.turn<0||r.turn>s.turn)))throw new Error('奏折轮换记录损坏');
   if(s.memorials.some(m=>m.textStatus!==undefined&&!['template','ready'].includes(m.textStatus)))throw new Error('奏折正文状态损坏');

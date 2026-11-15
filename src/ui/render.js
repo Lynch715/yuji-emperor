@@ -426,7 +426,7 @@ export function introHTML() {
 }
 export function renderApp(
   s,
-  { readOnly = false, busy = false, saveStatus = "", canRepeat = false, scheduleCollapsed = false } = {},
+  { readOnly = false, busy = false, turnStage = "", saveStatus = "", canRepeat = false, scheduleCollapsed = false } = {},
 ) {
   const last = s?.history.at(-1),
     locked = readOnly || busy || !!s?.ending || !!s?.pending,
@@ -521,6 +521,9 @@ export function renderApp(
                       "已归档奏报",
                   )
                   .join(" · ")
+              : a?.kind === "下旨" && a.text?.trim()
+              ? (a.placeholder ? "" : a.edictType + " · ") + a.text.trim().slice(0, 36) +
+                (a.text.trim().length > 36 ? "…" : "")
               : a?.label ||
                 (ACTIONS &&
                   Object.keys(ACTIONS)
@@ -595,13 +598,15 @@ export function renderApp(
         (readOnly || busy || s.ending ? "disabled" : "") +
         ">" +
         (busy
-          ? "正在续写…"
+          ? (turnStage ? "起驾中…" : "正在续写…")
           : s.pending
             ? (s.pending.kind==='scene'?"继续这段情节":"继续本旬故事")
             : scheduled
               ? "起驾"
               : "歇息") +
-        "</button></div></section>"
+        "</button></div>" +
+        (turnStage ? '<p id="turn-progress" role="status" class="muted">' + esc(turnStage) + '</p>' : "") +
+        "</section>"
       : "") +
     (readOnly
       ? '<p class="warning">此卷暂不可改写，旧卷已保留。请先导出备份。</p>'

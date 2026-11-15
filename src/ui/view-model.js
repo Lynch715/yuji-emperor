@@ -77,7 +77,7 @@ export function scheduleEstimate(s) {
   const totals={treasury:0,privy:0,grain:0}, executions=[];
   if (!s) return {totals,executions};
   for (const a of Object.values(s.schedule).filter(Boolean)) {
-    if (a.kind === "下旨" && a.text?.trim()) continue;
+    if (a.kind === "下旨" && (a.placeholder || a.text?.trim())) continue;
     if (a.kind === "下旨" && EDICTS[a.edictType]) {
       const base=EDICTS[a.edictType],e={...base,cost:base.cost*(a.edictType==='修河'?1-(techEffects(s).riverDiscount||0):1)};
       if(a.edictType==='格物')continue;

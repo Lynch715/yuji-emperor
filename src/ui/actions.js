@@ -34,6 +34,7 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
   if (kind === "下旨")
     fields =
       '<label for="edict-type">旨意事项</label><select id="edict-type">' +
+      (fiatEnabled(s) ? '<option value="">自由拟旨</option>' : '') +
       Object.keys(EDICTS)
         .map((x) => "<option>" + x + "</option>")
         .join("") +
@@ -158,7 +159,6 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
     "action-shell",
   );
   $('#modal .dialog-head').insertAdjacentHTML('beforebegin','<div id="action-art">' + sceneHTML(sceneKey({kind},preferred),'action',preferred==='夜') + '</div>');
-  if(kind==='下旨'&&fiatEnabled(s))$('#edict-type').value='禁令';
   if(kind==='自拟情节')$('#modal').classList.add('scene-dialog');
   document.querySelectorAll('[data-form-slot]').forEach(b=>b.onclick=()=>{
     $('#action-slot').value=b.dataset.formSlot;
@@ -174,7 +174,7 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
       scheduleCost(s.schedule) +
       " / " +
       energyLimit(s);
-    if (kind === "下旨") {
+    if (kind === "下旨" && $("#edict-type").value) {
       const type = $("#edict-type").value,
         e = {...EDICTS[type],cost:edictCost(s,type)},
         x = execution(s, type, 11);
@@ -197,7 +197,8 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
       if(type==='加开恩科')text='国库三十万两，士林声望加3；先选主考，起驾后到科举殿命题。';
       if(type==='格物')text='格物月经费 '+$('#research-funding').value+' 万两，月结按余银拨付；安排后起驾生效。';
       if(type==='兴业'){updateDevelopmentPreview($('#action-form'),s);text=$('#industry-quote').textContent;}
-      const blocked=edictBlock(s,$('#edict-type').value,$('#province').value||null);if(blocked)text+='；'+blocked;}
+      if(type){const blocked=edictBlock(s,type,province);if(blocked)text+='；'+blocked;}
+    }
     if(kind==='外交'){
       const country=s.foreign.find(f=>f.id===$('#country').value),operation=$('#operation');
       for(const option of operation.options)option.disabled=country.status==='交战'&&!['接见','议和'].includes(option.value)||country.status==='停战待议'&&option.value!=='接见';
@@ -216,8 +217,10 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
     if(kind==='外交'&&$('#operation')?.value==='互市')text+='；可重新议约，议成后替换原约，未成仍照旧约往来。';
     $("#action-estimate").textContent = text;
     const show=(id,visible)=>$("#"+id)?.classList.toggle("hidden",!visible);
-    const development=['格物','兴业','加开恩科'].includes($('#edict-type')?.value);
-    for(const id of ['edict-province-field','edict-followup-field','edict-text-field','force-edict-field'])show(id,!development);
+    const edictType=$('#edict-type')?.value;
+    const development=['格物','兴业','加开恩科'].includes(edictType);
+    for(const id of ['edict-province-field','edict-followup-field','force-edict-field'])show(id,!development&&!!edictType);
+    show('edict-text-field',!development);
     show('examiner-edict-field',$('#edict-type')?.value==='加开恩科');
     show('research-fields',$('#edict-type')?.value==='格物');
     show('industry-fields',$('#edict-type')?.value==='兴业');
@@ -236,9 +239,9 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
     const person=s.court.officials.find(o=>o.id===$('#person')?.value)||s.harem.consorts.find(o=>o.id===$('#person')?.value)||s.foreign.find(o=>o.id===$('#country')?.value)||s.harem.candidates.find(o=>o.id===$('#person')?.value);
     const slot=$('#action-slot').value;
     $('#action-art').innerHTML=sceneHTML(sceneKey({kind,place:$('#scene-place')?.value,edictType:$('#edict-type')?.value},slot),'action',slot==='夜');
-    let html=(person?portraitHTML(s,person,'paper'):'')+'<div class="eyebrow">'+kind+' · 待定</div><h3>'+esc(person?.ruler||person?.name||$('#edict-type')?.value||kind)+'</h3>';
+    let html=(person?portraitHTML(s,person,'paper'):'')+'<div class="eyebrow">'+kind+' · 待定</div><h3>'+esc(person?.ruler||person?.name||$('#edict-type')?.value||(kind==='下旨'?'自由拟旨':kind))+'</h3>';
     if(person)html+='<p>'+esc(person.family||person.personality||postTitle(s,s.court.posts.find(p=>p.holder===person.id))||person.status||'御前候命')+'</p><p>'+esc(person.age?person.age+' 岁':'')+(person.favor!==undefined?' · 好感 '+person.favor:'')+'</p>';
-    if(kind==='下旨'){
+    if(kind==='下旨'&&$('#edict-type').value){
       const r={...EDICTS[$('#edict-type').value],cost:edictCost(s,$('#edict-type').value)};
       if($('#edict-type').value==='加开恩科')html+='<p>国库三十万两，士林声望加3。</p><p>主考：'+esc(s.court.officials.find(o=>o.id===$('#enke-examiner').value)?.name||'尚未任命')+'</p><p>起驾后，前往科举殿颁题阅卷。</p>';
       else if(['格物','兴业'].includes($('#edict-type').value))html+='<p>先定方向与经费，起驾后发往有司。</p>';
@@ -260,9 +263,11 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
           ].map((x) => x.value);
       const a = { kind };
       if(kind==='自拟情节')Object.assign(a,{people:checked('scene-person'),place:val('scene-place').trim(),text:val('scene-text').trim(),label:'自拟情节'});
-      if (kind === "下旨")
+      if (kind === "下旨") {
+        if(!val("edict-type")&&!val("edict-text").trim())throw new Error("请先拟写御旨");
         Object.assign(a, {
-          edictType: val("edict-type"),
+          edictType: val("edict-type") || "禁令",
+          ...(val("edict-type") ? {} : {placeholder:true}),
           ...($("#edict-type").value==='加开恩科'?{examiner:val("enke-examiner")}:{}),
           province: val("province"),
           ...($('#edict-type').value==='征兵'?{armyTarget:val('edict-army')}:{}),
@@ -271,6 +276,7 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
           text: val("edict-text"),
           force: $("#force-edict").checked,
         });
+      }
       if(kind==='下旨'&&['格物','兴业'].includes(val('edict-type')))Object.assign(a,developmentAction($('#action-form'),val('edict-type')));
       if(kind==='下旨'&&val('edict-followup')==='督办')a.followup='督办';
       if (kind === "任命")
@@ -317,7 +323,7 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
       if (kind === "出巡") a.destination = val("destination");
       if (kind === "亲征") a.regent = val("regent");
       a.label =
-        a.edictType ||
+        (a.placeholder ? "口谕" : a.edictType) ||
         a.operation ||
         a.type ||
         (a.memorials

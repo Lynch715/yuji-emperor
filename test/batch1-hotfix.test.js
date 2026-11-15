@@ -1,6 +1,7 @@
 import { portraitHTML, sceneHTML, withChapterArt } from '../src/ui/art.js';
 import { talkPeople } from '../src/core/text.js';
-import {requestPlayerIntents,requestScheduleIntents} from '../src/ui/intent-request.js';
+import {requestPlayerIntents,requestScheduleIntents,requestTalkIntents} from '../src/ui/intent-request.js';
+import {oralScheduleEntry} from '../src/ui/oral.js';
 import {resolveTalkIntents} from '../src/core/intents.js';
 import {classifyMemorialSchedule} from "../src/llm/remark-classifier.js";
 import test from 'node:test';
@@ -32,20 +33,22 @@ function controller(state,extra={}){
   const errors=[],saves=[];
   const context={portraitHTML,sceneHTML,withChapterArt,scheduleSave:{cancel(){},schedule(){},flush:async()=>{}},classifyMemorialSchedule,talkPeople,state,readOnly:false,busy:false,config,AbortController,createBudget,forecastTurn,commitTurn,validateSchedule,talkAttempt,talkMessages,turnMessages,biographyMessages,validateTalk,
     requestTurnContent:(c,s,f,o)=>context.requestTurnNarrative(c,s,f,o),
-    requestPlayerIntents:(c,s,i,o)=>requestPlayerIntents(c,s,i,{...o,fetcher:async()=>response({actions:[]})}),requestScheduleIntents,resolveTalkIntents,gameText:x=>x,streamDraft(){},lastSchedule:null,postTitle,$:id=>elements[id],esc:x=>String(x),openDialog(){},closeDialog(){},render(){},toast:m=>errors.push(m),markMetric(){},persist:async()=>{saves.push(structuredClone(context.state));return true;},
+    requestPlayerIntents:(c,s,i,o)=>requestPlayerIntents(c,s,i,{...o,fetcher:async()=>response({actions:[]})}),
+    requestScheduleIntents:(c,s,i,o)=>requestScheduleIntents(c,s,i,{...o,fetcher:async()=>response({actions:[]})}),
+    requestTalkIntents,oralScheduleEntry,resolveTalkIntents,gameText:x=>x,streamDraft(){},lastSchedule:null,postTitle,$:id=>elements[id],esc:x=>String(x),openDialog(){},closeDialog(){},render(){},toast:m=>errors.push(m),markMetric(){},persist:async()=>{saves.push(structuredClone(context.state));return true;},
     callJSON:(c,m,o)=>callJSON(c,m,{...o,fetcher:async()=>response({reply:'臣尚须查核旧档，此事未敢轻允。'})}),
     requestTurnNarrative:(c,s,f,o)=>requestTurnNarrative(c,s,f,{...o,fetcher:async()=>response(prose)}),...extra};
   runInNewContext(oldBudget+'\n'+snippets,context);
   return {context,elements,errors,saves};
 }
-test('A1 面谈后超过240秒仍可请求正文，三轮面谈与分类不占正文两次额度',async()=>{
+test('A1 面谈后超过240秒仍可请求正文，三轮面谈与口谕投递不占正文两次额度',async()=>{
   const {context:c,elements,errors,saves}=controller(initial());
   c.startTalk('o0');
   for(let i=0;i<3;i++)await elements['#talk-form'].onsubmit({preventDefault(){}});
   assert.equal(c.state.turnBudget,null,'面谈不得持久化正文预算');
-  c.classifyMessages=()=>[];c.ACTIONS={};
-  await c.oral('请卿另议一事');
-  assert.equal(c.state.turnBudget,null,'口谕分类不得占正文预算');
+  c.oral('  请卿另议一事\n  ');
+  assert.equal(c.state.schedule.朝.text,'  请卿另议一事\n  ');
+  assert.equal(c.state.turnBudget,null,'口谕投递不得占正文预算');
   c.state.turnBudget={...createBudget(0),used:4}; // legacy planning-time budget, ten minutes later
   let calls=0;
   c.requestTurnNarrative=(cfg,s,f,o)=>requestTurnNarrative(cfg,s,f,{...o,now:()=>600000,sleep:async()=>{},fetcher:async()=>++calls<2?response({}):response(prose)});
@@ -67,6 +70,35 @@ test('A1 待续重载只保留已用次数，重新计时且重试不重掷',asy
   assert.equal(s.turnBudget.used,2);assert.equal(hash(s.pending.forecast),before);
   await assert.rejects(()=>requestTurnNarrative(config,s,f,{budget:s.turnBudget,fetcher:()=>assert.fail('两次后不得再请求')}),/预算/);
   assert.equal(hash(s.pending.forecast),before);
+});
+test('起驾先显示解析，再显示撰写与誊录，等待期间重复起驾不发请求',async()=>{
+  const stages=[];
+  const status={set textContent(value){stages.push(value);}};
+  let release,requests=0;
+  const {context:c}=controller(initial(),{
+    $:id=>id==='#turn-progress'?status:null,
+    render(){if(c.turnStage)stages.push(c.turnStage);},
+    requestScheduleIntents:async (config,state,schedule,options)=>{
+      requests++;
+      await new Promise(resolve=>{release=resolve;});
+      options.onFallback();
+      return {schedule,intents:[]};
+    },
+    requestTurnContent:async (config,state,forecast,options)=>{
+      options.onNarrativeReady();
+      return prose;
+    },
+  });
+  const advancing=c.advance();
+  assert.equal(c.busy,true);
+  assert.deepEqual(stages,['正在解析旨意…']);
+  await c.advance();
+  assert.equal(requests,1);
+  release();
+  await advancing;
+  assert.deepEqual(stages,['正在解析旨意…','正在撰写本旬…','正在誊录奏文…']);
+  assert.equal(c.busy,false);
+  assert.equal(c.state.turn,1);
 });
 test('B11 试读心声与普通面谈提示词不泄密，试探成功或已知才提供秘密',()=>{
   const s=initial();s.emperor.talents.魅力=100;

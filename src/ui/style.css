@@ -2468,6 +2468,7 @@ textarea.brush-input::placeholder {
   }
   dialog.drawer {
     width: 100%;
+    max-width: 100vw;
     max-height: var(--drawer-height);
     margin: auto var(--s0) var(--s0);
     border-radius: var(--radius-card) var(--radius-card) var(--s0) var(--s0);
@@ -2898,6 +2899,9 @@ textarea::placeholder {
     line-height: 1.6;
     min-height: var(--top-height);
   }
+  input, select, textarea {
+    font-size: max(16px, 1em);
+  }
   .palace .row {
     align-items: flex-start;
   }
@@ -2926,6 +2930,7 @@ textarea::placeholder {
 }
 /* F1: touch feedback, tap highlight and reader font size. */
 html {
+  -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: transparent;
 }
 button,
