@@ -1,0 +1,55 @@
+模式：内置 image_gen（非 CLI）
+无二维码版提示词：
+
+Use case: ads-marketing.
+Asset type: finished premium Chinese game promotional poster, portrait 2:3, high resolution 1536x2304 preferred, single flat full-bleed artwork.
+
+Primary request: Create a completely new, eye-catching cinematic poster for the browser text strategy / roleplaying game titled EXACTLY “皇帝模拟器——御极”. This is the version WITHOUT a QR code. It must be polished enough to share directly on Chinese social media. The game combines governing a dynasty, court relationships, freeform personal stories, character memories and a chronicle.
+
+Scene and art direction: an adult Chinese emperor, a compelling intelligent face in three-quarter profile, seated at a carved imperial writing desk, wearing a richly embroidered black-and-antique-gold dragon robe and a formal emperor's crown. His hand holds a vermilion brush over a pale memorial; a small dramatic streak of red ink visually becomes the route of a golden map of mountains, rivers and city walls. Behind him, a magnificent ceremonial palace recedes into atmospheric red mist with courtiers in silhouette; farther away, layered mountains and a small border beacon evoke the scale of ruling an empire. Keep the emperor clearly readable, dignified, thoughtful and powerful. No martial fantasy armor, no weapons as the main subject, no combat character collage. Make the artwork feel like a high-budget historical strategy game key visual, a refined Chinese gongbi-inspired painting blended with cinematic realism. Rich real textiles, engraved metal, delicate cloud motifs, weathered paper textures, very controlled gold dust and rim light. Deep ink black, cinnabar red, warm parchment and antique gold. Dramatic but legible, sophisticated visual hierarchy. Avoid the old composition of an emperor seen from behind in a dark corridor.
+
+Composition: top 20 percent for the exact full game title and tagline, middle 43 percent for the emperor key art, lower 37 percent a cohesive ink-black and dark-red copy panel integrated with the art. The top must remain dark enough for gold lettering. Fine gold rules separate content elegantly. The title is the largest type. Set the whole exact title “皇帝模拟器——御极” prominently across TWO centered lines if necessary: line 1 “皇帝模拟器”, line 2 “——御极”, so all title words and the long dash are conspicuous. Do not shorten the title to only 御极. Bold expressive gold Chinese calligraphy for the title; crisp, highly readable Chinese serif or clean print for the supporting text. Clear copy at phone size. No dense tiny paragraphs. All listed Chinese characters must be accurate.
+
+Text (verbatim; these are the ONLY text strings to render):
+At top, a discreet genre kicker:
+“帝王文字经营 · AI叙事”
+Main title:
+“皇帝模拟器——御极”
+Tagline:
+“一笔定江山，一生有回响”
+
+Lower panel, six compact feature items, as a balanced two-column by three-row layout, with the heading bold and the description on the next line:
+“朝堂决策”
+“上朝批折 · 任贤治吏”
+“天下经营”
+“钱粮民生 · 外交征战”
+“宫廷人生”
+“召见交谈 · 后宫皇嗣”
+“自由叙事”
+“自拟情节 · 随心续写”
+“人物记忆”
+“旧事留痕 · 关系生变”
+“帝王史册”
+“宏愿心事 · 起居成书”
+
+Below the six features, a clear short gameplay line:
+“朝、午、夜，安排你的一旬”
+Bottom call to action:
+“即刻登基，书写你的王朝”
+Small but readable footer disclosure:
+“AI叙事需自备模型API · 可先试读”
+
+Constraints: no QR code, no barcode, no URL, no fake UI screenshot, no awards, no download counts, no fabricated social proof, no platform logos, no English headline, no watermark, no extra slogans. Do not draw random illegible text on foreground memorials. Leave the right end of the bottom call-to-action region relatively uncluttered so a later matching QR edition can replace that region cleanly; this edition itself must still look complete with no blank placeholder box. Beautiful, striking, uncluttered professional game advertising, not a text document.
+
+有二维码版提示词：
+
+Use case: compositing.
+Asset type: final QR edition of the attached finished Chinese game poster, 1024x1536 portrait.
+Input images: Image 1 (/Users/ruis/Claude/Projects/皇帝模拟器/promo/yuji-poster-v2-no-qr.png) is the EDIT TARGET. Image 2 (/Users/ruis/Claude/Projects/皇帝模拟器/promo/game-qr.png) is a supporting insert: the EXACT REAL FUNCTIONAL QR CODE to place.
+Primary request: Make the matching QR-code edition by adding ONLY the supplied exact black-and-white QR code in the uncluttered bottom-right corner. Preserve image 1's title, every other Chinese text string, emperor portrait, map, colors, feature panel, layout, and all other artwork exactly.
+QR treatment: use the actual precise black/white square-module pattern from Image 2, not an approximation. This code must scan to https://lynch715.github.io/yuji-emperor/ . Preserve every black square, every white square, the three position markers and the smaller alignment marker. No artistic redesign, no rounded modules, no logo inside the QR. Place it fully front-facing, no perspective or texture, pure black on an untextured pure-white square with generous intact white quiet zone. A modest antique-gold outline frame may be OUTSIDE the white quiet zone only. Aim for an approximately 190x190 pixel white square at x800 to990 and y1298 to1488. It must not cover the six-feature texts, the line “朝、午、夜，安排你的一旬”, the bottom left CTA, or the footer about the model API. The existing bottom-right red cloud ornament may be replaced.
+Add a short crisp gold caption centered directly below the square reading EXACTLY “扫码登基”. Keep margins and fit this caption above the poster's bottom edge. Keep the full original main title “皇帝模拟器——御极”. No other changes, no other codes, no extra URLs, no watermark. Do not re-layout or rewrite the poster. This is an exceptionally small precise compositing edit.
+
+二维码定稿说明：
+生成式二维码合成未通过解码；另一次仅替换二维码的生成重试也未采用。保留首张扫码版的完整美术及文字，将qrcode 8.2编码的真实二维码原样组装于右下角。二维码目标：https://lynch715.github.io/yuji-emperor/ 。QR版本3，M纠错，实际29×29模块，加四模块白边共37×37；按每模块5像素放置为185×185，左上角坐标(802,1287)，外加细金边。使用原生CoreGraphics完成数据图块的精确组装，避免再次重绘二维码。最终zxing-cpp 3.1.1对完整海报在1024、768、512像素宽均解码正确；对应无二维码版均未检出条码。
+

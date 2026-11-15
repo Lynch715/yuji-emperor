@@ -1,0 +1,70 @@
+{
+  "decoder": "zxing-cpp 3.1.1",
+  "scope": "software decoding; not a physical phone scan",
+  "results": [
+    {
+      "file": "game-qr-v2.png",
+      "size": [
+        740,
+        740
+      ],
+      "decoded": [
+        "https://lynch715.github.io/yuji-emperor/"
+      ]
+    },
+    {
+      "file": "yuji-poster-v2-qr.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "decoded": [
+        "https://lynch715.github.io/yuji-emperor/"
+      ]
+    },
+    {
+      "file": "yuji-poster-v2-qr.png",
+      "size": [
+        768,
+        1152
+      ],
+      "decoded": [
+        "https://lynch715.github.io/yuji-emperor/"
+      ]
+    },
+    {
+      "file": "yuji-poster-v2-qr.png",
+      "size": [
+        512,
+        768
+      ],
+      "decoded": [
+        "https://lynch715.github.io/yuji-emperor/"
+      ]
+    },
+    {
+      "file": "yuji-poster-v2-no-qr.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "decoded": []
+    },
+    {
+      "file": "yuji-poster-v2-no-qr.png",
+      "size": [
+        768,
+        1152
+      ],
+      "decoded": []
+    },
+    {
+      "file": "yuji-poster-v2-no-qr.png",
+      "size": [
+        512,
+        768
+      ],
+      "decoded": []
+    }
+  ]
+}
