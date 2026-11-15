@@ -88,7 +88,7 @@ test('第二步 随心所欲八类动作都有真实结果；未知动作不制�
  for(const type of ['appoint','dismiss','promote','imprison']){const s=fresh('free');s.emperor.prestige=100;const r=run(s,{type,targetId:'o0',postId:type==='appoint'||type==='promote'?'p29':undefined});assert.equal(r.results[0].status,'success',type);assert.ok(r.facts.some(f=>f.kind==='appointment'));}
  let s=fresh('free'),r=run(s,{type:'favor',targetId:'o0',amount:5,requestedAmount:5});assert.equal(r.state.court.officials[0].favor,55);
  s=fresh('free');r=run(s,{type:'war',countryId:s.foreign[0].id,operation:'宣战'});assert.equal(r.state.foreign[0].status,'交战');
- s=fresh('free');s.nation.treasury=0;r=run(s,{type:'decree',edictType:'修河'});assert.equal(r.results[0].status,'success');assert.ok(r.state.projects.some(p=>p.edictType==='修河'));
+ s=fresh('free');r=run(s,{type:'decree',edictType:'修河'});assert.equal(r.results[0].status,'success');assert.ok(r.state.projects.some(p=>p.edictType==='修河'));
 });
 
 test('第二步 部分成功只影响相关大臣，无可下降民心时仍付出真实代价',()=>{

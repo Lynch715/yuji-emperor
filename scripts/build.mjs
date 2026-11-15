@@ -64,8 +64,8 @@ const temporary = resolve(root, "index.html." + process.pid + ".tmp");
 await writeFile(
   temporary,
   template
-    .replace("/* INLINE_CSS */", compactCSS(css))
-    .replace("/* INLINE_JS */", js.replace(/<\/script/gi, "<\\/script")),
+    .replace("/* INLINE_CSS */", () => compactCSS(css))
+    .replace("/* INLINE_JS */", () => js.replace(/<\/script/gi, "<\\/script")),
 );
 await rename(temporary, resolve(root, "index.html"));
 console.log(

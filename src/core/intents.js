@@ -15,9 +15,30 @@ import {fiatEnabled,normalizeFiatOperations,applyFiatOperations,ensureFiatFunds}
 import {WORLD_MAX} from './sandbox-schema.js';
 export const INTENT_TYPES=['kill','appoint','dismiss','promote','imprison','war','allocate','favor','decree','other','fiat'];
 const persons=s=>[...s.court.officials,...s.harem.consorts,...s.harem.children];
+
+function isProjectAllocation(a){
+ return a.type==='allocate'&&a.resource!=='troops'&&!!EDICTS[a.destination]?.months;
+}
+function allocationFunding(a){
+ return a.projectFunding??(a.resource==='grain'?{grain:a.amount}:{silver:a.amount,account:a.source});
+}
+function mergeProjectAllocations(actions){
+ const byProject=new Map();
+ const projectKey=(a,type)=>JSON.stringify([a.inputId,type,a.province||null]);
+ const merged=actions.filter(a=>{
+  if(!isProjectAllocation(a))return true;
+  const key=projectKey(a,a.destination),first=byProject.get(key);
+  if(!first){byProject.set(key,a);return true;}
+  if(!first.projectFunding&&(first.resource==='grain')!==(a.resource==='grain'))
+   first.projectFunding={...allocationFunding(first),...allocationFunding(a)};
+  return false;
+ });
+ // A funded order already issues this same policy.
+ return merged.filter(a=>a.type!=='decree'||!byProject.has(projectKey(a,a.edictType)));
+}
 export function normalizeIntents(state,actions,inputs){
  const byId=(list,value)=>list.find(x=>x.id===value||x.name===value);
- return (Array.isArray(actions)?actions:[]).map((raw,i)=>{
+ const normalized=(Array.isArray(actions)?actions:[]).map((raw,i)=>{
   const input=inputs.find(x=>x.id===raw?.inputId),type=INTENT_TYPES.includes(raw?.type)?raw.type:'other';
   const a={id:(input?.id||'unknown')+':'+i,inputId:input?.id||'',slot:input?.slot||'朝',type,text:String(raw?.text||input?.text||'').slice(0,TEXT_LIMITS.decree)};
   if(!input)return {...a,type:'other',text:'未能对应原口谕'};
@@ -56,12 +77,15 @@ export function normalizeIntents(state,actions,inputs){
   if(type==='decree'){if(!Object.hasOwn(EDICTS,raw.edictType))return {...a,type:'other',reason:'无法识别政令'};a.edictType=raw.edictType;a.province=state.nation.provinces.find(p=>p.id===raw.province)?.id||a.province||provinceMentioned(state,a.text)||input.province||null;}
   return a;
  });
+ return mergeProjectAllocations(normalized);
 }
 export function intentActionKey(a){
  const keys=['type','targetId','postId','countryId','operation','resource','amount','source','destination','edictType','province'];
  if(a.destination==='tech'||['格物','兴业'].includes(a.edictType))keys.push('techId','funding','lead','industry','name','line');
  if(a.type==='fiat')return JSON.stringify(['fiat',a.operations]);
- return JSON.stringify(keys.map(k=>a[k]??null));
+ const values=keys.map(k=>a[k]??null);
+ if(a.projectFunding)values.push(a.projectFunding.silver,a.projectFunding.grain,a.projectFunding.account);
+ return JSON.stringify(values);
 }
 export function resolveEdictCard(state, action, intents, slot, die) {
  const type=action.edictType,rule=Object.hasOwn(EDICTS,type)?EDICTS[type]:null;
@@ -83,9 +107,10 @@ export function resolveEdictCard(state, action, intents, slot, die) {
   for(const key of ['province','techId','lead','industry','name','line'])
    planned[key]||=a[key];
   if(type==='格物')planned.funding??=a.funding;
-  if(a.type!=='allocate'||!rule.months)continue;
-  if(a.resource==='grain')funding.grain??=a.amount;
-  else funding.silver??=a.amount;
+  if(!isProjectAllocation(a))continue;
+  const payment=allocationFunding(a);
+  funding.silver??=payment.silver;
+  funding.grain??=payment.grain;
  }
  const issued=issueEdict(state,planned,die,funding);
  const independent=intents.filter(a=>!merged.includes(a));
@@ -143,21 +168,24 @@ export function resolveIntents(state,actions,{slot='朝',source='decree',transfe
     }else if(a.type==='allocate'&&a.destination==='tech'){
      const result=configureResearch(s,{techId:a.techId,name:a.name,line:a.line,funding:a.funding??a.amount,lead:a.lead});s=result.state;
      r.actual={destination:'tech',techId:s.tech.current?.id,funding:s.tech.funding};r.summary=result.note;facts.push({kind:'research_plan',...r.actual});
-    }else if(a.type==='allocate'&&a.resource!=='troops'&&EDICTS[a.destination]?.months){
-     const funding=a.resource==='grain'?{grain:a.amount}:{silver:a.amount,account:a.source};
+    }else if(isProjectAllocation(a)){
+     const funding=allocationFunding(a);
      const result=issueEdict(s,{edictType:a.destination,province:a.province,allocation:true},die.value,{...funding,treasuryCap:transferLeft});
      s=result.state;
      const {silver=0,grain=0,account}=result.paid||{};
      const amount=a.resource==='grain'?grain:silver;
      const treasurySpent=account==='treasury'?silver:0;
      transferLeft-=treasurySpent;
-     r.clamped=amount!==a.amount;
+     r.clamped=(funding.silver!==undefined&&silver<funding.silver)||(funding.grain!==undefined&&grain<funding.grain);
      if(result.unfunded)r.status='failed';
      r.actual={resource:a.resource,source:a.source,destination:a.destination,amount,treasurySpent};
      r.summary=result.note;
      if(result.paid){
-      const payment=a.resource==='grain'?'调粮 '+amount+' 万石':'拨银 '+amount+' 万两';
-      r.summary+=' · '+payment+(r.clamped?'（按政令标准与可用钱粮办理）':'');
+      const payments=[];
+      if(silver)payments.push('拨银 '+Number(silver.toFixed(4))+' 万两');
+      if(grain)payments.push('调粮 '+Number(grain.toFixed(4))+' 万石');
+      if(payments.length)r.summary+=' · '+payments.join('、');
+      if(r.clamped)r.summary+='（按政令标准与可用钱粮办理）';
       facts.push({kind:'allocation',...r.actual});
      }
     }else if(a.type==='allocate'){

@@ -113,7 +113,8 @@ test("slot restrictions, full-turn actions and duplicate petitions reject invali
 test("standalone build parses without external scripts; optional Google Fonts only", () => {
   execFileSync(process.execPath, ["scripts/build.mjs"]);
   const html = readFileSync("index.html", "utf8"),
-    js = html.match(/<script>([\s\S]*)<\/script>/)[1];
+    js = html.match(/<script>([\s\S]*?)<\/script>/)[1];
+  assert.equal([...html.matchAll(/<\/script>/gi)].length,1);
   assert.doesNotThrow(() => new Script(js));
   assert.ok(!/<script[^>]+src=/.test(html));
   const links=[...html.matchAll(/<link[^>]+href="([^"]+)"/g)].map(m=>m[1]);

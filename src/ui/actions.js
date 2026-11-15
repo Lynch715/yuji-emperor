@@ -137,7 +137,7 @@ export function actionDialog(s, kind, preferred, onSchedule, onTalk) {
       '<label for="regent">留守大臣</label><select id="regent">' +
       opt(s.court.officials.filter((o) => o.alive)) +
       '</select><p class="warning">先通过外交宣战。亲征持续至战役结束，期间无法在京安排其他行动。</p>';
-  if(kind==='下旨'&&fiatEnabled(s))fields='<p class="muted">言出法随：直接写想要的结果，可连写多条。钱粮不足会自动补足，新人物、势力和制度也可创建。</p>'+fields.replace('着有司依议施行。','例如：国库设为一亿两；全体官员忠诚设为100；创建官员张三；任命张三为工业部长。');
+  if(kind==='下旨'&&fiatEnabled(s))fields='<p class="muted">言出法随：可连写多条指令，亦可创建人物、势力和制度。政令项目用现有钱粮办理。</p>'+fields.replace('着有司依议施行。','例如：国库设为一亿两；全体官员忠诚设为100；创建官员张三；任命张三为工业部长。');
   openDialog(
     kind + " · 安排本旬",
     '<form id="action-form"><div class="segmented" role="group" aria-label="行动时辰">'+rule.slots.map(sl=>'<button type="button" data-form-slot="'+sl+'" aria-pressed="'+(sl===(rule.slots.includes(preferred)?preferred:rule.slots[0]))+'">'+sl+'</button>').join('')+'</div><select id="action-slot" class="hidden" aria-label="时辰">' +

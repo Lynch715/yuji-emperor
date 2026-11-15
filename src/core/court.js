@@ -198,8 +198,8 @@ export function talkAttempt(state, personId, line, structured = false) {
   const receipts=new Set();let used=0;
   for(const t of state.talks.filter(t=>t.person===personId&&t.turn===state.turn)){
     if(!t.intentResults?.length){used+=t.effects?.privy||0;continue;}
-    for(const r of t.intentResults)if(!receipts.has(r.id)&&r.type==='allocate'&&['success','partial'].includes(r.status)&&r.actual.source==='treasury'){
-      receipts.add(r.id);used+=r.actual.treasurySpent??r.actual.amount??0;
+    for(const r of t.intentResults)if(!receipts.has(r.id)&&r.type==='allocate'&&['success','partial'].includes(r.status)){
+      receipts.add(r.id);used+=r.actual.treasurySpent??(r.actual.source==='treasury'?r.actual.amount||0:0);
     }
   }
   const cap =

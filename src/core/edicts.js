@@ -1,5 +1,5 @@
 import { openEnke, enkeBlock } from './keju.js';
-import {fiatEnabled,ensureFiatFunds} from './fiat.js';
+import {ensureFiatFunds} from './fiat.js';
 import {configureResearch} from './tech.js';
 import {buildIndustry,completeIndustry} from './industries.js';
 import {techEffects} from './tech-rules.js';
@@ -169,22 +169,25 @@ function projectExecution(p){
 const FUNDING_SHORTFALL = "钱粮不足，按比例办理";
 function projectFunding(state, rule, funding) {
   const account = funding.account ?? (rule.private ? "privy" : "treasury");
+  const silverPrice = rule.cost;
   const grainPrice = rule.grain || 0;
-  const sandbox = fiatEnabled(state);
-  const silver = Math.max(0,Math.min(funding.silver ?? rule.cost, rule.cost,
-    sandbox ? Infinity : state.nation[account],
-    !sandbox && account === "treasury" ? funding.treasuryCap ?? Infinity : Infinity));
-  const grain = Math.max(0,Math.min(funding.grain ?? grainPrice, grainPrice, sandbox ? Infinity : state.nation.grain));
-  const ratio = Math.min(rule.cost ? silver / rule.cost : 1, grainPrice ? grain / grainPrice : 1);
+  let silver = Math.max(0, Math.min(funding.silver ?? silverPrice, silverPrice, state.nation[account],
+    account === "treasury" ? funding.treasuryCap ?? Infinity : Infinity));
+  let grain = Math.max(0, Math.min(funding.grain ?? grainPrice, grainPrice, state.nation.grain));
+  const ratio = Math.min(silverPrice ? silver / silverPrice : 1, grainPrice ? grain / grainPrice : 1);
+  if ((funding.silver === undefined) !== (funding.grain === undefined)) {
+    // One amount sets the scale for both costs. The smaller available stock
+    // can lower that scale, without spending the other resource in excess.
+    silver = Math.min(silver, silverPrice * ratio);
+    grain = Math.min(grain, grainPrice * ratio);
+  }
   return { account, silver, grain, ratio };
 }
 function scaleEdictEffects(rule, rate, ratio) {
   return Object.fromEntries(Object.entries(rule.effects).map(([key, value]) => [key, value * rate * ratio]));
 }
 function payEdictFunding(state, paid, source, effects = {}) {
-  const costs = { [paid.account]: paid.silver, grain: paid.grain };
-  return applyPackage(ensureFiatFunds(state, costs),
-    { ...effects, [paid.account]: -paid.silver, grain: -paid.grain }, source);
+  return applyPackage(state, { ...effects, [paid.account]: -paid.silver, grain: -paid.grain }, source);
 }
 export function issueEdict(state, action, die, funding = {}) {
   const type = action.edictType || "禁令",
@@ -250,7 +253,7 @@ export function issueEdict(state, action, die, funding = {}) {
     const note=type+' · 追加督办'+(shortened?'，期限缩短':'')+(improved?'，执行改善':'')+'；仍只办结一次 · '+projectExecution(p).label+shortfall;
     return {state:s,note,execution:projectExecution(p),paid};
   }
-  if (!action.intent && !explicitFunding && projectFunding(state,rule,funding).ratio<1)
+  if (!explicitFunding && projectFunding(state,rule,funding).ratio<1)
     throw new Error("钱粮不足，无法下发此旨");
   let current = state, exec = execution(state, type, die), forced = false;
   // A direct allocation has already passed the intent's action check.
@@ -275,7 +278,8 @@ export function issueEdict(state, action, die, funding = {}) {
       );
   }
   const paid = projectFunding(current,rule,funding);
-  if(exec.rate>0&&!paid.ratio)return {state:current,note:type+" · 钱粮不足，未能办理",execution:exec,unfunded:true};
+  if(exec.rate>0&&(!paid.ratio||(!explicitFunding&&paid.ratio<1)))
+    return {state:current,note:type+" · 钱粮不足，未能办理",execution:exec,unfunded:true};
   const shortfall=exec.rate>0&&paid.ratio<1?" · "+FUNDING_SHORTFALL:"";
   const s = exec.tier===4
     ? applyPackage(current,{prestige:-3},type+"：内阁封还，钱粮未付 / "+exec.label)

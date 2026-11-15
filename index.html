@@ -7886,7 +7886,7 @@ return {activeExam,examiners,configureExams,enkeBlock,openEnke,appointExaminer,s
 const { roll } = __load("src/core/rng.js");
 const { applyPackage } = __load("src/core/effects.js");
 const FREEDOM_RULES=Object.freeze({
-free:Object.freeze({label:'言出法随',note:'按你的指令改写天下：钱粮不足自动补足，可创造人物、势力、制度与技术。',k:1,collapseImmune:true,courtLimit:Infinity,referrals:Infinity,talkRounds:Infinity,talkMultiplier:Infinity,appointmentAge:0,firstRankTalent:0,otherTalent:0,edictCooldown:0,selectionPeriod:0,rankCaps:false,tradeCooldown:0,energyPenalty:0}),
+free:Object.freeze({label:'言出法随',note:'可按指令创造人物、势力、制度与技术。政令项目用现有钱粮办理。',k:1,collapseImmune:true,courtLimit:Infinity,referrals:Infinity,talkRounds:Infinity,talkMultiplier:Infinity,appointmentAge:0,firstRankTalent:0,otherTalent:0,edictCooldown:0,selectionPeriod:0,rankCaps:false,tradeCooldown:0,energyPenalty:0}),
 mid:Object.freeze({label:'多数能成',note:'办事较容易，难事有时要多花钱、做让步或承担损失。',k:0.5,collapseImmune:false,partialCosts:Object.freeze({treasury:1,favor:3,morale:0.5}),courtLimit:Infinity,referrals:Infinity,talkRounds:Infinity,talkMultiplier:2,appointmentAge:20,firstRankTalent:30,otherTalent:15,edictCooldown:0,selectionPeriod:2,rankCaps:true,tradeCooldown:0,energyPenalty:1}),
 real:Object.freeze({label:'成败看实力',note:'按人物能力、朝局和天命判断，办事门槛也更严格。',k:0,collapseImmune:false,courtLimit:Infinity,referrals:Infinity,talkRounds:Infinity,talkMultiplier:1,appointmentAge:25,firstRankTalent:40,otherTalent:25,edictCooldown:0,selectionPeriod:3,rankCaps:true,tradeCooldown:0,energyPenalty:1}),
 });
@@ -11335,9 +11335,29 @@ const {fiatEnabled,normalizeFiatOperations,applyFiatOperations,ensureFiatFunds} 
 const {WORLD_MAX} = __load("src/core/sandbox-schema.js");
 const INTENT_TYPES=['kill','appoint','dismiss','promote','imprison','war','allocate','favor','decree','other','fiat'];
 const persons=s=>[...s.court.officials,...s.harem.consorts,...s.harem.children];
+function isProjectAllocation(a){
+return a.type==='allocate'&&a.resource!=='troops'&&!!EDICTS[a.destination]?.months;
+}
+function allocationFunding(a){
+return a.projectFunding??(a.resource==='grain'?{grain:a.amount}:{silver:a.amount,account:a.source});
+}
+function mergeProjectAllocations(actions){
+const byProject=new Map();
+const projectKey=(a,type)=>JSON.stringify([a.inputId,type,a.province||null]);
+const merged=actions.filter(a=>{
+if(!isProjectAllocation(a))return true;
+const key=projectKey(a,a.destination),first=byProject.get(key);
+if(!first){byProject.set(key,a);return true;}
+if(!first.projectFunding&&(first.resource==='grain')!==(a.resource==='grain'))
+first.projectFunding={...allocationFunding(first),...allocationFunding(a)};
+return false;
+});
+// A funded order already issues this same policy.
+return merged.filter(a=>a.type!=='decree'||!byProject.has(projectKey(a,a.edictType)));
+}
 function normalizeIntents(state,actions,inputs){
 const byId=(list,value)=>list.find(x=>x.id===value||x.name===value);
-return (Array.isArray(actions)?actions:[]).map((raw,i)=>{
+const normalized=(Array.isArray(actions)?actions:[]).map((raw,i)=>{
 const input=inputs.find(x=>x.id===raw?.inputId),type=INTENT_TYPES.includes(raw?.type)?raw.type:'other';
 const a={id:(input?.id||'unknown')+':'+i,inputId:input?.id||'',slot:input?.slot||'朝',type,text:String(raw?.text||input?.text||'').slice(0,TEXT_LIMITS.decree)};
 if(!input)return {...a,type:'other',text:'未能对应原口谕'};
@@ -11376,12 +11396,15 @@ if(type==='favor'){a.requestedAmount=raw.amount;a.amount=Number.isFinite(raw.amo
 if(type==='decree'){if(!Object.hasOwn(EDICTS,raw.edictType))return {...a,type:'other',reason:'无法识别政令'};a.edictType=raw.edictType;a.province=state.nation.provinces.find(p=>p.id===raw.province)?.id||a.province||provinceMentioned(state,a.text)||input.province||null;}
 return a;
 });
+return mergeProjectAllocations(normalized);
 }
 function intentActionKey(a){
 const keys=['type','targetId','postId','countryId','operation','resource','amount','source','destination','edictType','province'];
 if(a.destination==='tech'||['格物','兴业'].includes(a.edictType))keys.push('techId','funding','lead','industry','name','line');
 if(a.type==='fiat')return JSON.stringify(['fiat',a.operations]);
-return JSON.stringify(keys.map(k=>a[k]??null));
+const values=keys.map(k=>a[k]??null);
+if(a.projectFunding)values.push(a.projectFunding.silver,a.projectFunding.grain,a.projectFunding.account);
+return JSON.stringify(values);
 }
 function resolveEdictCard(state, action, intents, slot, die) {
 const type=action.edictType,rule=Object.hasOwn(EDICTS,type)?EDICTS[type]:null;
@@ -11403,9 +11426,10 @@ for(const a of merged){
 for(const key of ['province','techId','lead','industry','name','line'])
 planned[key]||=a[key];
 if(type==='格物')planned.funding??=a.funding;
-if(a.type!=='allocate'||!rule.months)continue;
-if(a.resource==='grain')funding.grain??=a.amount;
-else funding.silver??=a.amount;
+if(!isProjectAllocation(a))continue;
+const payment=allocationFunding(a);
+funding.silver??=payment.silver;
+funding.grain??=payment.grain;
 }
 const issued=issueEdict(state,planned,die,funding);
 const independent=intents.filter(a=>!merged.includes(a));
@@ -11463,21 +11487,24 @@ else{r.actual={targetId:target.id,postId:post.id};facts.push({kind:'appointment'
 }else if(a.type==='allocate'&&a.destination==='tech'){
 const result=configureResearch(s,{techId:a.techId,name:a.name,line:a.line,funding:a.funding??a.amount,lead:a.lead});s=result.state;
 r.actual={destination:'tech',techId:s.tech.current?.id,funding:s.tech.funding};r.summary=result.note;facts.push({kind:'research_plan',...r.actual});
-}else if(a.type==='allocate'&&a.resource!=='troops'&&EDICTS[a.destination]?.months){
-const funding=a.resource==='grain'?{grain:a.amount}:{silver:a.amount,account:a.source};
+}else if(isProjectAllocation(a)){
+const funding=allocationFunding(a);
 const result=issueEdict(s,{edictType:a.destination,province:a.province,allocation:true},die.value,{...funding,treasuryCap:transferLeft});
 s=result.state;
 const {silver=0,grain=0,account}=result.paid||{};
 const amount=a.resource==='grain'?grain:silver;
 const treasurySpent=account==='treasury'?silver:0;
 transferLeft-=treasurySpent;
-r.clamped=amount!==a.amount;
+r.clamped=(funding.silver!==undefined&&silver<funding.silver)||(funding.grain!==undefined&&grain<funding.grain);
 if(result.unfunded)r.status='failed';
 r.actual={resource:a.resource,source:a.source,destination:a.destination,amount,treasurySpent};
 r.summary=result.note;
 if(result.paid){
-const payment=a.resource==='grain'?'调粮 '+amount+' 万石':'拨银 '+amount+' 万两';
-r.summary+=' · '+payment+(r.clamped?'（按政令标准与可用钱粮办理）':'');
+const payments=[];
+if(silver)payments.push('拨银 '+Number(silver.toFixed(4))+' 万两');
+if(grain)payments.push('调粮 '+Number(grain.toFixed(4))+' 万石');
+if(payments.length)r.summary+=' · '+payments.join('、');
+if(r.clamped)r.summary+='（按政令标准与可用钱粮办理）';
 facts.push({kind:'allocation',...r.actual});
 }
 }else if(a.type==='allocate'){
@@ -11750,8 +11777,8 @@ mode=talkMode(line,structured),asking=!structured&&mode==='拨款';
 const receipts=new Set();let used=0;
 for(const t of state.talks.filter(t=>t.person===personId&&t.turn===state.turn)){
 if(!t.intentResults?.length){used+=t.effects?.privy||0;continue;}
-for(const r of t.intentResults)if(!receipts.has(r.id)&&r.type==='allocate'&&['success','partial'].includes(r.status)&&r.actual.source==='treasury'){
-receipts.add(r.id);used+=r.actual.treasurySpent??r.actual.amount??0;
+for(const r of t.intentResults)if(!receipts.has(r.id)&&r.type==='allocate'&&['success','partial'].includes(r.status)){
+receipts.add(r.id);used+=r.actual.treasurySpent??(r.actual.source==='treasury'?r.actual.amount||0:0);
 }
 }
 const cap =
@@ -12331,7 +12358,7 @@ return {foreignMonth,foreignYear,diplomacyBlock,diplomacy,borderInvasions,advanc
 },
 "src/core/edicts.js":function(__load){
 const { openEnke, enkeBlock } = __load("src/core/keju.js");
-const {fiatEnabled,ensureFiatFunds} = __load("src/core/fiat.js");
+const {ensureFiatFunds} = __load("src/core/fiat.js");
 const {configureResearch} = __load("src/core/tech.js");
 const {buildIndustry,completeIndustry} = __load("src/core/industries.js");
 const {techEffects} = __load("src/core/tech-rules.js");
@@ -12501,22 +12528,25 @@ return {label,rate:p.execRate,official:p.office};
 const FUNDING_SHORTFALL = "钱粮不足，按比例办理";
 function projectFunding(state, rule, funding) {
 const account = funding.account ?? (rule.private ? "privy" : "treasury");
+const silverPrice = rule.cost;
 const grainPrice = rule.grain || 0;
-const sandbox = fiatEnabled(state);
-const silver = Math.max(0,Math.min(funding.silver ?? rule.cost, rule.cost,
-sandbox ? Infinity : state.nation[account],
-!sandbox && account === "treasury" ? funding.treasuryCap ?? Infinity : Infinity));
-const grain = Math.max(0,Math.min(funding.grain ?? grainPrice, grainPrice, sandbox ? Infinity : state.nation.grain));
-const ratio = Math.min(rule.cost ? silver / rule.cost : 1, grainPrice ? grain / grainPrice : 1);
+let silver = Math.max(0, Math.min(funding.silver ?? silverPrice, silverPrice, state.nation[account],
+account === "treasury" ? funding.treasuryCap ?? Infinity : Infinity));
+let grain = Math.max(0, Math.min(funding.grain ?? grainPrice, grainPrice, state.nation.grain));
+const ratio = Math.min(silverPrice ? silver / silverPrice : 1, grainPrice ? grain / grainPrice : 1);
+if ((funding.silver === undefined) !== (funding.grain === undefined)) {
+// One amount sets the scale for both costs. The smaller available stock
+// can lower that scale, without spending the other resource in excess.
+silver = Math.min(silver, silverPrice * ratio);
+grain = Math.min(grain, grainPrice * ratio);
+}
 return { account, silver, grain, ratio };
 }
 function scaleEdictEffects(rule, rate, ratio) {
 return Object.fromEntries(Object.entries(rule.effects).map(([key, value]) => [key, value * rate * ratio]));
 }
 function payEdictFunding(state, paid, source, effects = {}) {
-const costs = { [paid.account]: paid.silver, grain: paid.grain };
-return applyPackage(ensureFiatFunds(state, costs),
-{ ...effects, [paid.account]: -paid.silver, grain: -paid.grain }, source);
+return applyPackage(state, { ...effects, [paid.account]: -paid.silver, grain: -paid.grain }, source);
 }
 function issueEdict(state, action, die, funding = {}) {
 const type = action.edictType || "禁令",
@@ -12582,7 +12612,7 @@ s.stats.edicts++;
 const note=type+' · 追加督办'+(shortened?'，期限缩短':'')+(improved?'，执行改善':'')+'；仍只办结一次 · '+projectExecution(p).label+shortfall;
 return {state:s,note,execution:projectExecution(p),paid};
 }
-if (!action.intent && !explicitFunding && projectFunding(state,rule,funding).ratio<1)
+if (!explicitFunding && projectFunding(state,rule,funding).ratio<1)
 throw new Error("钱粮不足，无法下发此旨");
 let current = state, exec = execution(state, type, die), forced = false;
 // A direct allocation has already passed the intent's action check.
@@ -12607,7 +12637,8 @@ current,
 );
 }
 const paid = projectFunding(current,rule,funding);
-if(exec.rate>0&&!paid.ratio)return {state:current,note:type+" · 钱粮不足，未能办理",execution:exec,unfunded:true};
+if(exec.rate>0&&(!paid.ratio||(!explicitFunding&&paid.ratio<1)))
+return {state:current,note:type+" · 钱粮不足，未能办理",execution:exec,unfunded:true};
 const shortfall=exec.rate>0&&paid.ratio<1?" · "+FUNDING_SHORTFALL:"";
 const s = exec.tier===4
 ? applyPackage(current,{prestige:-3},type+"：内阁封还，钱粮未付 / "+exec.label)
@@ -13249,6 +13280,9 @@ const edictWords = [
 const decreeClauses = text => text.split(/[。！？；;\n]/).map(line => line.trim()).filter(Boolean);
 const negativeOrder = /(?:暂缓|暂停|不必|不要|无需|无须|不许|不得|不可|禁止|免去|停止|勿|毋).*?(?:赈|救灾|修|治河|税|赋|整|征兵|募兵|赦|开海|禅位|赐死|处死|斩首|下狱|收监|罢免|革职|任命|出任|升任|晋升|嘉奖|申饬|赏罚|宣战|议和|出兵|拨|调)/;
 const ordinaryEdict = text => edictWords.find(([, pattern]) => pattern.test(text))?.[0];
+const allocationAmount = new RegExp('('+NUMBER_SOURCE+')\\s*(两|石|人)');
+const projectAmounts = new RegExp('('+NUMBER_SOURCE+')\\s*(两|石)','g');
+const budgetOnly = new RegExp('^(?:(?:再|另)?(?:[拨调][银粮]?|[银粮])\\s*'+NUMBER_SOURCE+'\\s*[两石][、，,及和与\\s]*)+$');
 function edictFromText(text) {
 for (const line of decreeClauses(text)) {
 if (negativeOrder.test(line)) continue;
@@ -13257,7 +13291,7 @@ const type = ordinaryEdict(line);
 if (type && !(type==='征兵' && new RegExp(NUMBER_SOURCE+'\\s*人').test(line))) return type;
 }
 }
-const CARD_EDICT_GUIDANCE = '输入若含 edictType，表示玩家已选该政令，由引擎办理。附言只有催办等套语时返回 other；附言明确拨银或调粮用于该政令时，用 allocate 并以该政令名为 destination，州郡用 province（州ID）。同一项拨款和政令不要拆成扣款与建项两步。分别解析独立任免等动作。';
+const CARD_EDICT_GUIDANCE = '输入若含 edictType，表示玩家已选该政令，由引擎办理。附言只有催办等套语时返回 other；附言明确拨银或调粮用于该政令时，用 allocate 并以该政令名为 destination，州郡用 province（州ID）。只返回原文指定的资源及数量；银粮都写时分别返回一条 allocate，两条使用相同政令和州郡。数目均未指定时只使用 decree，不代填钱粮。拨款动作本身会建项，无须另报 decree。分别解析独立任免等动作。';
 function intentInputs(schedule) {
 return ['朝','午','夜'].flatMap(slot => {
 const a = normalizeMemorialAction(schedule[slot]), inputs = [];
@@ -13306,8 +13340,10 @@ continue;
 }
 if(industrial){actions.push({inputId:input.id,type:'decree',edictType:'兴业',industry:industrial,province:state.nation.provinces.find(p=>input.text.includes(p.name))?.id,text:input.text});continue;}
 const roster=[...state.court.officials,...state.harem.consorts,...state.harem.children];
-for(const line of decreeClauses(input.text)){
-if(negativeOrder.test(line))continue;
+const lines=decreeClauses(input.text).filter(line=>!negativeOrder.test(line));
+const mentioned=new Set(lines.map(ordinaryEdict).filter(Boolean));
+const budgetEdict=mentioned.size===1?[...mentioned][0]:input.edictType;
+for(const line of lines){
 const type=ordinaryEdict(line),province=provinceMentioned(state,line);
 const post=state.court.posts.find(p=>line.includes(state.postNames?.[p.id]||p.title));
 const country=state.foreign.find(f=>line.includes(f.name)||f.ruler&&line.includes(f.ruler))||
@@ -13320,17 +13356,24 @@ input.scene&&input.people?.length===1?input.people[0]:null;
 const people=named.length?named:roster.filter(o=>o.id===referenced);
 if(personType)for(const target of people)actions.push({inputId:input.id,type:personType,targetId:target.id,postId:post?.id,text:line,amount:/申饬/.test(line)?-5:5});
 if(country&&/宣战|议和|出兵/.test(line))actions.push({inputId:input.id,type:'war',countryId:country.id,operation:line.match(/宣战|议和|出兵/)[0],text:line});
-const number=line.match(new RegExp('('+NUMBER_SOURCE+')\\s*(两|石|人)'));
-const amount=number?parseNumber(number[1])/(number[2]==='人'?1:10000):0;
-const project=type&&EDICTS[type].months&&(!EDICTS[type].private||/内帑/.test(line))?type:null;
-const allocation=number&&Number.isFinite(amount)&&(amount>0||project)&&/拨|调|征兵|募兵/.test(line);
-if(allocation){
+const number=line.match(allocationAmount);
+const onlyBudget=budgetOnly.test(line);
+const policy=type||(onlyBudget?budgetEdict:null);
+const project=EDICTS[policy]?.months&&(!EDICTS[policy].private||/内帑/.test(line))?policy:null;
+const allocation=/拨|调|征兵|募兵/.test(line)||project&&/银|粮/.test(line);
+let allocatedPolicy=false;
+const amounts=project&&number?.[2]!=='人'?[...line.matchAll(projectAmounts)]:number?[number]:[];
+for(const number of amounts){
+const amount=parseNumber(number[1])/(number[2]==='人'?1:10000);
+if(!Number.isFinite(amount)||!(amount>0||project)||!allocation)continue;
 const resource=number[2]==='石'?'grain':number[2]==='人'?'troops':'treasury';
 const destination=resource==='troops'?'capital':project||(/内帑/.test(line)?'privy':post?.id||'政务');
 const source=resource==='grain'?'grain':project&&EDICTS[project].private?'privy':'treasury';
-actions.push({inputId:input.id,type:'allocate',resource,source,destination,province,amount,text:line});
+const targetProvince=province||(project===budgetEdict&&onlyBudget?provinceMentioned(state,input.text):null);
+actions.push({inputId:input.id,type:'allocate',resource,source,destination,province:targetProvince,amount,text:line});
+allocatedPolicy||=destination===project||type==='征兵'&&resource==='troops';
 }
-if(type&&!(allocation&&(project||type==='征兵'&&number[2]==='人')))
+if(type&&!allocatedPolicy)
 actions.push({inputId:input.id,type:'decree',edictType:type,province,text:line});
 }
 const interaction=localSocial(state,input);if(interaction)actions.push({inputId:input.id,type:'other',text:input.text,interaction});
@@ -13348,7 +13391,7 @@ const {fiatEnabled} = __load("src/core/fiat.js");
 function fiatIntentMessages(state,inputs,cardGuidance){
  return [{role:'system',content:`你是帝王游戏言出法随档的指令解析员，只输出 JSON，不写剧情。玩家对游戏世界有最高决定权，不因钱粮、年龄资历、职位、历史年代、科技前置或既有动作模板拒绝要求。必须逐条落实玩家明确的目标和数量，尊重“不、不要、保留、仅”等限制，不擅自杀人、花钱、改变他人或增加愿望。普通闲聊无需改变状态。复合指令按顺序执行，可先创建新对象再按名字引用。未有专用模块的事物用object建立有数值属性的世界对象，或policy记录制度与每旬运行的具体操作；无明确可结算动作的愿望（例如令天下文风大兴）保留原文并返回type:"other"，不得为了贴合它编造可量化的操作。
 ${cardGuidance}
-普通政令使用 {inputId,type:"decree",edictType,province,text}。明确为政令拨银或调粮使用 {inputId,type:"allocate",resource:"treasury"或"grain",source:"treasury"、"privy"或"grain",destination:政令名,province,amount,text}，由引擎一次性开项并记账，不另给扣库或建项的 fiat 操作。其余可结算指令返回 type:"fiat"，带inputId、text原文、operations数组。op只选：
+普通政令使用 {inputId,type:"decree",edictType,province,text}。明确为政令拨银或调粮使用 {inputId,type:"allocate",resource:"treasury"或"grain",source:"treasury"、"privy"或"grain",destination:政令名,province,amount,text}，由引擎按现有钱粮一次性开项并记账，不另给补足钱粮、扣库或建项的 fiat 操作。其余可结算指令返回 type:"fiat"，带inputId、text原文、operations数组。op只选：
 set/add {target,field,value}：指定值/增量。target可为emperor/nation/capital/tech/keju、人物或外邦/州/派系的ID或姓名、边境方向、officials/consorts/children/provinces/factions/countries/armies全组。钱粮单位万两/万石，兵力为人；明确两/石须除10000。中文亿万须准确换算。field可为国库、内帑、粮储、吏治、民心、健康、年龄、寿命、心情、皇威、圣德、教养、资质、好感、位分，五才talents.政略/权谋/武略/文采/魅力、官员abilities.政/军/才/德/忠/权谋，军队troops/readiness/threat，州pop/tax/disaster/prosperity，外邦attitude，姓名name等。数字不受旧100/百万游戏上限约束，但必须是有限可表示数。
 create {kind,name,age,gender,description,fields,other}：kind为official/consort/child/country/province/faction/post/object。fields只给玩家要求的属性；child.other可给母亲姓名。新任官者若不在名册，先创建；新官职可直接给名称。
 appoint {target,post}、dismiss/imprison/kill/revive {target}：任免、收监、死亡与复生。relation {target,other?,value}：与另一人双向关系，省other则对皇帝好感。
@@ -15778,7 +15821,7 @@ esc(ledgerLabel(e.path)) +
 : "negative") +
 '">' +
 (e.delta > 0 ? "+" : "") +
-(/^nation\.(treasury|privy|grain)$/.test(e.path) && Math.abs(e.delta)<0.1
+(/^nation\.(treasury|privy|grain)$/.test(e.path)
 ? e.delta.toLocaleString("zh-CN",{maximumFractionDigits:4}) : num(e.delta)) +
 "</span></li>",
 )
@@ -17524,7 +17567,7 @@ fields =
 '<label for="regent">留守大臣</label><select id="regent">' +
 opt(s.court.officials.filter((o) => o.alive)) +
 '</select><p class="warning">先通过外交宣战。亲征持续至战役结束，期间无法在京安排其他行动。</p>';
-if(kind==='下旨'&&fiatEnabled(s))fields='<p class="muted">言出法随：直接写想要的结果，可连写多条。钱粮不足会自动补足，新人物、势力和制度也可创建。</p>'+fields.replace('着有司依议施行。','例如：国库设为一亿两；全体官员忠诚设为100；创建官员张三；任命张三为工业部长。');
+if(kind==='下旨'&&fiatEnabled(s))fields='<p class="muted">言出法随：可连写多条指令，亦可创建人物、势力和制度。政令项目用现有钱粮办理。</p>'+fields.replace('着有司依议施行。','例如：国库设为一亿两；全体官员忠诚设为100；创建官员张三；任命张三为工业部长。');
 openDialog(
 kind + " · 安排本旬",
 '<form id="action-form"><div class="segmented" role="group" aria-label="行动时辰">'+rule.slots.map(sl=>'<button type="button" data-form-slot="'+sl+'" aria-pressed="'+(sl===(rule.slots.includes(preferred)?preferred:rule.slots[0]))+'">'+sl+'</button>').join('')+'</div><select id="action-slot" class="hidden" aria-label="时辰">' +

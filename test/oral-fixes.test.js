@@ -64,17 +64,18 @@ for (const freedom of ['real','mid','free']) {
     s.emperor.talents.权谋 = 100;
     s.nation.provinces[0].disaster = 80;
     const cases = [
-      {text:'拨银一两修河',type:'修河',silver:0.0001,grain:0,province:null},
-      {text:'拨银十万两赈济直隶',type:'赈灾',silver:10,grain:20,province:'z0'},
-      {text:'赈济直隶',type:'赈灾',silver:30,grain:20,province:'z0'},
+      {text:'拨银一两修河',type:'修河',silver:0.0001,grain:0,ratio:0.0001/60,province:null},
+      {text:'拨银十万两赈济直隶',type:'赈灾',silver:10,grain:20/3,ratio:1/3,province:'z0'},
+      {text:'拨粮十万石赈济直隶',type:'赈灾',silver:15,grain:10,ratio:1/2,province:'z0'},
+      {text:'拨银十万两、拨粮五万石赈济直隶',type:'赈灾',silver:10,grain:5,ratio:1/4,province:'z0'},
+      {text:'赈济直隶',type:'赈灾',silver:30,grain:20,ratio:1,province:'z0'},
     ];
     for (const direct of [false,true]) {
-      for (const {text,type,silver,grain,province} of cases) {
+      for (const {text,type,silver,grain,ratio,province} of cases) {
         const schedule = scheduleOrder(s,text);
         if (direct) schedule.朝={...schedule.朝,edictType:'禁令',placeholder:true};
         const f = forecastOrder(s,schedule);
         const [project] = f.state.projects;
-        const ratio = silver/EDICTS[type].cost;
         assert.deepEqual(f.state.projects.map(p => [p.edictType,p.province,p.cost]),[[type,province,silver]],text);
         assert.equal(f.state.nation.treasury,s.nation.treasury-silver,text);
         assert.equal(f.state.nation.grain,s.nation.grain-grain,text);
@@ -84,6 +85,8 @@ for (const freedom of ['real','mid','free']) {
         ),text);
         const payments = f.entries.filter(e => e.path==='nation.treasury');
         assert.deepEqual(payments.map(e=>e.delta),[-silver],text);
+        const grainPayments = f.entries.filter(e => e.path==='nation.grain');
+        assert.deepEqual(grainPayments.map(e=>e.delta),grain?[-Number(grain.toFixed(2))]:[],text);
         assert.equal(payments[0].source.includes('钱粮不足，按比例办理'),ratio<1,text);
         assert.equal(f.slotResults.朝.join(' ').includes('钱粮不足，按比例办理'),ratio<1,text);
         if (type==='赈灾') {
@@ -126,20 +129,51 @@ test('银与粮分别封顶，短缺按较低出资比例，零额度既不开�
   assert.equal(capped.state.nation.treasury,s.nation.treasury-30);
   assert.equal(capped.state.nation.grain,s.nation.grain-5);
   assert.equal(capped.state.projects[0].fundingRatio,0.25);
-  const ample={...fresh('free'),nation:{...s.nation,treasury:0,grain:0}};
+  const ample=fresh('free');
   const surplus=issueEdict(ample,relief,11,{silver:999,grain:999});
   assert.equal(surplus.state.projects[0].fundingRatio,1);
-  assert.equal(surplus.state.ledger.find(e=>e.path==='nation.treasury').after,30);
-  assert.equal(surplus.state.ledger.find(e=>e.path==='nation.grain').after,20);
+  assert.equal(surplus.state.nation.treasury,ample.nation.treasury-30);
+  assert.equal(surplus.state.nation.grain,ample.nation.grain-20);
   const inputs=[{id:'朝',slot:'朝',text:'拨银十万两赈济直隶'}];
   const actions=localIntents(s,inputs);
   const limited=resolveIntents(s,actions,{transferCap:5});
   assert.equal(limited.results[0].actual.treasurySpent,5);
   assert.equal(limited.state.projects[0].fundingRatio,5/30);
+  assert.equal(limited.state.nation.grain,s.nation.grain-20*(5/30));
   const blocked=resolveIntents(s,actions,{transferCap:0});
   assert.equal(blocked.results[0].status,'failed');
   assert.equal(blocked.state.projects.length,0);
   assert.equal(blocked.state.nation.grain,s.nation.grain);
+});
+
+test('言出法随用现有钱粮，单项指定时缺粮同步缩减银款，无指定金额须付足', () => {
+  const s=fresh('free');
+  s.nation.grain=2;
+  const text='拨银十万两赈济直隶',relief={edictType:'赈灾',province:'z0'};
+  const order=scheduleOrder(s,text);
+  const direct={朝:{...order.朝,edictType:'禁令',placeholder:true}};
+  for(const schedule of [order,direct]){
+    const forecast=forecastOrder(s,schedule);
+    assert.equal(forecast.state.nation.treasury,s.nation.treasury-3);
+    assert.equal(forecast.state.nation.grain,0);
+    assert.equal(forecast.state.projects[0].fundingRatio,0.1);
+    assert.ok(!forecast.entries.some(e=>e.source.includes('补足')));
+  }
+  assert.throws(()=>issueEdict(s,relief,11),/钱粮不足/);
+  const blank=resolveIntents(s,localIntents(s,[{id:'朝',slot:'朝',text:'赈济直隶'}]));
+  assert.equal(blank.results[0].status,'failed');
+  assert.deepEqual(blank.state.nation,s.nation);
+});
+
+test('分开的银粮指令与同一地区的政令合并，未识别卡也只建一次', () => {
+  const s=fresh('free');
+  const schedule=scheduleOrder(s,'拨银十万两；拨粮五万石；赈济直隶');
+  schedule.朝={...schedule.朝,edictType:'禁令',placeholder:true};
+  const forecast=forecastOrder(s,schedule);
+  assert.equal(forecast.state.projects.length,1);
+  assert.equal(forecast.state.projects[0].fundingRatio,1/4);
+  assert.equal(forecast.state.nation.treasury,s.nation.treasury-10);
+  assert.equal(forecast.state.nation.grain,s.nation.grain-5);
 });
 
 test('督办和言出法随竣工继续按累计出资比例兑现', () => {
@@ -170,21 +204,25 @@ test('v27 在途项目保持旧效果，旧待续预演原样迁移', () => {
 
 test('模型返回重复的建项和拨款时只结算一次，独立的任免与拨转照常执行', () => {
   const s = fresh('free');
-  const schedule = {朝:{kind:'下旨',edictType:'赈灾',province:'z0',text:'拨银十万两赈济直隶；罢免户部尚书；另拨五万两入内帑。'}};
+  const schedule = {朝:{kind:'下旨',edictType:'赈灾',province:'z0',text:'拨银十万两、拨粮五万石赈济直隶；罢免户部尚书；另拨五万两入内帑。'}};
   const inputs = intentInputs(schedule);
   const post = s.court.posts.find(p => p.title==='户部尚书');
   const raw = {actions:[
     {inputId:'朝',type:'decree',edictType:'赈灾',province:'z0'},
+    {inputId:'朝',type:'allocate',destination:'赈灾',resource:'grain',amount:5},
     {inputId:'朝',type:'allocate',destination:'赈灾',source:'treasury',amount:10},
     {inputId:'朝',type:'allocate',destination:'赈灾',source:'treasury',amount:10},
     {inputId:'朝',type:'dismiss',targetId:post.holder},
     {inputId:'朝',type:'allocate',destination:'privy',source:'treasury',amount:5},
   ]};
-  const f = forecastTurn(s,schedule,validateIntents(raw,s,inputs));
-  assert.deepEqual(f.state.projects.map(p => [p.edictType,p.cost]),[['赈灾',10]]);
-  assert.equal(f.state.nation.treasury,s.nation.treasury-15);
-  assert.equal(f.state.nation.privy,s.nation.privy+5);
-  assert.notEqual(f.state.court.posts.find(p => p.id===post.id).holder,post.holder);
+  for(const current of [schedule,{朝:{...schedule.朝,edictType:'禁令',placeholder:true}}]){
+    const f = forecastTurn(s,current,validateIntents(raw,s,intentInputs(current)));
+    assert.deepEqual(f.state.projects.map(p => [p.edictType,p.cost,p.fundingRatio]),[['赈灾',10,1/4]]);
+    assert.equal(f.state.nation.treasury,s.nation.treasury-15);
+    assert.equal(f.state.nation.grain,s.nation.grain-5);
+    assert.equal(f.state.nation.privy,s.nation.privy+5);
+    assert.notEqual(f.state.court.posts.find(p => p.id===post.id).holder,post.holder);
+  }
   assert.equal(JSON.parse(intentMessages(s,inputs)[1].content).inputs[0].edictType,'赈灾');
 });
 

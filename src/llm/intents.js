@@ -24,6 +24,9 @@ const edictWords = [
 const decreeClauses = text => text.split(/[。！？；;\n]/).map(line => line.trim()).filter(Boolean);
 const negativeOrder = /(?:暂缓|暂停|不必|不要|无需|无须|不许|不得|不可|禁止|免去|停止|勿|毋).*?(?:赈|救灾|修|治河|税|赋|整|征兵|募兵|赦|开海|禅位|赐死|处死|斩首|下狱|收监|罢免|革职|任命|出任|升任|晋升|嘉奖|申饬|赏罚|宣战|议和|出兵|拨|调)/;
 const ordinaryEdict = text => edictWords.find(([, pattern]) => pattern.test(text))?.[0];
+const allocationAmount = new RegExp('('+NUMBER_SOURCE+')\\s*(两|石|人)');
+const projectAmounts = new RegExp('('+NUMBER_SOURCE+')\\s*(两|石)','g');
+const budgetOnly = new RegExp('^(?:(?:再|另)?(?:[拨调][银粮]?|[银粮])\\s*'+NUMBER_SOURCE+'\\s*[两石][、，,及和与\\s]*)+$');
 export function edictFromText(text) {
  for (const line of decreeClauses(text)) {
   if (negativeOrder.test(line)) continue;
@@ -32,7 +35,7 @@ export function edictFromText(text) {
   if (type && !(type==='征兵' && new RegExp(NUMBER_SOURCE+'\\s*人').test(line))) return type;
  }
 }
-const CARD_EDICT_GUIDANCE = '输入若含 edictType，表示玩家已选该政令，由引擎办理。附言只有催办等套语时返回 other；附言明确拨银或调粮用于该政令时，用 allocate 并以该政令名为 destination，州郡用 province（州ID）。同一项拨款和政令不要拆成扣款与建项两步。分别解析独立任免等动作。';
+const CARD_EDICT_GUIDANCE = '输入若含 edictType，表示玩家已选该政令，由引擎办理。附言只有催办等套语时返回 other；附言明确拨银或调粮用于该政令时，用 allocate 并以该政令名为 destination，州郡用 province（州ID）。只返回原文指定的资源及数量；银粮都写时分别返回一条 allocate，两条使用相同政令和州郡。数目均未指定时只使用 decree，不代填钱粮。拨款动作本身会建项，无须另报 decree。分别解析独立任免等动作。';
 
 export function intentInputs(schedule) {
  return ['朝','午','夜'].flatMap(slot => {
@@ -82,8 +85,10 @@ export function localIntents(state,inputs){
   }
   if(industrial){actions.push({inputId:input.id,type:'decree',edictType:'兴业',industry:industrial,province:state.nation.provinces.find(p=>input.text.includes(p.name))?.id,text:input.text});continue;}
   const roster=[...state.court.officials,...state.harem.consorts,...state.harem.children];
-  for(const line of decreeClauses(input.text)){
-   if(negativeOrder.test(line))continue;
+  const lines=decreeClauses(input.text).filter(line=>!negativeOrder.test(line));
+  const mentioned=new Set(lines.map(ordinaryEdict).filter(Boolean));
+  const budgetEdict=mentioned.size===1?[...mentioned][0]:input.edictType;
+  for(const line of lines){
    const type=ordinaryEdict(line),province=provinceMentioned(state,line);
    const post=state.court.posts.find(p=>line.includes(state.postNames?.[p.id]||p.title));
    const country=state.foreign.find(f=>line.includes(f.name)||f.ruler&&line.includes(f.ruler))||
@@ -97,17 +102,24 @@ export function localIntents(state,inputs){
    if(personType)for(const target of people)actions.push({inputId:input.id,type:personType,targetId:target.id,postId:post?.id,text:line,amount:/申饬/.test(line)?-5:5});
    if(country&&/宣战|议和|出兵/.test(line))actions.push({inputId:input.id,type:'war',countryId:country.id,operation:line.match(/宣战|议和|出兵/)[0],text:line});
 
-   const number=line.match(new RegExp('('+NUMBER_SOURCE+')\\s*(两|石|人)'));
-   const amount=number?parseNumber(number[1])/(number[2]==='人'?1:10000):0;
-   const project=type&&EDICTS[type].months&&(!EDICTS[type].private||/内帑/.test(line))?type:null;
-   const allocation=number&&Number.isFinite(amount)&&(amount>0||project)&&/拨|调|征兵|募兵/.test(line);
-   if(allocation){
+   const number=line.match(allocationAmount);
+   const onlyBudget=budgetOnly.test(line);
+   const policy=type||(onlyBudget?budgetEdict:null);
+   const project=EDICTS[policy]?.months&&(!EDICTS[policy].private||/内帑/.test(line))?policy:null;
+   const allocation=/拨|调|征兵|募兵/.test(line)||project&&/银|粮/.test(line);
+   let allocatedPolicy=false;
+   const amounts=project&&number?.[2]!=='人'?[...line.matchAll(projectAmounts)]:number?[number]:[];
+   for(const number of amounts){
+    const amount=parseNumber(number[1])/(number[2]==='人'?1:10000);
+    if(!Number.isFinite(amount)||!(amount>0||project)||!allocation)continue;
     const resource=number[2]==='石'?'grain':number[2]==='人'?'troops':'treasury';
     const destination=resource==='troops'?'capital':project||(/内帑/.test(line)?'privy':post?.id||'政务');
     const source=resource==='grain'?'grain':project&&EDICTS[project].private?'privy':'treasury';
-    actions.push({inputId:input.id,type:'allocate',resource,source,destination,province,amount,text:line});
+    const targetProvince=province||(project===budgetEdict&&onlyBudget?provinceMentioned(state,input.text):null);
+    actions.push({inputId:input.id,type:'allocate',resource,source,destination,province:targetProvince,amount,text:line});
+    allocatedPolicy||=destination===project||type==='征兵'&&resource==='troops';
    }
-   if(type&&!(allocation&&(project||type==='征兵'&&number[2]==='人')))
+   if(type&&!allocatedPolicy)
     actions.push({inputId:input.id,type:'decree',edictType:type,province,text:line});
   }
   const interaction=localSocial(state,input);if(interaction)actions.push({inputId:input.id,type:'other',text:input.text,interaction});
